@@ -1,6 +1,6 @@
 # openclaw-java-sdk
 
-纯 Java 库（无 Spring）：使用 Kong Unirest 调用 OpenClaw Gateway `POST /hooks/agent`（`OpenClawClient#invokeViaGateway`）：
+纯 Java 库（无 Spring）：使用 Kong Unirest 调用 OpenClaw Gateway `POST /hooks/agent`（推荐 `OpenClawClient#agent`，兼容旧方法 `OpenClawClient#invokeViaGateway`）：
 - **任意顶层命令**：`OpenClawClient#cli()` 返回 [`OpenClawCli`](src/main/java/com/github/hiwepy/openclaw/cli/OpenClawCli.java)，每个方法与官方 CLI 文档页一一对应；第二个参数为 [`cli.opts`](src/main/java/com/github/hiwepy/openclaw/cli/opts) 包中与该命令对应的 `*Options`（实现 [`CliSubArgs`](src/main/java/com/github/hiwepy/openclaw/cli/args/CliSubArgs.java)），例如 [`SetupOptions`](src/main/java/com/github/hiwepy/openclaw/cli/opts/SetupOptions.java)、[`AgentOptions`](src/main/java/com/github/hiwepy/openclaw/cli/opts/AgentOptions.java)。Gateway 另可用 [`GatewayCommandOptions`](src/main/java/com/github/hiwepy/openclaw/cli/opts/GatewayCommandOptions.java) 与 `GatewayRpcOptions`。
 
 HTTP 与 CLI 互不降级。入口类 `OpenClawClient`。
