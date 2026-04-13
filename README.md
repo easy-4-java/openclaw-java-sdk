@@ -1,7 +1,7 @@
 # openclaw-java-sdk
 
 纯 Java 库（无 Spring）：使用 Kong Unirest 调用 OpenClaw Gateway `POST /hooks/agent`（推荐 `OpenClawClient#agent`，兼容旧方法 `OpenClawClient#invokeViaGateway`）：
-- **任意顶层命令**：`OpenClawClient#cli()` 返回 [`OpenClawCli`](src/main/java/com/github/hiwepy/openclaw/cli/OpenClawCli.java)，每个方法与官方 CLI 文档页一一对应；第二个参数为 [`cli.opts`](src/main/java/com/github/hiwepy/openclaw/cli/opts) 包中与该命令对应的 `*Options`（实现 [`CliSubArgs`](src/main/java/com/github/hiwepy/openclaw/cli/args/CliSubArgs.java)），例如 [`SetupOptions`](src/main/java/com/github/hiwepy/openclaw/cli/opts/SetupOptions.java)、[`AgentOptions`](src/main/java/com/github/hiwepy/openclaw/cli/opts/AgentOptions.java)。Gateway 另可用 [`GatewayCommandOptions`](src/main/java/com/github/hiwepy/openclaw/cli/opts/GatewayCommandOptions.java) 与 `GatewayRpcOptions`。
+- **任意顶层命令**：`OpenClawClient#cli()` 返回 [`OpenClawCli`](src/main/java/io/github/hiwepy/openclaw/cli/OpenClawCli.java)，每个方法与官方 CLI 文档页一一对应；第二个参数为 [`cli.opts`](src/main/java/io/github/hiwepy/openclaw/cli/opts) 包中与该命令对应的 `*Options`（实现 [`CliSubArgs`](src/main/java/io/github/hiwepy/openclaw/cli/args/CliSubArgs.java)），例如 [`SetupOptions`](src/main/java/io/github/hiwepy/openclaw/cli/opts/SetupOptions.java)、[`AgentOptions`](src/main/java/io/github/hiwepy/openclaw/cli/opts/AgentOptions.java)。Gateway 另可用 [`GatewayCommandOptions`](src/main/java/io/github/hiwepy/openclaw/cli/opts/GatewayCommandOptions.java) 与 `GatewayRpcOptions`。
 
 HTTP 与 CLI 互不降级。入口类 `OpenClawClient`。
 
@@ -9,7 +9,7 @@ Spring Boot 应用请使用 [openclaw-spring-boot-starter](../openclaw-spring-bo
 
 ## CLI 封装与文档映射
 
-全局参数（`--dev`、`--profile`、`--container`、`--no-color`）请使用 [`OpenClawCliRequest`](src/main/java/com/github/hiwepy/openclaw/cli/OpenClawCliRequest.java) 并通过 [`OpenClawCli#execute`](src/main/java/com/github/hiwepy/openclaw/cli/OpenClawCli.java) 调用。
+全局参数（`--dev`、`--profile`、`--container`、`--no-color`）请使用 [`OpenClawCliRequest`](src/main/java/io/github/hiwepy/openclaw/cli/OpenClawCliRequest.java) 并通过 [`OpenClawCli#execute`](src/main/java/io/github/hiwepy/openclaw/cli/OpenClawCli.java) 调用。
 
 **表格怎么读**：第一列是官方 CLI 的**顶层**命令（`openclaw <cmd>` 里的 `<cmd>`），在 `OpenClawCli` 里**都已经**有同名方法；第二参数类型为 `cli.opts` 中 `*Options`（如 `SetupOptions`、`DaemonOptions`；文档未逐 flag 建模的命令提供 `*Options.builder().add(...)` 作为扩展）。Gateway 的 RPC 场景优先用 `GatewayRpcOptions` + `gatewayHealth` / `gatewayStatus` / `gatewayProbe` 或 `GatewayCommandOptions.builder().health(...)`，见下文「Gateway RPC」。
 
@@ -67,9 +67,9 @@ Spring Boot 应用请使用 [openclaw-spring-boot-starter](../openclaw-spring-bo
 
 ## Gateway RPC 类型化参数（`cli.opts`）
 
-与 [gateway CLI](https://docs.openclaw.ai/cli/gateway) 中「Query a running Gateway」共享的 `--url`、`--token`、`--password`、`--timeout`、`--expect-final`、`--json` 等，可用 [`GatewayRpcOptions`](src/main/java/com/github/hiwepy/openclaw/cli/opts/GatewayRpcOptions.java) 构建；[`GatewayCliArgv`](src/main/java/com/github/hiwepy/openclaw/cli/opts/GatewayCliArgv.java) 生成 `gateway health|status|probe` 的参数列表（不含可执行文件名）。
+与 [gateway CLI](https://docs.openclaw.ai/cli/gateway) 中「Query a running Gateway」共享的 `--url`、`--token`、`--password`、`--timeout`、`--expect-final`、`--json` 等，可用 [`GatewayRpcOptions`](src/main/java/io/github/hiwepy/openclaw/cli/opts/GatewayRpcOptions.java) 构建；[`GatewayCliArgv`](src/main/java/io/github/hiwepy/openclaw/cli/opts/GatewayCliArgv.java) 生成 `gateway health|status|probe` 的参数列表（不含可执行文件名）。
 
-[`OpenClawCli`](src/main/java/com/github/hiwepy/openclaw/cli/OpenClawCli.java) 提供便捷方法：
+[`OpenClawCli`](src/main/java/io/github/hiwepy/openclaw/cli/OpenClawCli.java) 提供便捷方法：
 
 - `gatewayHealth(GatewayRpcOptions)` → `openclaw gateway health ...`
 - `gatewayStatus(GatewayRpcOptions, GatewayCliArgv.GatewayStatusOptions)` → `openclaw gateway status ...`
