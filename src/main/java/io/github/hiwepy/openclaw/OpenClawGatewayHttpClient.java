@@ -3,21 +3,9 @@ package io.github.hiwepy.openclaw;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.hiwepy.openclaw.exception.OpenClawHttpException;
-import io.github.hiwepy.openclaw.util.OpenClawStrings;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.util.EntityUtils;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.UnirestInstance;
 
-import javax.net.ssl.SSLContext;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,15 +23,20 @@ import java.util.Objects;
  *     <li>{@code POST /hooks/agent}：触发一次隔离 agent turn</li>
  *     <li>{@code POST /hooks/<name>}：调用 hooks.mappings 中的自定义映射 webhook</li>
  * </ul>
- * <p>该客户端内部持有独立的 {@link CloseableHttpClient}，使用完成后应调用 {@link #close()} 释放连接池。</p>
+ * <p>安全建议（来自官方文档）：</p>
+ * <ul>
+ *     <li>Webhook 端点应仅暴露在 loopback/tailnet/受信代理之后</li>
+ *     <li>使用独立 hook token，不复用 gateway auth token</li>
+ *     <li>保持 {@code hooks.path} 为专用子路径（拒绝根路径）</li>
+ *     <li>建议配置 {@code hooks.allowedAgentIds} 限制显式 {@code agentId}</li>
+ *     <li>默认保持 {@code hooks.allowRequestSessionKey=false}；若开启需配 {@code hooks.allowedSessionKeyPrefixes}</li>
+ * </ul>
+ * <p>该客户端内部持有独立的 {@link UnirestInstance}，使用完成后应调用 {@link #close()} 释放连接池与线程资源。</p>
  *
  * @see <a href="https://docs.openclaw.ai/automation/cron-jobs#webhooks">Webhook 文档（cron-jobs）</a>
  */
 public class OpenClawGatewayHttpClient implements AutoCloseable {
 
-    private static final String HOOKS_AGENT_PATH = "/hooks/agent";
-    private static final String HOOKS_WAKE_PATH = "/hooks/wake";
-    private static final String HOOKS_PREFIX = "/hooks/";
     /**
      * 轻量解析响应 JSON 的共享 mapper，避免在静态解析方法中重复创建对象。
      */
@@ -51,7 +44,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
 
     private final OpenClawClientConfig config;
     private final ObjectMapper objectMapper;
-    private final CloseableHttpClient http;
+    private final UnirestInstance http;
 
     /**
      * @param config  非 null
@@ -60,7 +53,13 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
     public OpenClawGatewayHttpClient(OpenClawClientConfig config, ObjectMapper mapper) {
         this.config = Objects.requireNonNull(config, "config");
         this.objectMapper = mapper != null ? mapper : new ObjectMapper();
-        this.http = buildHttpClient(config);
+        this.http = kong.unirest.core.Unirest.spawnInstance();
+        this.http.config()
+                .connectTimeout(config.getConnectTimeoutMillis())
+                .requestTimeout(config.getReadTimeoutMillis());
+        if (!config.isVerifySsl()) {
+            this.http.config().verifySsl(false);
+        }
     }
 
     public OpenClawGatewayHttpClient(OpenClawClientConfig config) {
@@ -69,13 +68,18 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
 
     /**
      * 对应 {@code POST /hooks/agent}：触发一次 agent webhook 调用并返回解析结果。
+     * <p>请求体与 Gateway 文档一致：{@code message}（required）、{@code name}、{@code agentId}、
+     * {@code sessionKey}、{@code wakeMode}、{@code deliver}、{@code channel}、{@code to}、
+     * {@code model}、{@code thinking}、{@code timeoutSeconds}；可选字段为空时省略键。</p>
+     *
+     * @param request 请求体字段
      */
     public InvokeAgentResult postHooksAgent(InvokeAgentRequest request) {
         Objects.requireNonNull(request, "request");
 
         Map<String, Object> body = buildHooksAgentBody(request);
 
-        HttpResult response = postWebhook(HOOKS_AGENT_PATH, body);
+        HttpResponse<String> response = postWebhook(resolveHooksSubPath("agent"), body);
         String respBody = response.getBody();
         int status = response.getStatus();
 
@@ -90,32 +94,48 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
 
     /**
      * 对应 {@code POST /hooks/wake}：向主会话队列注入系统事件。
+     * <p>文档约束：{@code text} 必填；{@code mode} 可选，支持 {@code now}（默认）与
+     * {@code next-heartbeat}。</p>
+     *
+     * @param text 事件文本（文档 required）
+     * @param mode 触发模式：{@code now} 或 {@code next-heartbeat}；null/空则默认 {@code now}
+     * @return 网关原始响应体
      */
     public String postHooksWake(String text, String mode) {
-        if (OpenClawStrings.isBlank(text)) {
+        if (text == null || text.isBlank()) {
             throw new IllegalArgumentException("webhooks wake: text is required");
         }
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("text", text);
-        body.put("mode", OpenClawStrings.isBlank(mode) ? "now" : mode);
-        return postWebhook(HOOKS_WAKE_PATH, body).getBody();
+        body.put("mode", (mode == null || mode.isBlank()) ? "now" : mode);
+        return postWebhook(resolveHooksSubPath("wake"), body).getBody();
     }
 
     /**
      * 调用自定义映射 webhook：{@code POST /hooks/<name>}。
+     * <p>{@code <name>} 会在 Gateway 的 {@code hooks.mappings} 中解析，并可把任意负载
+     * 通过模板或代码转换为 wake/agent 动作。</p>
+     *
+     * @param hookName 映射名（不含 {@code /hooks/} 前缀）
+     * @param payload  请求体，null 时发送空 JSON 对象
+     * @return 网关原始响应体
      */
     public String postMappedHook(String hookName, Map<String, Object> payload) {
         String normalized = normalizeHookName(hookName);
         Map<String, Object> body = payload != null ? payload : Collections.emptyMap();
-        return postWebhook(HOOKS_PREFIX + normalized, body).getBody();
+        return postWebhook(resolveHooksSubPath(normalized), body).getBody();
     }
 
     /**
-     * 构建 {@code POST /hooks/agent} 的请求体：{@code message} 必填；其余可选字段仅非空时写入。
+     * 构建 {@code POST /hooks/agent} 的请求体：{@code message} 必填；其余可选字段仅非空时写入，
+     * 避免覆盖网关默认值。
+     *
+     * @param request 非 null
+     * @return 有序 Map，供 JSON 序列化
      */
     static Map<String, Object> buildHooksAgentBody(InvokeAgentRequest request) {
         Objects.requireNonNull(request, "request");
-        if (OpenClawStrings.isBlank(request.getMessage())) {
+        if (request.getMessage() == null || request.getMessage().isBlank()) {
             throw new IllegalArgumentException("hooks/agent: message is required");
         }
         Map<String, Object> body = new LinkedHashMap<>();
@@ -150,38 +170,49 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
     }
 
     /**
-     * 底层 webhook POST：统一鉴权头、超时与状态码检查。
+     * 拼接 {@link OpenClawClientConfig#resolveHooksPath()} 与子路径（如 {@code agent}、{@code wake}、映射名）。
      */
-    private HttpResult postWebhook(String hookPath, Map<String, Object> body) {
+    private String resolveHooksSubPath(String subPath) {
+        String base = config.resolveHooksPath();
+        String child = subPath != null ? subPath.trim() : "";
+        if (child.startsWith("/")) {
+            child = child.substring(1);
+        }
+        return child.isEmpty() ? base : base + "/" + child;
+    }
+
+    /**
+     * 底层 webhook POST 调用：统一做鉴权头、异常语义与状态码检查。
+     * <p>鉴权：{@code Authorization: Bearer} 或 {@code x-openclaw-token}（由 {@link OpenClawClientConfig#isHooksUseXOpenclawTokenHeader()} 二选一）。</p>
+     */
+    private HttpResponse<String> postWebhook(String hookPath, Map<String, Object> body) {
         String base = config.getGatewayBaseUrl();
         if (base == null || base.isEmpty()) {
             throw new OpenClawHttpException("OpenClaw gatewayBaseUrl is empty", null);
         }
         String url = base.replaceAll("/+$", "") + hookPath;
+        // 仅使用 hooks.token（及兼容字段 apiKey），绝不使用 gatewayAuthToken，避免与 gateway.auth.token 混同
         String token = config.resolveHooksBearerToken();
         try {
             String json = objectMapper.writeValueAsString(body);
-            HttpPost post = new HttpPost(url);
-            post.setHeader("Content-Type", "application/json");
-            post.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
-            if (OpenClawStrings.isNotBlank(token)) {
+            var req = http.post(url)
+                    .header("Content-Type", "application/json")
+                    .body(json);
+            if (token != null && !token.isEmpty()) {
+                // 文档：Bearer 与 x-openclaw-token 二选一，禁止 query-string token
                 if (config.isHooksUseXOpenclawTokenHeader()) {
-                    post.setHeader("x-openclaw-token", token);
+                    req = req.header("x-openclaw-token", token);
                 } else {
-                    post.setHeader("Authorization", "Bearer " + token);
+                    req = req.header("Authorization", "Bearer " + token);
                 }
             }
-            try (CloseableHttpResponse response = http.execute(post)) {
-                int status = response.getStatusLine().getStatusCode();
-                String respBody = response.getEntity() != null
-                        ? EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8)
-                        : "";
-                if (status < 200 || status >= 300) {
-                    throw new OpenClawHttpException(
-                            "OpenClaw webhook returned status " + status, status, respBody);
-                }
-                return new HttpResult(status, respBody);
+            HttpResponse<String> response = req.asString();
+            int status = response.getStatus();
+            if (status < 200 || status >= 300) {
+                throw new OpenClawHttpException(
+                        "OpenClaw webhook returned status " + status, status, response.getBody());
             }
+            return response;
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (Exception e) {
@@ -193,7 +224,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
      * 规范化自定义 hook 名称，防止路径注入或非法字符。
      */
     static String normalizeHookName(String hookName) {
-        if (OpenClawStrings.isBlank(hookName)) {
+        if (hookName == null || hookName.isBlank()) {
             throw new IllegalArgumentException("hookName is required");
         }
         String normalized = hookName.trim();
@@ -209,6 +240,9 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
         return normalized;
     }
 
+    /**
+     * 从 JSON 响应中解析 {@code ok} 字段；非 JSON 时根据关键字推断。
+     */
     static boolean parseOk(String body) {
         if (body == null || body.isEmpty()) {
             return false;
@@ -231,8 +265,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
         try {
             JsonNode root = RESPONSE_MAPPER.readTree(body);
             if (root.hasNonNull("runId")) {
-                JsonNode runId = root.get("runId");
-                return runId.isNull() ? null : runId.asText();
+                return root.get("runId").asText(null);
             }
         } catch (Exception ignored) {
             // ignore
@@ -241,58 +274,15 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
     }
 
     /**
-     * 关闭底层 HTTP 客户端，释放连接池；可重复调用。
+     * 关闭底层 {@link UnirestInstance}，释放连接池与相关资源。
+     * <p>可重复调用；当实例已关闭或底层拒绝重复关闭时会被安全忽略。</p>
      */
     @Override
     public void close() {
         try {
             http.close();
         } catch (Exception ignored) {
-            // idempotent shutdown
-        }
-    }
-
-    private static CloseableHttpClient buildHttpClient(OpenClawClientConfig config) {
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(config.getConnectTimeoutMillis())
-                .setSocketTimeout(config.getReadTimeoutMillis())
-                .build();
-        try {
-            if (!config.isVerifySsl()) {
-                SSLContext sslContext = SSLContextBuilder.create()
-                        .loadTrustMaterial(null, (chain, authType) -> true)
-                        .build();
-                SSLConnectionSocketFactory socketFactory =
-                        new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
-                return HttpClients.custom()
-                        .setSSLSocketFactory(socketFactory)
-                        .setDefaultRequestConfig(requestConfig)
-                        .build();
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to configure OpenClaw HTTP client SSL", e);
-        }
-        return HttpClients.custom()
-                .setDefaultRequestConfig(requestConfig)
-                .build();
-    }
-
-    /** 内部 HTTP 响应快照。 */
-    private static final class HttpResult {
-        private final int status;
-        private final String body;
-
-        private HttpResult(int status, String body) {
-            this.status = status;
-            this.body = body;
-        }
-
-        int getStatus() {
-            return status;
-        }
-
-        String getBody() {
-            return body;
+            // Ignore close exceptions to keep shutdown idempotent.
         }
     }
 }
