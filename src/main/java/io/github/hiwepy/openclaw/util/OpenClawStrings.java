@@ -1,7 +1,10 @@
 package io.github.hiwepy.openclaw.util;
 
+import java.util.Map;
+import java.util.Objects;
+
 /**
- * 字符串工具（Java 8 兼容），用于替代 {@link String#isBlank()} 等 JDK 9+ API。
+ * SDK 内部字符串工具，避免引入 Spring/Commons 等传递依赖。
  */
 public final class OpenClawStrings {
 
@@ -9,22 +12,53 @@ public final class OpenClawStrings {
     }
 
     /**
-     * 判断是否为 null、空串或仅空白字符（与 {@code String.isBlank()} 语义一致，适用于 Java 8）。
-     *
-     * @param value 待检测字符串，可为 null
-     * @return 无有效内容时返回 true
+     * @return {@code true} 当值为 {@code null}、空串或仅空白
      */
     public static boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
     }
 
     /**
-     * 与 {@link #isBlank(String)} 相反。
-     *
-     * @param value 待检测字符串，可为 null
-     * @return 包含非空白字符时返回 true
+     * @return {@code true} 当值非 {@code null} 且含非空白字符
      */
     public static boolean isNotBlank(String value) {
         return !isBlank(value);
+    }
+
+    /**
+     * @return 非 blank 时返回 trim 后的值，否则 {@code null}
+     */
+    public static String trimToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    /**
+     * @return blank 时返回 {@code defaultValue}，否则返回原值 trim 结果
+     */
+    public static String defaultIfBlank(String value, String defaultValue) {
+        String trimmed = trimToNull(value);
+        return trimmed != null ? trimmed : Objects.requireNonNull(defaultValue, "defaultValue");
+    }
+
+    /**
+     * @return {@code null} 转为空串
+     */
+    public static String nullToEmpty(String value) {
+        return value != null ? value : "";
+    }
+
+    /**
+     * 值非 blank 时写入 Map。
+     */
+    public static void putIfNotBlank(Map<String, Object> target, String key, String value) {
+        Objects.requireNonNull(target, "target");
+        Objects.requireNonNull(key, "key");
+        if (isNotBlank(value)) {
+            target.put(key, value.trim());
+        }
     }
 }

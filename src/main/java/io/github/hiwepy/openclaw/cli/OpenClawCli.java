@@ -3,7 +3,6 @@ package io.github.hiwepy.openclaw.cli;
 import io.github.hiwepy.openclaw.cli.args.CliSubArgs;
 import io.github.hiwepy.openclaw.cli.opts.*;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.Objects;
  * </p>
  */
 @Getter
-@Slf4j
 public class OpenClawCli {
 
     /**

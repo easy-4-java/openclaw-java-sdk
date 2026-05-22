@@ -94,7 +94,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
         }
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("text", text);
-        body.put("mode", OpenClawStrings.isBlank(mode) ? "now" : mode);
+        body.put("mode", (mode == null || mode.trim().isEmpty()) ? "now" : mode);
         return postWebhook(resolveHooksSubPath("wake"), body).getBody();
     }
 
@@ -176,7 +176,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
             HttpPost post = new HttpPost(url);
             post.setHeader("Content-Type", "application/json");
             post.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
-            if (OpenClawStrings.isNotBlank(token)) {
+            if (token != null && !token.trim().isEmpty()) {
                 if (config.isHooksUseXOpenclawTokenHeader()) {
                     post.setHeader("x-openclaw-token", token);
                 } else {
@@ -205,7 +205,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
      * 规范化自定义 hook 名称，防止路径注入或非法字符。
      */
     static String normalizeHookName(String hookName) {
-        if (OpenClawStrings.isBlank(hookName)) {
+        if (hookName == null || hookName.trim().isEmpty()) {
             throw new IllegalArgumentException("hookName is required");
         }
         String normalized = hookName.trim();
