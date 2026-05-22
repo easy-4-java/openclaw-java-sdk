@@ -2,7 +2,7 @@ package io.github.hiwepy.openclaw;
 
 import io.github.hiwepy.openclaw.cli.OpenClawCli;
 import io.github.hiwepy.openclaw.cli.OpenClawCliExecutor;
-import lombok.Generated;
+import io.github.hiwepy.openclaw.util.OpenClawStrings;
 
 import java.util.Map;
 import java.util.Objects;
@@ -120,7 +120,7 @@ public class OpenClawClient implements AutoCloseable {
     public InvokeAgentResult agentOneShotForPeer(String peerId, InvokeAgentRequest request) {
         Objects.requireNonNull(peerId, "peerId");
         InvokeAgentRequest copy = copyRequest(Objects.requireNonNull(request, "request"));
-        if (isBlank(copy.getSessionKey())) {
+        if (OpenClawStrings.isBlank(copy.getSessionKey())) {
             copy.setSessionKey(OpenClawSessionKeys.forEphemeralPeer(peerId));
         }
         return agent(copy);
@@ -137,7 +137,7 @@ public class OpenClawClient implements AutoCloseable {
         Objects.requireNonNull(peerId, "peerId");
         Objects.requireNonNull(correlationId, "correlationId");
         InvokeAgentRequest copy = copyRequest(Objects.requireNonNull(request, "request"));
-        if (isBlank(copy.getSessionKey())) {
+        if (OpenClawStrings.isBlank(copy.getSessionKey())) {
             copy.setSessionKey(OpenClawSessionKeys.forEphemeralPeer(peerId, correlationId));
         }
         return agent(copy);
@@ -155,7 +155,7 @@ public class OpenClawClient implements AutoCloseable {
         Objects.requireNonNull(peerId, "peerId");
         InvokeAgentRequest copy = copyRequest(Objects.requireNonNull(request, "request"));
         copy.setSessionKey(OpenClawSessionKeys.forStableSession(agentId, peerId));
-        if (isBlank(copy.getAgentId())) {
+        if (OpenClawStrings.isBlank(copy.getAgentId())) {
             copy.setAgentId(agentId.trim());
         }
         return agent(copy);
@@ -170,7 +170,7 @@ public class OpenClawClient implements AutoCloseable {
     public InvokeAgentResult agentWithStableSession(String peerId, InvokeAgentRequest request) {
         Objects.requireNonNull(peerId, "peerId");
         InvokeAgentRequest copy = copyRequest(Objects.requireNonNull(request, "request"));
-        if (isBlank(copy.getAgentId())) {
+        if (OpenClawStrings.isBlank(copy.getAgentId())) {
             throw new IllegalArgumentException("agentId is required on request");
         }
         return agentWithStableSession(copy.getAgentId(), peerId, copy);
@@ -207,10 +207,6 @@ public class OpenClawClient implements AutoCloseable {
     @Override
     public void close() {
         gatewayHttpClient.close();
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
     }
 
     /**
