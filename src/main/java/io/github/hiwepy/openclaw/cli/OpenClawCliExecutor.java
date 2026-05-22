@@ -1,13 +1,12 @@
 package io.github.hiwepy.openclaw.cli;
 
 import io.github.hiwepy.openclaw.OpenClawClientConfig;
+import io.github.hiwepy.openclaw.util.OpenClawStrings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -55,7 +54,7 @@ public class OpenClawCliExecutor {
         } catch (Exception e) {
             log.warn("openclaw execution failed: {}", e.getMessage());
             String stderr = err.toString(StandardCharsets.UTF_8);
-            if (!stderr.isEmpty()) {
+            if (OpenClawStrings.isNotBlank(stderr)) {
                 stderr = stderr + "\n";
             }
             stderr = stderr + e.getMessage();

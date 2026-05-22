@@ -3,8 +3,10 @@ package io.github.hiwepy.openclaw;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.hiwepy.openclaw.exception.OpenClawHttpException;
+import io.github.hiwepy.openclaw.util.OpenClawStrings;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.UnirestInstance;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -35,6 +37,7 @@ import java.util.Objects;
  *
  * @see <a href="https://docs.openclaw.ai/automation/cron-jobs#webhooks">Webhook 文档（cron-jobs）</a>
  */
+@Slf4j
 public class OpenClawGatewayHttpClient implements AutoCloseable {
 
     /**
@@ -52,7 +55,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
      */
     public OpenClawGatewayHttpClient(OpenClawClientConfig config, ObjectMapper mapper) {
         this.config = Objects.requireNonNull(config, "config");
-        this.objectMapper = mapper != null ? mapper : new ObjectMapper();
+        this.objectMapper = Objects.requireNonNullElse(mapper, new ObjectMapper());
         this.http = kong.unirest.core.Unirest.spawnInstance();
         this.http.config()
                 .connectTimeout(config.getConnectTimeoutMillis())
@@ -102,12 +105,12 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
      * @return 网关原始响应体
      */
     public String postHooksWake(String text, String mode) {
-        if (text == null || text.isBlank()) {
+        if (OpenClawStrings.isBlank(text)) {
             throw new IllegalArgumentException("webhooks wake: text is required");
         }
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("text", text);
-        body.put("mode", (mode == null || mode.isBlank()) ? "now" : mode);
+        body.put("text", text.trim());
+        body.put("mode", OpenClawStrings.defaultIfBlank(mode, "now"));
         return postWebhook(resolveHooksSubPath("wake"), body).getBody();
     }
 
@@ -135,37 +138,23 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
      */
     static Map<String, Object> buildHooksAgentBody(InvokeAgentRequest request) {
         Objects.requireNonNull(request, "request");
-        if (request.getMessage() == null || request.getMessage().isBlank()) {
+        if (OpenClawStrings.isBlank(request.getMessage())) {
             throw new IllegalArgumentException("hooks/agent: message is required");
         }
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("message", request.getMessage());
-        if (request.getAgentId() != null && !request.getAgentId().isEmpty()) {
-            body.put("agentId", request.getAgentId());
-        }
-        String name = request.getName();
-        body.put("name", (name != null && !name.isEmpty()) ? name : "Generation");
-        String wakeMode = request.getWakeMode();
-        body.put("wakeMode", (wakeMode != null && !wakeMode.isEmpty()) ? wakeMode : "now");
+        body.put("message", request.getMessage().trim());
+        OpenClawStrings.putIfNotBlank(body, "agentId", request.getAgentId());
+        body.put("name", OpenClawStrings.defaultIfBlank(request.getName(), "Generation"));
+        body.put("wakeMode", OpenClawStrings.defaultIfBlank(request.getWakeMode(), "now"));
         body.put("timeoutSeconds", request.getTimeoutSeconds());
-        if (request.getSessionKey() != null && !request.getSessionKey().isEmpty()) {
-            body.put("sessionKey", request.getSessionKey());
-        }
+        OpenClawStrings.putIfNotBlank(body, "sessionKey", request.getSessionKey());
         if (request.getDeliver() != null) {
             body.put("deliver", request.getDeliver());
         }
-        if (request.getChannel() != null && !request.getChannel().isEmpty()) {
-            body.put("channel", request.getChannel());
-        }
-        if (request.getTo() != null && !request.getTo().isEmpty()) {
-            body.put("to", request.getTo());
-        }
-        if (request.getModel() != null && !request.getModel().isEmpty()) {
-            body.put("model", request.getModel());
-        }
-        if (request.getThinking() != null && !request.getThinking().isEmpty()) {
-            body.put("thinking", request.getThinking());
-        }
+        OpenClawStrings.putIfNotBlank(body, "channel", request.getChannel());
+        OpenClawStrings.putIfNotBlank(body, "to", request.getTo());
+        OpenClawStrings.putIfNotBlank(body, "model", request.getModel());
+        OpenClawStrings.putIfNotBlank(body, "thinking", request.getThinking());
         return body;
     }
 
@@ -174,7 +163,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
      */
     private String resolveHooksSubPath(String subPath) {
         String base = config.resolveHooksPath();
-        String child = subPath != null ? subPath.trim() : "";
+        String child = OpenClawStrings.nullToEmpty(subPath).trim();
         if (child.startsWith("/")) {
             child = child.substring(1);
         }
@@ -187,18 +176,18 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
      */
     private HttpResponse<String> postWebhook(String hookPath, Map<String, Object> body) {
         String base = config.getGatewayBaseUrl();
-        if (base == null || base.isEmpty()) {
+        if (OpenClawStrings.isBlank(base)) {
             throw new OpenClawHttpException("OpenClaw gatewayBaseUrl is empty", null);
         }
         String url = base.replaceAll("/+$", "") + hookPath;
-        // 仅使用 hooks.token（及兼容字段 apiKey），绝不使用 gatewayAuthToken，避免与 gateway.auth.token 混同
         String token = config.resolveHooksBearerToken();
+        log.debug("OpenClaw webhook POST {}", url);
         try {
             String json = objectMapper.writeValueAsString(body);
             var req = http.post(url)
                     .header("Content-Type", "application/json")
                     .body(json);
-            if (token != null && !token.isEmpty()) {
+            if (OpenClawStrings.isNotBlank(token)) {
                 // 文档：Bearer 与 x-openclaw-token 二选一，禁止 query-string token
                 if (config.isHooksUseXOpenclawTokenHeader()) {
                     req = req.header("x-openclaw-token", token);
@@ -209,6 +198,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
             HttpResponse<String> response = req.asString();
             int status = response.getStatus();
             if (status < 200 || status >= 300) {
+                log.warn("OpenClaw webhook failed status={} path={}", status, hookPath);
                 throw new OpenClawHttpException(
                         "OpenClaw webhook returned status " + status, status, response.getBody());
             }
@@ -216,6 +206,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (Exception e) {
+            log.warn("OpenClaw webhook invoke failed path={}: {}", hookPath, e.getMessage());
             throw new OpenClawHttpException("OpenClaw webhook invoke failed: " + e.getMessage(), e);
         }
     }
@@ -224,7 +215,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
      * 规范化自定义 hook 名称，防止路径注入或非法字符。
      */
     static String normalizeHookName(String hookName) {
-        if (hookName == null || hookName.isBlank()) {
+        if (OpenClawStrings.isBlank(hookName)) {
             throw new IllegalArgumentException("hookName is required");
         }
         String normalized = hookName.trim();
@@ -244,7 +235,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
      * 从 JSON 响应中解析 {@code ok} 字段；非 JSON 时根据关键字推断。
      */
     static boolean parseOk(String body) {
-        if (body == null || body.isEmpty()) {
+        if (OpenClawStrings.isBlank(body)) {
             return false;
         }
         try {
@@ -259,7 +250,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
     }
 
     static String parseRunId(String body) {
-        if (body == null || body.isEmpty()) {
+        if (OpenClawStrings.isBlank(body)) {
             return null;
         }
         try {

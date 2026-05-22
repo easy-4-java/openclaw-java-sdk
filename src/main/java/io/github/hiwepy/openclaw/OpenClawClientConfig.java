@@ -1,5 +1,6 @@
 package io.github.hiwepy.openclaw;
 
+import io.github.hiwepy.openclaw.util.OpenClawStrings;
 import lombok.Data;
 
 /**
@@ -95,10 +96,10 @@ public class OpenClawClientConfig {
      * @return {@link #hooksToken} 非空则用之，否则 {@link #apiKey}，均为空则空字符串
      */
     public String resolveHooksBearerToken() {
-        if (hooksToken != null && !hooksToken.isEmpty()) {
-            return hooksToken;
+        if (OpenClawStrings.isNotBlank(hooksToken)) {
+            return hooksToken.trim();
         }
-        return apiKey != null ? apiKey : "";
+        return OpenClawStrings.nullToEmpty(apiKey);
     }
 
     /**
@@ -116,10 +117,7 @@ public class OpenClawClientConfig {
      * 规范化 {@link #hooksPath}，保证以 {@code /} 开头且不以 {@code /} 结尾。
      */
     public String resolveHooksPath() {
-        String raw = hooksPath != null ? hooksPath.trim() : "";
-        if (raw.isEmpty()) {
-            raw = "/hooks";
-        }
+        String raw = OpenClawStrings.defaultIfBlank(hooksPath, "/hooks");
         if (!raw.startsWith("/")) {
             raw = "/" + raw;
         }
