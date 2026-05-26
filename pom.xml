@@ -402,6 +402,7 @@
         <maven-central-publishing-plugin.version>0.10.0</maven-central-publishing-plugin.version>
         <maven-nexus-yuicompressor-plugin.version>1.1.0</maven-nexus-yuicompressor-plugin.version>
         <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
+            <java-websocket.version>1.6.0</java-websocket.version>
     </properties>
 
     <dependencies>
