@@ -57,7 +57,8 @@ public class OpenClawCliExecutor {
 
             DefaultExecuteResultHandler handler = session.getHandler();
             Exception asyncFailure = handler.getException();
-            if (asyncFailure instanceof ExecuteException ex) {
+            if (asyncFailure instanceof ExecuteException) {
+                ExecuteException ex = (ExecuteException) asyncFailure;
                 return new OpenClawCliResult(ex.getExitValue(), stdout, stderr);
             }
             if (asyncFailure != null) {
