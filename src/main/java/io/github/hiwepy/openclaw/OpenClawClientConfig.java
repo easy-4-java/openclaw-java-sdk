@@ -1,5 +1,6 @@
 package io.github.hiwepy.openclaw;
 
+import io.github.hiwepy.openclaw.util.OpenClawStrings;
 import lombok.Data;
 
 /**
@@ -75,6 +76,16 @@ public class OpenClawClientConfig {
     /** 本地 agent 命令超时（秒） */
     private int localTimeoutSeconds = 300;
 
+    /**
+     * 本地 CLI 子进程工作目录；为空时使用 JVM 当前目录。
+     */
+    private String localWorkingDirectory;
+
+    /**
+     * 本机 CLI 子进程最大并发数；小于等于 0 时使用 CPU 核心数与 2 的较大值。
+     */
+    private int localMaxConcurrentExecutions = 0;
+
     /** 探测本地运行时是否可用的超时（秒） */
     private int localProbeTimeoutSeconds = 5;
 
@@ -85,15 +96,20 @@ public class OpenClawClientConfig {
     private boolean hooksUseXOpenclawTokenHeader = false;
 
     /**
+     * Gateway HTTP Webhooks 基础路径，对应 {@code hooks.path}，默认 {@code /hooks}。
+     */
+    private String hooksPath = "/hooks";
+
+    /**
      * 解析用于 {@code /hooks/*} HTTP Webhook 请求的 Bearer 令牌。
      *
      * @return {@link #hooksToken} 非空则用之，否则 {@link #apiKey}，均为空则空字符串
      */
     public String resolveHooksBearerToken() {
-        if (hooksToken != null && !hooksToken.isEmpty()) {
-            return hooksToken;
+        if (OpenClawStrings.isNotBlank(hooksToken)) {
+            return hooksToken.trim();
         }
-        return apiKey != null ? apiKey : "";
+        return OpenClawStrings.nullToEmpty(apiKey);
     }
 
     /**
@@ -105,5 +121,23 @@ public class OpenClawClientConfig {
     @Deprecated
     public String resolveBearerToken() {
         return resolveHooksBearerToken();
+    }
+
+    /**
+     * 规范化 {@link #hooksPath}，保证以 {@code /} 开头且不以 {@code /} 结尾。
+     */
+    public String resolveHooksPath() {
+        String raw = OpenClawStrings.defaultIfBlank(hooksPath, "/hooks");
+        if (!raw.startsWith("/")) {
+            raw = "/" + raw;
+        }
+        while (raw.endsWith("/") && raw.length() > 1) {
+            raw = raw.substring(0, raw.length() - 1);
+        }
+        if ("/".equals(raw)) {
+            throw new IllegalArgumentException(
+                    "hooks.path must be a dedicated subpath (e.g. /hooks); root path '/' is rejected by Gateway");
+        }
+        return raw;
     }
 }
