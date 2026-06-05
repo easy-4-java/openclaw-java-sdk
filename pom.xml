@@ -374,7 +374,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <httpclient.version>4.5.14</httpclient.version>
+        <unirest.version>4.4.5</unirest.version>
         <jackson.version>2.13.5</jackson.version>
         <commons-exec.version>1.4.0</commons-exec.version>
         <junit.version>5.8.2</junit.version>
@@ -405,10 +405,16 @@
     </properties>
 
     <dependencies>
+        <!-- HTTP client -->
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
+            <groupId>com.konghq</groupId>
+            <artifactId>unirest-java-core</artifactId>
+            <version>${unirest.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.konghq</groupId>
+            <artifactId>unirest-modules-jackson</artifactId>
+            <version>${unirest.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
