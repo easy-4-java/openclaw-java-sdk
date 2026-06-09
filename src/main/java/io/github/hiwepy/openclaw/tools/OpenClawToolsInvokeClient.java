@@ -99,7 +99,6 @@ public class OpenClawToolsInvokeClient  {
                             "POST /tools/invoke returned status " + status, status, respBody);
                 }
                 return objectMapper.readValue(respBody, ToolInvokeResult.class);
-            }
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (Exception e) {
@@ -108,7 +107,6 @@ public class OpenClawToolsInvokeClient  {
         }
     }
 
-    @Override
     public void close() {
         try {
             http.close();
@@ -117,26 +115,13 @@ public class OpenClawToolsInvokeClient  {
     }
 
     private static UnirestInstance buildHttpClient(OpenClawClientConfig config) {
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(config.getConnectTimeoutMillis())
-                .setSocketTimeout(config.getReadTimeoutMillis())
-                .build();
-        try {
-            if (!config.isVerifySsl()) {
-                SSLContextBuilder sslBuilder = SSLContextBuilder.create()
-                        .loadTrustMaterial(null, (chain, authType) -> true);
-                SSLConnectionSocketFactory socketFactory =
-                        new SSLConnectionSocketFactory(sslBuilder.build(), NoopHostnameVerifier.INSTANCE);
-                return HttpClients.custom()
-                        .setSSLSocketFactory(socketFactory)
-                        .setDefaultRequestConfig(requestConfig)
-                        .build();
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to configure SSL", e);
+        UnirestInstance http = Unirest.spawnInstance();
+        http.config()
+                .connectTimeout(config.getConnectTimeoutMillis())
+                .requestTimeout(config.getReadTimeoutMillis());
+        if (!config.isVerifySsl()) {
+            http.config().verifySsl(false);
         }
-        return HttpClients.custom()
-                .setDefaultRequestConfig(requestConfig)
-                .build();
+        return http;
     }
 }

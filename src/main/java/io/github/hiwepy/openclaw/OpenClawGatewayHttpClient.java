@@ -4,21 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.hiwepy.openclaw.exception.OpenClawHttpException;
 import io.github.hiwepy.openclaw.util.OpenClawStrings;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestInstance;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.util.EntityUtils;
 
-import javax.net.ssl.SSLContext;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,7 +50,7 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
 
     private final OpenClawClientConfig config;
     private final ObjectMapper objectMapper;
-    private final CloseableHttpClient http;
+    private final UnirestInstance http;
 
     /**
      * @param config  非 null
@@ -184,29 +174,25 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
         try {
             String json = objectMapper.writeValueAsString(body);
             log.debug("POST webhook url={} bodyLen={}", url, json.length());
-            HttpPost post = new HttpPost(url);
-            post.setHeader("Content-Type", "application/json");
-            post.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
+            kong.unirest.core.HttpRequestWithBody req = http.post(url)
+                    .header("Content-Type", "application/json");
             if (OpenClawStrings.isNotBlank(token)) {
                 if (config.isHooksUseXOpenclawTokenHeader()) {
-                    post.setHeader("x-openclaw-token", token);
+                    req = req.header("x-openclaw-token", token);
                 } else {
-                    post.setHeader("Authorization", "Bearer " + token);
+                    req = req.header("Authorization", "Bearer " + token);
                 }
             }
-            try (CloseableHttpResponse response = http.execute(post)) {
-                int status = response.getStatusLine().getStatusCode();
-                String respBody = response.getEntity() != null
-                        ? EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8)
-                        : "";
-                if (status < 200 || status >= 300) {
-                    log.warn("OpenClaw webhook returned non-2xx status={} url={}", status, url);
-                    throw new OpenClawHttpException(
-                            "OpenClaw webhook returned status " + status, status, respBody);
-                }
-                log.debug("OpenClaw webhook success status={} url={}", status, url);
-                return new HttpResult(status, respBody);
+            HttpResponse<String> response = req.body(json).asString();
+            int status = response.getStatus();
+            String respBody = response.getBody();
+            if (status < 200 || status >= 300) {
+                log.warn("OpenClaw webhook returned non-2xx status={} url={}", status, url);
+                throw new OpenClawHttpException(
+                        "OpenClaw webhook returned status " + status, status, respBody);
             }
+            log.debug("OpenClaw webhook success status={} url={}", status, url);
+            return new HttpResult(status, respBody);
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (Exception e) {
@@ -278,29 +264,15 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
         }
     }
 
-    private static CloseableHttpClient buildHttpClient(OpenClawClientConfig config) {
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(config.getConnectTimeoutMillis())
-                .setSocketTimeout(config.getReadTimeoutMillis())
-                .build();
-        try {
-            if (!config.isVerifySsl()) {
-                SSLContext sslContext = SSLContextBuilder.create()
-                        .loadTrustMaterial(null, (chain, authType) -> true)
-                        .build();
-                SSLConnectionSocketFactory socketFactory =
-                        new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
-                return HttpClients.custom()
-                        .setSSLSocketFactory(socketFactory)
-                        .setDefaultRequestConfig(requestConfig)
-                        .build();
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to configure OpenClaw HTTP client SSL", e);
+        private static UnirestInstance buildHttpClient(OpenClawClientConfig config) {
+        UnirestInstance http = Unirest.spawnInstance();
+        http.config()
+                .connectTimeout(config.getConnectTimeoutMillis())
+                .requestTimeout(config.getReadTimeoutMillis());
+        if (!config.isVerifySsl()) {
+            http.config().verifySsl(false);
         }
-        return HttpClients.custom()
-                .setDefaultRequestConfig(requestConfig)
-                .build();
+        return http;
     }
 
     /** 内部 HTTP 响应快照。 */
