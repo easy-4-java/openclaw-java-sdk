@@ -2,6 +2,13 @@ package io.github.hiwepy.openclaw;
 
 import io.github.hiwepy.openclaw.cli.OpenClawCli;
 import io.github.hiwepy.openclaw.cli.OpenClawCliExecutor;
+import io.github.hiwepy.openclaw.openai.OpenClawOpenAiHttpClient;
+import io.github.hiwepy.openclaw.openai.model.*;
+import io.github.hiwepy.openclaw.responses.model.ResponseRequest;
+import io.github.hiwepy.openclaw.responses.model.ResponseResult;
+import io.github.hiwepy.openclaw.tools.OpenClawToolsInvokeClient;
+import io.github.hiwepy.openclaw.tools.model.ToolInvokeRequest;
+import io.github.hiwepy.openclaw.tools.model.ToolInvokeResult;
 import io.github.hiwepy.openclaw.ws.ChatStreamHandler;
 import io.github.hiwepy.openclaw.ws.OpenClawGatewayWsClient;
 import io.github.hiwepy.openclaw.ws.OpenClawWsListener;
@@ -15,22 +22,29 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * 门面：<b>HTTP Webhooks</b>（{@code /hooks/*}）+ <b>WebSocket 控制面</b> + 通用本地 CLI（{@link #cli()}）。
+ * 门面：<b>HTTP Webhooks</b>（{@code /hooks/*}）+ <b>OpenAI 兼容 API</b>（{@code /v1/*}）+ <b>Tools Invoke</b>（{@code /tools/invoke}）+ <b>WebSocket 控制面</b> + 通用本地 CLI（{@link #cli()}）。
  * <p>
- * 三条通信通道相互独立：
+ * 五条通信通道相互独立：
  * </p>
  * <ul>
  *     <li><b>Webhook HTTP</b>：{@link #agent} / {@link #wake} / {@link #hook} — 无状态触发</li>
+ *     <li><b>OpenAI 兼容 HTTP</b>：{@link #chatCompletion} / {@link #listModels} / {@link #createEmbeddings} — OpenAI 标准 API</li>
+ *     <li><b>OpenResponses HTTP</b>：{@link #createResponse} — Item-based 输入，客户端工具调用</li>
+ *     <li><b>Tools Invoke HTTP</b>：{@link #toolInvoke} — 直接调用单个工具</li>
  *     <li><b>WebSocket</b>：{@link #ws()} — 双向实时通信，流式对话，完整 RPC</li>
  *     <li><b>CLI</b>：{@link #cli()} — 本地 {@code openclaw} 命令封装</li>
  * </ul>
  *
  * @see OpenClawGatewayWsClient
+ * @see OpenClawOpenAiHttpClient
+ * @see OpenClawToolsInvokeClient
  */
 public class OpenClawClient implements AutoCloseable {
 
     private final OpenClawClientConfig config;
     private final OpenClawGatewayHttpClient gatewayHttpClient;
+    private final OpenClawOpenAiHttpClient openAiHttpClient;
+    private final OpenClawToolsInvokeClient toolsInvokeClient;
     private final OpenClawCli cli;
     private final OpenClawGatewayWsClient wsClient;
 
@@ -41,7 +55,23 @@ public class OpenClawClient implements AutoCloseable {
         this.config = Objects.requireNonNull(config, "config");
         OpenClawCliExecutor exec = new OpenClawCliExecutor(config);
         this.gatewayHttpClient = new OpenClawGatewayHttpClient(config);
+        this.openAiHttpClient = new OpenClawOpenAiHttpClient(config);
+        this.toolsInvokeClient = new OpenClawToolsInvokeClient(config);
         this.cli = new OpenClawCli(exec);
+        this.wsClient = new OpenClawGatewayWsClient(config);
+    }
+
+    /**
+     * 兼容性构造（用于测试等简易场景，只传入 config 和 gatewayHttpClient）。
+     * <p>其他组件使用默认实现。</p>
+     */
+    public OpenClawClient(OpenClawClientConfig config,
+                          OpenClawGatewayHttpClient gatewayHttpClient) {
+        this.config = Objects.requireNonNull(config, "config");
+        this.gatewayHttpClient = Objects.requireNonNull(gatewayHttpClient, "gatewayHttpClient");
+        this.openAiHttpClient = new OpenClawOpenAiHttpClient(config);
+        this.toolsInvokeClient = new OpenClawToolsInvokeClient(config);
+        this.cli = new OpenClawCli(new OpenClawCliExecutor(config));
         this.wsClient = new OpenClawGatewayWsClient(config);
     }
 
@@ -50,10 +80,14 @@ public class OpenClawClient implements AutoCloseable {
      */
     public OpenClawClient(OpenClawClientConfig config,
                           OpenClawGatewayHttpClient gatewayHttpClient,
+                          OpenClawOpenAiHttpClient openAiHttpClient,
+                          OpenClawToolsInvokeClient toolsInvokeClient,
                           OpenClawCli cli,
                           OpenClawGatewayWsClient wsClient) {
         this.config = Objects.requireNonNull(config, "config");
         this.gatewayHttpClient = Objects.requireNonNull(gatewayHttpClient, "gatewayHttpClient");
+        this.openAiHttpClient = Objects.requireNonNull(openAiHttpClient, "openAiHttpClient");
+        this.toolsInvokeClient = Objects.requireNonNull(toolsInvokeClient, "toolsInvokeClient");
         this.cli = Objects.requireNonNull(cli, "cli");
         this.wsClient = Objects.requireNonNull(wsClient, "wsClient");
     }
@@ -218,6 +252,113 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     // ============================================================
+    // OpenAI 兼容 HTTP API（/v1/*）
+    // ============================================================
+
+    /**
+     * 获取 OpenAI 兼容 HTTP 客户端实例。
+     * <p>
+     * 通过此客户端可直接访问 OpenAI 标准 API：
+     * <ul>
+     *   <li>{@code POST /v1/chat/completions} - Chat Completions</li>
+     *   <li>{@code GET /v1/models} - 模型列表</li>
+     *   <li>{@code POST /v1/embeddings} - 嵌入向量</li>
+     *   <li>{@code POST /v1/responses} - OpenResponses</li>
+     * </ul>
+     * </p>
+     *
+     * @return OpenAI 兼容 HTTP 客户端
+     */
+    public OpenClawOpenAiHttpClient openai() {
+        return openAiHttpClient;
+    }
+
+    /**
+     * 发送 Chat Completions 请求（非流式）。
+     * <p>
+     * 快捷方式，等价于 {@code openai().chatCompletion(request)}。
+     * Agent 目标通过 {@code request.model} 指定（如 {@code "openclaw/default"}）。
+     * 如需覆盖后端模型，使用 {@link OpenClawOpenAiHttpClient} 的方法并设置 {@code x-openclaw-model} 头。
+     * </p>
+     *
+     * @param request 请求体
+     * @return Chat Completions 响应
+     */
+    public ChatCompletionResponse chatCompletion(ChatCompletionRequest request) {
+        return openAiHttpClient.chatCompletion(request);
+    }
+
+    /**
+     * 获取可用模型/agent 目标列表。
+     * <p>
+     * 快捷方式，等价于 {@code openai().listModels()}。
+     * 返回 OpenClaw agent 目标（如 {@code openclaw}、{@code openclaw/default}）。
+     * </p>
+     *
+     * @return 模型列表
+     */
+    public ModelsResponse listModels() {
+        return openAiHttpClient.listModels();
+    }
+
+    /**
+     * 创建嵌入向量。
+     * <p>
+     * 快捷方式，等价于 {@code openai().createEmbeddings(request)}。
+     * </p>
+     *
+     * @param request 请求体
+     * @return 嵌入向量响应
+     */
+    public EmbeddingsResponse createEmbeddings(EmbeddingsRequest request) {
+        return openAiHttpClient.createEmbeddings(request);
+    }
+
+    /**
+     * 发送 OpenResponses 请求（非流式）。
+     * <p>
+     * 快捷方式，等价于 {@code openai().createResponse(request)}。
+     * OpenResponses 支持 Item-based 输入、客户端工具调用、图片和文件输入。
+     * </p>
+     *
+     * @param request 请求体
+     * @return OpenResponses 响应
+     */
+    public ResponseResult createResponse(ResponseRequest request) {
+        return openAiHttpClient.createResponse(request);
+    }
+
+    // ============================================================
+    // Tools Invoke（/tools/invoke）
+    // ============================================================
+
+    /**
+     * 获取 Tools Invoke 客户端实例。
+     * <p>
+     * 通过此客户端可直接调用单个工具而无需运行完整 agent 回合。
+     * </p>
+     *
+     * @return Tools Invoke 客户端
+     */
+    public OpenClawToolsInvokeClient toolsInvoke() {
+        return toolsInvokeClient;
+    }
+
+    /**
+     * 调用单个工具。
+     * <p>
+     * 快捷方式，等价于 {@code toolsInvoke().invoke(request)}。
+     * 工具通过 Gateway 鉴权 + 工具策略过滤。
+     * </p>
+     *
+     * @param request 工具调用请求
+     * @return 工具调用结果
+     */
+    public ToolInvokeResult toolInvoke(ToolInvokeRequest request) {
+        return toolsInvokeClient.invoke(request);
+    }
+
+    // ============================================================
     // CLI
     // ============================================================
 
@@ -235,9 +376,33 @@ public class OpenClawClient implements AutoCloseable {
     @Override
     public void close() {
         gatewayHttpClient.close();
+        openAiHttpClient.close();
+        toolsInvokeClient.close();
         try {
             wsClient.close();
         } catch (Exception ignored) {
         }
+}
+    // Session Keys
+    // ============================================================
+
+    /**
+     * 复制 {@link InvokeAgentRequest} 并设置 session key。
+     * <p>用于 {@link OpenClawSessionKeys} 的辅助方法。</p>
+     */
+    public static InvokeAgentRequest copyRequest(InvokeAgentRequest request) {
+        InvokeAgentRequest copy = new InvokeAgentRequest();
+        copy.setMessage(request.getMessage());
+        copy.setAgentId(request.getAgentId());
+        copy.setName(request.getName());
+        copy.setWakeMode(request.getWakeMode());
+        copy.setTimeoutSeconds(request.getTimeoutSeconds());
+        copy.setSessionKey(request.getSessionKey());
+        copy.setDeliver(request.getDeliver());
+        copy.setChannel(request.getChannel());
+        copy.setTo(request.getTo());
+        copy.setModel(request.getModel());
+        copy.setThinking(request.getThinking());
+        return copy;
     }
 }

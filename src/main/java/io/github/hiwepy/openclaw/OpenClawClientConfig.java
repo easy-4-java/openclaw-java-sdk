@@ -140,4 +140,49 @@ public class OpenClawClientConfig {
         }
         return raw;
     }
+    // ============================================================
+    // Getters (non-Lombok, explicit for clarity)
+    // ============================================================
+
+    public String getGatewayBaseUrl() { return gatewayBaseUrl; }
+    public void setGatewayBaseUrl(String gatewayBaseUrl) { this.gatewayBaseUrl = gatewayBaseUrl; }
+
+    public String getHooksToken() { return hooksToken; }
+    public void setHooksToken(String hooksToken) { this.hooksToken = hooksToken; }
+
+    public String getApiKey() { return apiKey; }
+    public void setApiKey(String apiKey) { this.apiKey = apiKey; }
+
+    public String getGatewayAuthToken() { return gatewayAuthToken; }
+    public void setGatewayAuthToken(String gatewayAuthToken) { this.gatewayAuthToken = gatewayAuthToken; }
+
+    public String getGatewayAuthPassword() { return gatewayAuthPassword; }
+    public void setGatewayAuthPassword(String gatewayAuthPassword) { this.gatewayAuthPassword = gatewayAuthPassword; }
+
+    public boolean isVerifySsl() { return verifySsl; }
+    public void setVerifySsl(boolean verifySsl) { this.verifySsl = verifySsl; }
+
+    public int getConnectTimeoutMillis() { return connectTimeoutMillis; }
+    public void setConnectTimeoutMillis(int connectTimeoutMillis) { this.connectTimeoutMillis = connectTimeoutMillis; }
+
+    public int getReadTimeoutMillis() { return readTimeoutMillis; }
+    public void setReadTimeoutMillis(int readTimeoutMillis) { this.readTimeoutMillis = readTimeoutMillis; }
+
+    public String getLocalExecutable() { return localExecutable; }
+    public void setLocalExecutable(String localExecutable) { this.localExecutable = localExecutable; }
+
+    public int getLocalTimeoutSeconds() { return localTimeoutSeconds; }
+    public void setLocalTimeoutSeconds(int localTimeoutSeconds) { this.localTimeoutSeconds = localTimeoutSeconds; }
+
+    public String getLocalWorkingDirectory() { return localWorkingDirectory; }
+    public void setLocalWorkingDirectory(String localWorkingDirectory) { this.localWorkingDirectory = localWorkingDirectory; }
+
+    public int getLocalMaxConcurrentExecutions() { return localMaxConcurrentExecutions; }
+    public void setLocalMaxConcurrentExecutions(int localMaxConcurrentExecutions) { this.localMaxConcurrentExecutions = localMaxConcurrentExecutions; }
+
+    public int getLocalProbeTimeoutSeconds() { return localProbeTimeoutSeconds; }
+    public void setLocalProbeTimeoutSeconds(int localProbeTimeoutSeconds) { this.localProbeTimeoutSeconds = localProbeTimeoutSeconds; }
+
+    public boolean isHooksUseXOpenclawTokenHeader() { return hooksUseXOpenclawTokenHeader; }
+    public void setHooksUseXOpenclawTokenHeader(boolean hooksUseXOpenclawTokenHeader) { this.hooksUseXOpenclawTokenHeader = hooksUseXOpenclawTokenHeader; }
 }

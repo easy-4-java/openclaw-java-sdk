@@ -24,6 +24,17 @@ public final class OpenClawCliRequest {
     private final Integer timeoutSeconds;
     private final List<String> arguments;
 
+    // ============================================================
+    // Getters (non-Lombok)
+    // ============================================================
+
+    public boolean isDev() { return dev; }
+    public String getProfile() { return profile; }
+    public String getContainer() { return container; }
+    public boolean isNoColor() { return noColor; }
+    public Integer getTimeoutSeconds() { return timeoutSeconds; }
+    public List<String> getArguments() { return arguments; }
+
     private OpenClawCliRequest(Builder b) {
         this.dev = b.dev;
         this.profile = b.profile;
