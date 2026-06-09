@@ -110,14 +110,41 @@ public class OpenClawGatewayWsClient extends WebSocketClient {
         return URI.create(wsUrl);
     }
 
+    /**
+     * 预连接挑战的 nonce（从 {@code connect.challenge} 事件中获取）。
+     * <p>
+     * 根据 Gateway 协议 v4，Gateway 在接受 connect 请求前会先推送
+     * {@code connect.challenge} 事件，客户端需将 nonce 回传到 connect 请求中。
+     * 旧版 Gateway 可能不发送此事件，此时 nonce 为 null，connect 请求不包含 nonce。
+     * </p>
+     */
+    private final AtomicReference<String> challengeNonce = new AtomicReference<>();
+
+    /**
+     * 挑战等待超时（毫秒）。
+     * <p>若在此时间内未收到 connect.challenge，则直接发送 connect 请求（兼容旧版 Gateway）。</p>
+     */
+    private static final long CHALLENGE_TIMEOUT_MS = 3_000L;
+
     // ============================================================
     // 生命周期
     // ============================================================
 
     @Override
     public void onOpen(ServerHandshake handshake) {
-        log.info("WebSocket connected to {}, sending connect handshake", getURI());
-        sendConnectHandshake();
+        log.info("WebSocket connected to {}, waiting for connect.challenge or timeout", getURI());
+        challengeNonce.set(null);
+        // 启动挑战等待线程：超时后直接发送 connect（兼容旧版 Gateway）
+        CompletableFuture.delayedExecutor(CHALLENGE_TIMEOUT_MS, TimeUnit.MILLISECONDS, ForkJoinPool.commonPool())
+                .execute(() -> {
+                    if (!connectFuture.isDone()) {
+                        String nonce = challengeNonce.get();
+                        if (nonce == null) {
+                            log.debug("connect.challenge not received within {}ms, sending connect without nonce", CHALLENGE_TIMEOUT_MS);
+                        }
+                        sendConnectHandshake();
+                    }
+                });
     }
 
     @Override
@@ -131,6 +158,10 @@ public class OpenClawGatewayWsClient extends WebSocketClient {
                     handleResponse(root);
                     break;
                 case "event":
+                    // 先检查是否为 connect.challenge（预连接挑战）
+                    if (handleConnectChallenge(root)) {
+                        break;
+                    }
                     handleEvent(root);
                     break;
                 case "req":
@@ -728,5 +759,35 @@ public class OpenClawGatewayWsClient extends WebSocketClient {
 
     private static String generateId() {
         return UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+    }
+    /**
+     * <p>
+     * Gateway 在接受 connect 请求前推送此事件，包含 nonce 和 ts。
+     * 收到后存储 nonce 并立即发送 connect 握手（携带 nonce）。
+     * </p>
+     *
+     * @param root 事件帧 JSON
+     * @return true 表示已处理（是 connect.challenge），false 表示不是
+     */
+    private boolean handleConnectChallenge(JsonNode root) {
+        String event = root.path("event").asText("");
+        if (!"connect.challenge".equals(event)) {
+            return false;
+        }
+        try {
+            JsonNode payload = root.path("payload");
+            String nonce = payload.path("nonce").asText(null);
+            if (nonce != null) {
+                challengeNonce.set(nonce);
+                log.debug("Received connect.challenge with nonce, sending connect handshake");
+            } else {
+                log.debug("Received connect.challenge without nonce");
+            }
+            // 收到挑战后立即发送 connect 握手
+            sendConnectHandshake();
+        } catch (Exception e) {
+            log.warn("Failed to handle connect.challenge: {}", e.getMessage());
+        }
+        return true;
     }
 }

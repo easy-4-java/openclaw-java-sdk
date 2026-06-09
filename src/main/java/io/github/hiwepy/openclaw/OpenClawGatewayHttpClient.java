@@ -36,7 +36,17 @@ import java.util.Objects;
  *     <li>{@code POST /hooks/agent}：触发一次隔离 agent turn</li>
  *     <li>{@code POST /hooks/<name>}：调用 hooks.mappings 中的自定义映射 webhook</li>
  * </ul>
- * <p>该客户端内部持有独立的 {@link CloseableHttpClient}，使用完成后应调用 {@link #close()} 释放连接池。</p>
+* <p>该客户端内部持有独立的 {@link CloseableHttpClient}，使用完成后应调用 {@link #close()} 释放连接池。</p>
+ *
+ * <h2>其他 HTTP 端点（由独立客户端实现）</h2>
+ * <ul>
+ *   <li>{@code POST /v1/chat/completions}、{@code GET /v1/models}、{@code POST /v1/embeddings}
+ *       → {@link io.github.hiwepy.openclaw.openai.OpenClawOpenAiHttpClient}</li>
+ *   <li>{@code POST /v1/responses}
+ *       → {@link io.github.hiwepy.openclaw.openai.OpenClawOpenAiHttpClient#createResponse}</li>
+ *   <li>{@code POST /tools/invoke}
+ *       → {@link io.github.hiwepy.openclaw.tools.OpenClawToolsInvokeClient}</li>
+ * </ul>
  *
  * @see <a href="https://docs.openclaw.ai/automation/cron-jobs#webhooks">Webhook 文档（cron-jobs）</a>
  */
