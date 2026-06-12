@@ -30,7 +30,7 @@ public final class MockOpenClawCli {
     public static MockOpenClawCli install() throws IOException {
         Path root = Files.createTempDirectory("openclaw-mock-cli-");
         Path script = root.resolve("openclaw");
-        Files.writeString(script, buildScript(), StandardCharsets.UTF_8);
+        Files.write(script, buildScript().getBytes(java.nio.charset.StandardCharsets.UTF_8));
         makeExecutable(script);
         return new MockOpenClawCli(script);
     }
@@ -58,18 +58,16 @@ public final class MockOpenClawCli {
     }
 
     private static String buildScript() {
-        return """
-            #!/usr/bin/env bash
-            set -euo pipefail
-            for arg in "$@"; do
-              if [ "$arg" = "--version" ] || [ "$arg" = "-V" ]; then
-                echo 'openclaw mock 1.0.0'
-                exit 0
-              fi
-            done
-            echo "unsupported argv: $*" >&2
-            exit 1
-            """;
+        return "#!/usr/bin/env bash\n"
+                + "set -euo pipefail\n"
+                + "for arg in \"$@\"; do\n"
+                + "if [ \"$arg\" = \"--version\" ] || [ \"$arg\" = \"-V\" ]; then\n"
+                + "echo 'openclaw mock 1.0.0'\n"
+                + "exit 0\n"
+                + "fi\n"
+                + "done\n"
+                + "echo \"unsupported argv: $*\" >&2\n"
+                + "exit 1\n";
     }
 
     private static void makeExecutable(Path script) throws IOException {

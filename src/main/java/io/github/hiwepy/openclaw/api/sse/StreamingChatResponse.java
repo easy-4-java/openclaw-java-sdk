@@ -19,7 +19,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatCompletionChunk
     @Override
     public void onEvent(SseEvent event) {
         if (event.isTerminal()) return;
-        ChatCompletionChunk chunk = event.getParsed() instanceof ChatCompletionChunk c ? c : null;
+        Object p = event.getParsed(); ChatCompletionChunk chunk = p instanceof ChatCompletionChunk ? (ChatCompletionChunk) p : null;
         if (chunk == null) return;
         accumulator.merge(chunk);
         if (deltaConsumer != null && chunk.getChoices() != null && !chunk.getChoices().isEmpty()) {

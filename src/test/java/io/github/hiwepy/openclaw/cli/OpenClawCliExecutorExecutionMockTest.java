@@ -28,25 +28,22 @@ class OpenClawCliExecutorExecutionMockTest {
     void setUp() throws Exception {
         Path root = Files.createTempDirectory("openclaw-mock-cli-");
         scriptPath = root.resolve("openclaw");
-        Files.writeString(
+        Files.write(
                 scriptPath,
-                """
-                #!/usr/bin/env bash
-                cmd="${1:-}"
-                case "$cmd" in
-                  __sleep_forever)
-                    sleep 3600
-                    ;;
-                  __exit_zero)
-                    exit 0
-                    ;;
-                  *)
-                    echo "unknown"
-                    exit 2
-                    ;;
-                esac
-                """,
-                StandardCharsets.UTF_8);
+                ("#!/usr/bin/env bash\n"
+                + "cmd=\"${1:-}\"\n"
+                + "case \"$cmd\" in\n"
+                + "__sleep_forever)\n"
+                + "sleep 3600\n"
+                + ";;\n"
+                + "__exit_zero)\n"
+                + "exit 0\n"
+                + ";;\n"
+                + "*)\n"
+                + "echo \"unknown\"\n"
+                + "exit 2\n"
+                + ";;\n"
+                + "esac\n").getBytes(StandardCharsets.UTF_8));
         makeExecutable(scriptPath);
 
         OpenClawClientConfig cfg = new OpenClawClientConfig();

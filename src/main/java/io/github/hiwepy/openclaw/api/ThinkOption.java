@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Controls whether thinking/reasoning models expose their reasoning trace.
@@ -38,7 +39,7 @@ public interface ThinkOption {
 
     /** String-level think for GPT-OSS model. */
     static class ThinkLevel implements ThinkOption {
-        private static final List<String> VALID = List.of("low", "medium", "high");
+        private static final List<String> VALID = java.util.Arrays.asList("low", "medium", "high");
         public static final ThinkLevel LOW = new ThinkLevel("low");
         public static final ThinkLevel MEDIUM = new ThinkLevel("medium");
         public static final ThinkLevel HIGH = new ThinkLevel("high");

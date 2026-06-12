@@ -139,8 +139,8 @@ public class OpenClawGatewayWsClient extends WebSocketClient {
         log.info("WebSocket connected to {}, waiting for connect.challenge or timeout", getURI());
         challengeNonce.set(null);
         // 启动挑战等待线程：超时后直接发送 connect（兼容旧版 Gateway）
-        CompletableFuture.delayedExecutor(CHALLENGE_TIMEOUT_MS, TimeUnit.MILLISECONDS, ForkJoinPool.commonPool())
-                .execute(() -> {
+        java.util.concurrent.ScheduledExecutorService scheduler = java.util.concurrent.Executors.newSingleThreadScheduledExecutor();
+        scheduler.schedule(() -> {
                     if (!connectFuture.isDone()) {
                         String nonce = challengeNonce.get();
                         if (nonce == null) {
@@ -148,7 +148,8 @@ public class OpenClawGatewayWsClient extends WebSocketClient {
                         }
                         sendConnectHandshake();
                     }
-                });
+                }, CHALLENGE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        scheduler.shutdown();
     }
 
     @Override

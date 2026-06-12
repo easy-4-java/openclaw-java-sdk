@@ -63,7 +63,7 @@ public class SseEventAccumulator {
         choice.setDelta(delta);
         choice.setFinishReason(finishReason);
 
-        result.setChoices(List.of(choice));
+        result.setChoices(java.util.Collections.singletonList(choice));
         return result;
     }
 
