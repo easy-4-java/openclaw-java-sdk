@@ -291,6 +291,33 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
+     * 发送 chat completion 请求，携带自定义请求头（如 session-key 实现会话路由）。
+     *
+     * @param request 请求体
+     * @param headers 自定义请求头（可通过 {@link OpenClawHeaders.Builder} 构建）
+     * @return Chat Completions 响应
+     */
+    public ChatResponse chatCompletion(ChatRequest request, java.util.Map<String, String> headers) {
+        return openAiHttpClient.chatCompletion(request, headers);
+    }
+
+    /**
+     * 发送 chat completion 请求，按 sessionKey 路由会话。
+     * <p>sessionKey 通过 {@code x-openclaw-session-key} header 传递，Gateway 自动路由/创建会话。
+     * 建议用 {@link OpenClawSessionKeys} 生成 sessionKey。</p>
+     *
+     * @param request    请求体
+     * @param sessionKey 会话路由 key（如 {@code hook:<agentId>:<peerId>}）
+     * @return Chat Completions 响应
+     */
+    public ChatResponse chatCompletionWithSession(ChatRequest request, String sessionKey) {
+        java.util.Map<String, String> headers = OpenClawHeaders.builder()
+                .sessionKey(sessionKey)
+                .build();
+        return openAiHttpClient.chatCompletion(request, headers);
+    }
+
+    /**
      * 获取可用模型/agent 目标列表。
      * <p>
      * 快捷方式，等价于 {@code openai().listModels()}。

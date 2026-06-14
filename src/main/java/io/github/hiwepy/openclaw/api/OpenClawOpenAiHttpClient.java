@@ -88,6 +88,23 @@ public class OpenClawOpenAiHttpClient implements AutoCloseable {
         }
     }
 
+    /**
+     * 发送 chat completion 请求，携带自定义请求头（如 {@code x-openclaw-session-key} 实现会话路由）。
+     *
+     * @param request 请求体
+     * @param headers 自定义请求头（可通过 {@link OpenClawHeaders.Builder} 构建）
+     * @return 解析后的响应
+     */
+    public ChatResponse chatCompletion(ChatRequest request, java.util.Map<String, String> headers) {
+        Objects.requireNonNull(request, "request");
+        String responseBody = postJson("/v1/chat/completions", request, headers);
+        try {
+            return objectMapper.readValue(responseBody, ChatResponse.class);
+        } catch (Exception e) {
+            throw new OpenClawHttpException("Failed to parse chat completion response: " + e.getMessage(), e);
+        }
+    }
+
     // ============================================================
     // Models
     // ============================================================
@@ -195,6 +212,13 @@ public class OpenClawOpenAiHttpClient implements AutoCloseable {
      * 发送 POST 请求并返回响应体字符串。
      */
     private String postJson(String path, Object body) {
+        return postJson(path, body, null);
+    }
+
+    /**
+     * 发送 POST 请求并返回响应体字符串，支持附加自定义请求头。
+     */
+    private String postJson(String path, Object body, java.util.Map<String, String> headers) {
         String url = resolveUrl(path);
         String token = config.resolveGatewayBearerToken();
         try {
@@ -204,6 +228,13 @@ public class OpenClawOpenAiHttpClient implements AutoCloseable {
                     .header("Content-Type", "application/json");
             if (OpenClawStrings.isNotBlank(token)) {
                 req = req.header("Authorization", "Bearer " + token);
+            }
+            if (headers != null) {
+                for (java.util.Map.Entry<String, String> entry : headers.entrySet()) {
+                    if (OpenClawStrings.isNotBlank(entry.getKey()) && entry.getValue() != null) {
+                        req = req.header(entry.getKey(), entry.getValue());
+                    }
+                }
             }
             HttpResponse<String> response = req.body(json).asString();
             int status = response.getStatus();
