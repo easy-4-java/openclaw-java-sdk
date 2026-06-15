@@ -1,6 +1,8 @@
 package io.github.hiwepy.openclaw;
 
 import io.github.hiwepy.openclaw.api.*;
+import io.github.hiwepy.openclaw.api.sse.SseStreamReader;
+import io.github.hiwepy.openclaw.api.sse.StreamingChatResponse;
 import io.github.hiwepy.openclaw.cli.OpenClawCli;
 import io.github.hiwepy.openclaw.cli.OpenClawCliExecutor;
 import io.github.hiwepy.openclaw.api.model.*;
@@ -18,6 +20,7 @@ import io.github.hiwepy.openclaw.ws.protocol.result.SessionsSendResult;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -54,11 +57,18 @@ public class OpenClawClient implements AutoCloseable {
      * 标准构造（自动创建 HTTP、CLI、WS 客户端）。
      */
     public OpenClawClient(OpenClawClientConfig config) {
+        this(config, null, null);
+    }
+
+    /**
+     * 带 ObjectMapper 和 OkHttpClient 的构造（三个 HTTP 客户端共享同一个 OkHttpClient）。
+     */
+    public OpenClawClient(OpenClawClientConfig config, com.fasterxml.jackson.databind.ObjectMapper objectMapper, okhttp3.OkHttpClient httpClient) {
         this.config = Objects.requireNonNull(config, "config");
         OpenClawCliExecutor exec = new OpenClawCliExecutor(config);
-        this.gatewayHttpClient = new OpenClawGatewayHttpClient(config);
-        this.openAiHttpClient = new OpenClawOpenAiHttpClient(config);
-        this.toolsInvokeClient = new OpenClawToolsInvokeClient(config);
+        this.gatewayHttpClient = new OpenClawGatewayHttpClient(config, objectMapper, httpClient);
+        this.openAiHttpClient = new OpenClawOpenAiHttpClient(config, objectMapper, httpClient);
+        this.toolsInvokeClient = new OpenClawToolsInvokeClient(config, objectMapper, httpClient);
         this.cli = new OpenClawCli(exec);
         this.wsClient = new OpenClawGatewayWsClient(config);
     }
@@ -322,31 +332,32 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 流式 chat completion，返回 {@link io.github.hiwepy.openclaw.api.sse.StreamingChatResponse}。
+     * 流式 chat completion，返回 {@link StreamingChatResponse}。
      *
      * @param request 请求体（自动设 stream=true）
      * @return 流式响应
      */
-    public io.github.hiwepy.openclaw.api.sse.StreamingChatResponse chatCompletionStream(ChatRequest request) {
-        java.io.InputStream is = openAiHttpClient.chatCompletionStream(request);
-        return consumeStream(is);
+    public StreamingChatResponse chatCompletionStream(ChatRequest request) {
+        okhttp3.Response response = openAiHttpClient.chatCompletionStream(request);
+        return consumeStream(response);
     }
 
-    /**
-     * 按 sessionKey 流式 chat completion。
-     */
-    public io.github.hiwepy.openclaw.api.sse.StreamingChatResponse chatCompletionStreamWithSession(ChatRequest request, String sessionKey) {
-        java.util.Map<String, String> headers = OpenClawHeaders.builder().sessionKey(sessionKey).build();
-        java.io.InputStream is = openAiHttpClient.chatCompletionStream(request, headers);
-        return consumeStream(is);
+    public StreamingChatResponse chatCompletionStreamWithSession(ChatRequest request, String sessionKey) {
+        Map<String, String> headers = OpenClawHeaders.builder().sessionKey(sessionKey).build();
+        okhttp3.Response response = openAiHttpClient.chatCompletionStream(request, headers);
+        return consumeStream(response);
     }
 
-    private io.github.hiwepy.openclaw.api.sse.StreamingChatResponse consumeStream(java.io.InputStream is) {
-        io.github.hiwepy.openclaw.api.sse.StreamingChatResponse stream = new io.github.hiwepy.openclaw.api.sse.StreamingChatResponse();
-        io.github.hiwepy.openclaw.api.sse.SseStreamReader reader = new io.github.hiwepy.openclaw.api.sse.SseStreamReader();
+    private StreamingChatResponse consumeStream(okhttp3.Response response) {
+        StreamingChatResponse stream = new StreamingChatResponse();
+        SseStreamReader reader = new SseStreamReader();
         CompletableFuture.runAsync(() -> {
-            try { reader.readChatCompletionStream(is, stream); }
-            catch (Exception e) { stream.completeExceptionally(e); }
+            try {
+                if (response.body() != null) {
+                    reader.readChatCompletionStream(response.body().byteStream(), stream);
+                }
+                response.close();
+            } catch (Exception e) { stream.completeExceptionally(e); }
         });
         return stream;
     }

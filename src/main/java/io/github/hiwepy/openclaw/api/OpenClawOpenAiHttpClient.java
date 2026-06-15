@@ -6,146 +6,93 @@ import io.github.hiwepy.openclaw.OpenClawClientConfig;
 import io.github.hiwepy.openclaw.util.OpenClawStrings;
 import io.github.hiwepy.openclaw.exception.OpenClawHttpException;
 import io.github.hiwepy.openclaw.api.model.*;
-import kong.unirest.core.HttpResponse;
-import kong.unirest.core.Unirest;
-import kong.unirest.core.UnirestInstance;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * OpenAI 兼容 HTTP API 客户端。
- * <p>
- * 封装 OpenClaw Gateway 的 OpenAI 兼容 HTTP 端点，包括：
- * <ul>
- *   <li>{@code POST /v1/chat/completions} - Chat Completions（同步 + SSE 流式）</li>
- *   <li>{@code GET /v1/models} - 模型列表</li>
- *   <li>{@code GET /v1/models/{id}} - 单个模型信息</li>
- *   <li>{@code POST /v1/embeddings} - 嵌入向量</li>
- *   <li>{@code POST /v1/responses} - OpenResponses API</li>
- * </ul>
- *
- * <h3>Agent 目标约定</h3>
- * <p>OpenClaw 将 OpenAI {@code model} 字段解释为 agent 目标：</p>
- * <ul>
- *   <li>{@code "openclaw"} 或 {@code "openclaw/default"} - 默认 agent</li>
- *   <li>{@code "openclaw/<agentId>"} - 指定 agent</li>
- * </ul>
- * <p>使用 HTTP 头 {@code x-openclaw-model} 覆盖后端模型（如 {@code openai/gpt-5.4}）。</p>
- *
- * <h3>鉴权</h3>
- * <p>使用 Gateway 鉴权配置。共享密钥模式下使用 {@code Authorization: Bearer <token-or-password>}。</p>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
- * @see <a href="https://docs.openclaw.ai/gateway/openresponses-http-api">OpenResponses API</a>
+ * <p>基于 OkHttp，支持外部传入 {@link OkHttpClient}。</p>
  */
 @Slf4j
 public class OpenClawOpenAiHttpClient implements AutoCloseable {
 
+    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+
     private final OpenClawClientConfig config;
     private final ObjectMapper objectMapper;
-    private final UnirestInstance http;
+    private final OkHttpClient httpClient;
 
-    /**
-     * 构造函数。
-     *
-     * @param config  OpenClaw 客户端配置（不得为 null）
-     * @param mapper  JSON 序列化器（null 时使用默认配置）
-     */
     public OpenClawOpenAiHttpClient(OpenClawClientConfig config, ObjectMapper mapper) {
-        this.config = Objects.requireNonNull(config, "config");
-        this.objectMapper = mapper != null ? mapper : new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        this.http = buildHttpClient(config);
+        this(config, mapper, null);
     }
 
     public OpenClawOpenAiHttpClient(OpenClawClientConfig config) {
-        this(config, null);
+        this(config, null, null);
+    }
+
+    public OpenClawOpenAiHttpClient(OpenClawClientConfig config, ObjectMapper mapper, OkHttpClient httpClient) {
+        this.config = Objects.requireNonNull(config, "config");
+        this.objectMapper = mapper != null ? mapper : new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.httpClient = httpClient != null ? httpClient : buildOkHttpClient(config);
+    }
+
+    private static OkHttpClient buildOkHttpClient(OpenClawClientConfig config) {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .connectTimeout(config.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)
+                .readTimeout(config.getReadTimeoutMillis(), TimeUnit.MILLISECONDS);
+        if (!config.isVerifySsl()) {
+            builder.hostnameVerifier((hostname, session) -> true);
+        }
+        return builder.build();
     }
 
     // ============================================================
     // Chat Completions
     // ============================================================
 
-    /**
-     * 发送 Chat Completions 请求（非流式）。
-     * <p>
-     * 对应 {@code POST /v1/chat/completions}，{@code stream} 为 {@code false} 或未设置。
-     * </p>
-     *
-     * @param request 请求体
-     * @return 解析后的响应
-     */
     public ChatResponse chatCompletion(ChatRequest request) {
-        Objects.requireNonNull(request, "request");
-        String responseBody = postJson("/v1/chat/completions", request);
-        try {
-            return objectMapper.readValue(responseBody, ChatResponse.class);
-        } catch (Exception e) {
-            throw new OpenClawHttpException("Failed to parse chat completion response: " + e.getMessage(), e);
-        }
+        return chatCompletion(request, null);
     }
 
-    /**
-     * 发送 chat completion 请求，携带自定义请求头（如 {@code x-openclaw-session-key} 实现会话路由）。
-     *
-     * @param request 请求体
-     * @param headers 自定义请求头（可通过 {@link OpenClawHeaders.Builder} 构建）
-     * @return 解析后的响应
-     */
-    public ChatResponse chatCompletion(ChatRequest request, java.util.Map<String, String> headers) {
+    public ChatResponse chatCompletion(ChatRequest request, Map<String, String> headers) {
         Objects.requireNonNull(request, "request");
         String responseBody = postJson("/v1/chat/completions", request, headers);
-        try {
-            return objectMapper.readValue(responseBody, ChatResponse.class);
-        } catch (Exception e) {
-            throw new OpenClawHttpException("Failed to parse chat completion response: " + e.getMessage(), e);
-        }
+        return parse(responseBody, ChatResponse.class, "chat completion");
     }
 
     /**
      * 流式 chat completion（POST /v1/chat/completions with stream=true）。
-     * <p>返回输入流，调用方用 {@link io.github.hiwepy.openclaw.api.sse.SseStreamReader} 消费。</p>
-     *
-     * @param request 请求体（自动设 stream=true）
-     * @return SSE 输入流
+     * <p>返回 OkHttp Response，调用方用 {@code response.body().source()} 消费 SSE 流。</p>
      */
-    public java.io.InputStream chatCompletionStream(ChatRequest request) {
+    public Response chatCompletionStream(ChatRequest request) {
         return chatCompletionStream(request, null);
     }
 
-    /**
-     * 流式 chat completion（带自定义 header）。
-     */
-    public java.io.InputStream chatCompletionStream(ChatRequest request, java.util.Map<String, String> headers) {
+    public Response chatCompletionStream(ChatRequest request, Map<String, String> headers) {
         Objects.requireNonNull(request, "request");
         request.setStream(true);
-        String url = resolveUrl("/v1/chat/completions");
-        String token = config.resolveGatewayBearerToken();
+        Request.Builder builder = authedBuilder(resolveUrl("/v1/chat/completions"))
+                .header("Accept", "text/event-stream");
+        if (headers != null) {
+            headers.forEach((k, v) -> { if (k != null && v != null) builder.header(k, v); });
+        }
         try {
-            String json = objectMapper.writeValueAsString(request);
-            kong.unirest.core.HttpRequestWithBody req = http.post(url)
-                    .header("Content-Type", "application/json")
-                    .header("Accept", "text/event-stream");
-            if (OpenClawStrings.isNotBlank(token)) {
-                req = req.header("Authorization", "Bearer " + token);
+            Request req = builder.post(RequestBody.create(objectMapper.writeValueAsString(request), JSON)).build();
+            Response response = httpClient.newCall(req).execute();
+            if (!response.isSuccessful()) {
+                String body = response.body() != null ? response.body().string() : "";
+                response.close();
+                throw new OpenClawHttpException("Stream returned status " + response.code(), response.code(), body);
             }
-            if (headers != null) {
-                for (java.util.Map.Entry<String, String> entry : headers.entrySet()) {
-                    if (OpenClawStrings.isNotBlank(entry.getKey()) && entry.getValue() != null) {
-                        req = req.header(entry.getKey(), entry.getValue());
-                    }
-                }
-            }
-            HttpResponse<java.io.InputStream> response = req.body(json).asObject(java.io.InputStream.class);
-            int status = response.getStatus();
-            if (status < 200 || status >= 300) {
-                throw new OpenClawHttpException(
-                        "POST " + url + " returned status " + status, status, "");
-            }
-            return response.getBody();
+            return response;
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (Exception e) {
@@ -157,175 +104,102 @@ public class OpenClawOpenAiHttpClient implements AutoCloseable {
     // Models
     // ============================================================
 
-    /**
-     * 获取可用模型/agent 目标列表。
-     * <p>
-     * 对应 {@code GET /v1/models}。
-     * 返回 OpenClaw agent 目标（如 {@code openclaw}、{@code openclaw/default}），
-     * 而非原始 provider 模型目录。
-     * </p>
-     *
-     * @return 模型列表
-     */
     public ModelsResponse listModels() {
-        String responseBody = getJson("/v1/models");
-        try {
-            return objectMapper.readValue(responseBody, ModelsResponse.class);
-        } catch (Exception e) {
-            throw new OpenClawHttpException("Failed to parse models response: " + e.getMessage(), e);
-        }
+        return parse(getJson("/v1/models"), ModelsResponse.class, "models");
     }
 
-    /**
-     * 获取单个模型/agent 目标信息。
-     * <p>
-     * 对应 {@code GET /v1/models/{id}}。
-     * </p>
-     *
-     * @param modelId 模型标识（如 {@code "openclaw/default"}）
-     * @return 模型信息
-     */
     public ModelsResponse.ModelData getModel(String modelId) {
         Objects.requireNonNull(modelId, "modelId");
-        String encodedId;
-        try {
-            encodedId = URLEncoder.encode(modelId, StandardCharsets.UTF_8.name())
-                    .replace("+", "%20");
-        } catch (Exception e) {
-            throw new OpenClawHttpException("Failed to encode modelId: " + modelId, e);
-        }
-        String responseBody = getJson("/v1/models/" + encodedId);
-        try {
-            return objectMapper.readValue(responseBody, ModelsResponse.ModelData.class);
-        } catch (Exception e) {
-            throw new OpenClawHttpException("Failed to parse model response: " + e.getMessage(), e);
-        }
+        String encodedId = URLEncoder.encode(modelId, StandardCharsets.UTF_8).replace("+", "%20");
+        return parse(getJson("/v1/models/" + encodedId), ModelsResponse.ModelData.class, "model");
     }
 
     // ============================================================
     // Embeddings
     // ============================================================
 
-    /**
-     * 创建嵌入向量。
-     * <p>
-     * 对应 {@code POST /v1/embeddings}。
-     * 使用与 Chat Completions 相同的 agent 目标约定。
-     * 如需指定嵌入模型，使用 HTTP 头 {@code x-openclaw-model}。
-     * </p>
-     *
-     * @param request 请求体
-     * @return 嵌入向量响应
-     */
     public EmbeddingsResponse createEmbeddings(EmbeddingsRequest request) {
         Objects.requireNonNull(request, "request");
-        String responseBody = postJson("/v1/embeddings", request);
-        try {
-            return objectMapper.readValue(responseBody, EmbeddingsResponse.class);
-        } catch (Exception e) {
-            throw new OpenClawHttpException("Failed to parse embeddings response: " + e.getMessage(), e);
-        }
+        return parse(postJson("/v1/embeddings", request), EmbeddingsResponse.class, "embeddings");
     }
 
     // ============================================================
     // OpenResponses
     // ============================================================
 
-    /**
-     * 发送 OpenResponses 请求（非流式）。
-     * <p>
-     * 对应 {@code POST /v1/responses}，{@code stream} 为 {@code false} 或未设置。
-     * </p>
-     *
-     * @param request 请求体
-     * @return 解析后的响应
-     */
-    public io.github.hiwepy.openclaw.api.model.ResponseResult createResponse(
-            io.github.hiwepy.openclaw.api.model.ResponseRequest request) {
+    public ResponseResult createResponse(ResponseRequest request) {
         Objects.requireNonNull(request, "request");
-        String responseBody = postJson("/v1/responses", request);
-        try {
-            return objectMapper.readValue(responseBody,
-                    io.github.hiwepy.openclaw.api.model.ResponseResult.class);
-        } catch (Exception e) {
-            throw new OpenClawHttpException("Failed to parse response result: " + e.getMessage(), e);
-        }
+        return parse(postJson("/v1/responses", request), ResponseResult.class, "response");
+    }
+
+    /**
+     * 暴露 OkHttpClient 供 SSE/WS 客户端复用。
+     */
+    public OkHttpClient getOkHttpClient() {
+        return httpClient;
     }
 
     // ============================================================
     // HTTP primitives
     // ============================================================
 
-    /**
-     * 发送 POST 请求并返回响应体字符串。
-     */
+    private Request.Builder authedBuilder(String url) {
+        Request.Builder builder = new Request.Builder().url(url)
+                .header("Content-Type", "application/json");
+        String token = config.resolveGatewayBearerToken();
+        if (OpenClawStrings.isNotBlank(token)) {
+            builder.header("Authorization", "Bearer " + token);
+        }
+        return builder;
+    }
+
     private String postJson(String path, Object body) {
         return postJson(path, body, null);
     }
 
-    /**
-     * 发送 POST 请求并返回响应体字符串，支持附加自定义请求头。
-     */
-    private String postJson(String path, Object body, java.util.Map<String, String> headers) {
+    private String postJson(String path, Object body, Map<String, String> headers) {
         String url = resolveUrl(path);
-        String token = config.resolveGatewayBearerToken();
         try {
-            String json = objectMapper.writeValueAsString(body);
-            log.debug("POST {} bodyLen={}", url, json.length());
-            kong.unirest.core.HttpRequestWithBody req = http.post(url)
-                    .header("Content-Type", "application/json");
-            if (OpenClawStrings.isNotBlank(token)) {
-                req = req.header("Authorization", "Bearer " + token);
-            }
+            Request.Builder builder = authedBuilder(url);
             if (headers != null) {
-                for (java.util.Map.Entry<String, String> entry : headers.entrySet()) {
-                    if (OpenClawStrings.isNotBlank(entry.getKey()) && entry.getValue() != null) {
-                        req = req.header(entry.getKey(), entry.getValue());
-                    }
-                }
+                headers.forEach((k, v) -> { if (k != null && v != null) builder.header(k, v); });
             }
-            HttpResponse<String> response = req.body(json).asString();
-            int status = response.getStatus();
-            String respBody = response.getBody();
-            if (status < 200 || status >= 300) {
-                log.warn("POST {} returned status={}", url, status);
-                throw new OpenClawHttpException(
-                        "POST " + url + " returned status " + status, status, respBody);
-            }
-            return respBody;
+            Request request = builder.post(RequestBody.create(objectMapper.writeValueAsString(body), JSON)).build();
+            return execute(request, url);
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (Exception e) {
-            log.error("POST {} failed: {}", url, e.getMessage(), e);
             throw new OpenClawHttpException("POST " + url + " failed: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * 发送 GET 请求并返回响应体字符串。
-     */
     private String getJson(String path) {
         String url = resolveUrl(path);
-        String token = config.resolveGatewayBearerToken();
         try {
-            kong.unirest.core.GetRequest req = http.get(url);
-            if (OpenClawStrings.isNotBlank(token)) {
-                req = req.header("Authorization", "Bearer " + token);
-            }
-            HttpResponse<String> response = req.asString();
-            int status = response.getStatus();
-            String respBody = response.getBody();
-            if (status < 200 || status >= 300) {
-                log.warn("GET {} returned status={}", url, status);
-                throw new OpenClawHttpException(
-                        "GET " + url + " returned status " + status, status, respBody);
-            }
-            return respBody;
+            Request request = authedBuilder(url).get().build();
+            return execute(request, url);
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (Exception e) {
-            log.error("GET {} failed: {}", url, e.getMessage(), e);
             throw new OpenClawHttpException("GET " + url + " failed: " + e.getMessage(), e);
+        }
+    }
+
+    private String execute(Request request, String url) throws IOException {
+        try (Response response = httpClient.newCall(request).execute()) {
+            String respBody = response.body() != null ? response.body().string() : "";
+            if (!response.isSuccessful()) {
+                throw new OpenClawHttpException("Request returned status " + response.code(), response.code(), respBody);
+            }
+            return respBody;
+        }
+    }
+
+    private <T> T parse(String json, Class<T> type, String label) {
+        try {
+            return objectMapper.readValue(json, type);
+        } catch (Exception e) {
+            throw new OpenClawHttpException("Failed to parse " + label + " response: " + e.getMessage(), e);
         }
     }
 
@@ -337,24 +211,8 @@ public class OpenClawOpenAiHttpClient implements AutoCloseable {
         return base.replaceAll("/+$", "") + path;
     }
 
-    /**
-     * 关闭底层 HTTP 客户端。
-     */
+    @Override
     public void close() {
-        try {
-            http.close();
-        } catch (Exception ignored) {
-        }
-    }
-
-    private static UnirestInstance buildHttpClient(OpenClawClientConfig config) {
-        UnirestInstance http = Unirest.spawnInstance();
-        http.config()
-                .connectTimeout(config.getConnectTimeoutMillis())
-                .requestTimeout(config.getReadTimeoutMillis());
-        if (!config.isVerifySsl()) {
-            http.config().verifySsl(false);
-        }
-        return http;
+        // 外部传入的 OkHttpClient 不关闭
     }
 }
