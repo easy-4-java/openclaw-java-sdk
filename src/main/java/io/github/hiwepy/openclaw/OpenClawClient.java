@@ -46,7 +46,8 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class OpenClawClient implements AutoCloseable {
 
-    private final OpenClawClientConfig config;
+    private final OpenClawHttpClientConfig httpConfig;
+    private final OpenClawCliConfig cliConfig;
     private final OpenClawGatewayHttpClient gatewayHttpClient;
     private final OpenClawOpenAiHttpClient openAiHttpClient;
     private final OpenClawToolsInvokeClient toolsInvokeClient;
@@ -56,47 +57,50 @@ public class OpenClawClient implements AutoCloseable {
     /**
      * 标准构造（自动创建 HTTP、CLI、WS 客户端）。
      */
-    public OpenClawClient(OpenClawClientConfig config) {
-        this(config, null, null);
+    public OpenClawClient(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig) {
+        this(httpConfig, cliConfig, null, null);
     }
 
     /**
      * 带 ObjectMapper 和 OkHttpClient 的构造（三个 HTTP 客户端共享同一个 OkHttpClient）。
      */
-    public OpenClawClient(OpenClawClientConfig config, com.fasterxml.jackson.databind.ObjectMapper objectMapper, okhttp3.OkHttpClient httpClient) {
-        this.config = Objects.requireNonNull(config, "config");
-        OpenClawCliExecutor exec = new OpenClawCliExecutor(config.getCli());
-        this.gatewayHttpClient = new OpenClawGatewayHttpClient(config.getHttp(), objectMapper, httpClient);
-        this.openAiHttpClient = new OpenClawOpenAiHttpClient(config.getHttp(), objectMapper, httpClient);
-        this.toolsInvokeClient = new OpenClawToolsInvokeClient(config.getHttp(), objectMapper, httpClient);
+    public OpenClawClient(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig, com.fasterxml.jackson.databind.ObjectMapper objectMapper, okhttp3.OkHttpClient httpClient) {
+        this.httpConfig = Objects.requireNonNull(httpConfig, "httpConfig");
+        this.cliConfig = Objects.requireNonNull(cliConfig, "cliConfig");
+        OpenClawCliExecutor exec = new OpenClawCliExecutor(cliConfig);
+        this.gatewayHttpClient = new OpenClawGatewayHttpClient(httpConfig, objectMapper, httpClient);
+        this.openAiHttpClient = new OpenClawOpenAiHttpClient(httpConfig, objectMapper, httpClient);
+        this.toolsInvokeClient = new OpenClawToolsInvokeClient(httpConfig, objectMapper, httpClient);
         this.cli = new OpenClawCli(exec);
-        this.wsClient = new OpenClawGatewayWsClient(config.getHttp());
+        this.wsClient = new OpenClawGatewayWsClient(httpConfig);
     }
 
     /**
      * 兼容性构造（用于测试等简易场景，只传入 config 和 gatewayHttpClient）。
      * <p>其他组件使用默认实现。</p>
      */
-    public OpenClawClient(OpenClawClientConfig config,
-                          OpenClawGatewayHttpClient gatewayHttpClient) {
-        this.config = Objects.requireNonNull(config, "config");
+    public OpenClawClient(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig, OpenClawGatewayHttpClient gatewayHttpClient) {
+        this.httpConfig = Objects.requireNonNull(httpConfig, "httpConfig");
+        this.cliConfig = Objects.requireNonNull(cliConfig, "cliConfig");
         this.gatewayHttpClient = Objects.requireNonNull(gatewayHttpClient, "gatewayHttpClient");
-        this.openAiHttpClient = new OpenClawOpenAiHttpClient(config.getHttp());
-        this.toolsInvokeClient = new OpenClawToolsInvokeClient(config.getHttp());
-        this.cli = new OpenClawCli(new OpenClawCliExecutor(config.getCli()));
-        this.wsClient = new OpenClawGatewayWsClient(config.getHttp());
+        this.openAiHttpClient = new OpenClawOpenAiHttpClient(httpConfig);
+        this.toolsInvokeClient = new OpenClawToolsInvokeClient(httpConfig);
+        this.cli = new OpenClawCli(new OpenClawCliExecutor(cliConfig));
+        this.wsClient = new OpenClawGatewayWsClient(httpConfig);
     }
 
     /**
      * 完整依赖注入（用于测试或自定义组件）。
      */
-    public OpenClawClient(OpenClawClientConfig config,
+    public OpenClawClient(OpenClawHttpClientConfig httpConfig,
+                          OpenClawCliConfig cliConfig,
                           OpenClawGatewayHttpClient gatewayHttpClient,
                           OpenClawOpenAiHttpClient openAiHttpClient,
                           OpenClawToolsInvokeClient toolsInvokeClient,
                           OpenClawCli cli,
                           OpenClawGatewayWsClient wsClient) {
-        this.config = Objects.requireNonNull(config, "config");
+        this.httpConfig = Objects.requireNonNull(httpConfig, "httpConfig");
+        this.cliConfig = Objects.requireNonNull(cliConfig, "cliConfig");
         this.gatewayHttpClient = Objects.requireNonNull(gatewayHttpClient, "gatewayHttpClient");
         this.openAiHttpClient = Objects.requireNonNull(openAiHttpClient, "openAiHttpClient");
         this.toolsInvokeClient = Objects.requireNonNull(toolsInvokeClient, "toolsInvokeClient");

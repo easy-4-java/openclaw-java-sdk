@@ -74,13 +74,13 @@ public class OpenClawHttpClientConfig {
     /**
      * 解析用于 {@code /hooks/*} HTTP Webhook 请求的 Bearer 令牌。
      *
-     * @return {@link #hooksToken} 非空则用之，否则 {@link #apiKey}，均为空则空字符串
+     * @return {@link #hooksToken} 非空则用之，否则空字符串
      */
     public String resolveHooksBearerToken() {
         if (OpenClawStrings.isNotBlank(hooksToken)) {
             return hooksToken.trim();
         }
-        return OpenClawStrings.nullToEmpty(apiKey);
+        return "";
     }
 
     /**
