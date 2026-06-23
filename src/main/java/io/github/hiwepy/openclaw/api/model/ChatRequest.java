@@ -1,6 +1,7 @@
 package io.github.hiwepy.openclaw.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -75,6 +76,7 @@ public class ChatRequest {
      * 流式选项。当 {@code stream} 为 {@code true} 时可设置。
      * <p>若 {@code include_usage} 为 {@code true}，则在 {@code [DONE]} 前发送 usage 统计块。</p>
      */
+    @JsonProperty("stream_options")
     private Map<String, Object> streamOptions;
 
     /**
@@ -88,6 +90,7 @@ public class ChatRequest {
      * <p>支持：{@code "auto"}、{@code "none"}、{@code "required"}、
      * 或 {@code { "type": "function", "function": { "name": "..." } }}（指定函数）。</p>
      */
+    @JsonProperty("tool_choice")
     private Object toolChoice;
 
     /**
@@ -101,11 +104,13 @@ public class ChatRequest {
      * 最大完成 token 数（含推理 token）。
      * <p>优先于 {@code maxTokens}。向上传递到 agent 的 stream-param 通道。</p>
      */
+    @JsonProperty("max_completion_tokens")
     private Integer maxCompletionTokens;
 
     /**
      * 最大 token 数（旧版字段，当 {@code maxCompletionTokens} 存在时被忽略）。
      */
+    @JsonProperty("max_tokens")
     private Integer maxTokens;
 
     /**
@@ -116,16 +121,19 @@ public class ChatRequest {
     /**
      * nucleus 采样参数（0-1）。最佳努力转发到上游 provider。
      */
+    @JsonProperty("top_p")
     private Double topP;
 
     /**
      * 频率惩罚（-2.0 到 2.0）。超出范围返回 {@code 400 invalid_request_error}。
      */
+    @JsonProperty("frequency_penalty")
     private Double frequencyPenalty;
 
     /**
      * 存在惩罚（-2.0 到 2.0）。超出范围返回 {@code 400 invalid_request_error}。
      */
+    @JsonProperty("presence_penalty")
     private Double presencePenalty;
 
     /**
@@ -142,6 +150,7 @@ public class ChatRequest {
      *
      * @see ResponseFormat
      */
+    @JsonProperty("response_format")
     private ResponseFormat responseFormat;
 
     /**

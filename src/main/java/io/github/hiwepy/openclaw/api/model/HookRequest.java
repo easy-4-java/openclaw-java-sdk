@@ -1,5 +1,6 @@
 package io.github.hiwepy.openclaw.api.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.hiwepy.openclaw.OpenClawClient;
 import io.github.hiwepy.openclaw.api.OpenClawSessionKeys;
 import lombok.Getter;
@@ -17,14 +18,22 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class HookRequest {
 
     /** 必填：发给 agent 的提示/任务内容 */
     private String message;
 
+    /** 路由 agent */
     private String agentId;
+
+    /** agent 显示名称，默认 "Hook" */
     private String name = "Generation";
+
+    /** 唤醒模式："now" 或 "next-heartbeat" */
     private String wakeMode = "now";
+
+    /** 超时秒数（正整数），默认 300 */
     private int timeoutSeconds = 300;
 
     /**
@@ -52,6 +61,12 @@ public class HookRequest {
 
     /** 思考等级或开关，如文档示例 {@code off} */
     private String thinking;
+
+    /**
+     * 幂等键（可选）。
+     * <p>用于去重和 {@code tool_call_id} 构建。</p>
+     */
+    private String idempotencyKey;
 
     /**
      * @param agentId 路由 agent

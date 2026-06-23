@@ -92,6 +92,7 @@ public class ResponseRequest {
      * <p>支持：{@code "auto"}、{@code "none"}、{@code "required"}、
      * 或 {@code { "type": "function", "name": "..." }}。</p>
      */
+    @JsonProperty("tool_choice")
     private Object toolChoice;
 
     /**
@@ -102,6 +103,7 @@ public class ResponseRequest {
     /**
      * 最大输出 token 数。
      */
+    @JsonProperty("max_output_tokens")
     private Integer maxOutputTokens;
 
     /**
@@ -112,6 +114,7 @@ public class ResponseRequest {
     /**
      * nucleus 采样参数。
      */
+    @JsonProperty("top_p")
     private Double topP;
 
     /**
@@ -122,6 +125,7 @@ public class ResponseRequest {
     /**
      * 先前响应 ID。
      */
+    @JsonProperty("previous_response_id")
     private String previousResponseId;
 
     // ==================== Inner Classes ====================

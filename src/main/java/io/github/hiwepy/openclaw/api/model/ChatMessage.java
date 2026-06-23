@@ -1,6 +1,7 @@
 package io.github.hiwepy.openclaw.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.hiwepy.openclaw.api.OpenClawConstants;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,9 +55,11 @@ public class ChatMessage {
     private String content;
 
     /** 工具调用列表 */
+    @JsonProperty("tool_calls")
     private List<ToolCall> toolCalls;
 
     /** 工具调用 ID（tool 角色使用） */
+    @JsonProperty("tool_call_id")
     private String toolCallId;
 
     // ==================== Factory Methods ====================
