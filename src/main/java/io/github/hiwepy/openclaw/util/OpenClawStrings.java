@@ -1,5 +1,7 @@
 package io.github.hiwepy.openclaw.util;
 
+import io.github.hiwepy.openclaw.api.OpenClawConstants;
+
 import java.util.Map;
 import java.util.Objects;
 
@@ -60,5 +62,17 @@ public final class OpenClawStrings {
         if (isNotBlank(value)) {
             target.put(key, value.trim());
         }
+    }
+
+    /**
+     * 判断 model 值是否为 Agent 目标路由。
+     */
+    public static boolean isAgentTarget(String value) {
+        if (value == null) {
+            return false;
+        }
+        return value.startsWith(OpenClawConstants.AGENT_PREFIX_OPENCLAW) ||
+                value.startsWith(OpenClawConstants.AGENT_PREFIX_AGENT_COLON) ||
+                value.startsWith(OpenClawConstants.AGENT_PREFIX_OPENCLAW_COLON);
     }
 }

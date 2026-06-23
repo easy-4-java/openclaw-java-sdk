@@ -4,11 +4,13 @@
 
 | 通道 | 用途 | 入口方法 |
 |------|------|----------|
-| **HTTP Webhook** | 无状态触发 agent | `agent()` / `wake()` / `hook()` |
-| **OpenAI 兼容 HTTP** | Chat/Embeddings/Responses 标准 API | `chatCompletion()` / `listModels()` / `createEmbeddings()` / `createResponse()` |
-| **OpenAI 流式 SSE** | 流式 Chat Completions / OpenResponses | `chatCompletionStream()` / `createResponseStream()` |
-| **Tools Invoke HTTP** | 直接调用单个工具 | `toolInvoke()` |
-| **WebSocket** | 双向实时通信、流式对话、完整 RPC | `ws()` / `wsConnect()` / `wsChatSend()` |
+| **HTTP Webhook** | 触发 agent / 注入事件 / 自定义 webhook | `hook()` / `wake()` |
+| **Chat Completions** | `/v1/chat/completions` | `chat()` / `chatCompletion()` / `chatCompletionStream()` |
+| **Models** | `/v1/models` | `listModels()` |
+| **Embeddings** | `/v1/embeddings` | `embeddings()` / `createEmbeddings()` |
+| **Responses** | `/v1/responses` | `responses()` / `createResponse()` |
+| **Tools Invoke** | `/tools/invoke` | `toolInvoke()` |
+| **WebSocket** | 双向实时通信、流式对话、完整 RPC | `ws()` / `connect()` / `chatSend()` |
 | **CLI** | 本地 `openclaw` 命令封装 | `cli()` |
 
 Spring Boot 应用请使用 [openclaw-spring-boot-starter](../openclaw-spring-boot-starter)。
@@ -114,7 +116,7 @@ String answer = resp.getChoices().get(0).getMessage().getContent();
 ### Chat Completions（流式 SSE）
 
 ```java
-import io.github.hiwepy.openclaw.api.sse.*;
+import io.github.hiwepy.openclaw.api.sse.StreamingChatResponse;
 
 ChatRequest req = ChatRequest.builder()
     .agent("openclaw/default")
@@ -122,41 +124,58 @@ ChatRequest req = ChatRequest.builder()
     .messages(List.of(ChatMessage.ofUser("写一首关于春天的诗")))
     .build();
 
-// 方式1：便捷方法
-StreamingChatResponse stream = client.chatCompletionStream(
-    "openclaw/default", "gpt-4o",
-    List.of(ChatMessage.ofUser("写一首关于春天的诗"))
-);
+// 方式1：链式回调（推荐）
+StreamingChatResponse stream = client.chatCompletionStream(req);
+stream.onDelta(delta -> System.out.print(delta))       // 增量文本
+      .onChunk(chunk -> System.out.println(chunk))    // 原始 chunk
+      .onComplete(text -> System.out.println("\n完成")) // 流结束
+      .onError(error -> error.printStackTrace());     // 错误处理
 
-// 等待完整响应
+// 等待完整结果
 ChatChunk result = stream.get();
-System.out.println(result.getChoices().get(0).getDelta().getContent());
 
-// 方式2：消费增量
-StreamingChatResponse stream2 = client.chatCompletionStream(req)
-    .onDelta(delta -> System.out.print(delta));
+// 方式2：Builder 模式
+StreamingChatResponse stream2 = client.chatCompletionStream(req,
+    StreamingChatResponse.builder()
+        .onDelta(delta -> System.out.print(delta))
+        .onComplete(text -> System.out.println("\n完成"))
+        .build()
+);
 ChatChunk finalChunk = stream2.get();
 ```
 
 ### 流式工具调用
 
 ```java
-import io.github.hiwepy.openclaw.api.model.Tools;
-
 // 定义客户端工具
 List<Map<String, Object>> tools = List.of(
-        Tools.function("get_weather", "获取指定城市的天气")
-                .param("city", "string", "城市名称", true)
-                .build()
+    Tools.function("get_weather", "获取指定城市的天气")
+        .param("city", "string", "城市名称", true)
+        .build()
 );
 
-        ChatRequest req = ChatRequest.builder()
-                .agent("openclaw/default")
-                .model("gpt-4o")
-                .messages(List.of(ChatMessage.ofUser("北京今天天气如何？")))
-                .tools(tools)
-                .toolChoice("auto")
-                .build();
+ChatRequest req = ChatRequest.builder()
+    .agent("openclaw/default")
+    .model("gpt-4o")
+    .messages(List.of(ChatMessage.ofUser("北京今天天气如何？")))
+    .tools(tools)
+    .toolChoice("auto")
+    .build();
+
+// 流式调用
+StreamingChatResponse stream = client.chatCompletionStream(req);
+stream.onDelta(delta -> System.out.print(delta))
+      .onToolCall(toolCalls -> {
+          // 处理工具调用
+          for (ChatMessage.ToolCall tc : toolCalls) {
+              String fnName = tc.getFunction().getName();
+              String args = tc.getFunction().getArguments();
+              // 执行工具...
+          }
+      })
+      .onComplete(text -> System.out.println("\n完成"))
+      .onError(error -> error.printStackTrace());
+```
 
         StreamingChatResponse stream = client.chatCompletionStream(req);
 
@@ -328,11 +347,11 @@ import io.github.hiwepy.openclaw.ws.*;
 import io.github.hiwepy.openclaw.ws.protocol.*;
 
 // 连接并握手
-HelloOk hello = client.wsConnect();
+HelloOk hello = client.connect();
 System.out.println("协议版本: " + hello.getProtocol());
 
 // 流式对话
-client.wsChatSend("你好", new ChatStreamHandler() {
+client.chatSend("你好", new ChatStreamHandler() {
     @Override
     public void onDelta(String text) { System.out.print(text); }
     @Override
@@ -342,10 +361,10 @@ client.wsChatSend("你好", new ChatStreamHandler() {
 });
 
 // 指定会话的流式对话
-client.wsChatSend("my-session", "继续讨论", handler);
+client.chatSend("my-session", "继续讨论", handler);
 
 // 非流式 RPC：向指定会话发消息
-SessionsSendResult sendResult = client.wsSessionsSend("my-session", "你好");
+SessionsSendResult sendResult = client.sessionsSend("my-session", "你好");
 ```
 
 ---

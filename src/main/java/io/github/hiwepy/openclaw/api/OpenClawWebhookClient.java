@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * <p>基于 OkHttp，支持外部传入 {@link OkHttpClient}。</p>
  */
 @Slf4j
-public class OpenClawGatewayHttpClient implements AutoCloseable {
+public class OpenClawWebhookClient implements AutoCloseable {
 
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final ObjectMapper RESPONSE_MAPPER = new ObjectMapper();
@@ -30,15 +30,15 @@ public class OpenClawGatewayHttpClient implements AutoCloseable {
     private final ObjectMapper objectMapper;
     private final OkHttpClient httpClient;
 
-    public OpenClawGatewayHttpClient(OpenClawHttpClientConfig config, ObjectMapper mapper) {
+    public OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper) {
         this(config, mapper, null);
     }
 
-    public OpenClawGatewayHttpClient(OpenClawHttpClientConfig config) {
+    public OpenClawWebhookClient(OpenClawHttpClientConfig config) {
         this(config, null, null);
     }
 
-    public OpenClawGatewayHttpClient(OpenClawHttpClientConfig config, ObjectMapper mapper, OkHttpClient httpClient) {
+    public OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper, OkHttpClient httpClient) {
         this.config = Objects.requireNonNull(config, "config");
         this.objectMapper = mapper != null ? mapper : new ObjectMapper();
         this.httpClient = httpClient != null ? httpClient : buildOkHttpClient(config);
