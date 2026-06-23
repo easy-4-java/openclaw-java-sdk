@@ -2,9 +2,9 @@ package io.github.hiwepy.openclaw.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.hiwepy.openclaw.OpenClawHttpClientConfig;
+import io.github.hiwepy.openclaw.util.OpenClawStrings;
 import io.github.hiwepy.openclaw.api.model.EmbeddingsRequest;
 import io.github.hiwepy.openclaw.api.model.EmbeddingsResponse;
-import io.github.hiwepy.openclaw.util.OpenClawStrings;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
@@ -28,8 +28,18 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
     }
 
     public EmbeddingsResponse createEmbeddings(EmbeddingsRequest request) {
+        debug("=== Embeddings Request ===");
+        debug("agent: {}", request.getAgent());
+        debug("model: {}", request.getModel());
+        debug("input: {}", request.getInput());
+
+        // 验证请求
+        validateRequest(request);
+
         Map<String, String> headers = buildHeaders(request);
         String bodyModel = resolveModel(request);
+
+        debug("Resolved body model: {}", bodyModel);
 
         EmbeddingsRequest normalized = EmbeddingsRequest.builder()
                 .model(bodyModel)
@@ -37,18 +47,43 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
                 .build();
 
         String json = postJson(OpenClawConstants.ENDPOINT_EMBEDDINGS, normalized, headers);
+        debug("Embeddings response received");
+
         return parse(json, EmbeddingsResponse.class, "embeddings");
+    }
+
+    private void validateRequest(EmbeddingsRequest request) {
+        if (OpenClawStrings.isBlank(request.getAgent()) && OpenClawStrings.isBlank(request.getModel())) {
+            String msg = "Embeddings request requires either 'agent' or 'model' field. " +
+                    "Use 'agent' for OpenClaw routing (e.g., 'openclaw/default'), " +
+                    "or 'model' for direct backend model (e.g., 'text-embedding-3-small').";
+            warn(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
+        if (request.getInput() == null) {
+            warn("Embeddings request has no input");
+            throw new IllegalArgumentException("Embeddings request requires input");
+        }
     }
 
     private Map<String, String> buildHeaders(EmbeddingsRequest request) {
         Map<String, String> headers = new HashMap<>();
+
         if (request.getModel() != null && !OpenClawStrings.isAgentTarget(request.getModel())) {
             headers.put(OpenClawConstants.HEADER_X_OPENCLAW_MODEL, request.getModel());
+            debug("Added {} header: {}", OpenClawConstants.HEADER_X_OPENCLAW_MODEL, request.getModel());
         }
+
         return headers.isEmpty() ? null : headers;
     }
 
     private String resolveModel(EmbeddingsRequest request) {
-        return request.getAgent() != null ? request.getAgent() : request.getModel();
+        if (request.getAgent() != null) {
+            debug("Using agent as model: {}", request.getAgent());
+            return request.getAgent();
+        }
+        debug("Using model: {}", request.getModel());
+        return request.getModel();
     }
 }

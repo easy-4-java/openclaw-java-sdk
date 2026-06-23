@@ -2,6 +2,7 @@ package io.github.hiwepy.openclaw.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.hiwepy.openclaw.OpenClawHttpClientConfig;
+import io.github.hiwepy.openclaw.util.OpenClawStrings;
 import io.github.hiwepy.openclaw.api.model.ResponseRequest;
 import io.github.hiwepy.openclaw.api.model.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +31,19 @@ public class OpenClawResponsesClient extends OpenClawHttpClient {
      * 发送 OpenResponses 请求。
      */
     public ResponseResult createResponse(ResponseRequest request) {
+        debug("=== Response Request ===");
+        debug("agent: {}", request.getAgent());
+        debug("model: {}", request.getModel());
+        debug("input type: {}", request.getInput() != null ? request.getInput().getClass().getSimpleName() : "null");
+        debug("stream: {}", request.getStream());
+
+        // 验证请求
+        validateRequest(request);
+
         Map<String, String> headers = buildHeaders(request);
         String bodyModel = resolveModel(request);
+
+        debug("Resolved body model: {}", bodyModel);
 
         ResponseRequest normalized = ResponseRequest.builder()
                 .model(bodyModel)
@@ -48,18 +60,43 @@ public class OpenClawResponsesClient extends OpenClawHttpClient {
                 .build();
 
         String json = postJson(OpenClawConstants.ENDPOINT_RESPONSES, normalized, headers);
+        debug("Response API response received");
+
         return parse(json, ResponseResult.class, "response");
+    }
+
+    private void validateRequest(ResponseRequest request) {
+        if (OpenClawStrings.isBlank(request.getAgent()) && OpenClawStrings.isBlank(request.getModel())) {
+            String msg = "Response request requires either 'agent' or 'model' field. " +
+                    "Use 'agent' for OpenClaw routing (e.g., 'openclaw/default'), " +
+                    "or 'model' for direct backend model.";
+            warn(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
+        if (request.getInput() == null) {
+            warn("Response request has no input");
+            throw new IllegalArgumentException("Response request requires input");
+        }
     }
 
     private Map<String, String> buildHeaders(ResponseRequest request) {
         Map<String, String> headers = new HashMap<>();
-        if (request.getModel() != null && !io.github.hiwepy.openclaw.util.OpenClawStrings.isAgentTarget(request.getModel())) {
+
+        if (request.getModel() != null && !OpenClawStrings.isAgentTarget(request.getModel())) {
             headers.put(OpenClawConstants.HEADER_X_OPENCLAW_MODEL, request.getModel());
+            debug("Added {} header: {}", OpenClawConstants.HEADER_X_OPENCLAW_MODEL, request.getModel());
         }
+
         return headers.isEmpty() ? null : headers;
     }
 
     private String resolveModel(ResponseRequest request) {
-        return request.getAgent() != null ? request.getAgent() : request.getModel();
+        if (request.getAgent() != null) {
+            debug("Using agent as model: {}", request.getAgent());
+            return request.getAgent();
+        }
+        debug("Using model: {}", request.getModel());
+        return request.getModel();
     }
 }

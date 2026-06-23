@@ -6,6 +6,7 @@ import io.github.hiwepy.openclaw.OpenClawHttpClientConfig;
 import io.github.hiwepy.openclaw.exception.OpenClawHttpException;
 import io.github.hiwepy.openclaw.util.OpenClawStrings;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
  * </p>
  */
 @Getter
+@Slf4j
 public abstract class OpenClawHttpClient implements AutoCloseable {
 
     protected static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -61,27 +63,35 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      * 构建带认证的请求。
      */
     protected Request.Builder authedBuilder(String url) {
-        Request.Builder builder = new Request.Builder().url(url)
-                .header("Content-Type", "application/json");
-        String token = config.resolveGatewayBearerToken();
-        if (OpenClawStrings.isNotBlank(token)) {
-            builder.header("Authorization", "Bearer " + token);
-        }
-        return builder;
+        return authedBuilder(url, null);
     }
 
     /**
      * 构建带认证的请求，追加额外请求头。
      */
     protected Request.Builder authedBuilder(String url, Map<String, String> headers) {
-        Request.Builder builder = authedBuilder(url);
-        if (headers != null) {
+        debug("Building request: url={}", url);
+
+        Request.Builder builder = new Request.Builder().url(url)
+                .header("Content-Type", "application/json");
+
+        String token = config.resolveGatewayBearerToken();
+        if (OpenClawStrings.isNotBlank(token)) {
+            builder.header("Authorization", "Bearer " + token);
+            debug("Added Authorization header");
+        } else {
+            warn("No gateway bearer token configured");
+        }
+
+        if (headers != null && !headers.isEmpty()) {
             headers.forEach((k, v) -> {
                 if (k != null && v != null) {
                     builder.header(k, v);
+                    debug("Added header: {}={}", k, v);
                 }
             });
         }
+
         return builder;
     }
 
@@ -97,12 +107,17 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      */
     protected String postJson(String path, Object body, Map<String, String> headers) {
         String url = resolveUrl(path);
+        debug("POST JSON: path={}, url={}", path, url);
+
         try {
             String json = objectMapper.writeValueAsString(body);
+            debug("Request body: {}", json);
+
             Request request = authedBuilder(url, headers)
                     .post(RequestBody.create(json, JSON))
                     .build();
-            return execute(request);
+
+            return execute(request, url);
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (IOException e) {
@@ -115,9 +130,11 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      */
     protected String getJson(String path) {
         String url = resolveUrl(path);
+        debug("GET JSON: path={}, url={}", path, url);
+
         try {
             Request request = authedBuilder(url).get().build();
-            return execute(request);
+            return execute(request, url);
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (IOException e) {
@@ -128,11 +145,25 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     /**
      * 执行请求。
      */
-    protected String execute(Request request) throws IOException {
+    protected String execute(Request request, String url) throws IOException {
+        debug("Executing request: {} {}", request.method(), request.url());
+        debug("Request headers: {}", request.headers());
+
         try (Response response = httpClient.newCall(request).execute()) {
+            int status = response.code();
             String respBody = response.body() != null ? response.body().string() : "";
+
+            debug("Response status: {}, body length: {}", status, respBody.length());
+            if (status >= 300) {
+                debug("Response body (error): {}", respBody);
+            } else if (respBody.length() < 500) {
+                debug("Response body: {}", respBody);
+            } else {
+                debug("Response body (truncated): {}...", respBody.substring(0, 500));
+            }
+
             if (!response.isSuccessful()) {
-                throw new OpenClawHttpException("Request returned status " + response.code(), response.code(), respBody);
+                throw new OpenClawHttpException("Request returned status " + status, status, respBody);
             }
             return respBody;
         }
@@ -169,6 +200,30 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             throw new OpenClawHttpException("gatewayBaseUrl is empty", null);
         }
         return base.replaceAll("/+$", "") + path;
+    }
+
+    // ============================================================
+    // Logging helpers
+    // ============================================================
+
+    protected void debug(String msg, Object... args) {
+        if (log.isDebugEnabled()) {
+            log.debug(msg, args);
+        }
+    }
+
+    protected void info(String msg, Object... args) {
+        if (log.isInfoEnabled()) {
+            log.info(msg, args);
+        }
+    }
+
+    protected void warn(String msg, Object... args) {
+        log.warn(msg, args);
+    }
+
+    protected void error(String msg, Object... args) {
+        log.error(msg, args);
     }
 
     @Override

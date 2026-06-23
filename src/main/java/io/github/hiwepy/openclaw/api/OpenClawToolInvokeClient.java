@@ -29,31 +29,50 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
 
     public ToolInvokeResult invoke(ToolInvokeRequest request) {
         Objects.requireNonNull(request, "request");
+
+        debug("=== Tool Invoke Request ===");
+        debug("tool: {}", request.getTool());
+        debug("action: {}", request.getAction());
+        debug("args: {}", request.getArgs());
+
         if (OpenClawStrings.isBlank(request.getTool())) {
-            throw new IllegalArgumentException("tool name is required");
+            String msg = "Tool name is required";
+            warn(msg);
+            throw new IllegalArgumentException(msg);
         }
 
         try {
             Request.Builder builder = authedBuilder(resolveUrl(OpenClawConstants.ENDPOINT_TOOLS_INVOKE));
             Request httpRequest = builder.post(RequestBody.create(objectMapper.writeValueAsString(request), JSON)).build();
 
+            debug("Sending tool invoke request...");
+
             try (Response response = httpClient.newCall(httpRequest).execute()) {
                 int status = response.code();
                 String respBody = response.body() != null ? response.body().string() : "";
 
+                debug("Tool invoke response status: {}", status);
+                debug("Tool invoke response body: {}", respBody);
+
                 if (status == 404) {
+                    String msg = "Tool not available: " + request.getTool();
+                    warn(msg);
                     ToolInvokeResult result = new ToolInvokeResult();
                     result.setOk(false);
                     ToolInvokeResult.ErrorDetail error = new ToolInvokeResult.ErrorDetail();
                     error.setType(ToolInvokeResult.ERROR_TYPE_NOT_FOUND);
-                    error.setMessage("Tool not available: " + request.getTool());
+                    error.setMessage(msg);
                     result.setError(error);
                     return result;
                 }
+
                 if (status < 200 || status >= 300) {
                     throw new OpenClawHttpException("POST /tools/invoke returned status " + status, status, respBody);
                 }
-                return parse(respBody, ToolInvokeResult.class);
+
+                ToolInvokeResult result = parse(respBody, ToolInvokeResult.class);
+                debug("Tool invoke success, ok: {}", result.getOk());
+                return result;
             }
         } catch (OpenClawHttpException e) {
             throw e;

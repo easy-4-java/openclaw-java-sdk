@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -45,8 +43,21 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     public ChatResponse chatCompletion(ChatRequest request, Map<String, String> headers) {
         Objects.requireNonNull(request, "request");
 
+        debug("=== Chat Completion Request ===");
+        debug("agent: {}", request.getAgent());
+        debug("model: {}", request.getModel());
+        debug("messages count: {}", request.getMessages() != null ? request.getMessages().size() : 0);
+        debug("stream: {}", request.getStream());
+        debug("tools: {}", request.getTools() != null ? request.getTools().size() : 0);
+
+        // 验证请求
+        validateRequest(request);
+
         headers = buildHeaders(request, headers);
         String bodyModel = resolveModel(request);
+
+        debug("Resolved body model (agent routing): {}", bodyModel);
+        debug("Headers to send: {}", headers);
 
         ChatRequest normalized = ChatRequest.builder()
                 .model(bodyModel)
@@ -66,19 +77,23 @@ public class OpenClawChatClient extends OpenClawHttpClient {
                 .stop(request.getStop())
                 .build();
 
-        String json = postJson(OpenClawConstants.ENDPOINT_CHAT_COMPLETIONS, normalized, headers);
-        return parse(json, ChatResponse.class, "chat completion");
+        String json;
+        try {
+            json = postJson(OpenClawConstants.ENDPOINT_CHAT_COMPLETIONS, normalized, headers);
+        } catch (OpenClawHttpException e) {
+            error("Chat completion failed: status={}, message={}", e.getStatusCode(), e.getMessage());
+            throw e;
+        }
+
+        debug("Response received, parsing...");
+        ChatResponse response = parse(json, ChatResponse.class, "chat completion");
+        debug("Chat completion success: id={}", response.getId());
+
+        return response;
     }
 
     /**
      * 流式 chat completion。
-     *
-     * <pre>{@code
-     * client.chatCompletionStream(request)
-     *     .onDelta(delta -> System.out.print(delta))
-     *     .onComplete(text -> System.out.println("\\n完成"))
-     *     .onError(error -> error.printStackTrace());
-     * }</pre>
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request) {
         return chatCompletionStream(request, (Map<String, String>) null);
@@ -102,15 +117,19 @@ public class OpenClawChatClient extends OpenClawHttpClient {
      * 获取流式响应的原始 OkHttp Response（高级用法）。
      */
     public Response chatCompletionStreamRaw(ChatRequest request) {
-        return chatCompletionStreamRaw(request, (Map<String, String>) null);
+        return chatCompletionStreamRaw(request, null);
     }
 
     public Response chatCompletionStreamRaw(ChatRequest request, Map<String, String> headers) {
         Objects.requireNonNull(request, "request");
+
+        debug("=== Chat Completion Stream Request ===");
         request.setStream(true);
 
         headers = buildHeaders(request, headers);
         String bodyModel = resolveModel(request);
+
+        debug("Resolved body model: {}", bodyModel);
 
         ChatRequest normalized = ChatRequest.builder()
                 .model(bodyModel)
@@ -135,11 +154,18 @@ public class OpenClawChatClient extends OpenClawHttpClient {
 
         try {
             Request req = builder.post(RequestBody.create(objectMapper.writeValueAsString(normalized), JSON)).build();
+            debug("Sending streaming request...");
+
             Response response = httpClient.newCall(req).execute();
+            int status = response.code();
+
+            debug("Stream response status: {}", status);
+
             if (!response.isSuccessful()) {
                 String body = response.body() != null ? response.body().string() : "";
+                debug("Stream error response: {}", body);
                 response.close();
-                throw new OpenClawHttpException("Stream returned status " + response.code(), response.code(), body);
+                throw new OpenClawHttpException("Stream returned status " + status, status, body);
             }
             return response;
         } catch (OpenClawHttpException e) {
@@ -154,18 +180,24 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     // ============================================================
 
     public ModelsResponse listModels() {
+        debug("=== List Models ===");
         String json = getJson(OpenClawConstants.ENDPOINT_MODELS);
-        return parse(json, ModelsResponse.class, "models");
+        ModelsResponse response = parse(json, ModelsResponse.class, "models");
+        debug("Models count: {}", response.getData() != null ? response.getData().size() : 0);
+        return response;
     }
 
     public ModelsResponse.ModelData getModel(String modelId) {
         Objects.requireNonNull(modelId, "modelId");
+        debug("=== Get Model: {} ===", modelId);
+
         String encodedId;
         try {
-            encodedId = URLEncoder.encode(modelId, StandardCharsets.UTF_8.name()).replace("+", "%20");
+            encodedId = URLEncoder.encode(modelId, "UTF-8").replace("+", "%20");
         } catch (java.io.UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+
         String json = getJson(OpenClawConstants.ENDPOINT_MODELS + "/" + encodedId);
         return parse(json, ModelsResponse.ModelData.class, "model");
     }
@@ -174,23 +206,51 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     // Private helpers
     // ============================================================
 
+    private void validateRequest(ChatRequest request) {
+        // 检查 agent 或 model 必须有一个
+        if (OpenClawStrings.isBlank(request.getAgent()) && OpenClawStrings.isBlank(request.getModel())) {
+            String msg = "Chat request requires either 'agent' or 'model' field. " +
+                    "Use 'agent' for OpenClaw routing (e.g., 'openclaw/default'), " +
+                    "or 'model' for direct backend model (e.g., 'gpt-4o').";
+            warn(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
+        // 检查 messages
+        if (request.getMessages() == null || request.getMessages().isEmpty()) {
+            warn("Chat request has no messages");
+            throw new IllegalArgumentException("Chat request requires at least one message");
+        }
+    }
+
     private Map<String, String> buildHeaders(ChatRequest request, Map<String, String> existingHeaders) {
         Map<String, String> headers = existingHeaders != null ? new HashMap<>(existingHeaders) : new HashMap<>();
+
+        // 如果有独立的 model 字段（非 agent 路由），设置 x-openclaw-model header
         if (request.getModel() != null && !OpenClawStrings.isAgentTarget(request.getModel())) {
             headers.put(OpenClawConstants.HEADER_X_OPENCLAW_MODEL, request.getModel());
+            debug("Added {} header: {}", OpenClawConstants.HEADER_X_OPENCLAW_MODEL, request.getModel());
         }
+
         return headers.isEmpty() ? null : headers;
     }
 
     private String resolveModel(ChatRequest request) {
-        return request.getAgent() != null ? request.getAgent() : request.getModel();
+        // 优先使用 agent 字段（用于 OpenClaw 路由）
+        if (request.getAgent() != null) {
+            debug("Using agent as model: {}", request.getAgent());
+            return request.getAgent();
+        }
+        // 否则使用 model 字段（用于直接调用后端模型）
+        debug("Using model: {}", request.getModel());
+        return request.getModel();
     }
 
     private void startStreamConsumer(Response httpResponse, StreamingChatResponse response) {
         SseStreamReader reader = new SseStreamReader(objectMapper);
         CompletableFuture.runAsync(() -> {
             try {
-                reader.readChatCompletionStream(Objects.requireNonNull(httpResponse.body(), "Response body is null").byteStream(), response);
+                reader.readChatCompletionStream(httpResponse.body().byteStream(), response);
             } finally {
                 httpResponse.close();
             }
