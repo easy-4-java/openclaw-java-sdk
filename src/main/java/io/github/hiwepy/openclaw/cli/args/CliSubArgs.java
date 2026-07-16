@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * 表示官方 CLI 中「顶层命令之后」的参数片段（不含 {@code openclaw} 与顶层命令名本身）。
  * <p>
- * 典型实现见 {@code io.github.hiwepy.openclaw.cli.opts} 包（如 {@link io.github.hiwepy.openclaw.cli.opts.SetupOptions}、{@link io.github.hiwepy.openclaw.cli.opts.AgentOptions}）。
+ * 典型实现见 {@code io.github.hiwepy.openclaw.cli.opts} 包（如 {@link io.github.hiwepy.openclaw.cli.opts.AgentOptions}）。
  * </p>
  */
 @FunctionalInterface

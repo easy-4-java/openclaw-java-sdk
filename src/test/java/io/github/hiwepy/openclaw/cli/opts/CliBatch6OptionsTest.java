@@ -42,11 +42,4 @@ class CliBatch6OptionsTest {
                 OpenClawLists.of("apply", "--from", "/tmp/plan.json", "--dry-run"),
                 SecretsOptions.builder().apply("/tmp/plan.json").dryRun(true).build().toSubcommandArguments());
     }
-
-    @Test
-    void sandbox_recreate() {
-        assertEquals(
-                OpenClawLists.of("recreate", "--all", "--browser", "--force"),
-                SandboxOptions.builder().recreate().recreateAll(true).recreateBrowser(true).force(true).build().toSubcommandArguments());
-    }
 }

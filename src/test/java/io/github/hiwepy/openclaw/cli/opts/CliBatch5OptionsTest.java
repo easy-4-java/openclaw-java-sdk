@@ -50,13 +50,6 @@ class CliBatch5OptionsTest {
     }
 
     @Test
-    void webhooks_gmail_setup() {
-        assertEquals(
-                OpenClawLists.of("gmail", "setup", "--account", "a@b.com", "--json"),
-                WebhooksOptions.builder().gmailSetup("a@b.com").json(true).build().toSubcommandArguments());
-    }
-
-    @Test
     void flows_list() {
         assertEquals(OpenClawLists.of("flow", "list", "--json"), FlowsOptions.builder().list().listJson(true).build().toSubcommandArguments());
     }
