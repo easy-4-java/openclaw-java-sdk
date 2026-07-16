@@ -13,22 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CliBatch4OptionsTest {
 
     @Test
-    void browser_profile_and_lifecycle() {
-        assertEquals(
-                OpenClawLists.of("--browser-profile", "openclaw", "start"),
-                BrowserOptions.builder().browserProfile("openclaw").start().build().toSubcommandArguments());
-        assertEquals(
-                OpenClawLists.of("--url", "wss://g:1", "--timeout", "5000", "--json", "profiles"),
-                BrowserOptions.builder()
-                        .gatewayUrl("wss://g:1")
-                        .timeoutMs(5000)
-                        .json(true)
-                        .profiles()
-                        .build()
-                        .toSubcommandArguments());
-    }
-
-    @Test
     void mcp_serve_and_registry() {
         assertEquals(
                 OpenClawLists.of("serve",

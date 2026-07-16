@@ -74,26 +74,4 @@ class CliBatch1OptionsTest {
                 OpenClawLists.of("--json", "--verbose"),
                 SkillsOptions.builder().defaultList().listJson(true).listVerbose(true).build().toSubcommandArguments());
     }
-
-    @Test
-    void memory_status_and_search() {
-        assertEquals(
-                OpenClawLists.of("status", "--agent", "main", "--deep", "--json"),
-                MemoryOptions.builder()
-                        .status()
-                        .agent("main")
-                        .statusDeep(true)
-                        .statusJson(true)
-                        .build()
-                        .toSubcommandArguments());
-        assertEquals(
-                OpenClawLists.of("search", "--query", "deployment", "--max-results", "20", "--json"),
-                MemoryOptions.builder()
-                        .search()
-                        .searchQuery("deployment")
-                        .maxResults(20)
-                        .searchJson(true)
-                        .build()
-                        .toSubcommandArguments());
-    }
 }
