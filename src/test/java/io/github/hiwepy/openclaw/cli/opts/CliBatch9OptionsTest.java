@@ -13,23 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CliBatch9OptionsTest {
 
     @Test
-    void voicecall_call_and_expose() {
-        assertEquals(
-                OpenClawLists.of("call", "--to", "+1", "--message", "Hello", "--mode", "notify"),
-                VoicecallOptions.builder().call("+1", "Hello", "notify").build().toSubcommandArguments());
-        assertEquals(
-                OpenClawLists.of("expose", "--mode", "serve"),
-                VoicecallOptions.builder().expose(VoicecallOptions.ExposeMode.SERVE).build().toSubcommandArguments());
-    }
-
-    @Test
-    void clawbot_qr() {
-        assertEquals(
-                OpenClawLists.of("qr", "--remote", "--json"),
-                ClawbotOptions.builder().qr().remote(true).json(true).build().toSubcommandArguments());
-    }
-
-    @Test
     void acp_bridge_and_client() {
         assertEquals(
                 OpenClawLists.of("--url",

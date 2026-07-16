@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 官方 CLI 顶层命令封装；每个方法接收 {@code io.github.hiwepy.openclaw.cli.opts} 包中的 {@link CliSubArgs} 实现（如 {@link SetupOptions}、{@link AgentOptions}），
+ * 官方 CLI 顶层命令封装；每个方法接收 {@code io.github.hiwepy.openclaw.cli.opts} 包中的 {@link CliSubArgs} 实现（如 {@link AgentOptions}），
  * 避免使用裸 {@code String...} 导致调用方不清楚参数顺序与含义。
  * <p>
  * 文档索引：<a href="https://docs.openclaw.ai/cli">CLI Reference</a>。
@@ -175,16 +175,6 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw setup ...}。
-     *
-     * @param args 子命令与 flag，见 {@link SetupOptions}
-     * @see <a href="https://docs.openclaw.ai/cli/setup">setup CLI</a>
-     */
-    public OpenClawCliResult setup(SetupOptions args) {
-        return run("setup", args);
-    }
-
-    /**
      * {@code openclaw onboard ...}。
      *
      * @param args 子命令与 flag，见 {@link OnboardOptions}
@@ -192,16 +182,6 @@ public class OpenClawCli {
      */
     public OpenClawCliResult onboard(OnboardOptions args) {
         return run("onboard", args);
-    }
-
-    /**
-     * {@code openclaw docs ...}。
-     *
-     * @param args 子命令与 flag，见 {@link DocsCommandOptions}
-     * @see <a href="https://docs.openclaw.ai/cli/docs">docs CLI</a>
-     */
-    public OpenClawCliResult docs(DocsCommandOptions args) {
-        return run("docs", args);
     }
 
     // --- Agents & sessions & skills ---
@@ -247,16 +227,6 @@ public class OpenClawCli {
      */
     public OpenClawCliResult skills(SkillsOptions args) {
         return run("skills", args);
-    }
-
-    /**
-     * {@code openclaw memory ...}。
-     *
-     * @param args 子命令与 flag，见 {@link MemoryOptions}
-     * @see <a href="https://docs.openclaw.ai/cli/memory">memory CLI</a>
-     */
-    public OpenClawCliResult memory(MemoryOptions args) {
-        return run("memory", args);
     }
 
     /**
@@ -344,16 +314,6 @@ public class OpenClawCli {
     // --- Browser & MCP & tools ---
 
     /**
-     * {@code openclaw browser ...}。
-     *
-     * @param args 子命令与 flag，见 {@link BrowserOptions}
-     * @see <a href="https://docs.openclaw.ai/cli/browser">browser CLI</a>
-     */
-    public OpenClawCliResult browser(BrowserOptions args) {
-        return run("browser", args);
-    }
-
-    /**
      * {@code openclaw mcp ...}。
      *
      * @param args 子命令与 flag，见 {@link McpOptions}
@@ -396,16 +356,6 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw webhooks ...}。
-     *
-     * @param args 子命令与 flag，见 {@link WebhooksOptions}
-     * @see <a href="https://docs.openclaw.ai/cli/webhooks">webhooks CLI</a>
-     */
-    public OpenClawCliResult webhooks(WebhooksOptions args) {
-        return run("webhooks", args);
-    }
-
-    /**
      * Task flow 子命令（官方文档对应 {@code openclaw tasks flow ...}，见 {@link FlowsOptions}）。
      *
      * @param args 子命令与 flag，见 {@link FlowsOptions}
@@ -445,16 +395,6 @@ public class OpenClawCli {
      */
     public OpenClawCliResult secrets(SecretsOptions args) {
         return run("secrets", args);
-    }
-
-    /**
-     * {@code openclaw sandbox ...}。
-     *
-     * @param args 子命令与 flag，见 {@link SandboxOptions}
-     * @see <a href="https://docs.openclaw.ai/cli/sandbox">sandbox CLI</a>
-     */
-    public OpenClawCliResult sandbox(SandboxOptions args) {
-        return run("sandbox", args);
     }
 
     /**
@@ -538,16 +478,6 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw dns ...}。
-     *
-     * @param args 子命令与 flag，见 {@link DnsOptions}
-     * @see <a href="https://docs.openclaw.ai/cli/dns">dns CLI</a>
-     */
-    public OpenClawCliResult dns(DnsOptions args) {
-        return run("dns", args);
-    }
-
-    /**
      * {@code openclaw system ...}。
      *
      * @param args 子命令与 flag，见 {@link SystemOptions}
@@ -558,26 +488,6 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw voicecall ...}。
-     *
-     * @param args 子命令与 flag，见 {@link VoicecallOptions}
-     * @see <a href="https://docs.openclaw.ai/cli/voicecall">voicecall CLI</a>
-     */
-    public OpenClawCliResult voicecall(VoicecallOptions args) {
-        return run("voicecall", args);
-    }
-
-    /**
-     * {@code openclaw clawbot ...}。
-     *
-     * @param args 子命令与 flag，见 {@link ClawbotOptions}
-     * @see <a href="https://docs.openclaw.ai/cli/clawbot">clawbot CLI</a>
-     */
-    public OpenClawCliResult clawbot(ClawbotOptions args) {
-        return run("clawbot", args);
-    }
-
-    /**
      * {@code openclaw acp ...}。
      *
      * @param args 子命令与 flag，见 {@link AcpOptions}
@@ -585,6 +495,116 @@ public class OpenClawCli {
      */
     public OpenClawCliResult acp(AcpOptions args) {
         return run("acp", args);
+    }
+
+    /**
+     * {@code openclaw chat ...}（{@code tui --local} 别名）。
+     *
+     * @param args 子命令与 flag，见 {@link ChatOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/chat">chat CLI</a>
+     */
+    public OpenClawCliResult chat(ChatOptions args) {
+        return run("chat", args);
+    }
+
+    /**
+     * {@code openclaw terminal ...}（{@code tui --local} 别名）。
+     *
+     * @param args 子命令与 flag，见 {@link TerminalOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/terminal">terminal CLI</a>
+     */
+    public OpenClawCliResult terminal(TerminalOptions args) {
+        return run("terminal", args);
+    }
+
+    /**
+     * {@code openclaw commitments ...}。
+     *
+     * @param args 子命令与 flag，见 {@link CommitmentsOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/commitments">commitments CLI</a>
+     */
+    public OpenClawCliResult commitments(CommitmentsOptions args) {
+        return run("commitments", args);
+    }
+
+    /**
+     * {@code openclaw crestodian ...}。
+     *
+     * @param args 子命令与 flag，见 {@link CrestodianOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/crestodian">crestodian CLI</a>
+     */
+    public OpenClawCliResult crestodian(CrestodianOptions args) {
+        return run("crestodian", args);
+    }
+
+    /**
+     * {@code openclaw exec-approvals ...}（别名 {@code approvals}）。
+     *
+     * @param args 子命令与 flag，见 {@link ExecApprovalsOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/exec-approvals">exec-approvals CLI</a>
+     */
+    public OpenClawCliResult execApprovals(ExecApprovalsOptions args) {
+        return run("exec-approvals", args);
+    }
+
+    /**
+     * {@code openclaw exec-policy ...}。
+     *
+     * @param args 子命令与 flag，见 {@link ExecPolicyOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/exec-policy">exec-policy CLI</a>
+     */
+    public OpenClawCliResult execPolicy(ExecPolicyOptions args) {
+        return run("exec-policy", args);
+    }
+
+    /**
+     * {@code openclaw migrate ...}。
+     *
+     * @param args 子命令与 flag，见 {@link MigrateOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/migrate">migrate CLI</a>
+     */
+    public OpenClawCliResult migrate(MigrateOptions args) {
+        return run("migrate", args);
+    }
+
+    /**
+     * {@code openclaw proxy ...}。
+     *
+     * @param args 子命令与 flag，见 {@link ProxyOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/proxy">proxy CLI</a>
+     */
+    public OpenClawCliResult proxy(ProxyOptions args) {
+        return run("proxy", args);
+    }
+
+    /**
+     * {@code openclaw worktrees ...}。
+     *
+     * @param args 子命令与 flag，见 {@link WorktreesOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/worktrees">worktrees CLI</a>
+     */
+    public OpenClawCliResult worktrees(WorktreesOptions args) {
+        return run("worktrees", args);
+    }
+
+    /**
+     * {@code openclaw tool ...}（保留命令根，无选项）。
+     *
+     * @param args 子命令与 flag，见 {@link ToolOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/tool">tool CLI</a>
+     */
+    public OpenClawCliResult tool(ToolOptions args) {
+        return run("tool", args);
+    }
+
+    /**
+     * {@code openclaw tools ...}（根帮助别名，无选项）。
+     *
+     * @param args 子命令与 flag，见 {@link ToolsOptions}
+     * @see <a href="https://docs.openclaw.ai/cli/tools">tools CLI</a>
+     */
+    public OpenClawCliResult tools(ToolsOptions args) {
+        return run("tools", args);
     }
 
     /**

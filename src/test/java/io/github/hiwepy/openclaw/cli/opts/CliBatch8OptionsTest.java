@@ -39,27 +39,4 @@ class CliBatch8OptionsTest {
                         .build()
                         .toSubcommandArguments());
     }
-
-    @Test
-    void dns_setup_and_system_event() {
-        assertEquals(
-                OpenClawLists.of("setup", "--domain", "openclaw.internal", "--apply"),
-                DnsOptions.builder().domain("openclaw.internal").apply(true).build().toSubcommandArguments());
-        assertEquals(
-                OpenClawLists.of("event",
-                        "--text",
-                        "Check",
-                        "--mode",
-                        "now",
-                        "--url",
-                        "ws://127.0.0.1:18789",
-                        "--json"),
-                SystemOptions.builder()
-                        .event("Check")
-                        .eventMode("now")
-                        .gatewayUrl("ws://127.0.0.1:18789")
-                        .json(true)
-                        .build()
-                        .toSubcommandArguments());
-    }
 }
