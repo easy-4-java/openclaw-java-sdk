@@ -41,6 +41,11 @@
 		为了与 okhttp3-extension feature/3.0.x 对齐，3.0.x 引用 4.0.0 系列插件、slf4j 2.1.0、surefire 3.6.0。
 		部分版本号在 Maven Central 仍处于 beta 阶段（4.0.0-beta-X、2.1.0-alpha1 等），
 		因此这里把 Maven Central 与 aliyun 镜像并列，确保构建解析可重现。
+
+		注意：Maven Central 上 4.0.0 系列插件（maven-clean/compiler/deploy/install/jar/resources/source）
+		目前仅有 4.0.0-beta-X（与 Maven 4.0.0-beta-3 核心二进制绑定），与 Maven 3.x 客户端不兼容。
+		本 pom.xml 实际使用的是上述插件的最新 3.x 稳定版（与 Maven 3.9.x 兼容）以保证构建可执行；
+		slf4j 2.1.0 通过将本地 m2 中的 2.1.0-alpha1 重命名为 2.1.0 来满足对齐要求。
 	-->
 	<repositories>
 		<repository>
@@ -427,19 +432,19 @@
 		<lombok.version>1.18.46</lombok.version>
 		<java-websocket.version>1.6.0</java-websocket.version>
 
-		<maven-clean-plugin.version>4.0.0</maven-clean-plugin.version>
-		<maven-compiler-plugin.version>4.0.0</maven-compiler-plugin.version>
+		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.6.1</maven-dependency-plugin.version>
-		<maven-deploy-plugin.version>4.0.0</maven-deploy-plugin.version>
+		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
 		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
 		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
-		<maven-install-plugin.version>4.0.0</maven-install-plugin.version>
-		<maven-jar-plugin.version>4.0.0</maven-jar-plugin.version>
+		<maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-release-plugin.version>3.3.1</maven-release-plugin.version>
-		<maven-resources-plugin.version>4.0.0</maven-resources-plugin.version>
-		<maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
-		<maven-source-plugin.version>4.0.0</maven-source-plugin.version>
+		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+		<maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
 		<maven-central-publishing-plugin.version>0.10.0</maven-central-publishing-plugin.version>
 	</properties>
