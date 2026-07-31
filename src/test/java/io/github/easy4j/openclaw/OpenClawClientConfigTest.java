@@ -58,24 +58,24 @@ class OpenClawClientConfigTest {
     }
 
     /**
-     * HTTP 子配置默认启用且启动检查开启，fail-fast 默认关闭。
+     * HTTP 子配置默认启用，启动检查默认关闭，fail-fast 默认关闭。
      */
     @Test
     void httpConfig_startupCheckDefaults() {
         OpenClawClientConfig config = new OpenClawClientConfig();
         assertTrue(config.getHttp().isEnabled());
-        assertTrue(config.getHttp().isStartupCheckEnabled());
+        assertFalse(config.getHttp().isStartupCheckEnabled());
         assertFalse(config.getHttp().isFailFastOnUnavailable());
     }
 
     /**
-     * CLI 子配置默认启用且启动检查开启，fail-fast 默认关闭。
+     * CLI 子配置默认启用，启动检查默认关闭，fail-fast 默认关闭。
      */
     @Test
     void cliConfig_startupCheckDefaults() {
         OpenClawClientConfig config = new OpenClawClientConfig();
         assertTrue(config.getCli().isEnabled());
-        assertTrue(config.getCli().isStartupCheckEnabled());
+        assertFalse(config.getCli().isStartupCheckEnabled());
         assertFalse(config.getCli().isFailFastOnUnavailable());
     }
 }

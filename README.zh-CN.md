@@ -220,7 +220,7 @@ Starter 自动装配 `OpenClawClient`、`OkHttpClient`、`ObjectMapper`、`OpenC
 | 属性 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `enabled` | boolean | `true` | 是否启用 HTTP 子系统 |
-| `startupCheckEnabled` | boolean | `true` | 启动时探测 `/v1/models` |
+| `startupCheckEnabled` | boolean | `false` | 启动时探测 `/v1/models` |
 | `failFastOnUnavailable` | boolean | `false` | 探测失败时中断构造 |
 | `gatewayBaseUrl` | String | `http://localhost:18789` | Gateway 根地址 |
 | `gatewayAuthToken` | String | — | 控制面令牌 |
@@ -237,7 +237,7 @@ Starter 自动装配 `OpenClawClient`、`OkHttpClient`、`ObjectMapper`、`OpenC
 | 属性 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `enabled` | boolean | `true` | 是否启用 CLI 子系统 |
-| `startupCheckEnabled` | boolean | `true` | 启动时探测 `openclaw --version` |
+| `startupCheckEnabled` | boolean | `false` | 启动时探测 `openclaw --version` |
 | `failFastOnUnavailable` | boolean | `false` | 探测失败时中断构造 |
 | `executable` | String | `openclaw` | 可执行文件名或绝对路径 |
 | `timeout` | int | `300` | CLI 命令超时（秒） |
