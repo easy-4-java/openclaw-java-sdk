@@ -23,7 +23,7 @@ public class OpenClawCliConfig {
     /**
      * 启动时是否探测 {@code openclaw --version}。
      */
-    private boolean startupCheckEnabled = true;
+    private boolean startupCheckEnabled = false;
 
     /**
      * CLI 不可用时是否快速失败（中断构造）。
