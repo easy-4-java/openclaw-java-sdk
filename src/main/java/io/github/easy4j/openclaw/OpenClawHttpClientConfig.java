@@ -37,7 +37,7 @@ public class OpenClawHttpClientConfig {
     /**
      * 启动时是否探测 Gateway HTTP 可用性（{@code GET /v1/models}）。
      */
-    private boolean startupCheckEnabled = true;
+    private boolean startupCheckEnabled = false;
 
     /**
      * Gateway HTTP 不可用时是否快速失败（中断构造）。
