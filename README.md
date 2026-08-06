@@ -1,454 +1,296 @@
 # openclaw-java-sdk
 
-纯 Java 库（无 Spring）：五条独立通信通道的门面客户端 [`OpenClawClient`](src/main/java/io/github/hiwepy/openclaw/OpenClawClient.java)。
+[English](./README.md) | [简体中文](./README.zh-CN.md)
 
-| 通道 | 用途 | 入口方法 |
-|------|------|----------|
-| **HTTP Webhook** | 触发 agent / 注入事件 / 自定义 webhook | `hook()` / `wake()` |
-| **Chat Completions** | `/v1/chat/completions` | `chat()` / `chatCompletion()` / `chatCompletionStream()` |
-| **Models** | `/v1/models` | `listModels()` |
-| **Embeddings** | `/v1/embeddings` | `embeddings()` / `createEmbeddings()` |
-| **Responses** | `/v1/responses` | `responses()` / `createResponse()` |
-| **Tools Invoke** | `/tools/invoke` | `toolInvoke()` |
-| **WebSocket** | 双向实时通信、流式对话、完整 RPC | `ws()` / `connect()` / `chatSend()` |
-| **CLI** | 本地 `openclaw` 命令封装 | `cli()` |
+[![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/openclaw-java-sdk) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
-Spring Boot 应用请使用 [openclaw-spring-boot-starter](../openclaw-spring-boot-starter)。
+Pure Java SDK — talks to the OpenClaw Gateway through independent HTTP, SSE, WebSocket and local CLI channels
+[简体中文](./README.zh-CN.md)
 
----
+> **Current branch**: `feature/2.0.x`
+> **Version**: `2.0.x.x.20260630-SNAPSHOT`
+> **JDK baseline**: 8
+> **Project status**: stable (1.0.x line). Not yet published to Maven Central; artifacts are distributed via the Aliyun Maven repository and GitHub Releases.
 
-## 快速开始
+## Table of Contents
+
+- [1. Project Overview](#1-project-overview)
+- [2. Features & Status](#2-features--status)
+- [3. Requirements & Compatibility](#3-requirements--compatibility)
+- [4. Architecture & Modules](#4-architecture--modules)
+- [5. Installation](#5-installation)
+- [6. Quick Start](#6-quick-start)
+- [7. Configuration](#7-configuration)
+- [8. Core Usage](#8-core-usage)
+- [9. Testing & Build](#9-testing--build)
+- [10. Versioning & Branches](#10-versioning--branches)
+- [11. Contributing & License](#11-contributing--license)
+
+## 1. Project Overview
+
+### 1.1 What it is
+
+**openclaw-java-sdk** is a pure Java library for Java developers to integrate with the OpenClaw Gateway over all of its external communication surfaces: HTTP Chat Completions / Embeddings / Responses / Webhook / Tools invoke, a WebSocket control plane for bidirectional streaming, and the local `openclaw` CLI.
+
+### 1.2 What it is not
+
+- Not the OpenClaw Gateway itself, and not an LLM inference engine.
+- No Spring, Servlet or ORM dependencies.
+- No promises about JDK/framework combinations that are not part of the compatibility matrix.
+
+### 1.3 Typical scenarios
+
+| Scenario | Recommended entry | Result |
+|---|---|---|
+| Plain Java chat (blocking) | `client.chatCompletion(...)` | OpenAI-compatible Chat Completions response |
+| Streaming chat / tool calls | `client.chatCompletionStream(request)` | SSE stream with delta / tool-call / completion callbacks |
+| Embedding generation | `client.createEmbeddings(request)` | Embeddings response |
+| Webhook-triggered agent | `client.hook(...)` / `client.wake(...)` | HTTP webhook invocation |
+| Bidirectional realtime chat | `client.connect()` + `client.chatSend(...)` | WebSocket streaming replies |
+| Local CLI operations | `client.cli().version()` / `gatewayHealth(...)` | Local `openclaw` subcommand execution |
+
+<a id="2-features--status"></a>
+## 2. Features & Status
+
+| Capability | Status | Notes |
+|---|:---:|---|
+| HTTP Webhook | Available | `hook()` / `wake()`; custom mapping webhooks |
+| Chat Completions | Available | `chatCompletion(...)` blocking + `chatCompletionStream(...)` SSE |
+| Models | Available | `listModels()` |
+| Embeddings | Available | `createEmbeddings(request)` |
+| Responses | Available | `createResponse(request)` |
+| Tools invoke | Available | `toolInvoke(request)` / `toolsInvoke()` |
+| WebSocket control plane | Available | `connect()` / `chatSend()` / `sessionsSend()`; frame protocol under `ws.protocol` |
+| Local CLI | Available | `cli()` facade over 40+ `openclaw` subcommands with typed options |
+| Startup self-check | Available | Constructor-time HTTP health probe + `openclaw --version` probe (per-sub-system toggles) |
+
+<a id="3-requirements--compatibility"></a>
+## 3. Requirements & Compatibility
+
+| Component | Version | Notes |
+|---|---:|---|
+| JDK | 17+ | 1.0.x line baseline |
+| Maven | 3.0+ | Enforcer minimum |
+| OkHttp / okhttp-sse | 4.12.0 | HTTP + SSE transport |
+| Java-WebSocket | — | WebSocket transport |
+| Jackson databind | 2.17.x | JSON |
+| commons-exec | — | CLI subprocess execution |
+| SLF4J | 2.0.18 | Logging facade |
+
+Version-line matrix:
+
+| Version line | Branch | JDK | Version pattern | Purpose |
+|---|---|---:|---|---|
+| 1.0.x | `feature/2.0.x` (this branch) | 8 | `1.0.x.*` | Legacy projects, Boot 2.x starter line |
+| 2.0.x | `feature/2.0.x` | 17 | `2.0.x.*` | Main line (JDK 17) |
+| 3.0.x | `feature/3.0.x` | 21 | `3.0.x.*` | New projects |
+
+Dependency boundary: the SDK depends only on OkHttp, Jackson, Java-WebSocket, commons-exec and SLF4J. **No Spring dependency** — Spring Boot applications should use the companion `openclaw-spring-boot-starter`.
+
+<a id="4-architecture--modules"></a>
+## 4. Architecture & Modules
+
+```text
+[ Business Application ]
+        |
+        | openclaw-java-sdk
+        v
++------------------------------------------+
+| OpenClawClient (facade)                   |
+|  HTTP   /v1/chat/completions, /v1/models  |
+|         /v1/embeddings, /v1/responses,    |
+|         /tools/invoke, /hooks/*           |
+|  SSE    StreamingChatResponse             |
+|  WS     connect / chatSend / sessionsSend |
+|  CLI    local `openclaw` subprocess       |
++------------------------------------------+
+        |
+        v
+[ OpenClaw Gateway ] -> [ LLM / Agents / Tools ]
+```
+
+Package layout:
+
+| Package | Responsibility |
+|---|---|
+| `io.github.easy4j.openclaw` | Facade `OpenClawClient` + config classes |
+| `io.github.easy4j.openclaw.api` | HTTP sub-clients (chat / embeddings / responses / webhook / tools) |
+| `io.github.easy4j.openclaw.api.model` | DTOs (`ChatRequest`, `ChatResponse`, `Tools`, `HookRequest`, ...) |
+| `io.github.easy4j.openclaw.api.sse` | SSE streaming (`StreamingChatResponse`, `SseStreamReader`, `SseEventAccumulator`) |
+| `io.github.easy4j.openclaw.cli` | CLI facade (`OpenClawCli` / `OpenClawCliExecutor`) |
+| `io.github.easy4j.openclaw.cli.opts` | Typed options for 60+ CLI subcommands |
+| `io.github.easy4j.openclaw.cli.availability` | CLI availability probing |
+| `io.github.easy4j.openclaw.exception` | Exception hierarchy |
+| `io.github.easy4j.openclaw.ws` | WebSocket client + frame protocol (params / results) |
+
+<a id="5-installation"></a>
+## 5. Installation
+
+Maven:
+
+```xml
+<dependency>
+    <groupId>io.github.easy4j</groupId>
+    <artifactId>openclaw-java-sdk</artifactId>
+    <version>2.0.x.x.20260630-SNAPSHOT</version>
+</dependency>
+```
+
+Gradle:
+
+```groovy
+implementation 'io.github.easy4j:openclaw-java-sdk:2.0.x.x.20260630-SNAPSHOT'
+```
+
+Snapshot builds require an enabled snapshot repository (Aliyun Maven snapshot repository per `distributionManagement` in `pom.xml`).
+
+<a id="6-quick-start"></a>
+## 6. Quick Start
 
 ```java
-import io.github.hiwepy.openclaw.*;
-import io.github.hiwepy.openclaw.api.model.*;
+import io.github.easy4j.openclaw.OpenClawClient;
+import io.github.easy4j.openclaw.OpenClawClientConfig;
+import io.github.easy4j.openclaw.api.model.ChatMessage;
+import io.github.easy4j.openclaw.api.model.ChatResponse;
+import java.util.List;
 
-// 1. 配置
+// 1. Configure
 OpenClawClientConfig config = new OpenClawClientConfig();
-config.setGatewayBaseUrl("http://localhost:18789");
-config.setGatewayAuthToken("your-gateway-token");
+config.getHttp().setGatewayBaseUrl("http://localhost:18789");
+config.getHttp().setGatewayAuthToken("your-gateway-token");
 
-// 2. 创建客户端
+// 2. Create the client (constructor runs the startup self-check)
 OpenClawClient client = new OpenClawClient(config);
 
-// 3. 调用（简洁写法）
+// 3. Chat
 ChatResponse resp = client.chatCompletion(
-    "openclaw/default", "gpt-4o",
-    List.of(ChatMessage.ofUser("你好"))
-);
+        "openclaw/default", "gpt-4o",
+        List.of(ChatMessage.ofUser("Hello")));
 System.out.println(resp.getChoices().get(0).getMessage().getContent());
 
-// 4. 释放
+// 4. Release
 client.close();
 ```
 
----
+**Expected result**: with the default config the HTTP subsystem is enabled but `startupCheckEnabled` is `false`, so no blocking probe runs at startup; the call returns the agent's reply text. When startup checks are enabled, INFO logs `OpenClaw HTTP health check passed: ...` / `OpenClaw CLI ready: ...` appear, and a failing probe either throws `IllegalStateException` (fail-fast) or logs a WARN (non-fail-fast).
 
-## 认证与能力边界
+<a id="7-configuration"></a>
+## 7. Configuration
 
-SDK 对不同 API 端点使用**不同的凭证**：
+Configuration is object-based (no Spring properties in this library). Three config classes:
 
-| 端点 | 使用的凭证 | 配置字段 |
-|------|-----------|----------|
-| `POST /hooks/*` (Webhook) | Hooks 令牌 | `hooksToken`（或兼容 `apiKey`） |
-| `POST /v1/*` (OpenAI 兼容) | Gateway 控制面凭证 | `gatewayAuthToken` → `gatewayAuthPassword` → `hooksToken` |
-| `POST /tools/invoke` | Gateway 控制面凭证 | 同上 |
-| WebSocket | Gateway 控制面凭证 | `gatewayAuthToken` / `gatewayAuthPassword` |
+| Config class | Responsibility |
+|---|---|
+| `OpenClawClientConfig` | Aggregates `http` + `cli` sub-configs |
+| `OpenClawHttpClientConfig` | Gateway HTTP/WS settings |
+| `OpenClawCliConfig` | Local CLI settings |
 
-凭证解析优先级（控制面 API）：`gatewayAuthToken` > `gatewayAuthPassword` > `hooksToken` > `apiKey`。
+`OpenClawHttpClientConfig` properties:
 
-| 配置字段 | 含义 | 用于 |
-|----------|------|------|
-| `gatewayAuthToken` | 对应 `gateway.auth.token` 或 `OPENCLAW_GATEWAY_TOKEN` | 控制面 HTTP + WS 鉴权 |
-| `gatewayAuthPassword` | 对应 `gateway.auth.password` | 密码模式控制面鉴权 |
-| `hooksToken` | 对应 `hooks.token` | Webhook `Authorization: Bearer` |
-| `apiKey`（兼容） | 未设 `hooksToken` 时的兜底 | 同 Webhook |
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `enabled` | boolean | `true` | Enable the HTTP sub-system |
+| `startupCheckEnabled` | boolean | `false` | Probe the gateway health endpoint at startup |
+| `failFastOnUnavailable` | boolean | `false` | Fail construction when the probe fails |
+| `gatewayBaseUrl` | String | `http://localhost:18789` | Gateway base URL |
+| `gatewayAuthToken` | String | — | Control-plane token |
+| `gatewayAuthPassword` | String | — | Control-plane password mode |
+| `hooksToken` | String | — | Webhook auth token |
+| `hooksPath` | String | `/hooks` | Webhook base path |
+| `hooksUseXOpenclawTokenHeader` | boolean | `false` | Send the hook token via `x-openclaw-token` header |
+| `verifySsl` | boolean | `true` | Verify HTTPS certificates |
+| `connectTimeoutMillis` | int | `15000` | Connect timeout (ms) |
+| `readTimeoutMillis` | int | `120000` | Read timeout (ms) |
 
----
+`OpenClawCliConfig` properties:
 
-## OpenAI 兼容 API（`/v1/*`）
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `enabled` | boolean | `true` | Enable the CLI sub-system |
+| `startupCheckEnabled` | boolean | `false` | Probe `openclaw --version` at startup |
+| `failFastOnUnavailable` | boolean | `false` | Fail construction when the probe fails |
+| `executable` | String | `openclaw` | Executable name or absolute path |
+| `timeout` | int | `300` | CLI command timeout (seconds) |
+| `probeTimeoutSeconds` | int | `5` | Startup probe timeout (seconds) |
+| `workingDirectory` | String | — | Subprocess working directory |
+| `maxConcurrentExecutions` | int | `0` | Max concurrent subprocesses (0 = CPU cores) |
 
-对应文档：[OpenAI Chat Completions](https://docs.openclaw.ai/gateway/openai-http-api)
+Custom request headers via `OpenClawHeaders.Builder`:
 
-### Agent 与 Model 字段约定
+| Header | Constant | Purpose |
+|---|---|---|
+| `x-openclaw-model` | `X_OPENCLAW_MODEL` | Override backend model |
+| `x-openclaw-agent-id` | `X_OPENCLAW_AGENT_ID` | Override agent |
+| `x-openclaw-session-key` | `X_OPENCLAW_SESSION_KEY` | Explicit session routing |
+| `x-openclaw-message-channel` | `X_OPENCLAW_MESSAGE_CHANNEL` | Entry channel context |
+| `x-openclaw-scopes` | `X_OPENCLAW_SCOPES` | Scope claims |
 
-SDK 提供了清晰的 `agent` / `model` 分离：
+Auth priority: webhook (`/hooks/*`) uses `hooksToken`; control plane (`/v1/*`, `/tools/*`, WebSocket) uses `gatewayAuthToken` → `gatewayAuthPassword` → `hooksToken` → none.
 
-| 字段 | 含义 | 示例 |
-|------|------|------|
-| `agent` | Agent 目标路由 | `"openclaw/default"`、`"openclaw/research"` |
-| `model` | 后端 LLM 模型 | `"gpt-4o"`、`"claude-3-opus"` |
+<a id="8-core-usage"></a>
+## 8. Core Usage
 
-**优先级**：
-1. `agent` 字段 → HTTP body 的 `model`（用于路由）
-2. `model` 字段（若非 Agent 路由）→ `x-openclaw-model` header（用于覆盖后端模型）
-
-### Chat Completions（非流式）
-
-```java
-import io.github.hiwepy.openclaw.api.model.*;
-
-// 方式1：Builder（推荐）
-ChatRequest req = ChatRequest.builder()
-    .agent("openclaw/default")
-    .model("gpt-4o")
-    .messages(List.of(
-        ChatMessage.ofSystem("你是一个有用的助手"),
-        ChatMessage.ofUser("今天天气怎么样？")
-    ))
-    .build();
-
-// 方式2：便捷方法（最简洁）
-ChatResponse resp = client.chatCompletion(
-    "openclaw/default", "gpt-4o",
-    List.of(ChatMessage.ofUser("今天天气怎么样？"))
-);
-
-// 方式3：setter
-ChatRequest req = new ChatRequest();
-req.setAgent("openclaw/default");
-req.setModel("gpt-4o");
-req.setMessages(List.of(ChatMessage.ofUser("你好")));
-ChatResponse resp = client.chatCompletion(req);
-String answer = resp.getChoices().get(0).getMessage().getContent();
-```
-
-### Chat Completions（流式 SSE）
+### 8.1 Streaming chat with tool calls
 
 ```java
-import io.github.hiwepy.openclaw.api.sse.StreamingChatResponse;
-
 ChatRequest req = ChatRequest.builder()
-    .agent("openclaw/default")
-    .model("gpt-4o")
-    .messages(List.of(ChatMessage.ofUser("写一首关于春天的诗")))
-    .build();
+        .agent("openclaw/default")
+        .messages(List.of(ChatMessage.ofUser("What's the weather in Beijing?")))
+        .tools(List.of(Tools.function("get_weather", "Get weather")
+                .param("city", "string", "City name", true).build()))
+        .toolChoice("auto")
+        .build();
 
-// 方式1：链式回调（推荐）
-StreamingChatResponse stream = client.chatCompletionStream(req);
-stream.onDelta(delta -> System.out.print(delta))       // 增量文本
-      .onChunk(chunk -> System.out.println(chunk))    // 原始 chunk
-      .onComplete(text -> System.out.println("\n完成")) // 流结束
-      .onError(error -> error.printStackTrace());     // 错误处理
-
-// 等待完整结果
-ChatChunk result = stream.get();
-
-// 方式2：Builder 模式
-StreamingChatResponse stream2 = client.chatCompletionStream(req,
-    StreamingChatResponse.builder()
+client.chatCompletionStream(req)
         .onDelta(delta -> System.out.print(delta))
-        .onComplete(text -> System.out.println("\n完成"))
-        .build()
-);
-ChatChunk finalChunk = stream2.get();
+        .onToolCall(toolCalls -> toolCalls.forEach(
+                tc -> System.out.println(tc.getFunction().getName())))
+        .onComplete(text -> System.out.println("\n[done]"))
+        .onError(Throwable::printStackTrace);
 ```
 
-### 流式工具调用
+### 8.2 WebSocket streaming conversation
 
 ```java
-// 定义客户端工具
-List<Map<String, Object>> tools = List.of(
-    Tools.function("get_weather", "获取指定城市的天气")
-        .param("city", "string", "城市名称", true)
-        .build()
-);
-
-ChatRequest req = ChatRequest.builder()
-    .agent("openclaw/default")
-    .model("gpt-4o")
-    .messages(List.of(ChatMessage.ofUser("北京今天天气如何？")))
-    .tools(tools)
-    .toolChoice("auto")
-    .build();
-
-// 流式调用
-StreamingChatResponse stream = client.chatCompletionStream(req);
-stream.onDelta(delta -> System.out.print(delta))
-      .onToolCall(toolCalls -> {
-          // 处理工具调用
-          for (ChatMessage.ToolCall tc : toolCalls) {
-              String fnName = tc.getFunction().getName();
-              String args = tc.getFunction().getArguments();
-              // 执行工具...
-          }
-      })
-      .onComplete(text -> System.out.println("\n完成"))
-      .onError(error -> error.printStackTrace());
-```
-
-        StreamingChatResponse stream = client.chatCompletionStream(req);
-
-// 处理工具调用
-for(
-        ChatMessage.ToolCall call :Tools.
-
-        extractToolCalls(result.getChoices().
-
-        get(0).
-
-        getMessage())){
-        Map<String, Object> args = Tools.parseArgsAsMap(call);
-        String city = (String) args.get("city");
-
-        // 执行工具...
-        String weatherResult = executeGetWeather(city);
-
-        // 构建工具结果消息
-        ChatMessage toolResult = Tools.toolResult(call.getId(), weatherResult);
-
-        // 继续对话（包含工具结果）
-        List<ChatMessage> messagesWithResult = new java.util.ArrayList<>(req.getMessages());
-    messagesWithResult.
-
-        add(result.getChoices().
-
-        get(0).
-
-        getMessage()); // assistant tool call
-        messagesWithResult.
-
-        add(toolResult); // tool result
-
-        ChatRequest followUp = ChatRequest.builder()
-                .agent("openclaw/default")
-                .model("gpt-4o")
-                .messages(messagesWithResult)
-                .build();
-
-        ChatResponse finalResp = client.chatCompletion(followUp);
-}
-```
-
-### 获取模型列表
-
-```java
-ModelsResponse models = client.listModels();
-for (ModelsResponse.ModelData m : models.getData()) {
-    System.out.println(m.getId());  // openclaw, openclaw/default, openclaw/<agentId>
-}
-
-// 获取单个模型（自动 URL 编码）
-ModelsResponse.ModelData model = client.openai().getModel("openclaw/default");
-```
-
-### Embeddings
-
-```java
-EmbeddingsRequest req = EmbeddingsRequest.builder()
-    .agent("openclaw/default")
-    .model("text-embedding-3-small")  // 指定嵌入模型
-    .input(List.of("hello", "world"))
-    .build();
-
-EmbeddingsResponse resp = client.createEmbeddings(req);
-```
-
-### 会话行为
-
-默认每次请求无状态（新会话 key）。复用会话的两种方式：
-
-```java
-// 方式 1：通过 user 字段派生稳定 session key
-ChatResponse resp = client.chatCompletion(
-    "openclaw/default", "gpt-4o", "conv:my-conversation-id",
-    List.of(ChatMessage.ofUser("继续之前的讨论"))
-);
-
-// 方式 2：通过 x-openclaw-session-key 显式控制
-Map<String, String> headers = OpenClawHeaders.builder()
-    .sessionKey("my-explicit-session-key")
-    .build();
-```
-
----
-
-## OpenResponses API（`/v1/responses`）
-
-对应文档：[OpenResponses API](https://docs.openclaw.ai/gateway/openresponses-http-api)
-
-### 非流式
-
-```java
-ResponseRequest req = ResponseRequest.builder()
-    .agent("openclaw/default")
-    .model("gpt-4o")
-    .input("分析今天的任务")
-    .build();
-
-ResponseResult result = client.createResponse(req);
-System.out.println("状态: " + result.getStatus());
-```
-
-### Item-based 输入（图片 + 文件）
-
-```java
-ResponseRequest req = ResponseRequest.builder()
-    .agent("openclaw/default")
-    .input(List.of(
-        ResponseRequest.InputItem.message()
-            .role("system")
-            .content("你是一个图片分析助手")
-            .build(),
-        ResponseRequest.InputItem.imageUrl("https://example.com/photo.jpg")
-            .build(),
-        ResponseRequest.InputItem.message()
-            .role("user")
-            .content("描述这张图片的内容")
-            .build()
-    ))
-    .build();
-
-ResponseResult result = client.createResponse(req);
-```
-
-### 流式
-
-```java
-ResponseRequest req = ResponseRequest.builder()
-    .agent("openclaw/default")
-    .input("写一个项目计划")
-    .build();
-
-StreamingChatResponse stream = client.chatCompletionStream(req);
-stream.onDelta(delta -> System.out.print(delta));
-ChatChunk result = stream.get();
-```
-
----
-
-## Tools Invoke API（`/tools/invoke`）
-
-对应文档：[Tools Invoke API](https://docs.openclaw.ai/gateway/tools-invoke-http-api)
-
-```java
-ToolInvokeRequest req = ToolInvokeRequest.builder()
-    .tool("sessions_list")
-    .action("json")
-    .args(Map.of())
-    .build();
-
-ToolInvokeResult result = client.toolInvoke(req);
-if (Boolean.TRUE.equals(result.getOk())) {
-    System.out.println("结果: " + result.getResult());
-} else {
-    System.err.println("错误: " + result.getError().getMessage());
-}
-```
-
----
-
-## WebSocket 控制面
-
-对应文档：[Gateway Protocol](https://docs.openclaw.ai/gateway/protocol)
-
-```java
-import io.github.hiwepy.openclaw.ws.*;
-import io.github.hiwepy.openclaw.ws.protocol.*;
-
-// 连接并握手
 HelloOk hello = client.connect();
-System.out.println("协议版本: " + hello.getProtocol());
-
-// 流式对话
-client.chatSend("你好", new ChatStreamHandler() {
-    @Override
-    public void onDelta(String text) { System.out.print(text); }
-    @Override
-    public void onComplete(String fullText) { System.out.println("\n[完成]"); }
-    @Override
-    public void onError(String error) { System.err.println("错误: " + error); }
+client.chatSend("Hello", new ChatStreamHandler() {
+    @Override public void onDelta(String text) { System.out.print(text); }
+    @Override public void onComplete(String fullText) { System.out.println(); }
+    @Override public void onError(String error) { System.err.println(error); }
 });
-
-// 指定会话的流式对话
-client.chatSend("my-session", "继续讨论", handler);
-
-// 非流式 RPC：向指定会话发消息
-SessionsSendResult sendResult = client.sessionsSend("my-session", "你好");
 ```
 
----
-
-## HTTP Webhook（`/hooks/*`）
+### 8.3 Local CLI
 
 ```java
-InvokeAgentRequest req = InvokeAgentRequest.builder()
-    .message("总结今天的任务")
-    .build();
+OpenClawCliResult result = client.cli().version();        // openclaw --version
+System.out.println(result.getStdout());
 
-// 一次性调用
-InvokeAgentResult result = client.agentOneShot(req);
-
-// 稳定多轮会话
-InvokeAgentResult result2 = client.agentWithStableSession(
-    "agent-id", userId, req);
-
-// 注入系统事件
-client.wake("提醒：3点有会议", "now");
-
-// 自定义映射 webhook
-client.hook("my-webhook", Map.of("key", "value"));
+client.cli().gatewayHealth(                                // openclaw gateway health
+        GatewayRpcOptions.builder().url("ws://127.0.0.1:18789").build());
 ```
 
-### Hook `sessionKey` 约定
-
-| 场景 | sessionKey | SDK 用法 |
-|------|------------|----------|
-| 一次性、无 peer | 不传 → Gateway 生成 `hook:<uuid>` | `client.agentOneShot(request)` |
-| 一次性、有 peer | `hook:<peerId>:<uuid>` | `client.agentOneShotForPeer(peerId, request)` |
-| 固定多轮 | `hook:<agentId>:<peerId>` | `client.agentWithStableSession(agentId, peerId, request)` |
-
-Gateway 建议：`hooks.allowRequestSessionKey: true`，`hooks.allowedSessionKeyPrefixes: ["hook:"]`。
-
----
-
-## OpenClaw 自定义请求头
-
-通过 [`OpenClawHeaders`](src/main/java/io/github/hiwepy/openclaw/api/OpenClawHeaders.java) 构建器创建自定义头：
-
-```java
-Map<String, String> headers = OpenClawHeaders.builder()
-    .model("gpt-4o")                              // x-openclaw-model
-    .agentId("research")                          // x-openclaw-agent-id
-    .sessionKey("my-session")                     // x-openclaw-session-key
-    .messageChannel("slack")                      // x-openclaw-message-channel
-    .scopes("operator.read,operator.write")       // x-openclaw-scopes
-    .build();
-
-// 用于任何 HTTP API
-client.chatCompletion(req, headers);
-```
-
-| 头部 | 常量 | 用途 |
-|------|------|------|
-| `x-openclaw-model` | `OpenClawHeaders.X_OPENCLAW_MODEL` | 覆盖后端模型 |
-| `x-openclaw-agent-id` | `OpenClawHeaders.X_OPENCLAW_AGENT_ID` | 兼容性 agent 覆盖 |
-| `x-openclaw-session-key` | `OpenClawHeaders.X_OPENCLAW_SESSION_KEY` | 显式会话路由 |
-| `x-openclaw-message-channel` | `OpenClawHeaders.X_OPENCLAW_MESSAGE_CHANNEL` | 合成入口通道上下文 |
-| `x-openclaw-scopes` | `OpenClawHeaders.X_OPENCLAW_SCOPES` | 权限范围声明 |
-
----
-
-## 发布与 JDK
-
-| 分支 | 版本 | JDK | 用途 |
-|------|------|-----|------|
-| `feature/1.0.x` | `1.0.x.20260630-SNAPSHOT` | 1.8 | 兼容老项目、Spring Boot 2.x starter |
-| `feature/2.0.x` | `2.0.x.20260630-SNAPSHOT` | 17 | 主流线、Spring Boot 3.x starter |
-| `feature/3.0.x` | `3.0.x.20260630-SNAPSHOT` | 21 | 新项目、Spring Boot 4.x starter |
-| `main` | `2.0.x.20260630-SNAPSHOT` | 17 | 默认分支，与 `feature/2.0.x` 保持一致 |
-
-- 各分支的最低 JDK 要求由 `pom.xml` 中的 `<java.version>` 与 `maven-enforcer-plugin` 共同决定。
-- 发布快照/正式版（在对应分支下，使用对应 JDK）：
+<a id="9-testing--build"></a>
+## 9. Testing & Build
 
 ```bash
-mvn clean deploy -DskipTests
+mvn clean verify
 ```
 
-- 发布 [openclaw-spring-boot-starter](../openclaw-spring-boot-starter) 各 Spring Boot 线时：
+- Unit tests cover config defaults, CLI args/execution, WS protocol, HTTP sub-clients and constructor contracts (23 test sources: 22 test classes + 1 mock CLI helper under `src/test`).
+- JaCoCo runs `prepare-agent`, `report` and `check` on the `verify` phase with a **90% line-coverage** rule (`haltOnFailure=false`).
+- Release packaging (`mvn -Prelease deploy`) attaches sources and javadoc jars, GPG-signs artifacts and is wired for Sonatype Central Publishing; plain `mvn deploy` routes SNAPSHOT/release artifacts to the Aliyun Maven repository per `distributionManagement`.
 
-```bash
-./release-starter-versions.sh openclaw-spring-boot-starter 3.3.x 20251227
-```
+<a id="10-versioning--branches"></a>
+## 10. Versioning & Branches
 
-执行前请确认该分支 `pom.xml` 中 **`openclaw-java-sdk.version` 与已部署的 SDK 版本一致**。
+| Branch | Version pattern | JDK | Maintenance policy |
+|---|---|---|---|
+| `feature/1.0.x` (this branch) | `1.0.x.*` | 8 | Compatibility fixes and JDK-8-safe dependency upgrades only |
+| `feature/2.0.x` | `2.0.x.*` | 17 | Main development line |
+| `feature/3.0.x` | `3.0.x.*` | 21 | New projects |
+
+<a id="11-contributing--license"></a>
+## 11. Contributing & License
+
+Run `mvn clean verify` before opening a pull request and describe compatibility, testing, documentation and migration impact. This project is licensed under the [Apache License 2.0](LICENSE).
