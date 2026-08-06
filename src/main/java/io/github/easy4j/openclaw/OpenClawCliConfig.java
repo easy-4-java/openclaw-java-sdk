@@ -8,7 +8,7 @@ import lombok.Data;
  * 涵盖本地 {@code openclaw} 可执行文件路径、超时、并发、工作目录等所有 CLI 运行时设置。
  * </p>
  *
- * @author wandl
+ * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
  */
 @Data
