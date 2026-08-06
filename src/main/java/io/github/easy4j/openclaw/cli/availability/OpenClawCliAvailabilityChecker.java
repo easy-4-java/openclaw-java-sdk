@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * 探测本机 {@code openclaw} 是否已安装且可执行 {@code openclaw --version}。
  *
- * @author wandl
+ * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
  */
 public class OpenClawCliAvailabilityChecker {

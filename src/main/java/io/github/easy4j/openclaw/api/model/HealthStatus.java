@@ -12,7 +12,7 @@ import lombok.Data;
  * 不会破坏解析。
  * </p>
  *
- * @author wandl
+ * @author [@Loong Wan](https://github.com/loong10k)
  * @since 2.0.0
  */
 @Data
