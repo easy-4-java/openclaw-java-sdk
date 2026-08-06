@@ -2,6 +2,8 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
+[![Java](https://img.shields.io/badge/Java-21-orange)](https://github.com/easy-4-java/openclaw-java-sdk) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
+
 Pure Java SDK — talks to the OpenClaw Gateway through independent HTTP, SSE, WebSocket and local CLI channels
 [简体中文](./README.zh-CN.md)
 
