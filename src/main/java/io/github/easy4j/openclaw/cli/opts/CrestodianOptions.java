@@ -7,21 +7,24 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw crestodian}：打开 ring-zero 设置与修复助手。
+ * {@code openclaw crestodian}: ring-zero repair.
  * <p>
- * 在 openclaw 源码（{@code src/cli/program/register.crestodian.ts}）中注册为独立助手命令，
- * 目录策略为 {@code bypassConfigGuard, loadPlugins "never", ensureCliPath false}。
+ * openclaw ({@code src/cli/program/register.crestodian.ts}),
+ * directory {@code bypassConfigGuard, loadPlugins "never", ensureCliPath false}.
  * </p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/crestodian">crestodian CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class CrestodianOptions implements CliSubArgs {
 
-    /** {@code -m, --message}：运行一次 Crestodian 请求。 */
+ /** {@code -m, --message}: Crestodian . */
     private final String message;
-    /** {@code --yes}：批准本次请求的持久化配置写入。 */
+ /** {@code --yes}:. */
     private final boolean yes;
-    /** {@code --json}：以 JSON 输出启动概览。 */
+ /** {@code --json}: JSON . */
     private final boolean json;
 
     private CrestodianOptions(Builder b) {
@@ -31,7 +34,7 @@ public final class CrestodianOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -54,22 +57,22 @@ public final class CrestodianOptions implements CliSubArgs {
     }
 
     /**
-     * {@link CrestodianOptions} 构建器。
+ * {@link CrestodianOptions} builder.
      */
     public static final class Builder {
         private String message;
         private boolean yes;
         private boolean json;
 
-        /** {@code -m, --message}：运行一次 Crestodian 请求。 */
+ /** {@code -m, --message}: Crestodian . */
         public Builder message(String message) { this.message = message; return this; }
-        /** {@code --yes}：批准持久化配置写入。 */
+ /** {@code --yes}:. */
         public Builder yes(boolean yes) { this.yes = yes; return this; }
-        /** {@code --json}：以 JSON 输出启动概览。 */
+ /** {@code --json}: JSON . */
         public Builder json(boolean json) { this.json = json; return this; }
 
         /**
-         * @return 不可变 {@link CrestodianOptions}
+ * @return {@link CrestodianOptions}
          */
         public CrestodianOptions build() {
             return new CrestodianOptions(this);

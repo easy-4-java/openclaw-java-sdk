@@ -6,26 +6,29 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw tools}：根帮助别名（root help alias），无顶层 CLI 选项。
+ * {@code openclaw tools}:help(root help alias), CLI .
  * <p>
- * 在 openclaw 源码（{@code src/cli/run-main-policy.ts}）中，{@code tools} 列在
- * {@code ROOT_HELP_ALIASES} 集合中，{@code openclaw tools --help} 会触发根帮助快速路径。
- * 顶层不存在 Commander {@code .option(...)} 定义。
+ * openclaw ({@code src/cli/run-main-policy.ts}),{@code tools}
+ * {@code ROOT_HELP_ALIASES} ,{@code openclaw tools --help} help.
+ * Commander {@code .option(...)} .
  * </p>
  * <p>
- * 注意：带选项的「tools」语义位于 {@code mcp tools} 子命令（更新 MCP 服务器工具 include/exclude 过滤器），
- * 应使用 {@link McpOptions} 封装；本类仅作为顶层 {@code tools} 占位。
+ * :"tools" {@code mcp tools} subcommand( MCP include/exclude ),
+ * {@link McpOptions} Wraps;only {@code tools} .
  * </p>
  *
  * @see McpOptions
  * @see <a href="https://docs.openclaw.ai/cli/tools">tools CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ToolsOptions implements CliSubArgs {
 
     /**
-     * 无选项实例：对应裸 {@code openclaw tools}（触发根帮助）。
+ * :Corresponds to {@code openclaw tools}(help).
      *
-     * @return 共享的空参数实例
+ * @return
      */
     public static ToolsOptions empty() {
         return INSTANCE;
@@ -39,7 +42,7 @@ public final class ToolsOptions implements CliSubArgs {
     /**
      * {@inheritDoc}
      *
-     * @return 永远返回空列表（该命令根无任何子命令 token 或选项）
+ * @return (subcommand token )
      */
     @Override
     public List<String> toSubcommandArguments() {

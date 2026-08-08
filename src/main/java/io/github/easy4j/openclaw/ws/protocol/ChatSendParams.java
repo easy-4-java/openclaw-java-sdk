@@ -6,8 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * {@code chat.send} RPC 参数。
- * <p>与 {@code src/gateway/server-methods/chat.ts} 中 {@code chat.send} handler 对齐。</p>
+ * {@code chat.send} RPC .
+ * <p> {@code src/gateway/server-methods/chat.ts} {@code chat.send} handler aligned.</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChatSendParams {
@@ -39,7 +42,7 @@ public class ChatSendParams {
     public Integer getTimeoutMs() { return timeoutMs; }
 
     /**
-     * 构建为 RPC params Map。
+ * Builds as RPC params Map.
      */
     public Map<String, Object> toParamsMap() {
         Map<String, Object> m = new LinkedHashMap<>();

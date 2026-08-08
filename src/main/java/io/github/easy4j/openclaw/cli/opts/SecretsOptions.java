@@ -8,92 +8,95 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw secrets}：管理 SecretRef、刷新网关运行时密钥快照，并对配置做审计与（交互）迁移计划应用。
- * <p>{@code reload} 走 {@code secrets.reload} RPC；{@code audit --check} 用于 CI 门槛；含 exec 提供方的计划须在 dry-run 与写入阶段都带 {@code --allow-exec}。</p>
+ * {@code openclaw secrets}: SecretRef,Gatewaysecret,migrate.
+ * <p>{@code reload} {@code secrets.reload} RPC;{@code audit --check} Used for CI ; exec Provides dry-run {@code --allow-exec}.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/secrets">secrets CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class SecretsOptions implements CliSubArgs {
 
     /**
-     * secrets 子命令：重载运行时、只读审计、交互配置或执行已保存计划。
+ * secrets subcommand:,.
      */
     public enum Mode {
-        /** {@code secrets reload}：重新解析 SecretRef 并在全量成功时原子切换运行时快照。 */
+ /** {@code secrets reload}: SecretRef . */
         RELOAD,
-        /** {@code secrets audit}：扫描明文、未解析引用与影子配置等。 */
+ /** {@code secrets audit}:,. */
         AUDIT,
-        /** {@code secrets configure}：TTY 交互生成计划并可选预检后应用。 */
+ /** {@code secrets configure}:TTY Optional. */
         CONFIGURE,
-        /** {@code secrets apply}：对既有 JSON 计划做 dry-run 或写入并清理残留明文。 */
+ /** {@code secrets apply}: JSON dry-run . */
         APPLY
     }
 
-    /** reload / audit / configure / apply 之一。 */
+ /** reload / audit / configure / apply . */
     private final Mode mode;
     /**
-     * reload：{@code --url} 网关 WebSocket 地址（共享 gateway 查询选项语义）。
+ * reload:{@code --url} Gateway WebSocket ( gateway ).
      */
     private final String gatewayUrl;
     /**
-     * reload：{@code --token} 网关 token（与文档其它 gateway RPC 命令一致）。
+ * reload:{@code --token} Gateway token(with documentation gateway RPC ).
      */
     private final String gatewayToken;
     /**
-     * reload：{@code --timeout} RPC 超时。
+ * reload:{@code --timeout} RPC timeout.
      */
     private final String timeout;
     /**
-     * 各子命令：{@code --json} 结构化输出（configure 在 TTY 前提下仍可打印计划 JSON）。
+ * subcommand:{@code --json} (configure TTY JSON).
      */
     private final boolean json;
     /**
-     * audit：{@code --check} 发现项时以非零退出（与未解析引用优先级见文档）。
+ * audit:{@code --check} (PrioritySeedocumentation).
      */
     private final boolean auditCheck;
     /**
-     * configure / apply：{@code --allow-exec} 允许执行类 SecretRef 提供方在预检或写入时运行命令。
+ * configure / apply:{@code --allow-exec} SecretRef Provides.
      */
     private final boolean allowExec;
     /**
-     * configure：{@code --plan-out} 将计划写入路径以便后续 {@code apply --from}。
+ * configure:{@code --plan-out} {@code apply --from}.
      */
     private final String planOut;
     /**
-     * configure：{@code --apply} 预检后直接应用（仍可能触发额外确认，除非配合 {@code --yes}）。
+ * configure:{@code --apply} ( {@code --yes}).
      */
     private final boolean configureApply;
     /**
-     * configure：{@code --yes} 跳过部分确认提示。
+ * configure:{@code --yes} skips.
      */
     private final boolean yes;
     /**
-     * configure：{@code --providers-only} 只配置 {@code secrets.providers}，不做凭据映射。
+ * configure:{@code --providers-only} {@code secrets.providers},map.
      */
     private final boolean providersOnly;
     /**
-     * configure：{@code --skip-provider-setup} 跳过提供方新增步骤，只做映射。
+ * configure:{@code --skip-provider-setup} skipsProvides,map.
      */
     private final boolean skipProviderSetup;
     /**
-     * configure：{@code --agent} 限定 {@code auth-profiles.json} 的发现与写入范围。
+ * configure:{@code --agent} {@code auth-profiles.json} .
      */
     private final String agent;
     /**
-     * apply：{@code --from} 计划文件路径。
+ * apply:{@code --from} .
      */
     private final String applyFrom;
     /**
-     * apply：{@code --dry-run} 只做校验与预检，不写文件；默认跳过 exec 探测除非 {@code --allow-exec}。
+ * apply:{@code --dry-run} ,;skips exec {@code --allow-exec}.
      */
     private final boolean dryRun;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private SecretsOptions(Builder b) {
         this.mode = b.mode;
@@ -115,7 +118,7 @@ public final class SecretsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -167,7 +170,7 @@ public final class SecretsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link SecretsOptions} 构建器。
+ * {@link SecretsOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.AUDIT;
@@ -302,7 +305,7 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * @param planPath apply：{@code --from}（计划路径）
+ * @param planPath apply:{@code --from}
          * @return {@code this}
          */
         public Builder apply(String planPath) {
@@ -339,9 +342,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -352,7 +355,7 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link SecretsOptions}
+ * @return {@link SecretsOptions}
          */
         public SecretsOptions build() {
             return new SecretsOptions(this);

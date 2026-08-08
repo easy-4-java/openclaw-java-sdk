@@ -11,23 +11,26 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenAI Chat Completions API 流式响应块。
+ * OpenAI Chat Completions API streaming.
  * <p>
- * 当 {@code stream: true} 时，Gateway 以 SSE 格式推送多个此类对象。
- * 每个 SSE 事件格式为 {@code data: <json>}，流以 {@code data: [DONE]} 结束。
+ * {@code stream: true} ,Gateway SSE object.
+ * SSE event {@code data: <json>},stream {@code data: [DONE]} .
  * </p>
  *
- * <h3>工具调用流式响应</h3>
- * <p>当 agent 决定调用工具时，流式响应包含：</p>
+ * <h3>tool callstreaming</h3>
+ * <p> agent ,streaming:</p>
  * <ol>
- *   <li>初始 assistant 角色 delta</li>
- *   <li>可选的 assistant 说明 delta</li>
- *   <li>一个或多个 {@code delta.toolCalls} 块，携带工具标识和参数片段</li>
- *   <li>最终块，{@code finishReason} 为 {@code "tool_calls"}</li>
+ * <li> assistant delta</li>
+ * <li>Optional assistant delta</li>
+ * <li> {@code delta.toolCalls} ,argument fragment</li>
+ * <li>,{@code finishReason} {@code "tool_calls"}</li>
  *   <li>{@code data: [DONE]}</li>
  * </ol>
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Setter
@@ -36,24 +39,24 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatChunk {
 
-    /** 响应唯一标识。 */
+ /** . */
     private String id;
 
-    /** 对象类型，固定为 {@code "chat.completion.chunk"}。 */
+ /** object, {@code "chat.completion.chunk"}. */
     private String object = OpenClawConstants.OBJECT_CHAT_COMPLETION_CHUNK;
 
-    /** 创建时间戳（Unix epoch 秒）。 */
+ /** (Unix epoch seconds). */
     private Long created;
 
-    /** 使用的 agent 目标标识。 */
+ /** agent . */
     private String model;
 
-    /** 选择列表（通常只有一个元素）。 */
+ /** . */
     private List<DeltaChoice> choices;
 
     /**
-     * 流式响应中的选择。
-     * <p>注意：流式响应中的消息使用 {@code delta} 字段而非 {@code message} 字段。</p>
+ * streaming.
+ * <p>:streamingmessage {@code delta} field {@code message} field.</p>
      */
     @Getter
     @Setter
@@ -64,30 +67,30 @@ public class ChatChunk {
         private Integer index;
 
         /**
-         * 增量消息内容。
-         * <p>包含角色、内容片段、工具调用增量等。</p>
+ * deltamessage.
+ * <p>,tool calldelta.</p>
          */
         private DeltaMessage delta;
 
         /**
-         * 完成原因（仅在最后一个块中非 null）。
+ * completion(only null).
          * <ul>
-         *   <li>{@code "stop"} - 正常完成</li>
-         *   <li>{@code "tool_calls"} - agent 请求调用客户端工具</li>
+ * <li>{@code "stop"} - completion</li>
+ * <li>{@code "tool_calls"} - agent </li>
          * </ul>
          */
         @JsonProperty("finish_reason")
         private String finishReason;
 
-        /** 判定是否为工具调用完成 */
+ /** tool callcompletion */
         public boolean isToolCalls() {
             return OpenClawConstants.FINISH_REASON_TOOL_CALLS.equals(finishReason);
         }
     }
 
     /**
-     * 增量消息。
-     * <p>包含角色、内容片段、工具调用增量等字段。</p>
+ * deltamessage.
+ * <p>,tool calldeltafield.</p>
      */
     @Getter
     @Setter
@@ -95,11 +98,11 @@ public class ChatChunk {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DeltaMessage {
-        /** 消息角色（仅第一个块中存在）。 */
+ /** message(only). */
         private String role;
-        /** 增量文本内容。 */
+ /** delta text. */
         private String content;
-        /** 工具调用增量（用于流式传递工具标识和参数片段）。 */
+ /** tool calldelta(Used forstreamingargument fragment). */
         @JsonProperty("tool_calls")
         private List<ChatMessage.ToolCall> toolCalls;
     }

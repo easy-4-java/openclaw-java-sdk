@@ -7,39 +7,42 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw exec-policy}：显示或同步请求的 exec policy 与主机审批。
+ * {@code openclaw exec-policy}: exec policy approval.
  * <p>
- * 支持 {@code show}、{@code preset <name>}、{@code set} 子命令。{@code set} 子命令要求至少指定
- * {@code --host}/{@code --security}/{@code --ask}/{@code --ask-fallback} 之一。
+ * {@code show},{@code preset <name>},{@code set} subcommand.{@code set} subcommand
+ * {@code --host}/{@code --security}/{@code --ask}/{@code --ask-fallback} .
  * </p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/exec-policy">exec-policy CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ExecPolicyOptions implements CliSubArgs {
 
-    /** 子命令模式。 */
+ /** subcommand. */
     public enum Mode {
-        /** {@code show}：显示当前 exec policy。 */
+ /** {@code show}: exec policy. */
         SHOW,
-        /** {@code preset <name>}：应用预设（yolo/cautious/deny-all）。 */
+ /** {@code preset <name>}:(yolo/cautious/deny-all). */
         PRESET,
-        /** {@code set}：显式设置 exec policy 字段。 */
+ /** {@code set}: exec policy field. */
         SET
     }
 
     /** SHOW / PRESET / SET。 */
     private final Mode mode;
-    /** preset：预设名（yolo/cautious/deny-all）。 */
+ /** preset:(yolo/cautious/deny-all). */
     private final String presetName;
-    /** set：{@code --host} exec host 目标（auto/sandbox/gateway/node）。 */
+ /** set:{@code --host} exec host (auto/sandbox/gateway/node). */
     private final String host;
-    /** set：{@code --security} exec security 模式（deny/allowlist/full）。 */
+ /** set:{@code --security} exec security (deny/allowlist/full). */
     private final String security;
-    /** set：{@code --ask} exec ask 模式（off/on-miss/always）。 */
+ /** set:{@code --ask} exec ask (off/on-miss/always). */
     private final String ask;
-    /** set：{@code --ask-fallback} 主机审批兜底（deny/allowlist/full）。 */
+ /** set:{@code --ask-fallback} approval(deny/allowlist/full). */
     private final String askFallback;
-    /** {@code --json}：JSON 输出。 */
+ /** {@code --json}:JSON . */
     private final boolean json;
 
     private ExecPolicyOptions(Builder b) {
@@ -53,7 +56,7 @@ public final class ExecPolicyOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}（默认 {@link Mode#SHOW}）
+ * @return {@link Builder}( {@link Mode#SHOW})
      */
     public static Builder builder() {
         return new Builder();
@@ -88,7 +91,7 @@ public final class ExecPolicyOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ExecPolicyOptions} 构建器。
+ * {@link ExecPolicyOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.SHOW;
@@ -99,27 +102,27 @@ public final class ExecPolicyOptions implements CliSubArgs {
         private String askFallback;
         private boolean json;
 
-        /** 切换为 {@code show} 子命令。 */
+ /** {@code show} subcommand. */
         public Builder show() { this.mode = Mode.SHOW; return this; }
-        /** 切换为 {@code preset <name>} 子命令。 */
+ /** {@code preset <name>} subcommand. */
         public Builder preset(String name) { this.mode = Mode.PRESET; this.presetName = name; return this; }
-        /** 切换为 {@code set} 子命令。 */
+ /** {@code set} subcommand. */
         public Builder set() { this.mode = Mode.SET; return this; }
-        /** 显式指定 {@link Mode}。 */
+ /** {@link Mode}. */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
-        /** set：{@code --host} exec host 目标（auto/sandbox/gateway/node）。 */
+ /** set:{@code --host} exec host (auto/sandbox/gateway/node). */
         public Builder host(String host) { this.host = host; return this; }
-        /** set：{@code --security} exec security 模式（deny/allowlist/full）。 */
+ /** set:{@code --security} exec security (deny/allowlist/full). */
         public Builder security(String security) { this.security = security; return this; }
-        /** set：{@code --ask} exec ask 模式（off/on-miss/always）。 */
+ /** set:{@code --ask} exec ask (off/on-miss/always). */
         public Builder ask(String ask) { this.ask = ask; return this; }
-        /** set：{@code --ask-fallback} 主机审批兜底（deny/allowlist/full）。 */
+ /** set:{@code --ask-fallback} approval(deny/allowlist/full). */
         public Builder askFallback(String askFallback) { this.askFallback = askFallback; return this; }
-        /** {@code --json}：JSON 输出。 */
+ /** {@code --json}:JSON . */
         public Builder json(boolean json) { this.json = json; return this; }
 
         /**
-         * @return 不可变 {@link ExecPolicyOptions}
+ * @return {@link ExecPolicyOptions}
          */
         public ExecPolicyOptions build() {
             return new ExecPolicyOptions(this);

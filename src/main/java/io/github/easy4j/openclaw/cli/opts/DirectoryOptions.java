@@ -8,15 +8,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw directory}：在支持目录能力的渠道上查询联系人、群组与「自己」信息，供 {@code openclaw message send --target} 等命令粘贴 ID。
- * <p>多渠道配置时通常必须指定 {@code --channel}；单渠道时可省略。默认人机输出为制表符分隔，脚本建议 {@code --json}。</p>
+ * {@code openclaw directory}:directory,"", {@code openclaw message send --target} ID.
+ * <p> {@code --channel};., {@code --json}.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/directory">directory CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class DirectoryOptions implements CliSubArgs {
 
     /**
-     * 目录子命令模式，决定生成的 token 序列（{@code self}、{@code peers list} 等）。
+ * directorysubcommand, token ({@code self},{@code peers list} ).
      */
     public enum Mode {
         /** {@code directory self} */
@@ -25,45 +28,45 @@ public final class DirectoryOptions implements CliSubArgs {
         PEERS_LIST,
         /** {@code directory groups list} */
         GROUPS_LIST,
-        /** {@code directory groups members}（需 {@link Builder#groupId}） */
+ /** {@code directory groups members}( {@link Builder#groupId}) */
         GROUPS_MEMBERS
     }
 
     /**
-     * 目录子模式：{@code self}、{@code peers list}、{@code groups list}、{@code groups members}（与文档示例一致）。
+ * directory:{@code self},{@code peers list},{@code groups list},{@code groups members}(with documentationexample).
      */
     private final Mode mode;
     /**
-     * {@code --channel}：渠道 id 或别名（多渠道时必需；仅配一个渠道时可自动推断）。
+ * {@code --channel}: id (;only).
      */
     private final String channel;
     /**
-     * {@code --account}：账号 id（文档默认取渠道默认账号）。
+ * {@code --account}: id(documentation).
      */
     private final String account;
     /**
-     * {@code --json}：JSON 输出，便于脚本解析。
+ * {@code --json}:JSON ,for easy.
      */
     private final boolean json;
     /**
-     * {@code --query}：过滤 peers/groups 列表的查询子串（文档示例为名称片段）。
+ * {@code --query}: peers/groups (documentationexample).
      */
     private final String query;
     /**
-     * {@code --limit}：列表返回条数上限（文档 peers 示例为 50）。
+ * {@code --limit}:(documentation peers example 50).
      */
     private final Integer limit;
     /**
-     * {@code --group-id}：{@code groups members} 子命令所需的群组标识。
+ * {@code --group-id}:{@code groups members} subcommand.
      */
     private final String groupId;
     /**
-     * 其它未建模参数。
+ * .
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private DirectoryOptions(Builder b) {
         this.mode = b.mode;
@@ -77,7 +80,7 @@ public final class DirectoryOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -119,7 +122,7 @@ public final class DirectoryOptions implements CliSubArgs {
     }
 
     /**
-     * {@link DirectoryOptions} 构建器。
+ * {@link DirectoryOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.PEERS_LIST;
@@ -132,7 +135,7 @@ public final class DirectoryOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}，模式设为 {@link Mode#SELF}
+ * @return {@code this}, {@link Mode#SELF}
          */
         public Builder self() {
             this.mode = Mode.SELF;
@@ -140,7 +143,7 @@ public final class DirectoryOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}，模式设为 {@link Mode#PEERS_LIST}
+ * @return {@code this}, {@link Mode#PEERS_LIST}
          */
         public Builder peersList() {
             this.mode = Mode.PEERS_LIST;
@@ -148,7 +151,7 @@ public final class DirectoryOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}，模式设为 {@link Mode#GROUPS_LIST}
+ * @return {@code this}, {@link Mode#GROUPS_LIST}
          */
         public Builder groupsList() {
             this.mode = Mode.GROUPS_LIST;
@@ -156,7 +159,7 @@ public final class DirectoryOptions implements CliSubArgs {
         }
 
         /**
-         * @param groupId 群组 ID（{@code groups members}）
+ * @param groupId ID({@code groups members})
          * @return {@code this}
          */
         public Builder groupsMembers(String groupId) {
@@ -211,7 +214,7 @@ public final class DirectoryOptions implements CliSubArgs {
         }
 
         /**
-         * @param tokens 额外 CLI token
+ * @param tokens CLI token
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -222,7 +225,7 @@ public final class DirectoryOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link DirectoryOptions}
+ * @return {@link DirectoryOptions}
          */
         public DirectoryOptions build() {
             return new DirectoryOptions(this);

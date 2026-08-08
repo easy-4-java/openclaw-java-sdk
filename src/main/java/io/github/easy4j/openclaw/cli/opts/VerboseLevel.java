@@ -1,37 +1,40 @@
 package io.github.easy4j.openclaw.cli.opts;
 
 /**
- * {@code openclaw agent --verbose} 的合法取值：将会话级 verbose 开关持久化到该会话，与官方 agent CLI 一致。
+ * {@code openclaw agent --verbose} value:session verbose session,consistent with official agent CLI .
  *
  * @see <a href="https://docs.openclaw.ai/cli/agent">agent CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public enum VerboseLevel {
 
     /**
-     * {@code on}：为该会话打开 verbose（文档：persist verbose level for the session）。
+ * {@code on}:session verbose(documentation:persist verbose level for the session).
      */
     ON("on"),
     /**
-     * {@code off}：关闭该会话的 verbose 持久化。
+ * {@code off}:session verbose .
      */
     OFF("off");
 
     /**
-     * 传给 CLI 的 {@code --verbose} 参数字面量（{@code on} 或 {@code off}）。
+ * CLI {@code --verbose} ({@code on} {@code off}).
      */
     private final String cliValue;
 
     /**
-     * @param cliValue 非 null CLI 字符串
+ * @param cliValue null CLI characters
      */
     VerboseLevel(String cliValue) {
         this.cliValue = cliValue;
     }
 
     /**
-     * 传给 CLI 的 {@code --verbose} 参数值。
+ * CLI {@code --verbose} value.
      *
-     * @return {@code on} 或 {@code off}
+ * @return {@code on} {@code off}
      */
     public String cliValue() {
         return cliValue;

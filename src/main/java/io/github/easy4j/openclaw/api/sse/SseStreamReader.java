@@ -12,10 +12,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * SSE 流解析器。
+ * SSE stream parser.
  * <p>
- * 从 HTTP 响应的 {@code text/event-stream} 中逐行读取并解析 SSE 事件。
- * 支持两种格式：
+ * HTTP {@code text/event-stream} SSE event.
+ * :
  * </p>
  * <ul>
  *   <li>Chat Completions SSE：{@code data: <json>} + {@code data: [DONE]}</li>
@@ -24,6 +24,9 @@ import java.nio.charset.StandardCharsets;
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#streaming-sse">OpenAI Streaming (SSE)</a>
  * @see <a href="https://docs.openclaw.ai/gateway/openresponses-http-api#streaming-sse">OpenResponses Streaming (SSE)</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Slf4j
 public class SseStreamReader {
@@ -42,11 +45,11 @@ public class SseStreamReader {
     }
 
     /**
-     * 同步读取 SSE 流，将每个事件分发给处理器。
+ * SSE stream,event.
      *
-     * @param inputStream HTTP 响应的输入流
-     * @param handler     事件处理器
-     * @param chunkClass  Chat Completions chunk 解析目标类（传 {@code null} 则不解析 data）
+ * @param inputStream HTTP stream
+ * @param handler event
+ * @param chunkClass Chat Completions chunk ( {@code null} data)
      */
     public <T> void readStream(InputStream inputStream, SseEventHandler handler, Class<T> chunkClass) {
         if (inputStream == null) {
@@ -108,14 +111,14 @@ public class SseStreamReader {
     }
 
     /**
-     * 读取 Chat Completions SSE 流。
+ * Chat Completions SSE stream.
      */
     public void readChatCompletionStream(InputStream inputStream, SseEventHandler handler) {
         readStream(inputStream, handler, ChatChunk.class);
     }
 
     /**
-     * 读取 OpenResponses SSE 流（不解析 data，仅传递原始 event + data）。
+ * OpenResponses SSE stream( data,only event + data).
      */
     public void readResponseStream(InputStream inputStream, SseEventHandler handler) {
         readStream(inputStream, handler, null);

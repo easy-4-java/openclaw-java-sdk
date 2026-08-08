@@ -7,33 +7,36 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 顶层 {@code openclaw health}：向<strong>正在运行</strong>的 Gateway 拉取健康快照（非 {@code gateway health} RPC 子命令）。
- * <p>文档说明：默认可能返回缓存快照并在后台刷新；{@code --verbose} 会强制实时探测并展开人机输出。
- * 多 agent 配置时输出包含各 agent 的 session 存储信息。</p>
+ * {@code openclaw health}:<strong></strong> Gateway ( {@code gateway health} RPC subcommand).
+ * <p>documentation:;{@code --verbose} .
+ * agent agent session .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/health">health CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class HealthCommandOptions implements CliSubArgs {
 
     /**
-     * {@code --json}：机器可读 JSON 输出。
+ * {@code --json}: JSON .
      */
     private final boolean json;
     /**
-     * {@code --timeout}：连接超时毫秒数（文档默认 {@code 10000}），此处为字符串形式以与 CLI 传参一致。
+ * {@code --timeout}:connectiontimeoutmilliseconds(documentation {@code 10000}),characters CLI .
      */
     private final String timeoutMs;
     /**
-     * {@code --verbose}：详细日志；强制实时探测、打印网关连接细节，并在人机模式下展开已配置账号与 agent。
+ * {@code --verbose}:;,Gatewayconnection, agent.
      */
     private final boolean verbose;
     /**
-     * {@code --debug}：文档声明为 {@code --verbose} 的别名。
+ * {@code --debug}:documentation {@code --verbose} .
      */
     private final boolean debug;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private HealthCommandOptions(Builder b) {
         this.json = b.json;
@@ -43,7 +46,7 @@ public final class HealthCommandOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -72,7 +75,7 @@ public final class HealthCommandOptions implements CliSubArgs {
     }
 
     /**
-     * {@link HealthCommandOptions} 构建器。
+ * {@link HealthCommandOptions} builder.
      */
     public static final class Builder {
 
@@ -90,7 +93,7 @@ public final class HealthCommandOptions implements CliSubArgs {
             return this;
         }
 
-        /** 连接超时毫秒数（文档默认 10000）。 */
+ /** connectiontimeoutmilliseconds(documentation 10000). */
         public Builder timeoutMs(String timeoutMs) {
             this.timeoutMs = timeoutMs;
             return this;
@@ -105,14 +108,14 @@ public final class HealthCommandOptions implements CliSubArgs {
             return this;
         }
 
-        /** 文档中与 {@code --verbose} 等价别名。 */
+ /** documentation {@code --verbose} . */
         public Builder debug(boolean debug) {
             this.debug = debug;
             return this;
         }
 
         /**
-         * @return 不可变 {@link HealthCommandOptions}
+ * @return {@link HealthCommandOptions}
          */
         public HealthCommandOptions build() {
             return new HealthCommandOptions(this);

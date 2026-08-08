@@ -3,17 +3,20 @@ package io.github.easy4j.openclaw.exception;
 import lombok.Getter;
 
 /**
- * 通过 Gateway HTTP 调用 OpenClaw 失败时抛出。
+ * Gateway HTTP OpenClaw .
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public class OpenClawHttpException extends OpenClawException {
 
     private static final long serialVersionUID = 1L;
 
-    /** HTTP 状态码；未知时为 -1 */
+ /** HTTP status code; -1 */
     private final int statusCode;
 
-    /** 响应体原文，可能为 null */
+ /** response body, null */
     private final String responseBody;
 
     public OpenClawHttpException(String message, int statusCode, String responseBody) {

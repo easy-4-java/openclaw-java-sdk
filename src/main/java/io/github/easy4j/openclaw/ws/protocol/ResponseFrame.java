@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * Gateway→客户端 RPC 响应帧：{@code { type: "res", id, ok, payload, error }}。
+ * Gateway→ RPC :{@code { type: "res", id, ok, payload, error }}.
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public class ResponseFrame extends GatewayFrame {

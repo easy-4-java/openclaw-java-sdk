@@ -9,97 +9,100 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw acp}：以 OpenClaw 作为 ACP 服务端，经 stdio 接 IDE/客户端，经 WebSocket 转发到 Gateway 会话。
- * <p>用于「编辑器要讲 ACP 给 OpenClaw」；若要让外部 MCP 客户端直连频道会话，应使用 {@code openclaw mcp serve}。
- * 设置 {@code --url} 时须显式传 {@code --token} 或 {@code --password}（或文件变体），与网关侧其它客户端一致。</p>
+ * {@code openclaw acp}: OpenClaw ACP , stdio IDE/, WebSocket Gateway session.
+ * <p>Used for" ACP OpenClaw"; MCP channelsession, {@code openclaw mcp serve}.
+ * {@code --url} {@code --token} {@code --password},Gateway.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/acp">acp CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class AcpOptions implements CliSubArgs {
 
     /**
-     * {@code acp} 子模式：默认 bridge，或调试用的 {@code acp client}。
+ * {@code acp} : bridge, {@code acp client}.
      */
     public enum Mode {
-        /** stdio 与 Gateway WebSocket 之间的 ACP 桥接（默认）。 */
+ /** stdio with Gateway WebSocket ACP . */
         BRIDGE,
-        /** 内置 ACP 客户端：拉起 bridge 并交互输入，用于无 IDE 时的冒烟。 */
+ /** ACP : bridge ,Used for IDE . */
         CLIENT
     }
 
-    /** 当前为桥接模式还是 {@code client} 调试子命令。 */
+ /** {@code client} subcommand. */
     private final Mode mode;
     /**
-     * {@code --url}：目标 Gateway WebSocket URL；未传时可走配置中的 {@code gateway.remote.url}（见 acp 文档）。
+ * {@code --url}: Gateway WebSocket URL; {@code gateway.remote.url}(See acp documentation).
      */
     private final String url;
     /**
-     * {@code --token}：网关 token；内联值可能出现在本机进程列表，生产环境优先 {@code --token-file} 或环境变量。
+ * {@code --token}:Gateway token;valueprocess,production {@code --token-file} .
      */
     private final String token;
     /**
-     * {@code --token-file}：从文件读取网关 token，避免内联泄露。
+ * {@code --token-file}:Gateway token,.
      */
     private final String tokenFile;
     /**
-     * {@code --password}：网关密码认证；同样建议优先文件或环境变量。
+ * {@code --password}:Gatewayauthentication;.
      */
     private final String password;
     /**
-     * {@code --password-file}：从文件读取网关密码。
+ * {@code --password-file}:Gateway.
      */
     private final String passwordFile;
     /**
-     * {@code --session}：默认绑定的 Gateway 会话键（agent 作用域会话由键前缀区分，见 acp 文档 Selecting agents）。
+ * {@code --session}: Gateway sessionkey(agent sessionkey,See acp documentation Selecting agents).
      */
     private final String session;
     /**
-     * {@code --session-label}：按标签解析已存在会话；与 {@code --session} 二选一语义见文档 Session mapping。
+ * {@code --session-label}:session; {@code --session} mutually exclusive semanticsSeedocumentation Session mapping.
      */
     private final String sessionLabel;
     /**
-     * {@code --require-existing}：若会话键或标签不存在则失败，避免静默新建。
+ * {@code --require-existing}:sessionkey,.
      */
     private final boolean requireExisting;
     /**
-     * {@code --reset-session}：在首次 prompt 前重置该键对应会话 id（保留键，换新 transcript）。
+ * {@code --reset-session}: prompt resetkeyCorresponds tosession id(key, transcript).
      */
     private final boolean resetSession;
     /**
-     * {@code --no-prefix-cwd}：不在用户 prompt 前自动加上当前工作目录前缀。
+ * {@code --no-prefix-cwd}: prompt working directory.
      */
     private final boolean noPrefixCwd;
     /**
-     * {@code --provenance}：附带 ACP 侧来源/收据类元数据（见 acp Options）。
+ * {@code --provenance}: ACP /(See acp Options).
      */
     private final String provenance;
     /**
-     * {@code --verbose} / {@code -v}：向 stderr 打印更详细的桥接日志。
+ * {@code --verbose} / {@code -v}: stderr .
      */
     private final boolean verbose;
     /**
-     * {@code acp client --cwd}：ACP 会话的工作目录，影响只读自动批准等调试策略的作用域。
+ * {@code acp client --cwd}:ACP sessionworking directory,.
      */
     private final String cwd;
     /**
-     * {@code acp client --server}：启动 ACP 服务端子进程的命令（默认 {@code openclaw}）。
+ * {@code acp client --server}: ACP subprocess( {@code openclaw}).
      */
     private final String server;
     /**
-     * {@code acp client --server-args} 之后展开的参数列表，会原样传给服务端命令（例如附加 {@code acp --url ...}）。
+ * {@code acp client --server-args} argument list,( {@code acp --url ...}).
      */
     private final List<String> serverArgs;
     /**
-     * {@code acp client --server-verbose}：为被拉起的 ACP 服务端进程打开 verbose 日志。
+ * {@code acp client --server-verbose}: ACP process verbose .
      */
     private final boolean serverVerbose;
     /**
-     * 文档未单独建模的 argv 片段，按顺序追加在末尾。
+ * documentation argv ,.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private AcpOptions(Builder b) {
         this.mode = b.mode;
@@ -123,7 +126,7 @@ public final class AcpOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -165,7 +168,7 @@ public final class AcpOptions implements CliSubArgs {
     }
 
     /**
-     * {@link AcpOptions} 构建器。
+ * {@link AcpOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.BRIDGE;
@@ -188,7 +191,7 @@ public final class AcpOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}（bridge 模式）
+ * @return {@code this}(bridge )
          */
         public Builder bridge() {
             this.mode = Mode.BRIDGE;
@@ -304,7 +307,7 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（client 子命令）
+ * @return {@code this}(client subcommand)
          */
         public Builder client() {
             this.mode = Mode.CLIENT;
@@ -330,7 +333,7 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * @param token 追加到 {@code --server-args} 的单段参数
+ * @param token {@code --server-args}
          * @return {@code this}
          */
         public Builder addServerArg(String token) {
@@ -350,9 +353,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -363,7 +366,7 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link AcpOptions}
+ * @return {@link AcpOptions}
          */
         public AcpOptions build() {
             return new AcpOptions(this);

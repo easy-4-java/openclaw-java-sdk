@@ -8,53 +8,56 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * {@code openclaw logs}：通过 RPC 跟踪 Gateway 文件日志（远程模式可用）。
- * <p>日志专有选项见文档「Options」；另接受标准 Gateway 客户端 flag（{@link GatewayRpcOptions}），
- * 其中 {@code --timeout} 默认 30000ms，{@code --expect-final} 用于 agent 支撑的调用。</p>
+ * {@code openclaw logs}: RPC Gateway .
+ * <p>Seedocumentation"Options"; Gateway flag({@link GatewayRpcOptions}),
+ * {@code --timeout} 30000ms,{@code --expect-final} Used for agent .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/logs">logs CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class LogsOptions implements CliSubArgs {
 
     /**
-     * 共享 RPC 选项：{@code --url}、{@code --token}、{@code --password}、{@code --timeout}、{@code --expect-final}、{@code --json} 等（与 gateway 文档「Shared options」一致）。
+ * RPC :{@code --url},{@code --token},{@code --password},{@code --timeout},{@code --expect-final},{@code --json} ( gateway documentation"Shared options").
      */
     private final GatewayRpcOptions rpc;
     /**
-     * {@code --limit}：返回的最大日志行数（文档默认 {@code 200}）。
+ * {@code --limit}:(documentation {@code 200}).
      */
     private final String limit;
     /**
-     * {@code --max-bytes}：从日志文件读取的最大字节数（文档默认 {@code 250000}）。
+ * {@code --max-bytes}:bytes(documentation {@code 250000}).
      */
     private final String maxBytes;
     /**
-     * {@code --follow}：持续跟随日志流（轮询由 {@code --interval} 控制）。
+ * {@code --follow}:stream( {@code --interval} ).
      */
     private final boolean follow;
     /**
-     * {@code --interval}：follow 模式下的轮询间隔毫秒（文档默认 {@code 1000}）。
+ * {@code --interval}:follow milliseconds(documentation {@code 1000}).
      */
     private final String intervalMs;
     /**
-     * {@code --json}：每行一条 JSON 事件输出。
+ * {@code --json}: JSON event.
      */
     private final boolean json;
     /**
-     * {@code --plain}：纯文本，不带样式化排版。
+ * {@code --plain}:,.
      */
     private final boolean plain;
     /**
-     * {@code --no-color}：禁用 ANSI 颜色。
+ * {@code --no-color}: ANSI .
      */
     private final boolean noColor;
     /**
-     * {@code --local-time}：时间戳按本机时区渲染。
+ * {@code --local-time}:.
      */
     private final boolean localTime;
 
     /**
-     * @param b 构建器；{@code rpc} 缺省时使用空 {@link GatewayRpcOptions}
+ * @param b builder;{@code rpc} {@link GatewayRpcOptions}
      */
     private LogsOptions(Builder b) {
         this.rpc = b.rpc != null ? b.rpc : GatewayRpcOptions.builder().build();
@@ -69,7 +72,7 @@ public final class LogsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -113,7 +116,7 @@ public final class LogsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link LogsOptions} 构建器。
+ * {@link LogsOptions} builder.
      */
     public static final class Builder {
 
@@ -127,7 +130,7 @@ public final class LogsOptions implements CliSubArgs {
         private boolean noColor;
         private boolean localTime;
 
-        /** 共享 {@code --url} / {@code --token} / {@code --timeout} / {@code --expect-final} 等。 */
+ /** {@code --url} / {@code --token} / {@code --timeout} / {@code --expect-final} . */
         public Builder rpc(GatewayRpcOptions rpc) {
             this.rpc = Objects.requireNonNull(rpc, "rpc");
             return this;
@@ -161,7 +164,7 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
-         * @param intervalMs {@code --interval}（毫秒字符串）
+ * @param intervalMs {@code --interval}(millisecondscharacters)
          * @return {@code this}
          */
         public Builder intervalMs(String intervalMs) {
@@ -206,7 +209,7 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link LogsOptions}
+ * @return {@link LogsOptions}
          */
         public LogsOptions build() {
             return new LogsOptions(this);

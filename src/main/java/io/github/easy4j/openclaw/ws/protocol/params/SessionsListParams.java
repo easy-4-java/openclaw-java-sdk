@@ -5,8 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * {@code sessions.list} RPC 参数。
- * <p>对齐 {@code SessionsListParamsSchema}（{@code src/gateway/protocol/schema/sessions.ts}）。</p>
+ * {@code sessions.list} RPC .
+ * <p>aligned {@code SessionsListParamsSchema}({@code src/gateway/protocol/schema/sessions.ts}).</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Builder
@@ -26,7 +29,7 @@ public class SessionsListParams {
     private final String search;
 
     /**
-     * 无筛选条件的默认列表请求。
+ * .
      */
     public static SessionsListParams defaults() {
         return SessionsListParams.builder().build();

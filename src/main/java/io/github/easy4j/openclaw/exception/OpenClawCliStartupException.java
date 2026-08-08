@@ -4,7 +4,7 @@ import io.github.easy4j.openclaw.cli.availability.OpenClawCliAvailabilityReport;
 import lombok.Getter;
 
 /**
- * 应用启动阶段 OpenClaw CLI 不可用且配置为 fail-fast 时抛出。
+ * OpenClaw CLI fail-fast .
  *
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
@@ -15,8 +15,8 @@ public class OpenClawCliStartupException extends RuntimeException {
     private final OpenClawCliAvailabilityReport availabilityReport;
 
     /**
-     * @param message 诊断说明
-     * @param report    探测报告
+ * @param message diagnostic
+ * @param report probe report
      */
     public OpenClawCliStartupException(String message, OpenClawCliAvailabilityReport report) {
         super(message);

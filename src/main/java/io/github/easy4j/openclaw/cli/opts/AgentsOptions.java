@@ -8,91 +8,94 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 /**
- * {@code openclaw agents}：管理相互隔离的 agent（独立 workspace、认证与入站路由绑定）。
- * <p>路由绑定把渠道流量固定到某 agent；技能可见性另由 {@code agents.defaults.skills} 等配置控制。未覆盖子 flag 请用 {@link Builder#extra(String...)}。</p>
+ * {@code openclaw agents}: agent( workspace,authentication).
+ * <p>stream agent;skillSee {@code agents.defaults.skills} . flag {@link Builder#extra(String...)}.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/agents">agents CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class AgentsOptions implements CliSubArgs {
 
     /**
-     * 子命令动词：裸 {@code openclaw agents} 与显式 {@code list} 在 CLI 上等价。
+ * subcommand: {@code openclaw agents} {@code list} CLI .
      */
     public enum Verb {
         /**
-         * 与 {@code openclaw agents} 不带子命令一致：不发出字面量 {@code list} token，由 Gateway 走默认 list 行为。
+ * {@code openclaw agents} subcommand: {@code list} token, Gateway list .
          */
         DEFAULT_LIST,
         /**
-         * 显式 {@code agents list}。
+ * {@code agents list}.
          */
         LIST,
         /**
-         * {@code agents add [name]}：新建隔离 agent。
+ * {@code agents add [name]}: agent.
          */
         ADD,
         /**
-         * {@code agents bindings}：列出路由绑定规则。
+ * {@code agents bindings}:.
          */
         BINDINGS,
         /**
-         * {@code agents bind}：为某 agent 增加绑定。
+ * {@code agents bind}: agent .
          */
         BIND,
         /**
-         * {@code agents unbind}：移除绑定或 {@code --all} 清空。
+ * {@code agents unbind}: {@code --all} .
          */
         UNBIND,
         /**
-         * {@code agents set-identity}：写入 {@code agents.list[].identity}（名称、主题、emoji、头像等）。
+ * {@code agents set-identity}: {@code agents.list[].identity}(emoji).
          */
         SET_IDENTITY,
         /**
-         * {@code agents delete}：将 workspace 与状态移入废纸篓而非硬删（除非配合 force 与交互规则，见文档）。
+ * {@code agents delete}: workspace ( force ,Seedocumentation).
          */
         DELETE
     }
 
-    /** 当前 agents 子命令表面。 */
+ /** agents subcommand. */
     private final Verb verb;
     /**
-     * list / DEFAULT_LIST：{@code --json} 机器可读列表。
+ * list / DEFAULT_LIST:{@code --json} .
      */
     private final boolean listJson;
     /**
-     * list：{@code --bindings} 输出完整路由规则，而不只是每 agent 摘要计数。
+ * list:{@code --bindings} , agent .
      */
     private final boolean listBindings;
     /**
-     * add：新 agent 的 id 位置参数（{@code main} 为保留字不可用）。
+ * add: agent id ({@code main} ).
      */
     private final String addName;
     /**
-     * add：{@code --workspace} 独立工作区根路径；非交互 add 时与 name 同为必填。
+ * add:{@code --workspace} ; add name Required.
      */
     private final String workspace;
     /**
-     * add：{@code --model} 初始默认模型引用。
+ * add:{@code --model} .
      */
     private final String model;
     /**
-     * add：{@code --agent-dir} 自定义 agent 配置目录。
+ * add:{@code --agent-dir} agent directory.
      */
     private final String agentDir;
     /**
-     * add / bind / unbind：可重复 {@code --bind channel:account} 绑定说明（account 省略时按文档解析默认账号）。
+ * add / bind / unbind: {@code --bind channel:account} (account documentation).
      */
     private final List<String> bindValues;
     /**
-     * add：{@code --non-interactive} 脚本模式；一旦传入任意 add flag 即进入非交互路径。
+ * add:{@code --non-interactive} ; add flag .
      */
     private final boolean nonInteractive;
     /**
-     * add：{@code --json} 结构化输出。
+ * add:{@code --json} .
      */
     private final boolean addJson;
     /**
-     * bindings：{@code --agent} 只查看指定 agent 的绑定。
+ * bindings:{@code --agent} agent .
      */
     private final String bindingsAgent;
     /**
@@ -100,7 +103,7 @@ public final class AgentsOptions implements CliSubArgs {
      */
     private final boolean bindingsJson;
     /**
-     * bind：{@code --agent}，省略时指向当前默认 agent。
+ * bind:{@code --agent}, agent.
      */
     private final String bindAgent;
     /**
@@ -108,11 +111,11 @@ public final class AgentsOptions implements CliSubArgs {
      */
     private final boolean bindJson;
     /**
-     * unbind：{@code --agent}，省略时指向当前默认 agent。
+ * unbind:{@code --agent}, agent.
      */
     private final String unbindAgent;
     /**
-     * unbind：{@code --all} 移除该 agent 全部绑定（与重复 {@code --bind} 互斥）。
+ * unbind:{@code --all} agent ( {@code --bind} ).
      */
     private final boolean unbindAll;
     /**
@@ -120,11 +123,11 @@ public final class AgentsOptions implements CliSubArgs {
      */
     private final boolean unbindJson;
     /**
-     * delete：agent id 位置参数（不可删 {@code main}）。
+ * delete:agent id ( {@code main}).
      */
     private final String deleteAgentId;
     /**
-     * delete：{@code --force} 跳过交互确认。
+ * delete:{@code --force} skips.
      */
     private final boolean deleteForce;
     /**
@@ -132,35 +135,35 @@ public final class AgentsOptions implements CliSubArgs {
      */
     private final boolean deleteJson;
     /**
-     * set-identity：{@code --agent} 与 {@code --workspace} 二选一或组合以定位目标（多 agent 共享 workspace 时必须指定 agent）。
+ * set-identity:{@code --agent} {@code --workspace} mutually exclusiveComposes( agent workspace agent).
      */
     private final String identityAgent;
     /**
-     * set-identity：{@code --workspace} 用于选中 agent 或定位 {@code IDENTITY.md}。
+ * set-identity:{@code --workspace} Used for agent {@code IDENTITY.md}.
      */
     private final String identityWorkspace;
     /**
-     * set-identity：{@code --identity-file} 显式身份文件路径。
+ * set-identity:{@code --identity-file} .
      */
     private final String identityFile;
     /**
-     * set-identity：{@code --from-identity} 从 workspace 根或 {@code --identity-file} 读取 {@code IDENTITY.md}。
+ * set-identity:{@code --from-identity} workspace {@code --identity-file} {@code IDENTITY.md}.
      */
     private final boolean fromIdentity;
     /**
-     * set-identity：{@code --name} 显示名。
+ * set-identity:{@code --name} .
      */
     private final String identityName;
     /**
-     * set-identity：{@code --theme} 主题描述。
+ * set-identity:{@code --theme} .
      */
     private final String identityTheme;
     /**
-     * set-identity：{@code --emoji} 表情符号头像提示。
+ * set-identity:{@code --emoji} .
      */
     private final String identityEmoji;
     /**
-     * set-identity：{@code --avatar} 相对 workspace 的路径、http(s) URL 或 data URI。
+ * set-identity:{@code --avatar} workspace ,http(s) URL data URI.
      */
     private final String identityAvatar;
     /**
@@ -168,7 +171,7 @@ public final class AgentsOptions implements CliSubArgs {
      */
     private final boolean identityJson;
     /**
-     * 文档新增或未建模 argv，按顺序附加。
+ * documentation argv,.
      */
     private final List<String> extra;
 
@@ -292,7 +295,7 @@ public final class AgentsOptions implements CliSubArgs {
     }
 
     /**
-     * 构建 {@link AgentsOptions}。
+ * {@link AgentsOptions}.
      */
     public static final class Builder {
         private Verb verb = Verb.DEFAULT_LIST;
@@ -326,19 +329,19 @@ public final class AgentsOptions implements CliSubArgs {
         private boolean identityJson;
         private List<String> extra = new ArrayList<>();
 
-        /** 隐式 list（与裸 {@code openclaw agents} 一致）。 */
+ /** list( {@code openclaw agents} ). */
         public Builder defaultList() {
             this.verb = Verb.DEFAULT_LIST;
             return this;
         }
 
-        /** 显式 {@code agents list}。 */
+ /** {@code agents list}. */
         public Builder list() {
             this.verb = Verb.LIST;
             return this;
         }
 
-        /** list / 默认 list：{@code --json}。 */
+ /** list / list:{@code --json}. */
         public Builder listJson(boolean json) {
             this.listJson = json;
             return this;
@@ -372,7 +375,7 @@ public final class AgentsOptions implements CliSubArgs {
             return this;
         }
 
-        /** 可重复的 {@code --bind}。 */
+ /** {@code --bind}. */
         public Builder bind(String channelBinding) {
             if (channelBinding != null && OpenClawStrings.isNotBlank(channelBinding)) {
                 this.bindValues.add(channelBinding.trim());
@@ -510,9 +513,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 追加原始 token（文档新增或未建模 flag）。
+ * token(documentation flag).
          *
-         * @param tokens argv 片段
+ * @param tokens argv
          * @return this
          */
         public Builder extra(String... tokens) {

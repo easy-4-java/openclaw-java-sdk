@@ -9,36 +9,39 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * {@code openclaw gateway} 通用子命令参数；RPC 查询场景优先使用 {@link #health} / {@link #status} / {@link #probe}，
- * 其它子命令（如 {@code run}、{@code call}）使用 {@link #add(String...)} 按文档顺序追加。
- * <p>Gateway 为 OpenClaw 的 WebSocket 服务端（渠道、节点、会话、hooks）；子命令含前台 {@code run}、服务生命周期、
- * {@code discover}、{@code call} RPC 等，详见 gateway CLI 文档。</p>
+ * {@code openclaw gateway} subcommand;RPC {@link #health} / {@link #status} / {@link #probe},
+ * subcommand( {@code run},{@code call}) {@link #add(String...)} documentation.
+ * <p>Gateway OpenClaw WebSocket (node,session,hooks);subcommand {@code run},lifecycle,
+ * {@code discover},{@code call} RPC ,See gateway CLI documentation.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/gateway">gateway CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class GatewayCommandOptions implements CliSubArgs {
 
     /**
-     * 紧跟在 {@code gateway} 之后的子命令与参数 token 不可变列表（不含可执行文件名与全局前缀），顺序须与官方 CLI 一致。
+ * {@code gateway} subcommand token (executable name),consistent with official CLI .
      */
     private final List<String> segments;
 
     /**
-     * @param segments 非 null，将拷贝为不可变列表
+ * @param segments null,
      */
     private GatewayCommandOptions(List<String> segments) {
         this.segments = OpenClawLists.copyOf(segments);
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * 无子命令 token：对应裸 {@code openclaw gateway}（由 CLI 决定是否等价于前台启动行为，见文档 Run the Gateway 节）。
+ * subcommand token:Corresponds to {@code openclaw gateway}( CLI Equivalent to,Seedocumentation Run the Gateway ).
      */
     public static GatewayCommandOptions empty() {
         return new GatewayCommandOptions(OpenClawLists.empty());
@@ -53,17 +56,17 @@ public final class GatewayCommandOptions implements CliSubArgs {
     }
 
     /**
-     * {@link GatewayCommandOptions} 构建器：累积子命令片段。
+ * {@link GatewayCommandOptions} builder:subcommand.
      */
     public static final class Builder {
 
-        /** 内部可变的 token 缓冲。 */
+ /** token . */
         private final List<String> s = new ArrayList<>();
 
         /**
-         * 按顺序追加任意 CLI token（如 {@code run}、{@code call} 及参数）。
+ * CLI token( {@code run},{@code call} ).
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder add(String... tokens) {
@@ -74,9 +77,9 @@ public final class GatewayCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 追加 {@code gateway health ...} 片段。
+ * {@code gateway health ...} .
          *
-         * @param rpc 非 null
+ * @param rpc null
          * @return {@code this}
          */
         public Builder health(GatewayRpcOptions rpc) {
@@ -86,10 +89,10 @@ public final class GatewayCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 追加 {@code gateway status ...} 片段。
+ * {@code gateway status ...} .
          *
-         * @param rpc   非 null
-         * @param extra 可为 null
+ * @param rpc null
+ * @param extra null
          * @return {@code this}
          */
         public Builder status(GatewayRpcOptions rpc, GatewayCliArgv.GatewayStatusOptions extra) {
@@ -99,10 +102,10 @@ public final class GatewayCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 追加 {@code gateway probe ...} 片段。
+ * {@code gateway probe ...} .
          *
-         * @param rpc   非 null
-         * @param extra 可为 null
+ * @param rpc null
+ * @param extra null
          * @return {@code this}
          */
         public Builder probe(GatewayRpcOptions rpc, GatewayCliArgv.GatewayProbeOptions extra) {
@@ -112,7 +115,7 @@ public final class GatewayCommandOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link GatewayCommandOptions}
+ * @return {@link GatewayCommandOptions}
          */
         public GatewayCommandOptions build() {
             return new GatewayCommandOptions(OpenClawLists.copyOf(s));

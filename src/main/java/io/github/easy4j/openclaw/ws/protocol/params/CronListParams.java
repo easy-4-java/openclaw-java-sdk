@@ -5,8 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * {@code cron.list} RPC 参数。
- * <p>对齐 {@code CronListParamsSchema}（{@code src/gateway/protocol/schema/cron.ts}）。</p>
+ * {@code cron.list} RPC .
+ * <p>aligned {@code CronListParamsSchema}({@code src/gateway/protocol/schema/cron.ts}).</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Builder

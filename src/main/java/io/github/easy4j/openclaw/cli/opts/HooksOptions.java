@@ -9,47 +9,50 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw hooks}：列举、检查、启用或禁用工作区与捆绑等来源的 agent hooks（事件驱动自动化）。
- * <p>插件托管的 hook 只能改插件开关；安装 hook 包推荐 {@code openclaw plugins install}，{@code hooks install} 为转发别名并可能提示弃用。</p>
+ * {@code openclaw hooks}:, agent hooks(event).
+ * <p>plugin hook plugin; hook {@code openclaw plugins install},{@code hooks install} .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/hooks">hooks CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class HooksOptions implements CliSubArgs {
 
     /**
-     * hooks 子命令：默认与 {@code list} 等价，另有 info、健康检查、启用禁用与遗留 install。
+ * hooks subcommand: {@code list} , info, install.
      */
     public enum Mode {
-        /** {@code hooks list}：发现 workspace、managed、extra、bundled 目录下的全部 hook。 */
+ /** {@code hooks list}: workspace,managed,extra,bundled directory hook. */
         LIST,
-        /** {@code hooks info}：展示单个 hook 的元数据、事件与依赖。 */
+ /** {@code hooks info}: hook ,event. */
         INFO,
-        /** {@code hooks check}：汇总 eligible 与缺失依赖统计。 */
+ /** {@code hooks check}: eligible . */
         CHECK,
-        /** {@code hooks enable}：在配置中打开 {@code hooks.internal.entries.*.enabled}。 */
+ /** {@code hooks enable}: {@code hooks.internal.entries.*.enabled}. */
         ENABLE,
-        /** {@code hooks disable}：在配置中关闭指定 hook。 */
+ /** {@code hooks disable}: hook. */
         DISABLE,
-        /** {@code hooks install}：兼容别名，转发到 plugins 安装流。 */
+ /** {@code hooks install}:, plugins stream. */
         INSTALL
     }
 
-    /** list / info / check / enable / disable / install 之一。 */
+ /** list / info / check / enable / disable / install . */
     private final Mode mode;
     /**
-     * list：{@code --eligible} 只显示依赖已满足的 hook。
+ * list:{@code --eligible} hook.
      */
     private final boolean listEligible;
     /**
-     * list：{@code --json} 结构化列表。
+ * list:{@code --json} .
      */
     private final boolean listJson;
     /**
-     * list：{@code --verbose} 展示未满足依赖等诊断信息。
+ * list:{@code --verbose} diagnostic.
      */
     private final boolean listVerbose;
     /**
-     * info / enable / disable：hook 名称或 key 位置参数。
+ * info / enable / disable:hook key .
      */
     private final String hookName;
     /**
@@ -61,24 +64,24 @@ public final class HooksOptions implements CliSubArgs {
      */
     private final boolean checkJson;
     /**
-     * install：包路径、npm 名或归档位置参数（实际由 plugins 子系统处理）。
+ * install:,npm ( plugins system).
      */
     private final String installSpec;
     /**
-     * install：{@code --link} 链接本地目录到 {@code hooks.internal.load.extraDirs} 而非复制。
+ * install:{@code --link} directory {@code hooks.internal.load.extraDirs} .
      */
     private final boolean installLink;
     /**
-     * install：{@code --pin} npm 安装时记录精确版本到 {@code hooks.internal.installs}。
+ * install:{@code --pin} npm version {@code hooks.internal.installs}.
      */
     private final boolean installPin;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private HooksOptions(Builder b) {
         this.mode = b.mode;
@@ -95,14 +98,14 @@ public final class HooksOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * 空参数：对应 CLI 默认列出 hooks（与 {@code hooks list} 行为一致）。
+ * :Corresponds to CLI hooks( {@code hooks list} ).
      */
     public static HooksOptions defaultList() {
         return builder().list().build();
@@ -160,7 +163,7 @@ public final class HooksOptions implements CliSubArgs {
     }
 
     /**
-     * {@link HooksOptions} 构建器。
+ * {@link HooksOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.LIST;
@@ -211,7 +214,7 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param name hook 名称
+ * @param name hook
          * @return {@code this}
          */
         public Builder info(String name) {
@@ -247,7 +250,7 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param name hook 名称
+ * @param name hook
          * @return {@code this}
          */
         public Builder enable(String name) {
@@ -257,7 +260,7 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param name hook 名称
+ * @param name hook
          * @return {@code this}
          */
         public Builder disable(String name) {
@@ -267,7 +270,7 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param spec install：包 spec
+ * @param spec install: spec
          * @return {@code this}
          */
         public Builder install(String spec) {
@@ -295,9 +298,9 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -308,7 +311,7 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link HooksOptions}
+ * @return {@link HooksOptions}
          */
         public HooksOptions build() {
             return new HooksOptions(this);

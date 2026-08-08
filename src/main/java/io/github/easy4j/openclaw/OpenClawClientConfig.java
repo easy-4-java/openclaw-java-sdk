@@ -3,10 +3,10 @@ package io.github.easy4j.openclaw;
 import lombok.Data;
 
 /**
- * OpenClaw 客户端统一配置（纯 POJO，可与 Spring {@code @ConfigurationProperties} 映射）。
+ * OpenClaw unified client configuration( POJO, Spring {@code @ConfigurationProperties} map).
  * <p>
- * 组合 {@link OpenClawHttpClientConfig}（HTTP/Gateway 相关）与 {@link OpenClawCliConfig}（本地 CLI 相关），
- * 作为 {@link io.github.easy4j.openclaw.OpenClawClient} 等统一入口的配置载体。
+ * Composes {@link OpenClawHttpClientConfig}(HTTP/Gateway ) {@link OpenClawCliConfig}( CLI ),
+ * {@link io.github.easy4j.openclaw.OpenClawClient} .
  * </p>
  *
  * @see OpenClawHttpClientConfig
@@ -17,10 +17,10 @@ import lombok.Data;
 @Data
 public class OpenClawClientConfig {
 
-    /** HTTP/Gateway 相关配置 */
+ /** HTTP/Gateway */
     private final OpenClawHttpClientConfig http = new OpenClawHttpClientConfig();
 
-    /** 本地 CLI 相关配置 */
+ /** CLI */
     private final OpenClawCliConfig cli = new OpenClawCliConfig();
 
 }

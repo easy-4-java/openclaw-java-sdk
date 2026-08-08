@@ -6,8 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * {@code sessions.send} RPC 参数。
- * <p>与 {@code src/gateway/protocol/schema/sessions.ts} 中 {@code SessionsSendParamsSchema} 对齐。</p>
+ * {@code sessions.send} RPC .
+ * <p> {@code src/gateway/protocol/schema/sessions.ts} {@code SessionsSendParamsSchema} aligned.</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SessionsSendParams {

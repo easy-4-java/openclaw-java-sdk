@@ -7,8 +7,11 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * {@code chat.abort} RPC 参数。
- * <p>对齐 {@code ChatAbortParamsSchema}（{@code src/gateway/protocol/schema/logs-chat.ts}）。</p>
+ * {@code chat.abort} RPC .
+ * <p>aligned {@code ChatAbortParamsSchema}({@code src/gateway/protocol/schema/logs-chat.ts}).</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Builder
@@ -19,7 +22,7 @@ public class ChatAbortParams {
     private final String runId;
 
     /**
-     * 中止指定会话上所有进行中的 run。
+ * session run.
      */
     public static ChatAbortParams abortSession(String sessionKey) {
         Objects.requireNonNull(sessionKey, "sessionKey");
@@ -27,7 +30,7 @@ public class ChatAbortParams {
     }
 
     /**
-     * 中止指定 run。
+ * run.
      */
     public static ChatAbortParams abortRun(String sessionKey, String runId) {
         Objects.requireNonNull(sessionKey, "sessionKey");

@@ -25,9 +25,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Chat Completions API 客户端。
+ * Chat Completions API client.
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Slf4j
 public class OpenClawChatClient extends OpenClawHttpClient {
@@ -46,10 +49,10 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     private static ExecutorService createStreamExecutor(OpenClawHttpClientConfig config) {
-        int corePoolSize = Math.max(1, config.getSseCorePoolSize());
-        int maxPoolSize = Math.max(corePoolSize, config.getSseMaxPoolSize());
-        int queueCapacity = Math.max(1, config.getSseQueueCapacity());
-        long keepAliveMillis = Math.max(1L, config.getSseKeepAliveMillis());
+        int corePoolSize = Math.max(1, config.getStreamCorePoolSize());
+        int maxPoolSize = Math.max(corePoolSize, config.getStreamMaxPoolSize());
+        int queueCapacity = Math.max(1, config.getStreamQueueCapacity());
+        long keepAliveMillis = Math.max(1L, config.getStreamKeepAliveMillis());
         AtomicInteger threadIndex = new AtomicInteger();
         return new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveMillis, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<>(queueCapacity), runnable -> {
@@ -128,7 +131,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 流式 chat completion。
+ * streaming chat completion.
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request) {
         return chatCompletionStream(request, (Map<String, String>) null);
@@ -147,7 +150,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 获取流式响应的原始 OkHttp Response（高级用法）。
+ * streaming OkHttp Response(usage).
      */
     public Response chatCompletionStreamRaw(ChatRequest request) {
         return chatCompletionStreamRaw(request, null);
