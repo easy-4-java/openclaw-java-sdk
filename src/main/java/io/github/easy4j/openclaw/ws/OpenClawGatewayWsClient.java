@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <h3>example</h3>
  * <pre>{@code
  * OpenClawClientConfig config = new OpenClawClientConfig();
- * config.setGatewayBaseUrl("http://localhost:18789");
+ * config.setBaseUrl("http://localhost:18789");
  * config.setGatewayAuthToken("my-gateway-token");
  *
  * OpenClawGatewayWsClient ws = new OpenClawGatewayWsClient(config);
@@ -114,7 +114,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     private static URI buildWsUri(OpenClawHttpClientConfig config) {
-        String base = config.getGatewayBaseUrl();
+        String base = config.getBaseUrl();
         if (OpenClawStrings.isBlank(base)) {
             throw new IllegalArgumentException("gatewayBaseUrl is required for WebSocket connection");
         }

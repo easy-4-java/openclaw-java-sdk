@@ -225,7 +225,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
  * Resolves the URL.
      */
     protected String resolveUrl(String path) {
-        String base = config.getGatewayBaseUrl();
+        String base = config.getBaseUrl();
         if (OpenClawStrings.isBlank(base)) {
             throw new OpenClawHttpException("gatewayBaseUrl is empty", null);
         }

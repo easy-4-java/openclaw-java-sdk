@@ -51,7 +51,7 @@ public class OpenClawHttpClientConfig {
     /**
  * Gateway HTTP root URL(Webhooks HTTP ), {@code http://localhost:18789}.
      */
-    private String gatewayBaseUrl = "http://localhost:18789";
+    private String baseUrl = "http://localhost:18789";
 
     /**
  * Gateway control planetoken( {@code gateway.auth.token} {@code OPENCLAW_GATEWAY_TOKEN}).
@@ -106,54 +106,6 @@ public class OpenClawHttpClientConfig {
 
     /** 遇到失效连接等传输故障时是否允许 OkHttp 自动恢复 */
     private boolean retryOnConnectionFailure = true;
-
-    /** @deprecated 使用 {@link #getStreamCorePoolSize()}。 */
-    @Deprecated
-    public int getSseCorePoolSize() {
-        return streamCorePoolSize;
-    }
-
-    /** @deprecated 使用 {@link #setStreamCorePoolSize(int)}。 */
-    @Deprecated
-    public void setSseCorePoolSize(int value) {
-        this.streamCorePoolSize = value;
-    }
-
-    /** @deprecated 使用 {@link #getStreamMaxPoolSize()}。 */
-    @Deprecated
-    public int getSseMaxPoolSize() {
-        return streamMaxPoolSize;
-    }
-
-    /** @deprecated 使用 {@link #setStreamMaxPoolSize(int)}。 */
-    @Deprecated
-    public void setSseMaxPoolSize(int value) {
-        this.streamMaxPoolSize = value;
-    }
-
-    /** @deprecated 使用 {@link #getStreamQueueCapacity()}。 */
-    @Deprecated
-    public int getSseQueueCapacity() {
-        return streamQueueCapacity;
-    }
-
-    /** @deprecated 使用 {@link #setStreamQueueCapacity(int)}。 */
-    @Deprecated
-    public void setSseQueueCapacity(int value) {
-        this.streamQueueCapacity = value;
-    }
-
-    /** @deprecated 使用 {@link #getStreamKeepAliveMillis()}。 */
-    @Deprecated
-    public long getSseKeepAliveMillis() {
-        return streamKeepAliveMillis;
-    }
-
-    /** @deprecated 使用 {@link #setStreamKeepAliveMillis(long)}。 */
-    @Deprecated
-    public void setSseKeepAliveMillis(long value) {
-        this.streamKeepAliveMillis = value;
-    }
 
     /**
  * Gateway HTTP Webhooks base path,Corresponds to {@code hooks.path}, {@code /hooks}.

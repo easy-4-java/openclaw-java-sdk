@@ -239,10 +239,10 @@ public class OpenClawClient implements AutoCloseable {
      */
     private void runStartupChecks(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig) {
         if (httpConfig.isEnabled() && httpConfig.isStartupCheckEnabled()
-                && OpenClawStrings.isNotBlank(httpConfig.getGatewayBaseUrl())) {
+                && OpenClawStrings.isNotBlank(httpConfig.getBaseUrl())) {
             try {
                 chatClient.health();
-                log.info("OpenClaw HTTP health check passed: {}", httpConfig.getGatewayBaseUrl());
+                log.info("OpenClaw HTTP health check passed: {}", httpConfig.getBaseUrl());
             } catch (Exception e) {
                 if (httpConfig.isFailFastOnUnavailable()) {
                     throw new IllegalStateException(
