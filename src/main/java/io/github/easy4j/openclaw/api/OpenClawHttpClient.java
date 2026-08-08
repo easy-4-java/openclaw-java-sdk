@@ -15,10 +15,13 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * HTTP 客户端基类。
+ * HTTP client base class.
  * <p>
- * 封装 OkHttp 和 ObjectMapper 的配置，提供通用的 HTTP 请求方法。
+ * Wraps OkHttp ObjectMapper ,Provides HTTP .
  * </p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Slf4j
@@ -59,14 +62,14 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 构建带认证的请求。
+ * Builds an authenticated.
      */
     protected Request.Builder authedBuilder(String url) {
         return authedBuilder(url, null);
     }
 
     /**
-     * 构建带认证的请求，追加额外请求头。
+ * Builds an authenticated,extra headers.
      */
     protected Request.Builder authedBuilder(String url, Map<String, String> headers) {
         debug("Building request: url={}", url);
@@ -95,14 +98,14 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * POST JSON 请求。
+ * POST JSON .
      */
     protected String postJson(String path, Object body) {
         return postJson(path, body, null);
     }
 
     /**
-     * POST JSON 请求，带额外请求头。
+ * POST JSON ,extra headers.
      */
     protected String postJson(String path, Object body, Map<String, String> headers) {
         String url = resolveUrl(path);
@@ -125,7 +128,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * GET JSON 请求。
+ * GET JSON .
      */
     protected String getJson(String path) {
         String url = resolveUrl(path);
@@ -142,7 +145,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 执行请求。
+ * .
      */
     protected String execute(Request request, String url) throws IOException {
         debug("Executing request: {} {}", request.method(), request.url());
@@ -169,7 +172,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 解析 JSON 响应。
+ * JSON .
      */
     protected <T> T parse(String json, Class<T> type) {
         try {
@@ -180,7 +183,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 解析 JSON 响应，带标签。
+ * JSON ,.
      */
     protected <T> T parse(String json, Class<T> type, String label) {
         try {
@@ -191,7 +194,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 解析 URL。
+ * Resolves the URL.
      */
     protected String resolveUrl(String path) {
         String base = config.getGatewayBaseUrl();
@@ -206,13 +209,13 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 探测 Gateway HTTP 服务可用性。
+ * Probes the Gateway HTTP .
      * <p>
-     * 通过 {@code GET /v1/models} 触发；任何 HTTP 2xx 都视为健康。
-     * 抛出 {@link OpenClawHttpException} 时表示探测失败（网络错误或非 2xx）。
+ * {@code GET /v1/models} ; HTTP 2xx .
+ * {@link OpenClawHttpException} probe failed( 2xx).
      * </p>
      *
-     * @throws OpenClawHttpException 网络失败或响应非 2xx
+ * @throws OpenClawHttpException 2xx
      */
     public void health() {
         debug("=== Health probe: {} ===", OpenClawConstants.ENDPOINT_MODELS);

@@ -8,57 +8,60 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw migrate}：从其它 agent 系统导入状态。
+ * {@code openclaw migrate}: agent system.
  * <p>
- * 支持 {@code list}、{@code plan <provider>}、{@code apply <provider>} 子命令以及默认动作
- * {@code migrate [provider]}。共享选项通过 {@code addMigrationOptions} 注入；{@code apply} 与默认动作
- * 额外支持 {@code --yes}/{@code --backup-output}/{@code --no-backup}/{@code --force}/{@code --dry-run}。
+ * {@code list},{@code plan <provider>},{@code apply <provider>} subcommand
+ * {@code migrate [provider]}. {@code addMigrationOptions} inject;{@code apply}
+ * {@code --yes}/{@code --backup-output}/{@code --no-backup}/{@code --force}/{@code --dry-run}.
  * </p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/migrate">migrate CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class MigrateOptions implements CliSubArgs {
 
-    /** 子命令模式。 */
+ /** subcommand. */
     public enum Mode {
-        /** 默认动作 {@code migrate [provider]}：预览并可选应用。 */
+ /** {@code migrate [provider]}:Optional. */
         DEFAULT,
-        /** {@code list}：列出可用的迁移提供者。 */
+ /** {@code list}:migrateProvides. */
         LIST,
-        /** {@code plan <provider>}：仅预览，不应用。 */
+ /** {@code plan <provider>}:only,. */
         PLAN,
-        /** {@code apply <provider>}：应用迁移。 */
+ /** {@code apply <provider>}:migrate. */
         APPLY
     }
 
     private final Mode mode;
-    /** 迁移提供者 ID（如 {@code hermes}）。 */
+ /** migrateProvides ID( {@code hermes}). */
     private final String provider;
-    /** {@code --from}：源目录。 */
+ /** {@code --from}:directory. */
     private final String from;
-    /** {@code --include-secrets}：导入受支持的凭证与机密。 */
+ /** {@code --include-secrets}:credentials. */
     private final boolean includeSecrets;
-    /** {@code --no-auth-credentials}：跳过 auth 凭证迁移（Commander 否定标志）。 */
+ /** {@code --no-auth-credentials}:skips auth credentialsmigrate(Commander ). */
     private final boolean noAuthCredentials;
-    /** {@code --overwrite}：在条目级备份后覆盖冲突的目标文件。 */
+ /** {@code --overwrite}:backup. */
     private final boolean overwrite;
-    /** {@code --dry-run}：仅预览，不应用变更。 */
+ /** {@code --dry-run}:only,. */
     private final boolean dryRun;
-    /** {@code --yes}：预览后无需提示直接应用。 */
+ /** {@code --yes}:. */
     private final boolean yes;
-    /** {@code --skill}（可重复）：按名称或条目 id 选择一个技能迁移。 */
+ /** {@code --skill}: id skillmigrate. */
     private final List<String> skills;
-    /** {@code --plugin}（可重复）：按名称或条目 id 选择一个 Codex 插件迁移。 */
+ /** {@code --plugin}: id Codex pluginmigrate. */
     private final List<String> plugins;
-    /** {@code --backup-output}：迁移前备份归档路径或目录。 */
+ /** {@code --backup-output}:migratebackupdirectory. */
     private final String backupOutput;
-    /** {@code --no-backup}：跳过迁移前的 OpenClaw 备份。 */
+ /** {@code --no-backup}:skipsmigrate OpenClaw backup. */
     private final boolean noBackup;
-    /** {@code --force}：允许危险选项如 {@code --no-backup}。 */
+ /** {@code --force}: {@code --no-backup}. */
     private final boolean force;
-    /** {@code --verify-plugin-apps}：Codex 专用：在规划原生插件激活前用 app/list 校验源插件 app 可达性。 */
+ /** {@code --verify-plugin-apps}:Codex :plugin app/list plugin app . */
     private final boolean verifyPluginApps;
-    /** {@code --json}：JSON 输出。 */
+ /** {@code --json}:JSON . */
     private final boolean json;
 
     private MigrateOptions(Builder b) {
@@ -80,7 +83,7 @@ public final class MigrateOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}（默认 {@link Mode#DEFAULT}）
+ * @return {@link Builder}( {@link Mode#DEFAULT})
      */
     public static Builder builder() {
         return new Builder();
@@ -133,7 +136,7 @@ public final class MigrateOptions implements CliSubArgs {
     }
 
     /**
-     * {@link MigrateOptions} 构建器。
+ * {@link MigrateOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.DEFAULT;
@@ -152,47 +155,47 @@ public final class MigrateOptions implements CliSubArgs {
         private boolean verifyPluginApps;
         private boolean json;
 
-        /** 切换为 {@code list} 子命令。 */
+ /** {@code list} subcommand. */
         public Builder list() { this.mode = Mode.LIST; return this; }
-        /** 切换为 {@code plan <provider>} 子命令。 */
+ /** {@code plan <provider>} subcommand. */
         public Builder plan(String provider) { this.mode = Mode.PLAN; this.provider = provider; return this; }
-        /** 切换为 {@code apply <provider>} 子命令。 */
+ /** {@code apply <provider>} subcommand. */
         public Builder apply(String provider) { this.mode = Mode.APPLY; this.provider = provider; return this; }
-        /** 默认动作 {@code migrate [provider]}。 */
+ /** {@code migrate [provider]}. */
         public Builder defaultAction(String provider) { this.mode = Mode.DEFAULT; this.provider = provider; return this; }
-        /** 显式指定 {@link Mode}。 */
+ /** {@link Mode}. */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
-        /** 迁移提供者 ID（如 {@code hermes}）。 */
+ /** migrateProvides ID( {@code hermes}). */
         public Builder provider(String provider) { this.provider = provider; return this; }
-        /** {@code --from}：源目录。 */
+ /** {@code --from}:directory. */
         public Builder from(String from) { this.from = from; return this; }
-        /** {@code --include-secrets}：导入受支持的凭证与机密。 */
+ /** {@code --include-secrets}:credentials. */
         public Builder includeSecrets(boolean includeSecrets) { this.includeSecrets = includeSecrets; return this; }
-        /** {@code --no-auth-credentials}：跳过 auth 凭证迁移。 */
+ /** {@code --no-auth-credentials}:skips auth credentialsmigrate. */
         public Builder noAuthCredentials(boolean noAuthCredentials) { this.noAuthCredentials = noAuthCredentials; return this; }
-        /** {@code --overwrite}：覆盖冲突的目标文件。 */
+ /** {@code --overwrite}:. */
         public Builder overwrite(boolean overwrite) { this.overwrite = overwrite; return this; }
-        /** {@code --dry-run}：仅预览。 */
+ /** {@code --dry-run}:only. */
         public Builder dryRun(boolean dryRun) { this.dryRun = dryRun; return this; }
-        /** {@code --yes}：预览后无需提示直接应用。 */
+ /** {@code --yes}:. */
         public Builder yes(boolean yes) { this.yes = yes; return this; }
-        /** {@code --skill}（可重复）：技能名称或条目 id。 */
+ /** {@code --skill}:skill id. */
         public Builder skills(List<String> skills) { this.skills = skills; return this; }
-        /** {@code --plugin}（可重复）：Codex 插件名称或条目 id。 */
+ /** {@code --plugin}:Codex plugin id. */
         public Builder plugins(List<String> plugins) { this.plugins = plugins; return this; }
-        /** {@code --backup-output}：迁移前备份归档路径。 */
+ /** {@code --backup-output}:migratebackup. */
         public Builder backupOutput(String backupOutput) { this.backupOutput = backupOutput; return this; }
-        /** {@code --no-backup}：跳过迁移前的 OpenClaw 备份。 */
+ /** {@code --no-backup}:skipsmigrate OpenClaw backup. */
         public Builder noBackup(boolean noBackup) { this.noBackup = noBackup; return this; }
-        /** {@code --force}：允许危险选项。 */
+ /** {@code --force}:. */
         public Builder force(boolean force) { this.force = force; return this; }
-        /** {@code --verify-plugin-apps}：Codex 专用，校验源插件 app 可达性。 */
+ /** {@code --verify-plugin-apps}:Codex ,plugin app . */
         public Builder verifyPluginApps(boolean verifyPluginApps) { this.verifyPluginApps = verifyPluginApps; return this; }
-        /** {@code --json}：JSON 输出。 */
+ /** {@code --json}:JSON . */
         public Builder json(boolean json) { this.json = json; return this; }
 
         /**
-         * @return 不可变 {@link MigrateOptions}
+ * @return {@link MigrateOptions}
          */
         public MigrateOptions build() {
             return new MigrateOptions(this);

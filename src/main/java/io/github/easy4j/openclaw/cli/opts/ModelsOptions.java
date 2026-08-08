@@ -9,108 +9,111 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw models}：模型发现、默认与回退链、别名列表，以及各厂商认证辅助子命令。
- * <p>{@code models status} 可展示解析后的默认模型与鉴权概况；{@code --probe} 会发起真实探测请求（可能消耗额度）。更深子命令用 {@link Builder#extra(String...)}。</p>
+ * {@code openclaw models}:,,authenticationsubcommand.
+ * <p>{@code models status} authentication;{@code --probe} .subcommand {@link Builder#extra(String...)}.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/models">models CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ModelsOptions implements CliSubArgs {
 
     /**
-     * models 子命令路径（status、list、set、scan、aliases、fallbacks、auth 变体等）。
+ * models subcommand(status,list,set,scan,aliases,fallbacks,auth ).
      */
     public enum Mode {
-        /** {@code models status}：解析默认/回退与鉴权概况，可选 live probe。 */
+ /** {@code models status}:/authentication,Optional live probe. */
         STATUS,
-        /** {@code models list}：列出已加载模型目录。 */
+ /** {@code models list}:directory. */
         LIST,
-        /** {@code models set}：设置默认模型或别名目标。 */
+ /** {@code models set}:. */
         SET,
-        /** {@code models scan}：扫描/刷新模型清单。 */
+ /** {@code models scan}:/. */
         SCAN,
         /** {@code models aliases list}。 */
         ALIASES_LIST,
         /** {@code models fallbacks list}。 */
         FALLBACKS_LIST,
-        /** {@code models auth add}：交互式认证向导。 */
+ /** {@code models auth add}:authentication. */
         AUTH_ADD,
-        /** {@code models auth login}：运行某 provider 插件的 OAuth 或密钥流程。 */
+ /** {@code models auth login}: provider plugin OAuth secretstream. */
         AUTH_LOGIN,
-        /** {@code models auth setup-token}：TTY 下走 provider 的 token 配置方法。 */
+ /** {@code models auth setup-token}:TTY provider token . */
         AUTH_SETUP_TOKEN,
-        /** {@code models auth paste-token}：粘贴外部获得的 token 并写入配置。 */
+ /** {@code models auth paste-token}: token . */
         AUTH_PASTE_TOKEN
     }
 
-    /** 当前建模到的 models 子命令。 */
+ /** models subcommand. */
     private final Mode mode;
     /**
-     * status：{@code --json} 机器可读状态。
+ * status:{@code --json} .
      */
     private final boolean statusJson;
     /**
-     * status：{@code --plain} 简化人类可读输出。
+ * status:{@code --plain} .
      */
     private final boolean statusPlain;
     /**
-     * status：{@code --check} 在过期/缺失鉴权时非零退出（文档：1=过期缺失，2=将过期）。
+ * status:{@code --check} /authentication(documentation:1=,2=).
      */
     private final boolean statusCheck;
     /**
-     * status：{@code --probe} 对每个配置档发起实时鉴权探测（可能触发限额）。
+ * status:{@code --probe} authentication.
      */
     private final boolean probe;
     /**
-     * status：{@code --probe-provider} 只探测单一 provider。
+ * status:{@code --probe-provider} provider.
      */
     private final String probeProvider;
     /**
-     * status：{@code --probe-profile} 逗号分隔或重复的 profile id 过滤探测集合。
+ * status:{@code --probe-profile} profile id .
      */
     private final String probeProfile;
     /**
-     * status：{@code --probe-timeout} 单次探测超时。
+ * status:{@code --probe-timeout} timeout.
      */
     private final String probeTimeout;
     /**
-     * status：{@code --probe-concurrency} 并发探测上限。
+ * status:{@code --probe-concurrency} concurrency.
      */
     private final String probeConcurrency;
     /**
-     * status：{@code --probe-max-tokens} 探测请求允许的最大 token 用量上限。
+ * status:{@code --probe-max-tokens} token .
      */
     private final String probeMaxTokens;
     /**
-     * status：{@code --agent} 指定已配置 agent，以查看其模型与鉴权视图。
+ * status:{@code --agent} agent,authentication.
      */
     private final String agent;
     /**
-     * set：位置参数 {@code provider/model}、别名或文档所述可解析形式。
+ * set: {@code provider/model},documentation.
      */
     private final String modelOrAlias;
     /**
-     * auth 子命令：{@code --provider} 目标 provider id。
+ * auth subcommand:{@code --provider} provider id.
      */
     private final String authProvider;
     /**
-     * auth login：{@code --set-default} 登录成功后设为默认配置。
+ * auth login:{@code --set-default} .
      */
     private final boolean authSetDefault;
     /**
-     * paste-token：{@code --profile-id} 写入的配置档 id（默认 {@code :manual}）。
+ * paste-token:{@code --profile-id} id( {@code :manual}).
      */
     private final String pasteProfileId;
     /**
-     * paste-token：{@code --expires-in} 相对时长换算绝对过期时间（如 {@code 365d}）。
+ * paste-token:{@code --expires-in} ( {@code 365d}).
      */
     private final String pasteExpiresIn;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private ModelsOptions(Builder b) {
         this.mode = b.mode;
@@ -133,7 +136,7 @@ public final class ModelsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -209,7 +212,7 @@ public final class ModelsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ModelsOptions} 构建器。
+ * {@link ModelsOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.STATUS;
@@ -337,7 +340,7 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * @param modelOrAlias set：模型或别名
+ * @param modelOrAlias set:
          * @return {@code this}
          */
         public Builder set(String modelOrAlias) {
@@ -436,9 +439,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -449,7 +452,7 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link ModelsOptions}
+ * @return {@link ModelsOptions}
          */
         public ModelsOptions build() {
             return new ModelsOptions(this);

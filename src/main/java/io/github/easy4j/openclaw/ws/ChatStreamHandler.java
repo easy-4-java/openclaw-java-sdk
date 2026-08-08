@@ -1,32 +1,35 @@
 package io.github.easy4j.openclaw.ws;
 
 /**
- * {@code chat.send} 流式回复处理器。
- * <p>Gateway 在处理 {@code chat.send} 时会推送多个 {@code event: "chat"} 事件帧，
- * 其中 {@code delta: true} 表示增量文本，{@code done: true} 表示回复完成。</p>
+ * {@code chat.send} streaming reply handler.
+ * <p>Gateway {@code chat.send} {@code event: "chat"} event,
+ * {@code delta: true} delta text,{@code done: true} completion.</p>
  *
  * @see <a href="https://docs.openclaw.ai/gateway/protocol">Gateway Protocol</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public interface ChatStreamHandler {
 
     /**
-     * 收到增量文本。
+ * delta text.
      *
-     * @param text 增量文本片段
+ * @param text delta text
      */
     void onDelta(String text);
 
     /**
-     * 回复完成。
+ * completion.
      *
-     * @param fullText 完整回复文本
+ * @param fullText
      */
     void onComplete(String fullText);
 
     /**
-     * 回复出错。
+ * .
      *
-     * @param error 错误信息
+ * @param error error message
      */
     void onError(String error);
 }

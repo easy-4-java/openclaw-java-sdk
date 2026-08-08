@@ -9,15 +9,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Task Flow 子命令参数：对应 {@code openclaw tasks flow list|show|cancel}（多步流程编排，状态持久化，取消会写入 sticky cancel 并停止子任务）。
- * <p>请配合 {@link io.github.easy4j.openclaw.cli.OpenClawCli#flows(FlowsOptions)} 使用；其实现向 CLI 投递 {@code tasks} 前缀。</p>
+ * Task Flow subcommand:Corresponds to {@code openclaw tasks flow list|show|cancel}(stream, sticky cancel ).
+ * <p> {@link io.github.easy4j.openclaw.cli.OpenClawCli#flows(FlowsOptions)} ; CLI {@code tasks} .</p>
  *
- * @see <a href="https://docs.openclaw.ai/cli/flows">flows CLI（重定向说明）</a>
+ * @see <a href="https://docs.openclaw.ai/cli/flows">flows CLI</a>
  * @see <a href="https://docs.openclaw.ai/automation/taskflow">Task Flow</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class FlowsOptions implements CliSubArgs {
 
-    /** {@code flow list|show|cancel} 变体。 */
+ /** {@code flow list|show|cancel} . */
     public enum Mode {
         /** {@code flow list} */
         LIST,
@@ -28,24 +31,24 @@ public final class FlowsOptions implements CliSubArgs {
     }
 
     /**
-     * {@code flow list|show|cancel} 之一（与 Task Flow 文档 CLI 表一致）。
+ * {@code flow list|show|cancel} ( Task Flow documentation CLI ).
      */
     private final Mode mode;
     /**
-     * {@code flow list --json}：列出流程时输出机器可读 JSON。
+ * {@code flow list --json}:stream JSON.
      */
     private final boolean listJson;
     /**
-     * {@code flow show|cancel} 的位置参数：flow id 或 lookup key（官方文档以 {@code lookup} 占位符表示）。
+ * {@code flow show|cancel} :flow id lookup key(documentation {@code lookup} ).
      */
     private final String lookup;
     /**
-     * 其它 {@code openclaw tasks} 级 token。
+ * {@code openclaw tasks} token.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private FlowsOptions(Builder b) {
         this.mode = b.mode;
@@ -55,7 +58,7 @@ public final class FlowsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -93,7 +96,7 @@ public final class FlowsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link FlowsOptions} 构建器。
+ * {@link FlowsOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.LIST;
@@ -119,7 +122,7 @@ public final class FlowsOptions implements CliSubArgs {
         }
 
         /**
-         * @param lookup flow 标识（show）
+ * @param lookup flow (show)
          * @return {@code this}
          */
         public Builder show(String lookup) {
@@ -129,7 +132,7 @@ public final class FlowsOptions implements CliSubArgs {
         }
 
         /**
-         * @param lookup flow 标识（cancel）
+ * @param lookup flow (cancel)
          * @return {@code this}
          */
         public Builder cancel(String lookup) {
@@ -139,7 +142,7 @@ public final class FlowsOptions implements CliSubArgs {
         }
 
         /**
-         * @param tokens 额外 CLI token
+ * @param tokens CLI token
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -150,7 +153,7 @@ public final class FlowsOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link FlowsOptions}
+ * @return {@link FlowsOptions}
          */
         public FlowsOptions build() {
             return new FlowsOptions(this);

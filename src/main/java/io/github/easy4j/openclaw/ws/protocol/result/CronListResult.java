@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@code cron.list} RPC 成功响应体。
+ * {@code cron.list} RPC response body.
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -28,7 +31,7 @@ public class CronListResult {
     private Map<String, Object> deliveryPreviews;
 
     /**
-     * Gateway 不同版本可能使用 {@code jobs} 或 {@code items} 字段。
+ * Gateway version {@code jobs} {@code items} field.
      */
     public List<CronJobSummary> getJobs() {
         if (jobs != null && !jobs.isEmpty()) {

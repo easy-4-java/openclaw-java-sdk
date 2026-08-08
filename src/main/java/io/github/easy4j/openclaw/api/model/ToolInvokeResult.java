@@ -8,23 +8,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Tools Invoke API 响应。
+ * Tools Invoke API .
  * <p>
- * 对应 {@code POST /tools/invoke} 返回的 JSON。
+ * Corresponds to {@code POST /tools/invoke} JSON.
  * </p>
  *
- * <h3>响应状态码</h3>
+ * <h3>status code</h3>
  * <ul>
- *   <li>{@code 200} - 成功：{@code { ok: true, result }}</li>
- *   <li>{@code 400} - 请求无效或工具输入错误：{@code { ok: false, error: { type, message } }}</li>
- *   <li>{@code 401} - 未授权</li>
- *   <li>{@code 404} - 工具不可用（未找到或未在允许列表中）</li>
- *   <li>{@code 405} - 方法不允许</li>
- *   <li>{@code 429} - 鉴权速率限制（{@code Retry-After} 已设置）</li>
- *   <li>{@code 500} - 意外工具执行错误</li>
+ * <li>{@code 200} - :{@code { ok: true, result }}</li>
+ * <li>{@code 400} - :{@code { ok: false, error: { type, message } }}</li>
+ * <li>{@code 401} - </li>
+ * <li>{@code 404} - </li>
+ * <li>{@code 405} - </li>
+ * <li>{@code 429} - authentication({@code Retry-After} )</li>
+ * <li>{@code 500} - </li>
  * </ul>
  *
  * @see <a href="https://docs.openclaw.ai/gateway/tools-invoke-http-api">Tools Invoke API</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Setter
@@ -33,34 +36,34 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ToolInvokeResult {
 
-    /** 错误类型：未找到 */
+ /** : */
     public static final String ERROR_TYPE_NOT_FOUND = "not_found";
 
-    /** 错误类型：无效请求 */
+ /** : */
     public static final String ERROR_TYPE_INVALID_REQUEST = "invalid_request_error";
 
-    /** 错误类型：工具错误 */
+ /** : */
     public static final String ERROR_TYPE_TOOL_ERROR = "tool_error";
 
     /**
-     * 是否成功。
-     * <p>{@code true} 表示工具调用成功，{@code false} 表示失败。</p>
+ * .
+ * <p>{@code true} tool call,{@code false} .</p>
      */
     private Boolean ok;
 
     /**
-     * 工具执行结果（仅 {@code ok} 为 {@code true} 时存在）。
-     * <p>结果格式取决于具体工具。</p>
+ * (only {@code ok} {@code true} ).
+ * <p>.</p>
      */
     private Object result;
 
     /**
-     * 错误信息（仅 {@code ok} 为 {@code false} 时存在）。
+ * error message(only {@code ok} {@code false} ).
      */
     private ErrorDetail error;
 
     /**
-     * 错误详情。
+ * details.
      */
     @Getter
     @Setter
@@ -69,16 +72,16 @@ public class ToolInvokeResult {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ErrorDetail {
         /**
-         * 错误类型。
+ * .
          * <ul>
-         *   <li>{@code "invalid_request_error"} - 请求无效</li>
-         *   <li>{@code "tool_error"} - 工具执行错误</li>
+ * <li>{@code "invalid_request_error"} - </li>
+ * <li>{@code "tool_error"} - </li>
          * </ul>
          */
         private String type;
 
         /**
-         * 错误消息（已清理，可安全展示）。
+ * message(security).
          */
         private String message;
     }

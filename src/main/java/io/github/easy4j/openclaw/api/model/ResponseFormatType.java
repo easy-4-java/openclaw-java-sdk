@@ -3,13 +3,16 @@ package io.github.easy4j.openclaw.api.model;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * {@link ResponseFormat} 的 type 枚举。
+ * {@link ResponseFormat} type .
  *
  * <ul>
- *   <li>{@code text} — 默认文本输出</li>
- *   <li>{@code json_object} — 强制返回合法 JSON</li>
- *   <li>{@code json_schema} — 结构化输出（需配合 {@code json_schema} 字段）</li>
+ * <li>{@code text} — </li>
+ * <li>{@code json_object} — JSON</li>
+ * <li>{@code json_schema} — ( {@code json_schema} field)</li>
  * </ul>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public enum ResponseFormatType {
 

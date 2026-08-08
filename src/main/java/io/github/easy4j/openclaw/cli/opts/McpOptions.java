@@ -9,22 +9,25 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw mcp}：{@code mcp serve} 让 OpenClaw 作为 stdio MCP 服务端把 Gateway 已路由的会话暴露给外部客户端；
- * {@code list|show|set|unset} 则维护配置中的 {@code mcp.servers} 注册表（不启动桥接、也不探测远端可达性）。
+ * {@code openclaw mcp}:{@code mcp serve} OpenClaw stdio MCP Gateway session;
+ * {@code list|show|set|unset} {@code mcp.servers} ().
  *
  * @see <a href="https://docs.openclaw.ai/cli/mcp">mcp CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class McpOptions implements CliSubArgs {
 
     /**
-     * {@code mcp serve --claude-channel-mode}：是否为理解 Claude 通知协议的客户端开启额外推送通道。
+ * {@code mcp serve --claude-channel-mode}: Claude channel.
      */
     public enum ClaudeChannelMode {
-        /** {@code off}：仅标准 MCP 工具，无 Claude 专用通知。 */
+ /** {@code off}:only MCP , Claude . */
         OFF("off"),
-        /** {@code on}：启用 {@code notifications/claude/channel} 等实验能力。 */
+ /** {@code on}: {@code notifications/claude/channel} . */
         ON("on"),
-        /** {@code auto}：当前与 {@code on} 行为相同（文档：尚无客户端能力探测）。 */
+ /** {@code auto}: {@code on} (documentation:). */
         AUTO("auto");
 
         private final String cliValue;
@@ -39,53 +42,53 @@ public final class McpOptions implements CliSubArgs {
     }
 
     /**
-     * mcp 子命令：stdio 桥接 serve，或读写配置内 MCP server 定义。
+ * mcp subcommand:stdio serve, MCP server .
      */
     public enum Mode {
-        /** {@code mcp serve}：连接 Gateway 并在 MCP 会话存活期间维护内存事件队列。 */
+ /** {@code mcp serve}:connection Gateway MCP sessionevent. */
         SERVE,
-        /** {@code mcp list}：列出 {@code mcp.servers} 名称。 */
+ /** {@code mcp list}: {@code mcp.servers} . */
         LIST,
-        /** {@code mcp show}：打印单个或全部 server JSON。 */
+ /** {@code mcp show}: server JSON. */
         SHOW,
-        /** {@code mcp set}：写入一条 server 定义（JSON 对象字符串）。 */
+ /** {@code mcp set}: server (JSON objectcharacters). */
         SET,
-        /** {@code mcp unset}：删除命名 server。 */
+ /** {@code mcp unset}: server. */
         UNSET
     }
 
-    /** serve 或 registry 子命令之一。 */
+ /** serve registry subcommand. */
     private final Mode mode;
     /**
-     * serve：{@code --url} 目标 Gateway WebSocket（与 acp 一样建议显式凭据）。
+ * serve:{@code --url} Gateway WebSocket( acp ).
      */
     private final String url;
     /**
-     * serve：{@code --token} 网关 token（优先文件或环境变量以避免进程列表泄露）。
+ * serve:{@code --token} Gateway token(process).
      */
     private final String token;
     /**
-     * serve：{@code --token-file} 从文件读取 token。
+ * serve:{@code --token-file} token.
      */
     private final String tokenFile;
     /**
-     * serve：{@code --password} 网关密码。
+ * serve:{@code --password} Gateway.
      */
     private final String password;
     /**
-     * serve：{@code --password-file} 从文件读取密码。
+ * serve:{@code --password-file} .
      */
     private final String passwordFile;
     /**
-     * serve：{@code --claude-channel-mode} 见 {@link ClaudeChannelMode}。
+ * serve:{@code --claude-channel-mode} See {@link ClaudeChannelMode}.
      */
     private final ClaudeChannelMode claudeChannelMode;
     /**
-     * serve：{@code --verbose} 在 stderr 打印桥接诊断日志。
+ * serve:{@code --verbose} stderr diagnostic.
      */
     private final boolean verbose;
     /**
-     * show：server 名称位置参数；省略时打印完整对象（文档语义）。
+ * show:server ;object(documentation).
      */
     private final String showName;
     /**
@@ -93,24 +96,24 @@ public final class McpOptions implements CliSubArgs {
      */
     private final boolean showJson;
     /**
-     * set：server 名称位置参数。
+ * set:server .
      */
     private final String setName;
     /**
-     * set：紧随其后的 JSON 对象字面量（整条 server 配置）。
+ * set: JSON object( server ).
      */
     private final String setJson;
     /**
-     * unset：要删除的 server 名。
+ * unset: server .
      */
     private final String unsetName;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private McpOptions(Builder b) {
         this.mode = b.mode;
@@ -130,7 +133,7 @@ public final class McpOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -189,7 +192,7 @@ public final class McpOptions implements CliSubArgs {
     }
 
     /**
-     * {@link McpOptions} 构建器。
+ * {@link McpOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.SERVE;
@@ -287,9 +290,9 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * {@code show}；{@code name} 为空时等价于文档「无名称」展示完整对象。
+ * {@code show};{@code name} When empty,Equivalent todocumentation""object.
          *
-         * @param name MCP 名称（可为 null）
+ * @param name MCP ( null)
          * @return {@code this}
          */
         public Builder show(String name) {
@@ -308,10 +311,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * {@code set <name> <json>}，{@code json} 为单行 JSON 字符串。
+ * {@code set <name> <json>},{@code json} JSON characters.
          *
-         * @param name MCP 名称
-         * @param json 单行 JSON
+ * @param name MCP
+ * @param json JSON
          * @return {@code this}
          */
         public Builder set(String name, String json) {
@@ -322,7 +325,7 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @param name unset：名称
+ * @param name unset:
          * @return {@code this}
          */
         public Builder unset(String name) {
@@ -332,9 +335,9 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -345,7 +348,7 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link McpOptions}
+ * @return {@link McpOptions}
          */
         public McpOptions build() {
             return new McpOptions(this);

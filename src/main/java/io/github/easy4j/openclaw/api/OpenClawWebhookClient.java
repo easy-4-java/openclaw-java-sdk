@@ -17,8 +17,11 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * OpenClaw Gateway HTTP Webhooks 客户端（{@code /hooks/*}）。
- * <p>基于 OkHttp，支持外部传入 {@link OkHttpClient}。</p>
+ * OpenClaw Gateway HTTP Webhooks client({@code /hooks/*}).
+ * <p> OkHttp, {@link OkHttpClient}.</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Slf4j
 public class OpenClawWebhookClient implements AutoCloseable {

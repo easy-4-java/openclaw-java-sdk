@@ -8,14 +8,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw system}：Gateway 级系统能力——入队系统事件、控制心跳、查看 presence；子命令均走 Gateway RPC。
- * <p>共享客户端参数：{@code --url}、{@code --token}、{@code --timeout}、{@code --expect-final}。系统事件为临时数据，Gateway 重启后不保留。</p>
+ * {@code openclaw system}:Gateway system——systemevent,heartbeat, presence;subcommand Gateway RPC.
+ * <p>:{@code --url},{@code --token},{@code --timeout},{@code --expect-final}.systemevent,Gateway .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/system">system CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class SystemOptions implements CliSubArgs {
 
-    /** {@code system heartbeat} 子路径。 */
+ /** {@code system heartbeat} . */
     public enum HeartbeatSub {
         /** {@code heartbeat last} */
         LAST,
@@ -25,7 +28,7 @@ public final class SystemOptions implements CliSubArgs {
         DISABLE
     }
 
-    /** 顶层 {@code system} 子命令族。 */
+ /** {@code system} subcommand. */
     public enum Mode {
         /** {@code system event} */
         EVENT,
@@ -36,48 +39,48 @@ public final class SystemOptions implements CliSubArgs {
     }
 
     /**
-     * 子命令族：{@code event}（入队系统事件）、{@code heartbeat}、{@code presence}。
+ * subcommand:{@code event}(systemevent),{@code heartbeat},{@code presence}.
      */
     private final Mode mode;
     /**
-     * {@code heartbeat} 子路径：{@code last}（最近事件）、{@code enable}、{@code disable}（文档：暂停/恢复心跳调度）。
+ * {@code heartbeat} :{@code last}(event),{@code enable},{@code disable}(documentation:/restoreheartbeatschedule).
      */
     private final HeartbeatSub heartbeatSub;
     /**
-     * {@code --url}：Gateway WebSocket（与其它 RPC 子命令共享）。
+ * {@code --url}:Gateway WebSocket( RPC subcommand).
      */
     private final String gatewayUrl;
     /**
-     * {@code --token}：RPC 认证 token。
+ * {@code --token}:RPC authentication token.
      */
     private final String gatewayToken;
     /**
-     * {@code --timeout}：RPC 超时。
+ * {@code --timeout}:RPC timeout.
      */
     private final String timeout;
     /**
-     * {@code --expect-final}：等待 RPC 最终响应。
+ * {@code --expect-final}: RPC .
      */
     private final boolean expectFinal;
     /**
-     * {@code --text}：系统事件正文（{@code system event} 必需）；随下次心跳以 {@code System:} 行注入主会话提示。
+ * {@code --text}:systemevent({@code system event} );heartbeat {@code System:} injectsession.
      */
     private final String eventText;
     /**
-     * {@code --mode}：{@code now} 立即触发心跳，或 {@code next-heartbeat}（默认）等待下一次调度。
+ * {@code --mode}:{@code now} heartbeat, {@code next-heartbeat}schedule.
      */
     private final String eventMode;
     /**
-     * {@code --json}：机器可读输出。
+ * {@code --json}:.
      */
     private final boolean json;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private SystemOptions(Builder b) {
         this.mode = b.mode;
@@ -93,7 +96,7 @@ public final class SystemOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -137,7 +140,7 @@ public final class SystemOptions implements CliSubArgs {
     }
 
     /**
-     * {@link SystemOptions} 构建器。
+ * {@link SystemOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.PRESENCE;
@@ -152,7 +155,7 @@ public final class SystemOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 设为 {@link Mode#EVENT} 并设置事件文本。
+ * {@link Mode#EVENT} event.
          *
          * @param text {@code --text}
          * @return {@code this}
@@ -164,7 +167,7 @@ public final class SystemOptions implements CliSubArgs {
         }
 
         /**
-         * @param eventMode {@code --mode}（event 子命令）
+ * @param eventMode {@code --mode}(event subcommand)
          * @return {@code this}
          */
         public Builder eventMode(String eventMode) {
@@ -200,7 +203,7 @@ public final class SystemOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}，presence 子命令
+ * @return {@code this},presence subcommand
          */
         public Builder presence() {
             this.mode = Mode.PRESENCE;
@@ -253,7 +256,7 @@ public final class SystemOptions implements CliSubArgs {
         }
 
         /**
-         * @param tokens 额外 CLI token
+ * @param tokens CLI token
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -264,7 +267,7 @@ public final class SystemOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link SystemOptions}
+ * @return {@link SystemOptions}
          */
         public SystemOptions build() {
             return new SystemOptions(this);

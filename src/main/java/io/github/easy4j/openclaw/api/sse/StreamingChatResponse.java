@@ -10,30 +10,30 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
- * SSE 流式响应封装。
+ * SSE streaming response wrapper.
  * <p>
- * 提供流畅的 API 用于注册增量回调，支持：
+ * Provides a fluent API Used fordelta,:
  * </p>
  * <ul>
- *   <li>{@code onDelta} - 文本增量（类似 Spring AI 的 {@code Flux<ChatResponse>}）</li>
- *   <li>{@code onChunk} - 原始 chunk（完整的 SSE 数据块）</li>
- *   <li>{@code onToolCall} - 工具调用增量</li>
- *   <li>{@code onComplete} - 流结束</li>
- *   <li>{@code onError} - 错误处理</li>
+ * <li>{@code onDelta} - delta( Spring AI {@code Flux<ChatResponse>})</li>
+ * <li>{@code onChunk} - chunk( SSE )</li>
+ * <li>{@code onToolCall} - tool calldelta</li>
+ * <li>{@code onComplete} - stream</li>
+ * <li>{@code onError} - </li>
  * </ul>
  *
- * <h3>用法示例</h3>
+ * <h3>usageexample</h3>
  * <pre>{@code
- * // 方式 1：链式调用（推荐）
+ * // 1:
  * StreamingChatResponse stream = client.chatCompletionStream(request);
  * stream.onDelta(delta -> System.out.print(delta))
- *       .onComplete(fullText -> System.out.println("\\n完成: " + fullText))
+ * .onComplete(fullText -> System.out.println("\\ncompletion: " + fullText))
  *       .onError(error -> error.printStackTrace());
  *
- * // 等待完整结果
+ * //
  * ChatChunk result = stream.get();
  *
- * // 方式 2：Builder 模式
+ * // 2:Builder
  * StreamingChatResponse stream2 = client.chatCompletionStream(request,
  *     StreamingChatResponse.builder()
  *         .onDelta(delta -> System.out.print(delta))
@@ -46,6 +46,9 @@ import java.util.function.Consumer;
  *
  * @see SseEventHandler
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#streaming-sse">Streaming SSE</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public class StreamingChatResponse extends CompletableFuture<ChatChunk>
@@ -62,7 +65,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     private Consumer<Throwable> errorConsumer;
 
     /**
-     * 创建 Builder。
+ * Builder.
      */
     public static Builder builder() {
         return new Builder();
@@ -71,12 +74,12 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     // ==================== 回调注册 ====================
 
     /**
-     * 注册文本增量回调。
+ * delta.
      * <p>
-     * 每次收到 delta content 时触发。
+ * delta content .
      * </p>
      *
-     * @param callback 回调，参数为增量文本
+ * @param callback ,delta text
      * @return this
      */
     public StreamingChatResponse onDelta(Consumer<String> callback) {
@@ -85,12 +88,12 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 注册原始 chunk 回调。
+ * chunk .
      * <p>
-     * 每次收到完整的 SSE 数据块时触发，包括所有字段。
+ * SSE ,field.
      * </p>
      *
-     * @param callback 回调，参数为完整的 {@link ChatChunk}
+ * @param callback , {@link ChatChunk}
      * @return this
      */
     public StreamingChatResponse onChunk(Consumer<ChatChunk> callback) {
@@ -99,12 +102,12 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 注册工具调用回调。
+ * tool call.
      * <p>
-     * 当流中出现工具调用时触发，完整收集后调用。
+ * streamtool call,.
      * </p>
      *
-     * @param callback 回调，参数为工具调用列表
+ * @param callback ,tool call
      * @return this
      */
     public StreamingChatResponse onToolCall(Consumer<List<ChatMessage.ToolCall>> callback) {
@@ -113,9 +116,9 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 注册流完成回调。
+ * streamcompletion.
      *
-     * @param callback 回调，参数为完整文本
+ * @param callback ,
      * @return this
      */
     public StreamingChatResponse onComplete(Consumer<String> callback) {
@@ -124,9 +127,9 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 注册错误回调。
+ * .
      *
-     * @param callback 回调
+ * @param callback
      * @return this
      */
     public StreamingChatResponse onError(Consumer<Throwable> callback) {

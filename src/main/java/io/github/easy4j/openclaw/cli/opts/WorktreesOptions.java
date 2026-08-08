@@ -7,42 +7,45 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw worktrees}：创建、检查、恢复与清理受管 worktree。
+ * {@code openclaw worktrees}:,restore worktree.
  * <p>
- * 支持 {@code list}、{@code create <repoRoot>}、{@code remove <id>}、{@code restore <id>}、{@code gc} 子命令。
- * 父命令默认执行帮助。
+ * {@code list},{@code create <repoRoot>},{@code remove <id>},{@code restore <id>},{@code gc} subcommand.
+ * help.
  * </p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/worktrees">worktrees CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class WorktreesOptions implements CliSubArgs {
 
-    /** 子命令模式。 */
+ /** subcommand. */
     public enum Mode {
-        /** {@code list}：列出受管 worktree。 */
+ /** {@code list}: worktree. */
         LIST,
-        /** {@code create <repoRoot>}：创建受管 worktree。 */
+ /** {@code create <repoRoot>}: worktree. */
         CREATE,
-        /** {@code remove <id>}：移除受管 worktree。 */
+ /** {@code remove <id>}: worktree. */
         REMOVE,
-        /** {@code restore <id>}：恢复受管 worktree。 */
+ /** {@code restore <id>}:restore worktree. */
         RESTORE,
-        /** {@code gc}：垃圾回收。 */
+ /** {@code gc}:. */
         GC
     }
 
     private final Mode mode;
-    /** create：位置参数 {@code <repoRoot>} 源 git checkout。 */
+ /** create: {@code <repoRoot>} git checkout. */
     private final String repoRoot;
-    /** remove/restore：位置参数 {@code <id>} 受管 worktree id。 */
+ /** remove/restore: {@code <id>} worktree id. */
     private final String id;
-    /** create：{@code --name} 受管 worktree 名称。 */
+ /** create:{@code --name} worktree . */
     private final String name;
-    /** create：{@code --base-ref} 分支来源 Git ref。 */
+ /** create:{@code --base-ref} Git ref. */
     private final String baseRef;
-    /** remove：{@code --force} 即使快照创建失败也移除。 */
+ /** remove:{@code --force} . */
     private final boolean force;
-    /** {@code --json}：JSON 输出。 */
+ /** {@code --json}:JSON . */
     private final boolean json;
 
     private WorktreesOptions(Builder b) {
@@ -56,7 +59,7 @@ public final class WorktreesOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}（默认 {@link Mode#LIST}）
+ * @return {@link Builder}( {@link Mode#LIST})
      */
     public static Builder builder() {
         return new Builder();
@@ -101,7 +104,7 @@ public final class WorktreesOptions implements CliSubArgs {
     }
 
     /**
-     * {@link WorktreesOptions} 构建器。
+ * {@link WorktreesOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.LIST;
@@ -112,33 +115,33 @@ public final class WorktreesOptions implements CliSubArgs {
         private boolean force;
         private boolean json;
 
-        /** 切换为 {@code list} 子命令。 */
+ /** {@code list} subcommand. */
         public Builder list() { this.mode = Mode.LIST; return this; }
-        /** 切换为 {@code create <repoRoot>} 子命令。 */
+ /** {@code create <repoRoot>} subcommand. */
         public Builder create(String repoRoot) { this.mode = Mode.CREATE; this.repoRoot = repoRoot; return this; }
-        /** 切换为 {@code remove <id>} 子命令。 */
+ /** {@code remove <id>} subcommand. */
         public Builder remove(String id) { this.mode = Mode.REMOVE; this.id = id; return this; }
-        /** 切换为 {@code restore <id>} 子命令。 */
+ /** {@code restore <id>} subcommand. */
         public Builder restore(String id) { this.mode = Mode.RESTORE; this.id = id; return this; }
-        /** 切换为 {@code gc} 子命令。 */
+ /** {@code gc} subcommand. */
         public Builder gc() { this.mode = Mode.GC; return this; }
-        /** 显式指定 {@link Mode}。 */
+ /** {@link Mode}. */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
-        /** create：位置参数 {@code <repoRoot>} 源 git checkout。 */
+ /** create: {@code <repoRoot>} git checkout. */
         public Builder repoRoot(String repoRoot) { this.repoRoot = repoRoot; return this; }
-        /** remove/restore：位置参数 {@code <id>} 受管 worktree id。 */
+ /** remove/restore: {@code <id>} worktree id. */
         public Builder id(String id) { this.id = id; return this; }
-        /** create：{@code --name} 受管 worktree 名称。 */
+ /** create:{@code --name} worktree . */
         public Builder name(String name) { this.name = name; return this; }
-        /** create：{@code --base-ref} 分支来源 Git ref。 */
+ /** create:{@code --base-ref} Git ref. */
         public Builder baseRef(String baseRef) { this.baseRef = baseRef; return this; }
-        /** remove：{@code --force} 即使快照创建失败也移除。 */
+ /** remove:{@code --force} . */
         public Builder force(boolean force) { this.force = force; return this; }
-        /** {@code --json}：JSON 输出。 */
+ /** {@code --json}:JSON . */
         public Builder json(boolean json) { this.json = json; return this; }
 
         /**
-         * @return 不可变 {@link WorktreesOptions}
+ * @return {@link WorktreesOptions}
          */
         public WorktreesOptions build() {
             return new WorktreesOptions(this);

@@ -8,42 +8,45 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw tui}：打开连接 Gateway 的终端 UI。
- * <p>文档说明：启动时会尽量解析配置中的网关认证 SecretRef（token/password）；若在 agent workspace 目录下启动且未显式指定
- * {@code agent::...} 形式的 {@code --session}，会默认选中该 agent 的会话键。详见 TUI 指南链接。</p>
+ * {@code openclaw tui}:connection Gateway terminal UI.
+ * <p>documentation:At startupGatewayauthentication SecretRef(token/password); agent workspace directory
+ * {@code agent::...} {@code --session}, agent sessionkey.See TUI .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/tui">tui CLI</a>
- * @see <a href="https://docs.openclaw.ai/web/tui">TUI 指南</a>
+ * @see <a href="https://docs.openclaw.ai/web/tui">TUI </a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class TuiOptions implements CliSubArgs {
 
     /**
-     * {@code --url}：Gateway WebSocket 地址（示例见官方文档）。
+ * {@code --url}:Gateway WebSocket (exampleSeedocumentation).
      */
     private final String url;
     /**
-     * {@code --token}：网关 token，与文档示例 {@code openclaw tui --url ... --token &lt;token&gt;} 一致。
+ * {@code --token}:Gateway token,with documentationexample {@code openclaw tui --url ... --token &lt;token&gt;} .
      */
     private final String token;
     /**
-     * {@code --password}：网关密码认证（与 token 二选一，具体行为见网关认证文档）。
+ * {@code --password}:Gatewayauthentication( token mutually exclusive,SeeGatewayauthenticationdocumentation).
      */
     private final String password;
     /**
-     * {@code --session}：会话键（如 {@code main}、{@code bugfix}）；显式 {@code agent::...} 可覆盖工作区推断。
+ * {@code --session}:sessionkey( {@code main},{@code bugfix}); {@code agent::...} .
      */
     private final String session;
     /**
-     * {@code --deliver}：文档示例中与 {@code --session} 联用的投递相关行为开关。
+ * {@code --deliver}:documentationexample {@code --session} .
      */
     private final boolean deliver;
     /**
-     * 其余未在类型中建模的 CLI token。
+ * CLI token.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private TuiOptions(Builder b) {
         this.url = b.url;
@@ -55,7 +58,7 @@ public final class TuiOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -77,7 +80,7 @@ public final class TuiOptions implements CliSubArgs {
     }
 
     /**
-     * {@link TuiOptions} 构建器。
+ * {@link TuiOptions} builder.
      */
     public static final class Builder {
         private String url;
@@ -133,7 +136,7 @@ public final class TuiOptions implements CliSubArgs {
         }
 
         /**
-         * @param tokens 额外 CLI token
+ * @param tokens CLI token
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -144,7 +147,7 @@ public final class TuiOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link TuiOptions}
+ * @return {@link TuiOptions}
          */
         public TuiOptions build() {
             return new TuiOptions(this);

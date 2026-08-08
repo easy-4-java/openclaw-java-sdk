@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * 探测本机 {@code openclaw} 是否已安装且可执行 {@code openclaw --version}。
+ * Probes the local {@code openclaw} {@code openclaw --version}.
  *
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
@@ -18,10 +18,10 @@ import java.util.Optional;
 public class OpenClawCliAvailabilityChecker {
 
     /**
-     * 使用与运行时一致的配置探测 CLI。
+ * CLI.
      *
-     * @param config 客户端配置，不得为 null
-     * @return 探测报告
+ * @param config client configuration,Must not be null
+ * @return probe report
      */
     public OpenClawCliAvailabilityReport check(OpenClawCliConfig config) {
         Objects.requireNonNull(config, "config");
@@ -100,7 +100,7 @@ public class OpenClawCliAvailabilityChecker {
     }
 
     /**
-     * 解析可执行文件：绝对/相对路径直接检查；否则在 {@code PATH} 中查找。
+ * executable:/; {@code PATH} .
      */
     static Optional<String> resolveExecutablePath(String executable) {
         if (OpenClawStrings.isBlank(executable)) {

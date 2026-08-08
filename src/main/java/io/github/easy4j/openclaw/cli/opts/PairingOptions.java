@@ -9,35 +9,38 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw pairing}：列出并审批支持 DM 配对的渠道上的待处理配对请求（与 channels 配对流程配套）。
- * <p>配置多个可配对渠道时必须位置传入 channel 或使用 {@code --channel}；仅一个可配对渠道时 {@code approve} 可省略 channel。</p>
+ * {@code openclaw pairing}:approval DM pairingpairing( channels pairingstream).
+ * <p>pairing channel {@code --channel};onlypairing {@code approve} channel.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/pairing">pairing CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class PairingOptions implements CliSubArgs {
 
     /**
-     * pairing 子命令：查看队列或批准配对码。
+ * pairing subcommand:pairing.
      */
     public enum Verb {
-        /** {@code pairing list}：列出某渠道的待处理请求。 */
+ /** {@code pairing list}:. */
         LIST,
-        /** {@code pairing approve}：用配对码放行发送方。 */
+ /** {@code pairing approve}:pairing. */
         APPROVE
     }
 
-    /** list 或 approve。 */
+ /** list approve. */
     private final Verb verb;
     /**
-     * list：channel id 位置参数（可与 {@code --channel} 二选一）；approve 时在无 {@code --channel} 时也可承载 channel。
+ * list:channel id ( {@code --channel} mutually exclusive);approve {@code --channel} channel.
      */
     private final String channelPositional;
     /**
-     * list / approve：{@code --channel} 显式渠道 id。
+ * list / approve:{@code --channel} id.
      */
     private final String channel;
     /**
-     * list / approve：{@code --account} 多账号渠道的 account id。
+ * list / approve:{@code --account} account id.
      */
     private final String account;
     /**
@@ -45,20 +48,20 @@ public final class PairingOptions implements CliSubArgs {
      */
     private final boolean json;
     /**
-     * approve：配对码位置参数（与 channel 参数顺序见 {@link #toSubcommandArguments()}）。
+ * approve:pairing( channel See {@link #toSubcommandArguments}).
      */
     private final String approveCode;
     /**
-     * approve：{@code --notify} 在同一渠道向请求方发确认消息。
+ * approve:{@code --notify} message.
      */
     private final boolean notify;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private PairingOptions(Builder b) {
         this.verb = b.verb;
@@ -72,7 +75,7 @@ public final class PairingOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -109,7 +112,7 @@ public final class PairingOptions implements CliSubArgs {
     }
 
     /**
-     * {@link PairingOptions} 构建器。
+ * {@link PairingOptions} builder.
      */
     public static final class Builder {
         private Verb verb = Verb.LIST;
@@ -122,7 +125,7 @@ public final class PairingOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * {@code pairing list}（无 channel 位置参数）。
+ * {@code pairing list}( channel ).
          *
          * @return {@code this}
          */
@@ -135,7 +138,7 @@ public final class PairingOptions implements CliSubArgs {
         /**
          * {@code pairing list [channel]}。
          *
-         * @param channelPositionalOrNull channel 位置参数（可为 null）
+ * @param channelPositionalOrNull channel ( null)
          * @return {@code this}
          */
         public Builder list(String channelPositionalOrNull) {
@@ -172,10 +175,10 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * {@code pairing approve [channel] <code>}；若仅一个可配对 channel 可省略 channel。
+ * {@code pairing approve [channel] <code>};onlypairing channel channel.
          *
-         * @param channelPositional 可为 null
-         * @param code              配对码
+ * @param channelPositional null
+ * @param code pairing
          * @return {@code this}
          */
         public Builder approve(String channelPositional, String code) {
@@ -195,9 +198,9 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -208,7 +211,7 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link PairingOptions}
+ * @return {@link PairingOptions}
          */
         public PairingOptions build() {
             return new PairingOptions(this);

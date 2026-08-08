@@ -3,12 +3,12 @@ package io.github.easy4j.openclaw.api.sse;
 import io.github.easy4j.openclaw.api.model.ChatChunk;
 
 /**
- * SSE 流式事件处理器。
+ * SSE streaming event handler.
  * <p>
- * 用于处理 Gateway OpenAI 兼容端点和 OpenResponses 端点的 SSE 流式响应。
+ * Used to process Gateway OpenAI OpenResponses SSE streaming.
  * </p>
  *
- * <h3>Chat Completions 流式用法</h3>
+ * <h3>Chat Completions streamingusage</h3>
  * <pre>{@code
  * client.chatCompletionStream(request, headers, new SseEventHandler() {
  *     public void onEvent(SseEvent event) {
@@ -21,18 +21,18 @@ import io.github.easy4j.openclaw.api.model.ChatChunk;
  *             });
  *         }
  *     }
- *     public void onComplete() { System.out.println("\n[完成]"); }
+ * public void onComplete { System.out.println("\n[completion]"); }
  *     public void onError(Throwable error) { error.printStackTrace(); }
  * });
  * }</pre>
  *
- * <h3>OpenResponses 流式用法</h3>
+ * <h3>OpenResponses streamingusage</h3>
  * <pre>{@code
  * client.createResponseStream(request, headers, new SseEventHandler() {
  *     public void onEvent(SseEvent event) {
  *         System.out.println("[" + event.getEvent() + "] " + event.getData());
  *     }
- *     public void onComplete() { System.out.println("[完成]"); }
+ * public void onComplete { System.out.println("[completion]"); }
  *     public void onError(Throwable error) { error.printStackTrace(); }
  * });
  * }</pre>
@@ -40,29 +40,32 @@ import io.github.easy4j.openclaw.api.model.ChatChunk;
  * @see SseEvent
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
  * @see <a href="https://docs.openclaw.ai/gateway/openresponses-http-api">OpenResponses API</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public interface SseEventHandler {
 
     /**
-     * 收到一个 SSE 事件。
+ * SSE event.
      * <p>
-     * 对于 Chat Completions 流，{@code event.getParsed()} 包含 {@link ChatChunk}。
-     * 对于 OpenResponses 流，{@code event.getEvent()} 包含事件类型（如 {@code response.output_text.delta}）。
+ * Chat Completions stream,{@code event.getParsed} {@link ChatChunk}.
+ * OpenResponses stream,{@code event.getEvent} event( {@code response.output_text.delta}).
      * </p>
      *
-     * @param event SSE 事件（不为 null，{@code isDone()} 为 true 时不会调用此方法）
+ * @param event SSE event( null,{@code isDone} When true)
      */
     void onEvent(SseEvent event);
 
     /**
-     * 流正常结束（收到 {@code data: [DONE]}）。
+ * stream( {@code data: [DONE]}).
      */
     void onComplete();
 
     /**
-     * 流异常终止。
+ * stream.
      *
-     * @param error 异常信息
+ * @param error
      */
     void onError(Throwable error);
 }

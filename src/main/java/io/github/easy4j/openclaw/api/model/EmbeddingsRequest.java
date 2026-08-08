@@ -8,18 +8,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * OpenAI Embeddings API 请求体。
+ * OpenAI Embeddings API request body.
  * <p>
- * 对应 {@code POST /v1/embeddings} 的请求 JSON。
+ * Corresponds to {@code POST /v1/embeddings} JSON.
  * </p>
  *
- * <h3>字段语义</h3>
+ * <h3>field</h3>
  * <ul>
- *   <li>{@code agent} - Agent 目标路由（如 {@code "openclaw/default"}）
- *   <li>{@code model} - 后端嵌入模型（如 {@code "openai/text-embedding-3-small"}）
+ * <li>{@code agent} - Agent ( {@code "openclaw/default"})
+ * <li>{@code model} - embedding( {@code "openai/text-embedding-3-small"})
  * </ul>
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Setter
@@ -30,21 +33,21 @@ import lombok.Setter;
 public class EmbeddingsRequest {
 
     /**
-     * Agent 目标标识。
-     * <p>使用 {@code "openclaw"}、{@code "openclaw/default"} 或 {@code "openclaw/<agentId>"}。</p>
+ * Agent .
+ * <p> {@code "openclaw"},{@code "openclaw/default"} {@code "openclaw/<agentId>"}.</p>
      */
     private String agent;
 
     /**
-     * 后端嵌入模型标识。
-     * <p>如 {@code "openai/text-embedding-3-small"}。
-     * 若未指定，使用 Agent 配置的默认嵌入模型。</p>
+ * embedding.
+ * <p> {@code "openai/text-embedding-3-small"}.
+ * , Agent embedding.</p>
      */
     private String model;
 
     /**
-     * 输入文本（字符串或字符串数组）。
-     * <p>支持单个字符串或字符串数组两种格式。</p>
+ * (characterscharactersarray).
+ * <p>characterscharactersarray.</p>
      */
     private Object input;
 }

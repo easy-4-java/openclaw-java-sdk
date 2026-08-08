@@ -9,99 +9,102 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw nodes}：管理已配对 node host（列表、审批、重命名、状态）并通过 {@code invoke} 调用其能力面。
- * <p>{@code system.run} 等 shell 执行应使用 exec 工具 {@code host=node}；{@code nodes invoke} 聚焦相机、截屏、通知等能力 RPC。
- * 共享 {@code --url}、{@code --token}、{@code --password}、{@code --timeout}、{@code --json} 与 devices 文档同类网关查询选项一致。</p>
+ * {@code openclaw nodes}:pairing node host(approval) {@code invoke} .
+ * <p>{@code system.run} shell exec {@code host=node};{@code nodes invoke} , RPC.
+ * {@code --url},{@code --token},{@code --password},{@code --timeout},{@code --json} devices documentationGateway.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/nodes">nodes CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class NodesOptions implements CliSubArgs {
 
     /**
-     * nodes 子命令：列举与过滤、处理待配对、改名、查看状态或直接 invoke。
+ * nodes subcommand:,pairing, invoke.
      */
     public enum Verb {
-        /** {@code nodes list}：待配对与已配对表，可 {@code --connected} 或 {@code --last-connected} 过滤。 */
+ /** {@code nodes list}:pairingpairing, {@code --connected} {@code --last-connected} . */
         LIST,
-        /** {@code nodes pending}：仅列出待审批（需 pairing scope）。 */
+ /** {@code nodes pending}:onlyapproval( pairing scope). */
         PENDING,
-        /** {@code nodes approve}：批准请求（额外 scope 需求随请求类型变化）。 */
+ /** {@code nodes approve}:( scope ). */
         APPROVE,
-        /** {@code nodes reject}：拒绝请求。 */
+ /** {@code nodes reject}:. */
         REJECT,
-        /** {@code nodes rename}：修改显示名。 */
+ /** {@code nodes rename}:. */
         RENAME,
-        /** {@code nodes status}：与 list 类似的状态视图。 */
+ /** {@code nodes status}: list . */
         STATUS,
-        /** {@code nodes invoke}：向节点发送命名 command 与 JSON params。 */
+ /** {@code nodes invoke}:node command JSON params. */
         INVOKE
     }
 
-    /** 当前 nodes 子命令。 */
+ /** nodes subcommand. */
     private final Verb verb;
     /**
-     * list / status：{@code --connected} 只显示当前在线节点。
+ * list / status:{@code --connected} node.
      */
     private final boolean listConnected;
     /**
-     * list / status：{@code --last-connected} 过滤最近若干时间内连过的节点（如 {@code 24h}）。
+ * list / status:{@code --last-connected} node( {@code 24h}).
      */
     private final String lastConnected;
     /**
-     * approve / reject：配对请求 id。
+ * approve / reject:pairing id.
      */
     private final String requestId;
     /**
-     * rename / invoke：{@code --node} 目标选择器（id、名称或 IP，见文档）。
+ * rename / invoke:{@code --node} (id, IP,Seedocumentation).
      */
     private final String nodeRef;
     /**
-     * rename：{@code --name} 新显示名。
+ * rename:{@code --name} .
      */
     private final String name;
     /**
-     * invoke：{@code --command} 能力命令名。
+ * invoke:{@code --command} .
      */
     private final String command;
     /**
-     * invoke：{@code --params} JSON 对象字符串，默认 {@code {}}。
+ * invoke:{@code --params} JSON objectcharacters, {@code {}}.
      */
     private final String paramsJson;
     /**
-     * invoke：{@code --invoke-timeout} 调用超时毫秒（默认约 15000）。
+ * invoke:{@code --invoke-timeout} timeoutmilliseconds( 15000).
      */
     private final String invokeTimeout;
     /**
-     * invoke：{@code --idempotency-key} 可选幂等键。
+ * invoke:{@code --idempotency-key} Optionalkey.
      */
     private final String idempotencyKey;
     /**
-     * 全局：{@code --url} 显式 Gateway WebSocket。
+ * :{@code --url} Gateway WebSocket.
      */
     private final String url;
     /**
-     * 全局：{@code --token}。
+ * :{@code --token}.
      */
     private final String token;
     /**
-     * 全局：{@code --password}。
+ * :{@code --password}.
      */
     private final String password;
     /**
-     * 全局：{@code --timeout} RPC 预算。
+ * :{@code --timeout} RPC .
      */
     private final String timeout;
     /**
-     * 全局：{@code --json}。
+ * :{@code --json}.
      */
     private final boolean json;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private NodesOptions(Builder b) {
         this.verb = b.verb;
@@ -123,7 +126,7 @@ public final class NodesOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -187,7 +190,7 @@ public final class NodesOptions implements CliSubArgs {
     }
 
     /**
-     * {@link NodesOptions} 构建器。
+ * {@link NodesOptions} builder.
      */
     public static final class Builder {
         private Verb verb = Verb.LIST;
@@ -242,7 +245,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param requestId 请求 ID
+ * @param requestId ID
          * @return {@code this}
          */
         public Builder approve(String requestId) {
@@ -252,7 +255,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param requestId 请求 ID
+ * @param requestId ID
          * @return {@code this}
          */
         public Builder reject(String requestId) {
@@ -366,9 +369,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -379,7 +382,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link NodesOptions}
+ * @return {@link NodesOptions}
          */
         public NodesOptions build() {
             return new NodesOptions(this);

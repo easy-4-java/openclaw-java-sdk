@@ -4,9 +4,12 @@ import io.github.easy4j.openclaw.util.OpenClawStrings;
 import java.util.List;
 
 /**
- * 将 CLI flag 与参数片段追加到 argv 列表的辅助工具类（package-private）。
- * <p>供各 {@link io.github.easy4j.openclaw.cli.args.CliSubArgs} 实现类在
- * {@link io.github.easy4j.openclaw.cli.args.CliSubArgs#toSubcommandArguments()} 中复用，避免重复拼接逻辑。</p>
+ * CLI flag argument fragment argv (package-private).
+ * <p> {@link io.github.easy4j.openclaw.cli.args.CliSubArgs}
+ * {@link io.github.easy4j.openclaw.cli.args.CliSubArgs#toSubcommandArguments}.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 final class OpenClawCliArgv {
 
@@ -14,11 +17,11 @@ final class OpenClawCliArgv {
     }
 
     /**
-     * 当 {@code value} 非 null 且非空白时，追加 {@code flag} 与 {@code value} 各一项。
+ * {@code value} null , {@code flag} {@code value} .
      *
-     * @param out   目标参数列表
-     * @param flag  形如 {@code "--url"} 的选项名
-     * @param value 选项值
+ * @param out argument list
+ * @param flag {@code "--url"}
+ * @param value value
      */
     static void addIfPresent(List<String> out, String flag, String value) {
         if (value != null && OpenClawStrings.isNotBlank(value)) {
@@ -28,11 +31,11 @@ final class OpenClawCliArgv {
     }
 
     /**
-     * 当 {@code value} 为正数时，追加 {@code flag} 与数值字符串。
+ * {@code value} , {@code flag} valuecharacters.
      *
-     * @param out   目标参数列表
-     * @param flag  选项名
-     * @param value 整型值（通常表示毫秒等）
+ * @param out argument list
+ * @param flag
+ * @param value value(milliseconds)
      */
     static void addIfPositive(List<String> out, String flag, int value) {
         if (value > 0) {
@@ -42,11 +45,11 @@ final class OpenClawCliArgv {
     }
 
     /**
-     * 当 {@code value} 非 null 时，追加 {@code flag} 与 {@link Integer} 的十进制字符串形式。
+ * {@code value} null , {@code flag} {@link Integer} characters.
      *
-     * @param out   目标参数列表
-     * @param flag  选项名
-     * @param value 可空整型
+ * @param out argument list
+ * @param flag
+ * @param value
      */
     static void addIfNotNull(List<String> out, String flag, Integer value) {
         if (value != null) {
@@ -56,11 +59,11 @@ final class OpenClawCliArgv {
     }
 
     /**
-     * 当 {@code value} 非 null 时，追加 {@code flag} 与 {@link Double} 的字符串形式。
+ * {@code value} null , {@code flag} {@link Double} characters.
      *
-     * @param out   目标参数列表
-     * @param flag  选项名
-     * @param value 可空双精度值（如地理坐标）
+ * @param out argument list
+ * @param flag
+ * @param value value
      */
     static void addIfNotNull(List<String> out, String flag, Double value) {
         if (value != null) {
@@ -70,11 +73,11 @@ final class OpenClawCliArgv {
     }
 
     /**
-     * 当 {@code enabled} 为 true 时，仅追加 {@code flag}（布尔开关型选项，无独立值 token）。
+ * {@code enabled} When true,only {@code flag}(value token).
      *
-     * @param out     目标参数列表
-     * @param flag    选项名
-     * @param enabled 是否输出该 flag
+ * @param out argument list
+ * @param flag
+ * @param enabled flag
      */
     static void addFlag(List<String> out, String flag, boolean enabled) {
         if (enabled) {
@@ -83,11 +86,11 @@ final class OpenClawCliArgv {
     }
 
     /**
-     * 对列表中每个非空元素重复追加 {@code flag} 与元素值（可重复选项，如多个 {@code --scope}）。
+ * {@code flag} value( {@code --scope}).
      *
-     * @param out    目标参数列表
-     * @param flag   可重复选项名
-     * @param values 值列表，可为 null（忽略）
+ * @param out argument list
+ * @param flag
+ * @param values value, null
      */
     static void addRepeatable(List<String> out, String flag, List<String> values) {
         if (values == null) {
@@ -102,10 +105,10 @@ final class OpenClawCliArgv {
     }
 
     /**
-     * 将「逃生舱」额外 token 全部追加到末尾（{@link io.github.easy4j.openclaw.cli.opts} 各 Builder 的 {@code extra}）。
+ * "" token ({@link io.github.easy4j.openclaw.cli.opts} Builder {@code extra}).
      *
-     * @param out   目标参数列表
-     * @param extra 额外 token，可为 null（忽略）
+ * @param out argument list
+ * @param extra token, null
      */
     static void addExtra(List<String> out, List<String> extra) {
         if (extra == null) {

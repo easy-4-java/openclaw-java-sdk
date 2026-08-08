@@ -10,12 +10,15 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenAI Embeddings API 响应。
+ * OpenAI Embeddings API .
  * <p>
- * 对应 {@code POST /v1/embeddings} 返回的 JSON。
+ * Corresponds to {@code POST /v1/embeddings} JSON.
  * </p>
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Setter
@@ -24,20 +27,20 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EmbeddingsResponse {
 
-    /** 对象类型，固定为 {@code "list"}。 */
+ /** object, {@code "list"}. */
     private String object;
 
-    /** 嵌入向量列表。 */
+ /** embedding vector. */
     private List<EmbeddingData> data;
 
-    /** 使用的模型标识。 */
+ /** . */
     private String model;
 
-    /** Token 使用统计。 */
+ /** Token . */
     private Usage usage;
 
     /**
-     * 单个嵌入向量。
+ * embedding vector.
      */
     @Getter
     @Setter
@@ -45,16 +48,16 @@ public class EmbeddingsResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class EmbeddingData {
-        /** 对象类型，固定为 {@code "embedding"}。 */
+ /** object, {@code "embedding"}. */
         private String object;
-        /** 嵌入向量（浮点数数组）。 */
+ /** embedding vector(array). */
         private List<Double> embedding;
-        /** 输入文本在数组中的索引。 */
+ /** array. */
         private Integer index;
     }
 
     /**
-     * Token 使用统计。
+ * Token .
      */
     @Getter
     @Setter

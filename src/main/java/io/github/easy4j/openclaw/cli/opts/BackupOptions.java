@@ -9,60 +9,63 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw backup}：将状态目录、活动配置、凭据目录、会话与可选 workspace 打成本地 {@code .tar.gz}，并支持归档校验。
- * <p>归档内含 {@code manifest.json}；默认文件名带时间戳且不覆盖已存在文件；工作区很大时可用 {@code --no-include-workspace} 或 {@code --only-config}。</p>
+ * {@code openclaw backup}:directory,directory,sessionOptional workspace {@code .tar.gz},.
+ * <p> {@code manifest.json}; {@code --no-include-workspace} {@code --only-config}.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/backup">backup CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class BackupOptions implements CliSubArgs {
 
     /**
-     * backup 子命令：创建归档或校验既有归档。
+ * backup subcommand:.
      */
     public enum Mode {
-        /** {@code backup create}：打包当前安装可解析的数据源。 */
+ /** {@code backup create}:. */
         CREATE,
-        /** {@code backup verify}：校验 tarball 与 manifest 完整性。 */
+ /** {@code backup verify}: tarball manifest . */
         VERIFY
     }
 
-    /** {@code create} 或 {@code verify}。 */
+ /** {@code create} {@code verify}. */
     private final Mode mode;
     /**
-     * create：{@code --output} 指定目录或文件路径前缀（文档：默认在当前目录或 home 下落盘，避免自包含）。
+ * create:{@code --output} directory(documentation:directory home ).
      */
     private final String outputDir;
     /**
-     * create：{@code --dry-run} 只规划来源不写盘（与 {@code --json} 组合见文档示例）。
+ * create:{@code --dry-run} ( {@code --json} ComposesSeedocumentationexample).
      */
     private final boolean dryRun;
     /**
-     * create：{@code --json} 机器可读输出计划或结果。
+ * create:{@code --json} .
      */
     private final boolean json;
     /**
-     * create：{@code --verify} 写入后立即跑与 {@code backup verify} 相同的校验。
+ * create:{@code --verify} {@code backup verify} .
      */
     private final boolean verifyAfterCreate;
     /**
-     * create：{@code --no-include-workspace} 跳过配置推导的 workspace 树（配置无效但仍想备份状态时常用）。
+ * create:{@code --no-include-workspace} skips workspace (backup).
      */
     private final boolean noIncludeWorkspace;
     /**
-     * create：{@code --only-config} 只归档活动 JSON 配置文件本身。
+ * create:{@code --only-config} JSON .
      */
     private final boolean onlyConfig;
     /**
-     * verify：待校验的 {@code .tar.gz} 归档路径（位置参数）。
+ * verify: {@code .tar.gz} .
      */
     private final String verifyArchivePath;
     /**
-     * 其它未建模 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private BackupOptions(Builder b) {
         this.mode = b.mode;
@@ -77,7 +80,7 @@ public final class BackupOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -108,7 +111,7 @@ public final class BackupOptions implements CliSubArgs {
     }
 
     /**
-     * {@link BackupOptions} 构建器。
+ * {@link BackupOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.CREATE;
@@ -184,7 +187,7 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
-         * @param archivePath verify：归档路径
+ * @param archivePath verify:
          * @return {@code this}
          */
         public Builder verify(String archivePath) {
@@ -194,9 +197,9 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -207,7 +210,7 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link BackupOptions}
+ * @return {@link BackupOptions}
          */
         public BackupOptions build() {
             return new BackupOptions(this);

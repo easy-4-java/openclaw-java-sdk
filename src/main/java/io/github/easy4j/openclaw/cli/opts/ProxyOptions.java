@@ -8,17 +8,20 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw proxy}：运行 OpenClaw 调试代理并检查捕获的流量。
+ * {@code openclaw proxy}: OpenClaw proxystream.
  * <p>
- * 支持 {@code start}、{@code run [cmd...]}、{@code validate}、{@code coverage}、{@code sessions}、
- * {@code query}、{@code blob}、{@code purge} 子命令。
+ * {@code start},{@code run [cmd...]},{@code validate},{@code coverage},{@code sessions},
+ * {@code query},{@code blob},{@code purge} subcommand.
  * </p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/proxy">proxy CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ProxyOptions implements CliSubArgs {
 
-    /** 子命令模式。 */
+ /** subcommand. */
     public enum Mode {
         START,
         RUN,
@@ -31,35 +34,35 @@ public final class ProxyOptions implements CliSubArgs {
     }
 
     private final Mode mode;
-    /** run：位置参数 {@code [cmd...]}，要运行的命令片段。 */
+ /** run: {@code [cmd...]},. */
     private final List<String> runCommand;
-    /** start/run：{@code --host} 绑定主机（默认 {@code 127.0.0.1}）。 */
+ /** start/run:{@code --host} ( {@code 127.0.0.1}). */
     private final String host;
-    /** start/run：{@code --port} 绑定端口。 */
+ /** start/run:{@code --port} . */
     private final Integer port;
-    /** validate：{@code --json} 机器可读输出。 */
+ /** validate:{@code --json} . */
     private final boolean json;
-    /** validate：{@code --proxy-url} 待校验的代理 URL。 */
+ /** validate:{@code --proxy-url} proxy URL. */
     private final String proxyUrl;
-    /** validate：{@code --proxy-ca-file} 校验 HTTPS 代理端点的 CA bundle 文件。 */
+ /** validate:{@code --proxy-ca-file} HTTPS proxy CA bundle . */
     private final String proxyCaFile;
-    /** validate：{@code --allowed-url}（可重复）预期成功的目标 URL。 */
+ /** validate:{@code --allowed-url} URL. */
     private final List<String> allowedUrls;
-    /** validate：{@code --denied-url}（可重复）预期被代理阻断的目标 URL。 */
+ /** validate:{@code --denied-url}proxy URL. */
     private final List<String> deniedUrls;
-    /** validate：{@code --apns-reachable} 同时校验沙箱 APNs HTTP/2 可达性。 */
+ /** validate:{@code --apns-reachable} APNs HTTP/2 . */
     private final boolean apnsReachable;
-    /** validate：{@code --apns-authority} 配合 {@code --apns-reachable} 探测的 APNs authority。 */
+ /** validate:{@code --apns-authority} {@code --apns-reachable} APNs authority. */
     private final String apnsAuthority;
-    /** validate：{@code --timeout-ms} 每请求超时毫秒数。 */
+ /** validate:{@code --timeout-ms} timeoutmilliseconds. */
     private final Integer timeoutMs;
-    /** sessions：{@code --limit} 最大显示会话数。 */
+ /** sessions:{@code --limit} session. */
     private final Integer limit;
-    /** query：{@code --preset}（必选）查询预设。 */
+ /** query:{@code --preset}(Required). */
     private final String preset;
-    /** query：{@code --session} 限定到捕获会话 id。 */
+ /** query:{@code --session} session id. */
     private final String session;
-    /** blob：{@code --id}（必选）Blob id。 */
+ /** blob:{@code --id}(Required)Blob id. */
     private final String blobId;
 
     private ProxyOptions(Builder b) {
@@ -82,7 +85,7 @@ public final class ProxyOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}（默认 {@link Mode#START}）
+ * @return {@link Builder}( {@link Mode#START})
      */
     public static Builder builder() {
         return new Builder();
@@ -115,7 +118,7 @@ public final class ProxyOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ProxyOptions} 构建器。
+ * {@link ProxyOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.START;
@@ -135,55 +138,55 @@ public final class ProxyOptions implements CliSubArgs {
         private String session;
         private String blobId;
 
-        /** 显式指定 {@link Mode}。 */
+ /** {@link Mode}. */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
-        /** 切换为 {@code start} 子命令。 */
+ /** {@code start} subcommand. */
         public Builder start() { this.mode = Mode.START; return this; }
-        /** 切换为 {@code run [cmd...]} 子命令。 */
+ /** {@code run [cmd...]} subcommand. */
         public Builder run(List<String> cmd) { this.mode = Mode.RUN; this.runCommand = cmd; return this; }
-        /** 切换为 {@code validate} 子命令。 */
+ /** {@code validate} subcommand. */
         public Builder validate() { this.mode = Mode.VALIDATE; return this; }
-        /** 切换为 {@code coverage} 子命令。 */
+ /** {@code coverage} subcommand. */
         public Builder coverage() { this.mode = Mode.COVERAGE; return this; }
-        /** 切换为 {@code sessions} 子命令。 */
+ /** {@code sessions} subcommand. */
         public Builder sessions() { this.mode = Mode.SESSIONS; return this; }
-        /** 切换为 {@code query} 子命令。 */
+ /** {@code query} subcommand. */
         public Builder query() { this.mode = Mode.QUERY; return this; }
-        /** 切换为 {@code blob} 子命令。 */
+ /** {@code blob} subcommand. */
         public Builder blob() { this.mode = Mode.BLOB; return this; }
-        /** 切换为 {@code purge} 子命令。 */
+ /** {@code purge} subcommand. */
         public Builder purge() { this.mode = Mode.PURGE; return this; }
-        /** start/run：{@code --host} 绑定主机。 */
+ /** start/run:{@code --host} . */
         public Builder host(String host) { this.host = host; return this; }
-        /** start/run：{@code --port} 绑定端口。 */
+ /** start/run:{@code --port} . */
         public Builder port(Integer port) { this.port = port; return this; }
-        /** validate：{@code --json} 机器可读输出。 */
+ /** validate:{@code --json} . */
         public Builder json(boolean json) { this.json = json; return this; }
-        /** validate：{@code --proxy-url} 待校验的代理 URL。 */
+ /** validate:{@code --proxy-url} proxy URL. */
         public Builder proxyUrl(String proxyUrl) { this.proxyUrl = proxyUrl; return this; }
-        /** validate：{@code --proxy-ca-file} CA bundle 文件。 */
+ /** validate:{@code --proxy-ca-file} CA bundle . */
         public Builder proxyCaFile(String proxyCaFile) { this.proxyCaFile = proxyCaFile; return this; }
-        /** validate：{@code --allowed-url}（可重复）预期成功的目标 URL。 */
+ /** validate:{@code --allowed-url} URL. */
         public Builder allowedUrls(List<String> urls) { this.allowedUrls = urls; return this; }
-        /** validate：{@code --denied-url}（可重复）预期被阻断的目标 URL。 */
+ /** validate:{@code --denied-url} URL. */
         public Builder deniedUrls(List<String> urls) { this.deniedUrls = urls; return this; }
-        /** validate：{@code --apns-reachable} 同时校验 APNs 可达性。 */
+ /** validate:{@code --apns-reachable} APNs . */
         public Builder apnsReachable(boolean apnsReachable) { this.apnsReachable = apnsReachable; return this; }
         /** validate：{@code --apns-authority} APNs authority。 */
         public Builder apnsAuthority(String apnsAuthority) { this.apnsAuthority = apnsAuthority; return this; }
-        /** validate：{@code --timeout-ms} 每请求超时毫秒数。 */
+ /** validate:{@code --timeout-ms} timeoutmilliseconds. */
         public Builder timeoutMs(Integer timeoutMs) { this.timeoutMs = timeoutMs; return this; }
-        /** sessions：{@code --limit} 最大显示会话数。 */
+ /** sessions:{@code --limit} session. */
         public Builder limit(Integer limit) { this.limit = limit; return this; }
-        /** query：{@code --preset}（必选）查询预设。 */
+ /** query:{@code --preset}(Required). */
         public Builder preset(String preset) { this.preset = preset; return this; }
-        /** query：{@code --session} 限定到捕获会话 id。 */
+ /** query:{@code --session} session id. */
         public Builder session(String session) { this.session = session; return this; }
-        /** blob：{@code --id}（必选）Blob id。 */
+ /** blob:{@code --id}(Required)Blob id. */
         public Builder blobId(String blobId) { this.blobId = blobId; return this; }
 
         /**
-         * @return 不可变 {@link ProxyOptions}
+ * @return {@link ProxyOptions}
          */
         public ProxyOptions build() {
             return new ProxyOptions(this);

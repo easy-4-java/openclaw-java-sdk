@@ -5,49 +5,52 @@ import io.github.easy4j.openclaw.ws.protocol.HelloOk;
 import io.github.easy4j.openclaw.ws.protocol.ResponseFrame;
 
 /**
- * Gateway WebSocket 事件监听器。
- * <p>实现此接口以接收 Gateway 推送的事件和状态变更。</p>
+ * Gateway WebSocket event listener.
+ * <p> Gateway event.</p>
  *
  * @see <a href="https://docs.openclaw.ai/gateway/protocol">Gateway Protocol</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public interface OpenClawWsListener {
 
     /**
-     * WS 连接已建立并完成 {@code connect} 握手。
+ * WS connectioncompletion {@code connect} handshake.
      *
-     * @param helloOk Gateway 返回的握手信息
+ * @param helloOk Gateway handshake
      */
     default void onConnected(HelloOk helloOk) {}
 
     /**
-     * WS 连接已关闭。
+ * WS connection.
      *
-     * @param code    关闭码
-     * @param reason  关闭原因
-     * @param remote  是否由远端关闭
+ * @param code
+ * @param reason
+ * @param remote
      */
     default void onDisconnected(int code, String reason, boolean remote) {}
 
     /**
-     * WS 连接发生错误。
+ * WS connection.
      *
-     * @param ex 异常
+ * @param ex
      */
     default void onError(Exception ex) {}
 
     /**
-     * 收到 Gateway 推送事件帧。
-     * <p>常见事件：{@code chat}（智能体回复）、{@code agent}（智能体状态变更）、
-     * {@code tick}（心跳）、{@code shutdown}（Gateway 关闭）等。</p>
+ * Gateway event.
+ * <p>Seeevent:{@code chat}(agent),{@code agent}(agent),
+ * {@code tick}(heartbeat),{@code shutdown}(Gateway ).</p>
      *
-     * @param frame 事件帧
+ * @param frame event
      */
     default void onEvent(EventFrame frame) {}
 
     /**
-     * 收到 Gateway RPC 响应帧（未被内部 RPC 匹配消费的）。
+ * Gateway RPC ( RPC ).
      *
-     * @param frame 响应帧
+ * @param frame
      */
     default void onResponse(ResponseFrame frame) {}
 }

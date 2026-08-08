@@ -9,81 +9,84 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw approvals}（别名 {@code exec-approvals}）：查看或写入本机、网关或 node 上的 exec 审批文件与 glob allowlist。
- * <p>默认操作本地 {@code ~/.openclaw/exec-approvals.json}；{@code --gateway} 与 {@code --node} 切换目标主机。
- * {@code set} 接受 JSON5，可用 {@code --file} 或 {@code --stdin} 二选一。</p>
+ * {@code openclaw approvals}( {@code exec-approvals}):,Gateway node exec approval glob allowlist.
+ * <p> {@code ~/.openclaw/exec-approvals.json};{@code --gateway} {@code --node} .
+ * {@code set} JSON5, {@code --file} {@code --stdin} mutually exclusive.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/approvals">approvals CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ApprovalsOptions implements CliSubArgs {
 
     /**
-     * approvals 子命令：读取策略、替换文件或维护 allowlist。
+ * approvals subcommand:, allowlist.
      */
     public enum Verb {
-        /** {@code approvals get}：展示有效 exec 策略与来源优先级说明。 */
+ /** {@code approvals get}: exec Priority. */
         GET,
-        /** {@code approvals set}：从文件或标准输入写入整份审批 JSON。 */
+ /** {@code approvals set}:approval JSON. */
         SET,
-        /** {@code approvals allowlist add}：为某 agent 范围新增 glob。 */
+ /** {@code approvals allowlist add}: agent glob. */
         ALLOWLIST_ADD,
-        /** {@code approvals allowlist remove}：删除 glob。 */
+ /** {@code approvals allowlist remove}: glob. */
         ALLOWLIST_REMOVE
     }
 
-    /** get / set / allowlist 之一。 */
+ /** get / set / allowlist . */
     private final Verb verb;
     /**
-     * {@code --node}：解析为与 {@code openclaw nodes} 相同语义的节点选择器。
+ * {@code --node}: {@code openclaw nodes} node.
      */
     private final String node;
     /**
-     * {@code --gateway}：目标为网关主机上的审批文件。
+ * {@code --gateway}:Gatewayapproval.
      */
     private final boolean gateway;
     /**
-     * {@code --url}：node/gateway RPC 使用的 WebSocket（与文档 Common options 一致）。
+ * {@code --url}:node/gateway RPC WebSocket(with documentation Common options ).
      */
     private final String url;
     /**
-     * {@code --token}：网关 token。
+ * {@code --token}:Gateway token.
      */
     private final String token;
     /**
-     * {@code --password}：网关密码。
+ * {@code --password}:Gateway.
      */
     private final String password;
     /**
-     * {@code --timeout}：RPC 超时。
+ * {@code --timeout}:RPC timeout.
      */
     private final String timeout;
     /**
-     * {@code --json}：机器可读输出。
+ * {@code --json}:.
      */
     private final boolean json;
     /**
-     * set：{@code --file} 审批 JSON 文件路径。
+ * set:{@code --file} approval JSON .
      */
     private final String file;
     /**
-     * set：{@code --stdin} 从标准输入读取 JSON5。
+ * set:{@code --stdin} JSON5.
      */
     private final boolean stdin;
     /**
-     * allowlist add/remove：glob 模式位置参数。
+ * allowlist add/remove:glob .
      */
     private final String allowlistPattern;
     /**
-     * allowlist：{@code --agent} 作用域（默认 {@code *} 表示全部 agent）。
+ * allowlist:{@code --agent} ( {@code *} agent).
      */
     private final String agent;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private ApprovalsOptions(Builder b) {
         this.verb = b.verb;
@@ -102,7 +105,7 @@ public final class ApprovalsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -155,7 +158,7 @@ public final class ApprovalsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ApprovalsOptions} 构建器。
+ * {@link ApprovalsOptions} builder.
      */
     public static final class Builder {
         private Verb verb = Verb.GET;
@@ -207,7 +210,7 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param pattern allowlist add：模式
+ * @param pattern allowlist add:
          * @return {@code this}
          */
         public Builder allowlistAdd(String pattern) {
@@ -217,7 +220,7 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param pattern allowlist remove：模式
+ * @param pattern allowlist remove:
          * @return {@code this}
          */
         public Builder allowlistRemove(String pattern) {
@@ -299,9 +302,9 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -312,7 +315,7 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link ApprovalsOptions}
+ * @return {@link ApprovalsOptions}
          */
         public ApprovalsOptions build() {
             return new ApprovalsOptions(this);

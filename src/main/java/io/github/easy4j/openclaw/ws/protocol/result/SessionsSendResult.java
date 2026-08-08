@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * {@code sessions.send} RPC 成功响应体（由 {@code chat.send} 确认载荷扩展而来）。
+ * {@code sessions.send} RPC response body( {@code chat.send} ).
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)

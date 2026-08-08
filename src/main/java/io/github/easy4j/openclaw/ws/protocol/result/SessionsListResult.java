@@ -8,7 +8,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code sessions.list} RPC 成功响应体。
+ * {@code sessions.list} RPC response body.
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -39,7 +42,7 @@ public class SessionsListResult {
     private List<GatewaySessionRow> sessions;
 
     /**
-     * @return 非 null 的会话列表视图
+ * @return null session
      */
     public List<GatewaySessionRow> getSessions() {
         return sessions != null ? sessions : Collections.emptyList();

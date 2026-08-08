@@ -6,8 +6,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 
 /**
- * {@code config.get} RPC 成功响应体（配置快照，字段较多）。
- * <p>常用顶层字段已建模；完整结构请使用 {@link #getSnapshot()} 访问。</p>
+ * {@code config.get} RPC response body(field).
+ * <p>field; {@link #getSnapshot} .</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)

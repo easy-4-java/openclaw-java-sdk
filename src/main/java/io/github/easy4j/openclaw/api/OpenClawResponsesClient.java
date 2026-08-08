@@ -12,9 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * OpenResponses API 客户端。
+ * OpenResponses API client.
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openresponses-http-api">OpenResponses API</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Slf4j
 public class OpenClawResponsesClient extends OpenClawHttpClient {
@@ -28,7 +31,7 @@ public class OpenClawResponsesClient extends OpenClawHttpClient {
     }
 
     /**
-     * 发送 OpenResponses 请求。
+ * OpenResponses .
      */
     public ResponseResult createResponse(ResponseRequest request) {
         debug("=== Response Request ===");

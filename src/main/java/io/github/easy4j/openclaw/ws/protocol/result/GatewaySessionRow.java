@@ -5,8 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * {@code sessions.list} 响应中的单条会话摘要。
- * <p>对齐 {@code GatewaySessionRow}（{@code src/gateway/session-utils.types.ts}）常用字段。</p>
+ * {@code sessions.list} session.
+ * <p>aligned {@code GatewaySessionRow}({@code src/gateway/session-utils.types.ts})field.</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
