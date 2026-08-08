@@ -186,7 +186,7 @@ class OpenClawWsProtocolTest {
     @Test
     void testWsUriBuilding() {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
-        config.setGatewayBaseUrl("http://localhost:18789");
+        config.setBaseUrl("http://localhost:18789");
 
         OpenClawGatewayWsClient client = new OpenClawGatewayWsClient(config);
         assertEquals("ws://localhost:18789", client.getURI().toString());
@@ -195,7 +195,7 @@ class OpenClawWsProtocolTest {
     @Test
     void testWsUriBuildingHttps() {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
-        config.setGatewayBaseUrl("https://my-gateway.example.com");
+        config.setBaseUrl("https://my-gateway.example.com");
 
         OpenClawGatewayWsClient client = new OpenClawGatewayWsClient(config);
         assertEquals("wss://my-gateway.example.com", client.getURI().toString());
@@ -204,7 +204,7 @@ class OpenClawWsProtocolTest {
     @Test
     void testWsUriBuildingTrailingSlash() {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
-        config.setGatewayBaseUrl("http://localhost:18789/");
+        config.setBaseUrl("http://localhost:18789/");
 
         OpenClawGatewayWsClient client = new OpenClawGatewayWsClient(config);
         assertEquals("ws://localhost:18789", client.getURI().toString());

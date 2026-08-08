@@ -52,7 +52,7 @@ class OpenClawHttpApiCoverageTest {
     @BeforeEach
     void setUp() {
         config = new OpenClawHttpClientConfig();
-        config.setGatewayBaseUrl("http://localhost:18789");
+        config.setBaseUrl("http://localhost:18789");
         config.setGatewayAuthToken("gateway-token");
         config.setHooksToken("hook-token");
         client = new OkHttpClient.Builder().addInterceptor(chain -> {
@@ -154,7 +154,7 @@ class OpenClawHttpApiCoverageTest {
         }
 
         OpenClawHttpClientConfig empty = new OpenClawHttpClientConfig();
-        empty.setGatewayBaseUrl(" ");
+        empty.setBaseUrl(" ");
         try (OpenClawChatClient chat = new OpenClawChatClient(empty, null, client)) {
             assertThrows(OpenClawHttpException.class, chat::health);
         }

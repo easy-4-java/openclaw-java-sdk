@@ -11,10 +11,10 @@ class OpenClawHttpClientConfigTest {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
         assertEquals(HttpResponseMode.BLOCKING, config.getMode());
 
-        config.setSseCorePoolSize(7);
-        config.setSseMaxPoolSize(9);
-        config.setSseQueueCapacity(11);
-        config.setSseKeepAliveMillis(13L);
+        config.setStreamCorePoolSize(7);
+        config.setStreamMaxPoolSize(9);
+        config.setStreamQueueCapacity(11);
+        config.setStreamKeepAliveMillis(13L);
 
         assertEquals(7, config.getStreamCorePoolSize());
         assertEquals(9, config.getStreamMaxPoolSize());
