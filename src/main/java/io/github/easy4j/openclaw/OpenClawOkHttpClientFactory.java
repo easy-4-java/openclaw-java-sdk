@@ -8,10 +8,13 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
- * OpenClaw 默认 OkHttpClient 工厂。
+ * OpenClaw default OkHttpClient factory.
  *
- * <p>Spring 等容器已经提供 {@link OkHttpClient} 时应优先使用注入构造器；本工厂只负责
- * SDK 独立运行场景，并保证 Chat、Tools、Responses 等客户端共享同一连接池。</p>
+ * <p>Spring Provides {@link OkHttpClient} inject;
+ * SDK , Chat,Tools,Responses connection pool.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class OpenClawOkHttpClientFactory {
 
@@ -19,10 +22,10 @@ public final class OpenClawOkHttpClientFactory {
     }
 
     /**
-     * 按 HTTP 配置创建适合高并发长连接复用的客户端。
+ * Creates from HTTP configurationhigh concurrencyconnection reuse.
      *
-     * @param config HTTP 配置
-     * @return SDK 自主管理的 OkHttpClient
+ * @param config HTTP
+ * @return SDK OkHttpClient
      */
     public static OkHttpClient create(OpenClawHttpClientConfig config) {
         Objects.requireNonNull(config, "config");
@@ -48,9 +51,9 @@ public final class OpenClawOkHttpClientFactory {
     }
 
     /**
-     * 释放 SDK 自建客户端资源。外部注入的客户端不得调用此方法。
+ * Shuts down SDK .inject.
      *
-     * @param client SDK 自建客户端
+ * @param client SDK
      */
     public static void shutdown(OkHttpClient client) {
         if (Objects.isNull(client)) {

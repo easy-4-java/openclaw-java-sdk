@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * OpenClaw CLI 启动/就绪探测结果。
+ * OpenClaw CLI /.
  *
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
@@ -22,16 +22,16 @@ public class OpenClawCliAvailabilityReport {
     private final OpenClawCliResult probeResult;
 
     /**
-     * @return 是否可安全调用本地 {@code openclaw}
+ * @return security {@code openclaw}
      */
     public boolean isAvailable() {
         return available;
     }
 
     /**
-     * 构造面向日志/异常的诊断文本。
+ * /diagnostic.
      *
-     * @return 说明字符串
+ * @return characters
      */
     public String toDiagnosticMessage() {
         StringBuilder sb = new StringBuilder();

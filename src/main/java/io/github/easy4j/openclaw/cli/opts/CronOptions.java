@@ -9,125 +9,128 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw cron}：Gateway 侧定时与一次性任务（isolated 与主会话等模式），含投递、失败通知与运行历史。
- * <p>文档注意：isolated 任务默认 {@code --announce} 对外投递；{@code --no-deliver} 保持内部；{@code --at} 一次性任务成功后可自动删除除非 {@code --keep-after-run}。
- * 完整子命令以 {@code openclaw cron --help} 为准，未建模部分用 {@link Builder#extra(String...)}。</p>
+ * {@code openclaw cron}:Gateway (isolated session),.
+ * <p>documentation:isolated {@code --announce} ;{@code --no-deliver} ;{@code --at} {@code --keep-after-run}.
+ * subcommand {@code openclaw cron --help} , {@link Builder#extra(String...)}.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/cron">cron CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class CronOptions implements CliSubArgs {
 
     /**
-     * cron 子命令：手动运行、查看运行日志、增删改查任务定义等。
+ * cron subcommand:,.
      */
     public enum Verb {
-        /** {@code cron run}：默认强制排队执行；{@code --due} 保留仅到期才跑的旧行为。 */
+ /** {@code cron run}:;{@code --due} only. */
         RUN,
-        /** {@code cron runs}：按 job id 拉取最近运行记录。 */
+ /** {@code cron runs}: job id . */
         RUNS,
-        /** {@code cron add}：新建计划任务。 */
+ /** {@code cron add}:. */
         ADD,
-        /** {@code cron edit}：就地修改既有任务。 */
+ /** {@code cron edit}:. */
         EDIT,
-        /** {@code cron list}：列出任务。 */
+ /** {@code cron list}:. */
         LIST,
-        /** {@code cron delete}：删除任务。 */
+ /** {@code cron delete}:. */
         DELETE
     }
 
-    /** 当前 cron 子命令。 */
+ /** cron subcommand. */
     private final Verb verb;
     /**
-     * run / edit / delete：任务 id 位置参数。
+ * run / edit / delete: id .
      */
     private final String jobId;
     /**
-     * run：{@code --due} 仅在计划到期时才执行（与默认 force-run 相对）。
+ * run:{@code --due} only( force-run ).
      */
     private final boolean runDue;
     /**
-     * runs：{@code --id} 过滤到单个 job。
+ * runs:{@code --id} job.
      */
     private final String runsId;
     /**
-     * runs：{@code --limit} 返回条数上限。
+ * runs:{@code --limit} .
      */
     private final Integer runsLimit;
     /**
-     * add / edit：{@code --name} 人类可读任务名。
+ * add / edit:{@code --name} .
      */
     private final String name;
     /**
-     * add / edit：{@code --cron} 标准 cron 表达式（循环任务）。
+ * add / edit:{@code --cron} cron .
      */
     private final String cronExpr;
     /**
-     * add / edit：{@code --session} 绑定会话键（{@code main}、{@code isolated}、{@code current}、{@code session:...} 等，见文档）。
+ * add / edit:{@code --session} sessionkey({@code main},{@code isolated},{@code current},{@code session:...} ,Seedocumentation).
      */
     private final String session;
     /**
-     * add / edit：{@code --message} 发给 agent 的提示正文。
+ * add / edit:{@code --message} agent .
      */
     private final String message;
     /**
-     * add / edit：{@code --at} 一次性触发时间；无偏移时按 UTC 解释除非同时提供 {@code --tz}。
+ * add / edit:{@code --at} ; UTC Provides {@code --tz}.
      */
     private final String at;
     /**
-     * add / edit：{@code --tz} 将 {@code --at} 解释为此时区的本地墙钟时间。
+ * add / edit:{@code --tz} {@code --at} .
      */
     private final String tz;
     /**
-     * add / edit：{@code --keep-after-run} 一次性任务成功后仍保留记录。
+ * add / edit:{@code --keep-after-run} .
      */
     private final boolean keepAfterRun;
     /**
-     * add / edit：{@code --announce} 通过渠道/webhook 等对外播报最终结果（isolated 任务默认倾向开启，见文档）。
+ * add / edit:{@code --announce} /webhook (isolated ,Seedocumentation).
      */
     private final boolean announce;
     /**
-     * add / edit：{@code --no-deliver} 不对外投递，运行留在内部（不等价于把投递交回消息工具）。
+ * add / edit:{@code --no-deliver} ,(Equivalent tomessage).
      */
     private final boolean noDeliver;
     /**
-     * add / edit：{@code --light-context} isolated agent 任务使用轻量 bootstrap（空注入而非完整 workspace 集合）。
+ * add / edit:{@code --light-context} isolated agent bootstrap(inject workspace ).
      */
     private final boolean lightContext;
     /**
-     * add / edit：{@code --announce} 搭配使用的 {@code --channel}。
+ * add / edit:{@code --announce} {@code --channel}.
      */
     private final String channel;
     /**
-     * add / edit：{@code --announce} 搭配使用的 {@code --to} 目标。
+ * add / edit:{@code --announce} {@code --to} .
      */
     private final String to;
     /**
-     * add / edit：{@code --model} 覆盖任务允许使用的模型（不在 allowlist 时会警告并回退，见文档）。
+ * add / edit:{@code --model} ( allowlist ,Seedocumentation).
      */
     private final String model;
     /**
-     * add / edit：{@code --agent} 指定运行所属 agent。
+ * add / edit:{@code --agent} agent.
      */
     private final String agent;
     /**
-     * add / edit：{@code --clear-agent} 清除任务级 agent 覆盖。
+ * add / edit:{@code --clear-agent} agent .
      */
     private final boolean clearAgent;
     /**
-     * add / edit：显式 {@code true} 时追加 {@code --best-effort-deliver}；{@code null} 表示不传该 flag。
+ * add / edit: {@code true} {@code --best-effort-deliver};{@code null} flag.
      */
     private final Boolean bestEffortDeliver;
     /**
-     * add / edit：显式 {@code true} 时追加 {@code --no-best-effort-deliver}；{@code null} 表示不传。
+ * add / edit: {@code true} {@code --no-best-effort-deliver};{@code null} .
      */
     private final Boolean noBestEffortDeliver;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private CronOptions(Builder b) {
         this.verb = b.verb;
@@ -156,7 +159,7 @@ public final class CronOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -233,7 +236,7 @@ public final class CronOptions implements CliSubArgs {
     }
 
     /**
-     * {@link CronOptions} 构建器。
+ * {@link CronOptions} builder.
      */
     public static final class Builder {
         private Verb verb = Verb.LIST;
@@ -261,7 +264,7 @@ public final class CronOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @param jobId 任务 ID（可为 null）
+ * @param jobId ID( null)
          * @return {@code this}
          */
         public Builder run(String jobId) {
@@ -307,7 +310,7 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param jobId 任务 ID
+ * @param jobId ID
          * @return {@code this}
          */
         public Builder edit(String jobId) {
@@ -325,7 +328,7 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param jobId 任务 ID
+ * @param jobId ID
          * @return {@code this}
          */
         public Builder delete(String jobId) {
@@ -470,7 +473,7 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param v 为 true 时输出 {@code --best-effort-deliver}
+ * @param v When true, {@code --best-effort-deliver}
          * @return {@code this}
          */
         public Builder bestEffortDeliver(boolean v) {
@@ -479,7 +482,7 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param v 为 true 时输出 {@code --no-best-effort-deliver}
+ * @param v When true, {@code --no-best-effort-deliver}
          * @return {@code this}
          */
         public Builder noBestEffortDeliver(boolean v) {
@@ -488,9 +491,9 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -501,7 +504,7 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link CronOptions}
+ * @return {@link CronOptions}
          */
         public CronOptions build() {
             return new CronOptions(this);

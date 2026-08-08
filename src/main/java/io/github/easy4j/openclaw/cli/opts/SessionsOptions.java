@@ -8,78 +8,81 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw sessions}：列出各 agent 存储的会话记录，并按配置执行会话存储维护（裁剪、缺失修复等）。
- * <p>{@code cleanup} 使用 {@code session.maintenance} 设置；不会清理 cron 运行日志（见 cron 文档）。{@code --all-agents} 聚合所有已配置 agent store。</p>
+ * {@code openclaw sessions}: agent session,session(repair).
+ * <p>{@code cleanup} {@code session.maintenance} ; cron (See cron documentation).{@code --all-agents} agent store.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/sessions">sessions CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class SessionsOptions implements CliSubArgs {
 
     /**
-     * 默认列出会话，或进入 {@code sessions cleanup} 维护子命令。
+ * session, {@code sessions cleanup} subcommand.
      */
     public enum Mode {
         /**
-         * 默认列出：无子命令 token，与文档示例 {@code openclaw sessions} 一致。
+ * :subcommand token,with documentationexample {@code openclaw sessions} .
          */
         LIST,
-        /** {@code sessions cleanup}：立即执行维护而非等待下次写入周期。 */
+ /** {@code sessions cleanup}:. */
         CLEANUP
     }
 
-    /** LIST 或 CLEANUP。 */
+ /** LIST CLEANUP. */
     private final Mode mode;
     /**
-     * {@code --agent}：限定到单个已配置 agent 的会话 store。
+ * {@code --agent}: agent session store.
      */
     private final String agent;
     /**
-     * {@code --all-agents}：跨所有已配置 agent 聚合列出或清理。
+ * {@code --all-agents}: agent .
      */
     private final boolean allAgents;
     /**
-     * list：{@code --active} 最近若干分钟内活跃的会话过滤（分钟值）。
+ * list:{@code --active} session(value).
      */
     private final Integer activeMinutes;
     /**
-     * list：{@code --verbose} 更详细日志。
+ * list:{@code --verbose} .
      */
     private final boolean verbose;
     /**
-     * list：{@code --json} 输出会话条目与 store 元数据。
+ * list:{@code --json} session store .
      */
     private final boolean json;
     /**
-     * list / cleanup：{@code --store} 显式指向某个 {@code sessions.json} 文件（不可与 {@code --agent}/{@code --all-agents} 混用，见文档）。
+ * list / cleanup:{@code --store} {@code sessions.json} ( {@code --agent}/{@code --all-agents} ,Seedocumentation).
      */
     private final String store;
     /**
-     * cleanup：{@code --dry-run} 只打印将删除或裁剪的条目，不写盘。
+ * cleanup:{@code --dry-run} ,.
      */
     private final boolean cleanupDryRun;
     /**
-     * cleanup：{@code --enforce} 即使 {@code session.maintenance.mode=warn} 也执行维护。
+ * cleanup:{@code --enforce} {@code session.maintenance.mode=warn} .
      */
     private final boolean cleanupEnforce;
     /**
-     * cleanup：{@code --fix-missing} 删除 transcript 文件已缺失的僵尸索引项。
+ * cleanup:{@code --fix-missing} transcript .
      */
     private final boolean cleanupFixMissing;
     /**
-     * cleanup：{@code --active-key} 保护指定会话键不被磁盘预算驱逐。
+ * cleanup:{@code --active-key} sessionkey.
      */
     private final String cleanupActiveKey;
     /**
-     * cleanup：{@code --json} 输出每 store 前后计数等摘要。
+ * cleanup:{@code --json} store .
      */
     private final boolean cleanupJson;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private SessionsOptions(Builder b) {
         this.mode = b.mode;
@@ -98,7 +101,7 @@ public final class SessionsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -133,7 +136,7 @@ public final class SessionsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link SessionsOptions} 构建器。
+ * {@link SessionsOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.LIST;
@@ -151,7 +154,7 @@ public final class SessionsOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 列出会话（默认，无子命令 token）。
+ * session(subcommand token).
          *
          * @return {@code this}
          */
@@ -189,9 +192,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --active}：最近活跃分钟数筛选。
+ * {@code --active}:.
          *
-         * @param minutes 分钟数
+ * @param minutes
          * @return {@code this}
          */
         public Builder activeMinutes(int minutes) {
@@ -200,7 +203,7 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * @param minutes {@code --active}（可为 null）
+ * @param minutes {@code --active}( null)
          * @return {@code this}
          */
         public Builder activeMinutes(Integer minutes) {
@@ -281,9 +284,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 追加未建模的 CLI token。
+ * CLI token.
          *
-         * @param tokens argv 片段
+ * @param tokens argv
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -294,7 +297,7 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link SessionsOptions}
+ * @return {@link SessionsOptions}
          */
         public SessionsOptions build() {
             return new SessionsOptions(this);

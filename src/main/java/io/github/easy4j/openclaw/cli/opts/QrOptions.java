@@ -8,53 +8,56 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw qr}：根据当前 Gateway 配置生成移动端配对二维码与 setup code（载荷中含短期 {@code bootstrapToken}，非共享网关口令）。
- * <p>文档注意：{@code --token} 与 {@code --password} 互斥；{@code --remote} 需配置 {@code gateway.remote.url} 或
- * {@code gateway.tailscale.mode=serve|funnel}；公网/Tailscale 场景对 {@code ws://} 可能失败，宜 {@code wss://} 或 Tailscale Serve/Funnel。</p>
+ * {@code openclaw qr}: Gateway pairingQR code setup code( {@code bootstrapToken},Gateway).
+ * <p>documentation:{@code --token} {@code --password} ;{@code --remote} {@code gateway.remote.url}
+ * {@code gateway.tailscale.mode=serve|funnel};/Tailscale {@code ws://} , {@code wss://} Tailscale Serve/Funnel.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/qr">qr CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class QrOptions implements CliSubArgs {
 
     /**
-     * {@code --remote}：优先使用 {@code gateway.remote.url}；未设置时仍可由 {@code gateway.tailscale.mode=serve|funnel} 提供公网 URL。
+ * {@code --remote}: {@code gateway.remote.url}; {@code gateway.tailscale.mode=serve|funnel} Provides URL.
      */
     private final boolean remote;
     /**
-     * {@code --url}：覆盖载荷中使用的 Gateway WebSocket URL。
+ * {@code --url}: Gateway WebSocket URL.
      */
     private final String url;
     /**
-     * {@code --public-url}：覆盖载荷中的对外可见 URL（与 {@code --url} 分工见文档）。
+ * {@code --public-url}:See URL( {@code --url} Seedocumentation).
      */
     private final String publicUrl;
     /**
-     * {@code --token}：覆盖引导流程认证所用的网关 token（与 {@code --password} 互斥）。
+ * {@code --token}:streamauthenticationGateway token( {@code --password} ).
      */
     private final String token;
     /**
-     * {@code --password}：覆盖引导流程认证所用的网关密码（与 {@code --token} 互斥）。
+ * {@code --password}:streamauthenticationGateway( {@code --token} ).
      */
     private final String password;
     /**
-     * {@code --setup-code-only}：仅打印 setup code，不输出完整 QR 等。
+ * {@code --setup-code-only}:only setup code, QR .
      */
     private final boolean setupCodeOnly;
     /**
-     * {@code --no-ascii}：跳过终端 ASCII 二维码绘制。
+ * {@code --no-ascii}:skipsterminal ASCII QR code.
      */
     private final boolean noAscii;
     /**
-     * {@code --json}：输出 JSON（含 {@code setupCode}、{@code gatewayUrl}、{@code auth}、{@code urlSource} 等字段，见文档）。
+ * {@code --json}: JSON( {@code setupCode},{@code gatewayUrl},{@code auth},{@code urlSource} field,Seedocumentation).
      */
     private final boolean json;
     /**
-     * 文档未枚举的附加参数，按 shell 顺序透传。
+ * documentation, shell .
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private QrOptions(Builder b) {
         this.remote = b.remote;
@@ -69,7 +72,7 @@ public final class QrOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -94,7 +97,7 @@ public final class QrOptions implements CliSubArgs {
     }
 
     /**
-     * {@link QrOptions} 构建器。
+ * {@link QrOptions} builder.
      */
     public static final class Builder {
         private boolean remote;
@@ -180,9 +183,9 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -193,7 +196,7 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link QrOptions}
+ * @return {@link QrOptions}
          */
         public QrOptions build() {
             return new QrOptions(this);

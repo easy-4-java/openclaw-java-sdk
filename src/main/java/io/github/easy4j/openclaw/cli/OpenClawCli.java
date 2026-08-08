@@ -9,35 +9,38 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 官方 CLI 顶层命令封装；每个方法接收 {@code io.github.easy4j.openclaw.cli.opts} 包中的 {@link CliSubArgs} 实现（如 {@link AgentOptions}），
- * 避免使用裸 {@code String...} 导致调用方不清楚参数顺序与含义。
+ * top-level CLI command facade; {@code io.github.easy4j.openclaw.cli.opts} {@link CliSubArgs} ( {@link AgentOptions}),
+ * avoids using {@code String...} .
  * <p>
- * 文档索引：<a href="https://docs.openclaw.ai/cli">CLI Reference</a>。
- * Gateway 的 RPC 查询场景可优先使用 {@link GatewayCommandOptions.Builder#health(GatewayRpcOptions)} 等，
- * 或使用 {@link #gatewayHealth(GatewayRpcOptions)} 等便捷方法。
+ * Documentation index:<a href="https://docs.openclaw.ai/cli">CLI Reference</a>.
+ * Gateway RPC {@link GatewayCommandOptions.Builder#health(GatewayRpcOptions)} ,
+ * {@link #gatewayHealth(GatewayRpcOptions)} .
  * </p>
  *
  * @see <a href="https://docs.openclaw.ai/cli">CLI Reference</a>
  * @see <a href="https://docs.openclaw.ai/gateway/cli-backends">CLI Backends</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public class OpenClawCli {
 
     /**
-     * 底层执行器（高级用法：直接构造 {@link OpenClawCliRequest}）
+ * underlying executor(usage: {@link OpenClawCliRequest})
      */
     private final OpenClawCliExecutor executor;
 
     /**
-     * @param executor 用于执行本地 {@code openclaw} 的执行器
+ * @param executor Used for {@code openclaw} executor
      */
     public OpenClawCli(OpenClawCliExecutor executor) {
         this.executor = Objects.requireNonNull(executor, "executor");
     }
 
     /**
-     * 等价于 {@code openclaw --version}（与文档中 {@code -V} / {@code --version} 一致）。
-     * <p>示例（shell）：{@code openclaw --version}</p>
+ * Equivalent to {@code openclaw --version}(with documentation {@code -V} / {@code --version} ).
+ * <p>example(shell):{@code openclaw --version}</p>
      *
      * @see <a href="https://docs.openclaw.ai/cli">CLI Reference</a>
      */
@@ -46,8 +49,8 @@ public class OpenClawCli {
     }
 
     /**
-     * 等价于 {@code openclaw --help}（根级帮助，具体子命令请使用 {@code &lt;cmd&gt; --help}）。
-     * <p>示例：{@code openclaw --help}</p>
+ * Equivalent to {@code openclaw --help}(help,subcommand {@code &lt;cmd&gt; --help}).
+ * <p>example:{@code openclaw --help}</p>
      *
      * @see <a href="https://docs.openclaw.ai/cli">CLI Reference</a>
      */
@@ -59,9 +62,9 @@ public class OpenClawCli {
 
     /**
      * {@code openclaw gateway ...}。
-     * <p>示例：{@code gateway(GatewayCommandOptions.builder().health(GatewayRpcOptions.builder().url("ws://127.0.0.1:18789").build()).build())}</p>
+ * <p>example:{@code gateway(GatewayCommandOptions.builder.health(GatewayRpcOptions.builder.url("ws://127.0.0.1:18789").build).build)}</p>
      *
-     * @param args 子命令与 flag，见 {@link GatewayCommandOptions}
+ * @param args subcommand and flags,See {@link GatewayCommandOptions}
      * @see <a href="https://docs.openclaw.ai/cli/gateway">gateway CLI</a>
      */
     public OpenClawCliResult gateway(GatewayCommandOptions args) {
@@ -69,9 +72,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 类型化 {@code gateway health}（内部使用 {@link GatewayCommandOptions.Builder#health(GatewayRpcOptions)}）。
+ * {@code gateway health}( {@link GatewayCommandOptions.Builder#health(GatewayRpcOptions)}).
      *
-     * @param rpcOptions 与文档「Query a running Gateway」一致的 RPC 选项
+ * @param rpcOptions with documentation"Query a running Gateway" RPC
      * @see <a href="https://docs.openclaw.ai/cli/gateway">gateway CLI</a>
      * @see GatewayCliArgv#health(GatewayRpcOptions)
      */
@@ -80,7 +83,7 @@ public class OpenClawCli {
     }
 
     /**
-     * 类型化 {@code gateway status}。
+ * {@code gateway status}.
      *
      * @see <a href="https://docs.openclaw.ai/cli/gateway">gateway CLI</a>
      * @see GatewayCliArgv#status(GatewayRpcOptions, GatewayCliArgv.GatewayStatusOptions)
@@ -91,7 +94,7 @@ public class OpenClawCli {
     }
 
     /**
-     * 类型化 {@code gateway probe}。
+ * {@code gateway probe}.
      *
      * @see <a href="https://docs.openclaw.ai/cli/gateway">gateway CLI</a>
      * @see GatewayCliArgv#probe(GatewayRpcOptions, GatewayCliArgv.GatewayProbeOptions)
@@ -104,7 +107,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw daemon ...}。
      *
-     * @param args 子命令与 flag，见 {@link DaemonOptions}
+ * @param args subcommand and flags,See {@link DaemonOptions}
      * @see <a href="https://docs.openclaw.ai/cli/daemon">daemon CLI</a>
      */
     public OpenClawCliResult daemon(DaemonOptions args) {
@@ -112,9 +115,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 顶层 {@code openclaw health}（非 {@code gateway health}）。
+ * {@code openclaw health}( {@code gateway health}).
      *
-     * @param args 子命令与 flag，见 {@link HealthCommandOptions}
+ * @param args subcommand and flags,See {@link HealthCommandOptions}
      * @see <a href="https://docs.openclaw.ai/cli/health">health CLI</a>
      */
     public OpenClawCliResult health(HealthCommandOptions args) {
@@ -122,9 +125,9 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw status ...}（顶层 status，非仅 gateway 子命令）。
+ * {@code openclaw status ...}( status,not only gateway subcommand).
      *
-     * @param args 子命令与 flag，见 {@link StatusCommandOptions}
+ * @param args subcommand and flags,See {@link StatusCommandOptions}
      * @see <a href="https://docs.openclaw.ai/cli/status">status CLI</a>
      */
     public OpenClawCliResult status(StatusCommandOptions args) {
@@ -134,7 +137,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw doctor ...}。
      *
-     * @param args 子命令与 flag，见 {@link DoctorOptions}
+ * @param args subcommand and flags,See {@link DoctorOptions}
      * @see <a href="https://docs.openclaw.ai/cli/doctor">doctor CLI</a>
      */
     public OpenClawCliResult doctor(DoctorOptions args) {
@@ -144,7 +147,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw logs ...}。
      *
-     * @param args 子命令与 flag，见 {@link LogsOptions}
+ * @param args subcommand and flags,See {@link LogsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/logs">logs CLI</a>
      */
     public OpenClawCliResult logs(LogsOptions args) {
@@ -155,9 +158,9 @@ public class OpenClawCli {
 
     /**
      * {@code openclaw config ...}。
-     * <p>示例：{@code config(ConfigOptions.builder().tail("get", "gateway.mode").build())}</p>
+ * <p>example:{@code config(ConfigOptions.builder.tail("get", "gateway.mode").build)}</p>
      *
-     * @param args 子命令与 flag，见 {@link ConfigOptions}
+ * @param args subcommand and flags,See {@link ConfigOptions}
      * @see <a href="https://docs.openclaw.ai/cli/config">config CLI</a>
      */
     public OpenClawCliResult config(ConfigOptions args) {
@@ -167,7 +170,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw configure ...}。
      *
-     * @param args 子命令与 flag，见 {@link ConfigureOptions}
+ * @param args subcommand and flags,See {@link ConfigureOptions}
      * @see <a href="https://docs.openclaw.ai/cli/configure">configure CLI</a>
      */
     public OpenClawCliResult configure(ConfigureOptions args) {
@@ -177,7 +180,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw onboard ...}。
      *
-     * @param args 子命令与 flag，见 {@link OnboardOptions}
+ * @param args subcommand and flags,See {@link OnboardOptions}
      * @see <a href="https://docs.openclaw.ai/cli/onboard">onboard CLI</a>
      */
     public OpenClawCliResult onboard(OnboardOptions args) {
@@ -188,11 +191,11 @@ public class OpenClawCli {
 
     /**
      * {@code openclaw agent ...}。
-     * <p>使用 {@link AgentOptions} 构造完整参数：{@code --message} 必填；{@code --to} / {@code --session-id} / {@code --agent} 至少其一；
-     * 可选 {@link ThinkingLevel}、{@link VerboseLevel}、{@link AgentOptions.Builder#timeoutSeconds(int)} 等。</p>
-     * <p>示例：{@code agent(AgentOptions.builder().agent("ops").message("Summarize logs").build())}</p>
+ * <p> {@link AgentOptions} :{@code --message} Required;{@code --to} / {@code --session-id} / {@code --agent} ;
+ * Optional {@link ThinkingLevel},{@link VerboseLevel},{@link AgentOptions.Builder#timeoutSeconds(int)} .</p>
+ * <p>example:{@code agent(AgentOptions.builder.agent("ops").message("Summarize logs").build)}</p>
      *
-     * @param args 子命令与 flag，见 {@link AgentOptions}
+ * @param args subcommand and flags,See {@link AgentOptions}
      * @see <a href="https://docs.openclaw.ai/cli/agent">agent CLI</a>
      */
     public OpenClawCliResult agent(AgentOptions args) {
@@ -202,7 +205,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw agents ...}。
      *
-     * @param args 子命令与 flag，见 {@link AgentsOptions}
+ * @param args subcommand and flags,See {@link AgentsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/agents">agents CLI</a>
      */
     public OpenClawCliResult agents(AgentsOptions args) {
@@ -212,7 +215,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw sessions ...}。
      *
-     * @param args 子命令与 flag，见 {@link SessionsOptions}
+ * @param args subcommand and flags,See {@link SessionsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/sessions">sessions CLI</a>
      */
     public OpenClawCliResult sessions(SessionsOptions args) {
@@ -222,7 +225,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw skills ...}。
      *
-     * @param args 子命令与 flag，见 {@link SkillsOptions}
+ * @param args subcommand and flags,See {@link SkillsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/skills">skills CLI</a>
      */
     public OpenClawCliResult skills(SkillsOptions args) {
@@ -232,7 +235,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw approvals ...}。
      *
-     * @param args 子命令与 flag，见 {@link ApprovalsOptions}
+ * @param args subcommand and flags,See {@link ApprovalsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/approvals">approvals CLI</a>
      */
     public OpenClawCliResult approvals(ApprovalsOptions args) {
@@ -244,7 +247,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw channels ...}。
      *
-     * @param args 子命令与 flag，见 {@link ChannelsOptions}
+ * @param args subcommand and flags,See {@link ChannelsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/channels">channels CLI</a>
      */
     public OpenClawCliResult channels(ChannelsOptions args) {
@@ -254,7 +257,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw message ...}。
      *
-     * @param args 子命令与 flag，见 {@link MessageOptions}
+ * @param args subcommand and flags,See {@link MessageOptions}
      * @see <a href="https://docs.openclaw.ai/cli/message">message CLI</a>
      */
     public OpenClawCliResult message(MessageOptions args) {
@@ -264,7 +267,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw pairing ...}。
      *
-     * @param args 子命令与 flag，见 {@link PairingOptions}
+ * @param args subcommand and flags,See {@link PairingOptions}
      * @see <a href="https://docs.openclaw.ai/cli/pairing">pairing CLI</a>
      */
     public OpenClawCliResult pairing(PairingOptions args) {
@@ -274,7 +277,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw qr ...}。
      *
-     * @param args 子命令与 flag，见 {@link QrOptions}
+ * @param args subcommand and flags,See {@link QrOptions}
      * @see <a href="https://docs.openclaw.ai/cli/qr">qr CLI</a>
      */
     public OpenClawCliResult qr(QrOptions args) {
@@ -284,7 +287,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw node ...}。
      *
-     * @param args 子命令与 flag，见 {@link NodeOptions}
+ * @param args subcommand and flags,See {@link NodeOptions}
      * @see <a href="https://docs.openclaw.ai/cli/node">node CLI</a>
      */
     public OpenClawCliResult node(NodeOptions args) {
@@ -294,7 +297,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw nodes ...}。
      *
-     * @param args 子命令与 flag，见 {@link NodesOptions}
+ * @param args subcommand and flags,See {@link NodesOptions}
      * @see <a href="https://docs.openclaw.ai/cli/nodes">nodes CLI</a>
      */
     public OpenClawCliResult nodes(NodesOptions args) {
@@ -304,7 +307,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw devices ...}。
      *
-     * @param args 子命令与 flag，见 {@link DevicesOptions}
+ * @param args subcommand and flags,See {@link DevicesOptions}
      * @see <a href="https://docs.openclaw.ai/cli/devices">devices CLI</a>
      */
     public OpenClawCliResult devices(DevicesOptions args) {
@@ -316,7 +319,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw mcp ...}。
      *
-     * @param args 子命令与 flag，见 {@link McpOptions}
+ * @param args subcommand and flags,See {@link McpOptions}
      * @see <a href="https://docs.openclaw.ai/cli/mcp">mcp CLI</a>
      */
     public OpenClawCliResult mcp(McpOptions args) {
@@ -326,7 +329,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw plugins ...}。
      *
-     * @param args 子命令与 flag，见 {@link PluginsOptions}
+ * @param args subcommand and flags,See {@link PluginsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/plugins">plugins CLI</a>
      */
     public OpenClawCliResult plugins(PluginsOptions args) {
@@ -338,7 +341,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw cron ...}。
      *
-     * @param args 子命令与 flag，见 {@link CronOptions}
+ * @param args subcommand and flags,See {@link CronOptions}
      * @see <a href="https://docs.openclaw.ai/cli/cron">cron CLI</a>
      */
     public OpenClawCliResult cron(CronOptions args) {
@@ -348,7 +351,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw hooks ...}。
      *
-     * @param args 子命令与 flag，见 {@link HooksOptions}
+ * @param args subcommand and flags,See {@link HooksOptions}
      * @see <a href="https://docs.openclaw.ai/cli/hooks">hooks CLI</a>
      */
     public OpenClawCliResult hooks(HooksOptions args) {
@@ -356,9 +359,9 @@ public class OpenClawCli {
     }
 
     /**
-     * Task flow 子命令（官方文档对应 {@code openclaw tasks flow ...}，见 {@link FlowsOptions}）。
+ * Task flow subcommand(documentationCorresponds to {@code openclaw tasks flow ...},See {@link FlowsOptions}).
      *
-     * @param args 子命令与 flag，见 {@link FlowsOptions}
+ * @param args subcommand and flags,See {@link FlowsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/flows">flows CLI</a>
      */
     public OpenClawCliResult flows(FlowsOptions args) {
@@ -370,7 +373,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw models ...}。
      *
-     * @param args 子命令与 flag，见 {@link ModelsOptions}
+ * @param args subcommand and flags,See {@link ModelsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/models">models CLI</a>
      */
     public OpenClawCliResult models(ModelsOptions args) {
@@ -380,7 +383,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw security ...}。
      *
-     * @param args 子命令与 flag，见 {@link SecurityOptions}
+ * @param args subcommand and flags,See {@link SecurityOptions}
      * @see <a href="https://docs.openclaw.ai/cli/security">security CLI</a>
      */
     public OpenClawCliResult security(SecurityOptions args) {
@@ -390,7 +393,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw secrets ...}。
      *
-     * @param args 子命令与 flag，见 {@link SecretsOptions}
+ * @param args subcommand and flags,See {@link SecretsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/secrets">secrets CLI</a>
      */
     public OpenClawCliResult secrets(SecretsOptions args) {
@@ -400,7 +403,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw backup ...}。
      *
-     * @param args 子命令与 flag，见 {@link BackupOptions}
+ * @param args subcommand and flags,See {@link BackupOptions}
      * @see <a href="https://docs.openclaw.ai/cli/backup">backup CLI</a>
      */
     public OpenClawCliResult backup(BackupOptions args) {
@@ -410,7 +413,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw update ...}。
      *
-     * @param args 子命令与 flag，见 {@link UpdateOptions}
+ * @param args subcommand and flags,See {@link UpdateOptions}
      * @see <a href="https://docs.openclaw.ai/cli/update">update CLI</a>
      */
     public OpenClawCliResult update(UpdateOptions args) {
@@ -420,7 +423,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw uninstall ...}。
      *
-     * @param args 子命令与 flag，见 {@link UninstallOptions}
+ * @param args subcommand and flags,See {@link UninstallOptions}
      * @see <a href="https://docs.openclaw.ai/cli/uninstall">uninstall CLI</a>
      */
     public OpenClawCliResult uninstall(UninstallOptions args) {
@@ -430,7 +433,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw reset ...}。
      *
-     * @param args 子命令与 flag，见 {@link ResetOptions}
+ * @param args subcommand and flags,See {@link ResetOptions}
      * @see <a href="https://docs.openclaw.ai/cli/reset">reset CLI</a>
      */
     public OpenClawCliResult reset(ResetOptions args) {
@@ -440,7 +443,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw completion ...}。
      *
-     * @param args 子命令与 flag，见 {@link CompletionOptions}
+ * @param args subcommand and flags,See {@link CompletionOptions}
      * @see <a href="https://docs.openclaw.ai/cli/completion">completion CLI</a>
      */
     public OpenClawCliResult completion(CompletionOptions args) {
@@ -450,7 +453,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw tui ...}。
      *
-     * @param args 子命令与 flag，见 {@link TuiOptions}
+ * @param args subcommand and flags,See {@link TuiOptions}
      * @see <a href="https://docs.openclaw.ai/cli/tui">tui CLI</a>
      */
     public OpenClawCliResult tui(TuiOptions args) {
@@ -460,7 +463,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw dashboard ...}。
      *
-     * @param args 子命令与 flag，见 {@link DashboardOptions}
+ * @param args subcommand and flags,See {@link DashboardOptions}
      * @see <a href="https://docs.openclaw.ai/cli/dashboard">dashboard CLI</a>
      */
     public OpenClawCliResult dashboard(DashboardOptions args) {
@@ -470,7 +473,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw directory ...}。
      *
-     * @param args 子命令与 flag，见 {@link DirectoryOptions}
+ * @param args subcommand and flags,See {@link DirectoryOptions}
      * @see <a href="https://docs.openclaw.ai/cli/directory">directory CLI</a>
      */
     public OpenClawCliResult directory(DirectoryOptions args) {
@@ -480,7 +483,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw system ...}。
      *
-     * @param args 子命令与 flag，见 {@link SystemOptions}
+ * @param args subcommand and flags,See {@link SystemOptions}
      * @see <a href="https://docs.openclaw.ai/cli/system">system CLI</a>
      */
     public OpenClawCliResult system(SystemOptions args) {
@@ -490,7 +493,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw acp ...}。
      *
-     * @param args 子命令与 flag，见 {@link AcpOptions}
+ * @param args subcommand and flags,See {@link AcpOptions}
      * @see <a href="https://docs.openclaw.ai/cli/acp">acp CLI</a>
      */
     public OpenClawCliResult acp(AcpOptions args) {
@@ -498,9 +501,9 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw chat ...}（{@code tui --local} 别名）。
+ * {@code openclaw chat ...}({@code tui --local} ).
      *
-     * @param args 子命令与 flag，见 {@link ChatOptions}
+ * @param args subcommand and flags,See {@link ChatOptions}
      * @see <a href="https://docs.openclaw.ai/cli/chat">chat CLI</a>
      */
     public OpenClawCliResult chat(ChatOptions args) {
@@ -508,9 +511,9 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw terminal ...}（{@code tui --local} 别名）。
+ * {@code openclaw terminal ...}({@code tui --local} ).
      *
-     * @param args 子命令与 flag，见 {@link TerminalOptions}
+ * @param args subcommand and flags,See {@link TerminalOptions}
      * @see <a href="https://docs.openclaw.ai/cli/terminal">terminal CLI</a>
      */
     public OpenClawCliResult terminal(TerminalOptions args) {
@@ -520,7 +523,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw commitments ...}。
      *
-     * @param args 子命令与 flag，见 {@link CommitmentsOptions}
+ * @param args subcommand and flags,See {@link CommitmentsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/commitments">commitments CLI</a>
      */
     public OpenClawCliResult commitments(CommitmentsOptions args) {
@@ -530,7 +533,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw crestodian ...}。
      *
-     * @param args 子命令与 flag，见 {@link CrestodianOptions}
+ * @param args subcommand and flags,See {@link CrestodianOptions}
      * @see <a href="https://docs.openclaw.ai/cli/crestodian">crestodian CLI</a>
      */
     public OpenClawCliResult crestodian(CrestodianOptions args) {
@@ -538,9 +541,9 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw exec-approvals ...}（别名 {@code approvals}）。
+ * {@code openclaw exec-approvals ...}( {@code approvals}).
      *
-     * @param args 子命令与 flag，见 {@link ExecApprovalsOptions}
+ * @param args subcommand and flags,See {@link ExecApprovalsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/exec-approvals">exec-approvals CLI</a>
      */
     public OpenClawCliResult execApprovals(ExecApprovalsOptions args) {
@@ -550,7 +553,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw exec-policy ...}。
      *
-     * @param args 子命令与 flag，见 {@link ExecPolicyOptions}
+ * @param args subcommand and flags,See {@link ExecPolicyOptions}
      * @see <a href="https://docs.openclaw.ai/cli/exec-policy">exec-policy CLI</a>
      */
     public OpenClawCliResult execPolicy(ExecPolicyOptions args) {
@@ -560,7 +563,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw migrate ...}。
      *
-     * @param args 子命令与 flag，见 {@link MigrateOptions}
+ * @param args subcommand and flags,See {@link MigrateOptions}
      * @see <a href="https://docs.openclaw.ai/cli/migrate">migrate CLI</a>
      */
     public OpenClawCliResult migrate(MigrateOptions args) {
@@ -570,7 +573,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw proxy ...}。
      *
-     * @param args 子命令与 flag，见 {@link ProxyOptions}
+ * @param args subcommand and flags,See {@link ProxyOptions}
      * @see <a href="https://docs.openclaw.ai/cli/proxy">proxy CLI</a>
      */
     public OpenClawCliResult proxy(ProxyOptions args) {
@@ -580,7 +583,7 @@ public class OpenClawCli {
     /**
      * {@code openclaw worktrees ...}。
      *
-     * @param args 子命令与 flag，见 {@link WorktreesOptions}
+ * @param args subcommand and flags,See {@link WorktreesOptions}
      * @see <a href="https://docs.openclaw.ai/cli/worktrees">worktrees CLI</a>
      */
     public OpenClawCliResult worktrees(WorktreesOptions args) {
@@ -588,9 +591,9 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw tool ...}（保留命令根，无选项）。
+ * {@code openclaw tool ...}().
      *
-     * @param args 子命令与 flag，见 {@link ToolOptions}
+ * @param args subcommand and flags,See {@link ToolOptions}
      * @see <a href="https://docs.openclaw.ai/cli/tool">tool CLI</a>
      */
     public OpenClawCliResult tool(ToolOptions args) {
@@ -598,9 +601,9 @@ public class OpenClawCli {
     }
 
     /**
-     * {@code openclaw tools ...}（根帮助别名，无选项）。
+ * {@code openclaw tools ...}(help).
      *
-     * @param args 子命令与 flag，见 {@link ToolsOptions}
+ * @param args subcommand and flags,See {@link ToolsOptions}
      * @see <a href="https://docs.openclaw.ai/cli/tools">tools CLI</a>
      */
     public OpenClawCliResult tools(ToolsOptions args) {
@@ -608,9 +611,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 使用自定义 {@link OpenClawCliRequest}（可设置全局 {@code --dev}、{@code --profile} 等）。
+ * {@link OpenClawCliRequest}( {@code --dev},{@code --profile} ).
      *
-     * @param request 完整请求（含参数列表）
+ * @param request (argument list)
      * @see <a href="https://docs.openclaw.ai/cli">CLI Reference</a>
      */
     public OpenClawCliResult execute(OpenClawCliRequest request) {
@@ -618,7 +621,7 @@ public class OpenClawCli {
     }
 
     /**
-     * 组装 {@code openclaw &lt;顶层&gt; &lt;子参数...&gt;} 并执行。
+ * Assembles {@code openclaw &lt;&gt; &lt;sub-arguments...&gt;} .
      */
     private OpenClawCliResult run(String topLevel, CliSubArgs subArgs) {
         Objects.requireNonNull(topLevel, "topLevel");

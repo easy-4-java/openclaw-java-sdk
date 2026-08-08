@@ -7,7 +7,10 @@ import lombok.Getter;
 import java.util.Map;
 
 /**
- * 客户端→Gateway RPC 请求帧：{@code { type: "req", id, method, params }}。
+ * →Gateway RPC :{@code { type: "req", id, method, params }}.
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public class RequestFrame extends GatewayFrame {

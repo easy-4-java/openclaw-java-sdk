@@ -11,31 +11,34 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * OpenAI 函数工具调用辅助类。
+ * OpenAI tool call.
  * <p>
- * 提供工具定义、参数处理、调用执行等常用操作。
+ * Provides,.
  * </p>
  *
- * <h3>用法示例</h3>
+ * <h3>usageexample</h3>
  * <pre>{@code
- * // 定义工具
+ * //
  * Map<String, Object> getWeatherTool = Tools.function("get_weather", "Get weather info")
  *     .param("city", "string", "City name")
  *     .param("country", "string", "Country code", true)
  *     .build();
  *
- * // 解析工具调用参数
+ * // tool call
  * ToolCall call = response.getChoices().get(0).getMessage().getToolCalls().get(0);
  * Map<String, Object> args = Tools.parseArgs(call, Map.class);
  * String city = (String) args.get("city")
  *
- * // 执行工具并构建结果消息
+ * // message
  * String result = executeTool(call, args);
  * ChatMessage resultMsg = Tools.toolResult(call.getId(), result);
  * }</pre>
  *
  * @see ChatMessage.ToolCall
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#chat-tool-contract">Chat tool contract</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class Tools {
 
@@ -44,17 +47,17 @@ public final class Tools {
     private Tools() {}
 
     /**
-     * 创建函数工具定义。
+ * .
      *
-     * @param name 工具名称
-     * @param description 工具描述
+ * @param name
+ * @param description
      */
     public static FunctionBuilder function(String name, String description) {
         return new FunctionBuilder(name, description);
     }
 
     /**
-     * 判断消息是否包含工具调用。
+ * messagetool call.
      */
     public static boolean hasToolCalls(ChatMessage message) {
         return message != null
@@ -63,18 +66,18 @@ public final class Tools {
     }
 
     /**
-     * 判断 chunk 是否表示工具调用完成。
+ * chunk tool callcompletion.
      */
     public static boolean isToolCallFinish(String finishReason) {
         return OpenClawConstants.FINISH_REASON_TOOL_CALLS.equals(finishReason);
     }
 
     /**
-     * 解析工具调用参数为指定类型。
+ * tool call.
      *
-     * @param toolCall 工具调用
-     * @param clazz 目标类型（如 Map.class 或自定义类）
-     * @return 解析后的参数对象
+ * @param toolCall tool call
+ * @param clazz ( Map.class )
+ * @return object
      */
     public static <T> T parseArgs(ToolCall toolCall, Class<T> clazz) {
         Objects.requireNonNull(toolCall, "toolCall");
@@ -100,17 +103,17 @@ public final class Tools {
     }
 
     /**
-     * 解析工具调用参数为 Map。
+ * tool call Map.
      */
     public static Map<String, Object> parseArgsAsMap(ToolCall toolCall) {
         return parseArgs(toolCall, Map.class);
     }
 
     /**
-     * 创建工具结果消息。
+ * message.
      *
-     * @param toolCallId 对应的工具调用 ID
-     * @param output 工具执行结果（可以是任意可序列化对象，会自动转为 JSON）
+ * @param toolCallId Corresponds totool call ID
+ * @param output (object, JSON)
      */
     public static ChatMessage toolResult(String toolCallId, Object output) {
         String content;
@@ -127,7 +130,7 @@ public final class Tools {
     }
 
     /**
-     * 从消息中提取所有工具调用。
+ * messagetool call.
      */
     public static List<ToolCall> extractToolCalls(ChatMessage message) {
         if (!hasToolCalls(message)) {
@@ -137,7 +140,7 @@ public final class Tools {
     }
 
     /**
-     * 工具函数定义构建器。
+ * builder.
      */
     public static class FunctionBuilder {
         private final String name;
@@ -151,19 +154,19 @@ public final class Tools {
         }
 
         /**
-         * 添加可选参数。
+ * Optional.
          */
         public FunctionBuilder param(String name, String type, String description) {
             return param(name, type, description, false);
         }
 
         /**
-         * 添加参数。
+ * .
          *
-         * @param name 参数名
-         * @param type 参数类型：string, number, integer, boolean, array, object
-         * @param description 参数描述
-         * @param required 是否必填
+ * @param name
+ * @param type :string, number, integer, boolean, array, object
+ * @param description
+ * @param required Required
          */
         public FunctionBuilder param(String name, String type, String description, boolean required) {
             parameters.put(name, new Parameter(name, type, description, required));
@@ -174,7 +177,7 @@ public final class Tools {
         }
 
         /**
-         * 构建工具定义为 Map（用于 HTTP 请求）。
+ * Map(Used for HTTP ).
          */
         @SuppressWarnings("unchecked")
         public Map<String, Object> build() {

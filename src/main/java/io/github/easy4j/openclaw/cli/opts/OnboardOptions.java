@@ -8,28 +8,31 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw onboard}：本地或远程 Gateway 的交互式 / 非交互式引导（向导）。
- * <p>常用自动化 flag 由 {@link Builder} 方法追加；其余选项请用 {@link Builder#extra(String...)} 按官方文档顺序透传。
- * {@code --json} 不隐含非交互；脚本须同时传 {@code --non-interactive}。Gateway 令牌相关互斥与 SecretRef 规则见 onboard 文档。</p>
+ * {@code openclaw onboard}: Gateway / .
+ * <p> flag {@link Builder} ; {@link Builder#extra(String...)} documentation.
+ * {@code --json} ; {@code --non-interactive}.Gateway token SecretRef See onboard documentation.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/onboard">onboard CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class OnboardOptions implements CliSubArgs {
 
     /**
-     * 已按 shell 顺序展开的 onboard 子命令 argv 片段不可变列表；{@link #toSubcommandArguments()} 直接返回该视图。
+ * shell onboard subcommand argv ;{@link #toSubcommandArguments} .
      */
     private final List<String> segments;
 
     /**
-     * @param segments 非 null；内部持有引用，调用方应传入不可变或拷贝后的列表
+ * @param segments null;,
      */
     private OnboardOptions(List<String> segments) {
         this.segments = segments;
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -44,11 +47,11 @@ public final class OnboardOptions implements CliSubArgs {
     }
 
     /**
-     * {@link OnboardOptions} 构建器：逐项追加与官方文档一致的 flag。
+ * {@link OnboardOptions} builder:consistent with officialdocumentation flag.
      */
     public static final class Builder {
 
-        /** 可变参数缓冲，构建时拷贝为不可变列表。 */
+ /** ,. */
         private final List<String> s = new ArrayList<>();
 
         /**
@@ -88,7 +91,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * @param nonInteractive 为 true 时追加 {@code --non-interactive}
+ * @param nonInteractive When true, {@code --non-interactive}
          * @return {@code this}
          */
         public Builder nonInteractive(boolean nonInteractive) {
@@ -99,7 +102,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * @param json 为 true 时追加 {@code --json}
+ * @param json When true, {@code --json}
          * @return {@code this}
          */
         public Builder json(boolean json) {
@@ -158,7 +161,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * @param acceptRisk 为 true 时追加 {@code --accept-risk}
+ * @param acceptRisk When true, {@code --accept-risk}
          * @return {@code this}
          */
         public Builder acceptRisk(boolean acceptRisk) {
@@ -193,7 +196,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * @param envVar {@code --gateway-token-ref-env} 环境变量名
+ * @param envVar {@code --gateway-token-ref-env}
          * @return {@code this}
          */
         public Builder gatewayTokenRefEnv(String envVar) {
@@ -205,7 +208,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * @param installDaemon 为 true 时追加 {@code --install-daemon}
+ * @param installDaemon When true, {@code --install-daemon}
          * @return {@code this}
          */
         public Builder installDaemon(boolean installDaemon) {
@@ -216,7 +219,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * @param skipHealth 为 true 时追加 {@code --skip-health}
+ * @param skipHealth When true, {@code --skip-health}
          * @return {@code this}
          */
         public Builder skipHealth(boolean skipHealth) {
@@ -227,7 +230,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * @param allowUnconfigured 为 true 时追加 {@code --allow-unconfigured}
+ * @param allowUnconfigured When true, {@code --allow-unconfigured}
          * @return {@code this}
          */
         public Builder allowUnconfigured(boolean allowUnconfigured) {
@@ -238,9 +241,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 文档中其余 flag 或子参数，顺序与 shell 一致。
+ * documentation flag sub-arguments, shell .
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -251,7 +254,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link OnboardOptions}
+ * @return {@link OnboardOptions}
          */
         public OnboardOptions build() {
             return new OnboardOptions(OpenClawLists.copyOf(s));

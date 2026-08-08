@@ -7,17 +7,17 @@ import lombok.*;
 import java.util.Map;
 
 /**
- * JSON Schema 结构化输出配置（仅当 {@code type = "json_schema"} 时使用）。
+ * JSON Schema (only {@code type = "json_schema"} ).
  *
- * <h3>字段说明</h3>
+ * <h3>field</h3>
  * <ul>
- *   <li>{@code name} — Schema 名称（必填）</li>
- *   <li>{@code schema} — JSON Schema 定义（必填）</li>
- *   <li>{@code strict} — 是否启用严格模式（可选，默认 false）</li>
- *   <li>{@code description} — Schema 描述（可选）</li>
+ * <li>{@code name} — Schema (Required)</li>
+ * <li>{@code schema} — JSON Schema (Required)</li>
+ * <li>{@code strict} — Whether to enable(Optional,Defaults to false)</li>
+ * <li>{@code description} — Schema (Optional)</li>
  * </ul>
  *
- * <h3>用法示例</h3>
+ * <h3>usageexample</h3>
  * <pre>{@code
  * ResponseFormatJsonSchema.builder()
  *     .name("article")
@@ -28,6 +28,9 @@ import java.util.Map;
  * }</pre>
  *
  * @see <a href="https://platform.openai.com/docs/guides/structured-outputs">OpenAI Structured Outputs</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Data
 @Builder
@@ -37,27 +40,27 @@ import java.util.Map;
 public class ResponseFormatJsonSchema {
 
     /**
-     * Schema 名称（必填）。
+ * Schema (Required).
      */
     @JsonProperty("name")
     private String name;
 
     /**
-     * JSON Schema 定义（必填）。
-     * <p>格式：{@code { "type": "object", "properties": { ... }, "required": [...] }}</p>
+ * JSON Schema (Required).
+ * <p>:{@code { "type": "object", "properties": { ... }, "required": [...] }}</p>
      */
     @JsonProperty("schema")
     private Map<String, Object> schema;
 
     /**
-     * 是否启用严格模式（可选）。
-     * <p>启用后模型必须严格遵循 Schema，否则拒绝输出。默认 false。</p>
+ * Whether to enable(Optional).
+ * <p> Schema,.Defaults to false.</p>
      */
     @JsonProperty("strict")
     private Boolean strict;
 
     /**
-     * Schema 描述（可选）。
+ * Schema (Optional).
      */
     @JsonProperty("description")
     private String description;

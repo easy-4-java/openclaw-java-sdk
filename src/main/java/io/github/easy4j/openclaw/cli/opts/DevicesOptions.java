@@ -9,91 +9,94 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw devices}：审批移动/桌面控制端等设备配对请求，并管理设备作用域 token（轮换与吊销）。
- * <p>设置 {@code --url} 时须显式提供 {@code --token} 或 {@code --password}，CLI 不会回退到配置文件或环境变量。
- * 多数操作需要 {@code operator.pairing} 或 {@code operator.admin} 等作用域。</p>
+ * {@code openclaw devices}:approval/devicepairing,device token.
+ * <p> {@code --url} Provides {@code --token} {@code --password},CLI .
+ * {@code operator.pairing} {@code operator.admin} .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/devices">devices CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class DevicesOptions implements CliSubArgs {
 
     /**
-     * devices 子命令：列出、移除、批量清理、审批、拒绝、轮换或吊销设备 token。
+ * devices subcommand:,,approval,device token.
      */
     public enum Verb {
-        /** {@code devices list}：待配对与已配对设备表。 */
+ /** {@code devices list}:pairingpairingdevice. */
         LIST,
-        /** {@code devices remove}：删除单条已配对记录。 */
+ /** {@code devices remove}:pairing. */
         REMOVE,
-        /** {@code devices clear}：批量清理（必须 {@code --yes}）。 */
+ /** {@code devices clear}:( {@code --yes}). */
         CLEAR,
-        /** {@code devices approve}：批准待处理配对（可省略 id 以取最新）。 */
+ /** {@code devices approve}:pairing( id ). */
         APPROVE,
-        /** {@code devices reject}：拒绝指定请求。 */
+ /** {@code devices reject}:. */
         REJECT,
-        /** {@code devices rotate}：为既有角色轮换设备 token（可更新 scope 集合）。 */
+ /** {@code devices rotate}:device token( scope ). */
         ROTATE,
-        /** {@code devices revoke}：吊销某设备某角色的 token。 */
+ /** {@code devices revoke}:device token. */
         REVOKE
     }
 
-    /** list / remove / clear / approve / reject / rotate / revoke 之一。 */
+ /** list / remove / clear / approve / reject / rotate / revoke . */
     private final Verb verb;
     /**
-     * remove / rotate / revoke：设备 id（{@code --device} 或位置参数，依 Builder 实现）。
+ * remove / rotate / revoke:device id({@code --device} , Builder ).
      */
     private final String deviceId;
     /**
-     * clear：{@code --yes} 必填门闩，防止误删。
+ * clear:{@code --yes} Required,.
      */
     private final boolean clearYes;
     /**
-     * clear：{@code --pending} 同时清理待处理请求。
+ * clear:{@code --pending} .
      */
     private final boolean clearPending;
     /**
-     * approve / reject：配对请求 id；approve 可与 {@code approveLatest} 互斥组合见文档。
+ * approve / reject:pairing id;approve {@code approveLatest} ComposesSeedocumentation.
      */
     private final String requestId;
     /**
-     * approve：{@code --latest} 显式选择最新待处理请求。
+ * approve:{@code --latest} .
      */
     private final boolean approveLatest;
     /**
-     * rotate / revoke：目标角色名（必须是该设备已批准契约内的角色）。
+ * rotate / revoke:(device).
      */
     private final String role;
     /**
-     * rotate：重复 {@code --scope} 累加的 operator scope；省略则沿用缓存批准集合。
+ * rotate: {@code --scope} operator scope;.
      */
     private final List<String> scopes;
     /**
-     * 全局：{@code --url} Gateway WebSocket（与 gateway 查询命令共享「显式 url 不回退凭据」规则）。
+ * :{@code --url} Gateway WebSocket( gateway " url ").
      */
     private final String url;
     /**
-     * 全局：{@code --token} 网关共享 token。
+ * :{@code --token} Gateway token.
      */
     private final String token;
     /**
-     * 全局：{@code --password} 网关密码认证。
+ * :{@code --password} Gatewayauthentication.
      */
     private final String password;
     /**
-     * 全局：{@code --timeout} RPC 超时。
+ * :{@code --timeout} RPC timeout.
      */
     private final String timeout;
     /**
-     * 全局：{@code --json} 建议脚本使用。
+ * :{@code --json} .
      */
     private final boolean json;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private DevicesOptions(Builder b) {
         this.verb = b.verb;
@@ -113,7 +116,7 @@ public final class DevicesOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -183,7 +186,7 @@ public final class DevicesOptions implements CliSubArgs {
     }
 
     /**
-     * {@link DevicesOptions} 构建器。
+ * {@link DevicesOptions} builder.
      */
     public static final class Builder {
         private Verb verb = Verb.LIST;
@@ -210,7 +213,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * @param deviceId 设备 ID
+ * @param deviceId device ID
          * @return {@code this}
          */
         public Builder remove(String deviceId) {
@@ -239,7 +242,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（无参数 approve）
+ * @return {@code this}( approve)
          */
         public Builder approve() {
             this.verb = Verb.APPROVE;
@@ -249,7 +252,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * @param requestId 请求 ID
+ * @param requestId ID
          * @return {@code this}
          */
         public Builder approve(String requestId) {
@@ -269,7 +272,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * @param requestId 请求 ID
+ * @param requestId ID
          * @return {@code this}
          */
         public Builder reject(String requestId) {
@@ -291,7 +294,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * @param scope rotate：追加 {@code --scope}
+ * @param scope rotate: {@code --scope}
          * @return {@code this}
          */
         public Builder scope(String scope) {
@@ -359,9 +362,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -372,7 +375,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link DevicesOptions}
+ * @return {@link DevicesOptions}
          */
         public DevicesOptions build() {
             return new DevicesOptions(this);

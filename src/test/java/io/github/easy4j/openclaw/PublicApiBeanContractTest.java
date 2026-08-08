@@ -10,7 +10,6 @@ import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,14 +24,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static io.github.easy4j.openclaw.Java8Collections.list;
-import static io.github.easy4j.openclaw.Java8Collections.map;
-import static io.github.easy4j.openclaw.Java8Collections.set;
 
 /**
  * Verifies the public model and CLI option contracts as one compatibility surface.
@@ -74,10 +68,10 @@ class PublicApiBeanContractTest {
     }
 
     private List<Class<?>> discoverContractTypes() throws Exception {
-        Path classesRoot = Paths.get(OpenClawClient.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        Path classesRoot = Path.of(OpenClawClient.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         List<Class<?>> result = new ArrayList<>();
-        try (Stream<Path> paths = Files.walk(classesRoot)) {
-            for (Path path : paths.filter(value -> value.toString().endsWith(".class")).collect(Collectors.toList())) {
+        try (var paths = Files.walk(classesRoot)) {
+            for (Path path : paths.filter(value -> value.toString().endsWith(".class")).toList()) {
                 String name = classesRoot.relativize(path).toString()
                         .replace(File.separatorChar, '.')
                         .replaceAll("\\.class$", "");
@@ -195,18 +189,18 @@ class PublicApiBeanContractTest {
         if (type == byte.class || type == Byte.class) return (byte) 1;
         if (type == char.class || type == Character.class) return 'x';
         if (type == Duration.class) return Duration.ofSeconds(1);
-        if (type == Path.class) return Paths.get("target");
+        if (type == Path.class) return Path.of("target");
         if (type == File.class) return new File("target");
         if (type == URI.class) return URI.create("http://localhost");
         if (type == Optional.class) return Optional.of("value");
-        if (type == List.class || type == Collection.class) return list("value");
-        if (type == Set.class) return set("value");
-        if (type == Map.class) return map("key", "value");
+        if (type == List.class || type == Collection.class) return List.of("value");
+        if (type == Set.class) return Set.of("value");
+        if (type == Map.class) return Map.of("key", "value");
         if (type == Consumer.class) return (Consumer<Object>) ignored -> { };
         if (type == Supplier.class) return (Supplier<Object>) () -> "value";
         if (type.isArray()) {
-            Object array = java.lang.reflect.Array.newInstance(type.getComponentType(), 1);
-            Object component = sampleValue(type.getComponentType());
+            Object array = java.lang.reflect.Array.newInstance(type.componentType(), 1);
+            Object component = sampleValue(type.componentType());
             if (component == Unsupported.INSTANCE) return Unsupported.INSTANCE;
             java.lang.reflect.Array.set(array, 0, component);
             return array;

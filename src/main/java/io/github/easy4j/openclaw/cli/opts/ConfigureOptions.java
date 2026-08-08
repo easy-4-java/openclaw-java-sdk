@@ -8,28 +8,31 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw configure}：交互式向导，用于录入凭据、设备与 agent 默认值；可重复 {@code --section} 只跑部分步骤。
- * <p>与裸 {@code openclaw config}（无子命令）打开同一向导；非交互改键请用 {@code openclaw config get|set|unset}。
- * Model 段包含 {@code agents.defaults.models} 允许多选；从某 provider 认证入口进入时会优先筛该 provider 的模型目录。</p>
+ * {@code openclaw configure}:,Used for,device agent default value; {@code --section} .
+ * <p> {@code openclaw config}(subcommand);key {@code openclaw config get|set|unset}.
+ * Model {@code agents.defaults.models} ; provider authentication provider directory.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/configure">configure CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ConfigureOptions implements CliSubArgs {
 
     /**
-     * 可重复的 {@code --section} 取值，用于限制向导只跑指定段落（workspace、model、web、gateway、daemon、channels、plugins、skills、health）。
+ * {@code --section} value,Used for(workspace,model,web,gateway,daemon,channels,plugins,skills,health).
      */
     private final List<String> sections;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private ConfigureOptions(Builder b) {
         this.sections = OpenClawLists.copyOf(b.sections);
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -51,15 +54,15 @@ public final class ConfigureOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ConfigureOptions} 构建器。
+ * {@link ConfigureOptions} builder.
      */
     public static final class Builder {
 
-        /** 累积的 section 名称。 */
+ /** section . */
         private final List<String> sections = new ArrayList<>();
 
         /**
-         * 追加 {@code --section}（可多次调用；文档允许 workspace、model、web、gateway、daemon、channels、plugins、skills、health）。
+ * {@code --section}(;documentation workspace,model,web,gateway,daemon,channels,plugins,skills,health).
          */
         public Builder section(String section) {
             if (section != null && !section.isEmpty()) {
@@ -69,7 +72,7 @@ public final class ConfigureOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link ConfigureOptions}
+ * @return {@link ConfigureOptions}
          */
         public ConfigureOptions build() {
             return new ConfigureOptions(this);

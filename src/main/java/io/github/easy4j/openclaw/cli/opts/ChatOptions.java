@@ -8,40 +8,43 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw chat}：打开本地终端 UI（{@code tui --local} 的别名）。
+ * {@code openclaw chat}:terminal UI({@code tui --local} ).
  * <p>
- * 在 openclaw 源码（{@code src/cli/tui-cli.ts}）中，{@code chat} 通过 Commander {@code .alias("chat")}
- * 注册为 {@code tui} 的别名；调用 {@code openclaw chat} 会自动启用 {@code --local} 语义。
- * 选项集合与 {@link TuiOptions} 完全一致。
+ * openclaw ({@code src/cli/tui-cli.ts}),{@code chat} Commander {@code .alias("chat")}
+ * {@code tui} ; {@code openclaw chat} {@code --local} .
+ * {@link TuiOptions} .
  * </p>
  * <p>
- * 约束：{@code --local} 不能与 {@code --url}、{@code --token}、{@code --password} 同时使用。
+ * :{@code --local} {@code --url},{@code --token},{@code --password} .
  * </p>
  *
  * @see TuiOptions
  * @see <a href="https://docs.openclaw.ai/cli/chat">chat CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ChatOptions implements CliSubArgs {
 
-    /** {@code --local}：运行于本地嵌入式 agent 运行时（chat 别名调用时强制为 true）。 */
+ /** {@code --local}:embedding agent (chat when true). */
     private final boolean local;
     /** {@code --url}：Gateway WebSocket URL。 */
     private final String url;
-    /** {@code --token}：Gateway 令牌（如需）。 */
+ /** {@code --token}:Gateway token. */
     private final String token;
-    /** {@code --password}：Gateway 密码（如需）。 */
+ /** {@code --password}:Gateway . */
     private final String password;
-    /** {@code --session}：会话键（默认 {@code main}，{@code scope=global} 时为 {@code global}）。 */
+ /** {@code --session}:sessionkey( {@code main},{@code scope=global} {@code global}). */
     private final String session;
-    /** {@code --deliver}：投递助手回复。 */
+ /** {@code --deliver}:. */
     private final boolean deliver;
-    /** {@code --thinking}：思考级别覆盖。 */
+ /** {@code --thinking}:. */
     private final String thinking;
-    /** {@code --message}：连接后发送初始消息。 */
+ /** {@code --message}:connectionmessage. */
     private final String message;
-    /** {@code --timeout-ms}：Agent 超时毫秒数。 */
+ /** {@code --timeout-ms}:Agent timeoutmilliseconds. */
     private final Integer timeoutMs;
-    /** {@code --history-limit}：加载的历史条目数（默认 {@code 200}）。 */
+ /** {@code --history-limit}:( {@code 200}). */
     private final Integer historyLimit;
 
     private ChatOptions(Builder b) {
@@ -58,7 +61,7 @@ public final class ChatOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -81,7 +84,7 @@ public final class ChatOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ChatOptions} 构建器。
+ * {@link ChatOptions} builder.
      */
     public static final class Builder {
         private boolean local;
@@ -95,29 +98,29 @@ public final class ChatOptions implements CliSubArgs {
         private Integer timeoutMs;
         private Integer historyLimit;
 
-        /** {@code --local}：本地嵌入式 agent 运行时（chat 别名默认为 true）。 */
+ /** {@code --local}:embedding agent (chat when true). */
         public Builder local(boolean local) { this.local = local; return this; }
         /** {@code --url}：Gateway WebSocket URL。 */
         public Builder url(String url) { this.url = url; return this; }
-        /** {@code --token}：Gateway 令牌。 */
+ /** {@code --token}:Gateway token. */
         public Builder token(String token) { this.token = token; return this; }
-        /** {@code --password}：Gateway 密码。 */
+ /** {@code --password}:Gateway . */
         public Builder password(String password) { this.password = password; return this; }
-        /** {@code --session}：会话键。 */
+ /** {@code --session}:sessionkey. */
         public Builder session(String session) { this.session = session; return this; }
-        /** {@code --deliver}：投递助手回复。 */
+ /** {@code --deliver}:. */
         public Builder deliver(boolean deliver) { this.deliver = deliver; return this; }
-        /** {@code --thinking}：思考级别覆盖。 */
+ /** {@code --thinking}:. */
         public Builder thinking(String thinking) { this.thinking = thinking; return this; }
-        /** {@code --message}：连接后发送初始消息。 */
+ /** {@code --message}:connectionmessage. */
         public Builder message(String message) { this.message = message; return this; }
-        /** {@code --timeout-ms}：Agent 超时毫秒数。 */
+ /** {@code --timeout-ms}:Agent timeoutmilliseconds. */
         public Builder timeoutMs(Integer timeoutMs) { this.timeoutMs = timeoutMs; return this; }
-        /** {@code --history-limit}：加载的历史条目数。 */
+ /** {@code --history-limit}:. */
         public Builder historyLimit(Integer historyLimit) { this.historyLimit = historyLimit; return this; }
 
         /**
-         * @return 不可变 {@link ChatOptions}
+ * @return {@link ChatOptions}
          */
         public ChatOptions build() {
             return new ChatOptions(this);

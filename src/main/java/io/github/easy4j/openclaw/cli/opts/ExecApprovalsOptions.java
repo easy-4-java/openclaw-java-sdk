@@ -7,43 +7,46 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw exec-approvals}（别名 {@code approvals}）：管理 exec 审批（gateway 或 node host）。
+ * {@code openclaw exec-approvals}( {@code approvals}): exec approval(gateway node host).
  * <p>
- * 支持 {@code get}、{@code set}、{@code allowlist add <pattern>}、{@code allowlist remove <pattern>} 子命令。
- * 共享选项 {@code --node}、{@code --gateway}；{@code set} 支持 {@code --file}/{@code --stdin}；
- * {@code allowlist} 支持 {@code --agent}。
+ * {@code get},{@code set},{@code allowlist add <pattern>},{@code allowlist remove <pattern>} subcommand.
+ * {@code --node},{@code --gateway};{@code set} {@code --file}/{@code --stdin};
+ * {@code allowlist} {@code --agent}.
  * </p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/exec-approvals">exec-approvals CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ExecApprovalsOptions implements CliSubArgs {
 
-    /** 子命令模式。 */
+ /** subcommand. */
     public enum Mode {
-        /** {@code get}：读取审批快照。 */
+ /** {@code get}:approval. */
         GET,
-        /** {@code set}：上传审批 JSON。 */
+ /** {@code set}:approval JSON. */
         SET,
-        /** {@code allowlist add <pattern>}：添加允许模式。 */
+ /** {@code allowlist add <pattern>}:. */
         ALLOWLIST_ADD,
-        /** {@code allowlist remove <pattern>}：移除允许模式。 */
+ /** {@code allowlist remove <pattern>}:. */
         ALLOWLIST_REMOVE,
-        /** 默认（无子命令）：列出审批（父命令默认动作）。 */
+ /** (subcommand):approval. */
         DEFAULT
     }
 
     private final Mode mode;
-    /** allowlist add/remove：位置参数 {@code <pattern>}。 */
+ /** allowlist add/remove: {@code <pattern>}. */
     private final String pattern;
-    /** {@code --node}：目标节点 id/名称/IP。 */
+ /** {@code --node}:node id//IP. */
     private final String node;
-    /** {@code --gateway}：强制 gateway 审批。 */
+ /** {@code --gateway}: gateway approval. */
     private final boolean gateway;
-    /** set：{@code --file} 上传的 JSON 文件路径。 */
+ /** set:{@code --file} JSON . */
     private final String file;
-    /** set：{@code --stdin} 从标准输入读取 JSON。 */
+ /** set:{@code --stdin} JSON. */
     private final boolean stdin;
-    /** allowlist：{@code --agent} agent id（默认 {@code *}）。 */
+ /** allowlist:{@code --agent} agent id( {@code *}). */
     private final String agent;
 
     private ExecApprovalsOptions(Builder b) {
@@ -57,7 +60,7 @@ public final class ExecApprovalsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}（默认 {@link Mode#DEFAULT}）
+ * @return {@link Builder}( {@link Mode#DEFAULT})
      */
     public static Builder builder() {
         return new Builder();
@@ -101,7 +104,7 @@ public final class ExecApprovalsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ExecApprovalsOptions} 构建器。
+ * {@link ExecApprovalsOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.DEFAULT;
@@ -112,29 +115,29 @@ public final class ExecApprovalsOptions implements CliSubArgs {
         private boolean stdin;
         private String agent;
 
-        /** 切换为 {@code get} 子命令。 */
+ /** {@code get} subcommand. */
         public Builder get() { this.mode = Mode.GET; return this; }
-        /** 切换为 {@code set} 子命令。 */
+ /** {@code set} subcommand. */
         public Builder set() { this.mode = Mode.SET; return this; }
-        /** 切换为 {@code allowlist add <pattern>} 子命令。 */
+ /** {@code allowlist add <pattern>} subcommand. */
         public Builder allowlistAdd(String pattern) { this.mode = Mode.ALLOWLIST_ADD; this.pattern = pattern; return this; }
-        /** 切换为 {@code allowlist remove <pattern>} 子命令。 */
+ /** {@code allowlist remove <pattern>} subcommand. */
         public Builder allowlistRemove(String pattern) { this.mode = Mode.ALLOWLIST_REMOVE; this.pattern = pattern; return this; }
-        /** 显式指定 {@link Mode}。 */
+ /** {@link Mode}. */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
-        /** {@code --node}：目标节点 id/名称/IP。 */
+ /** {@code --node}:node id//IP. */
         public Builder node(String node) { this.node = node; return this; }
-        /** {@code --gateway}：强制 gateway 审批。 */
+ /** {@code --gateway}: gateway approval. */
         public Builder gateway(boolean gateway) { this.gateway = gateway; return this; }
-        /** set：{@code --file} 上传的 JSON 文件路径。 */
+ /** set:{@code --file} JSON . */
         public Builder file(String file) { this.file = file; return this; }
-        /** set：{@code --stdin} 从标准输入读取 JSON。 */
+ /** set:{@code --stdin} JSON. */
         public Builder stdin(boolean stdin) { this.stdin = stdin; return this; }
-        /** allowlist：{@code --agent} agent id（默认 {@code *}）。 */
+ /** allowlist:{@code --agent} agent id( {@code *}). */
         public Builder agent(String agent) { this.agent = agent; return this; }
 
         /**
-         * @return 不可变 {@link ExecApprovalsOptions}
+ * @return {@link ExecApprovalsOptions}
          */
         public ExecApprovalsOptions build() {
             return new ExecApprovalsOptions(this);

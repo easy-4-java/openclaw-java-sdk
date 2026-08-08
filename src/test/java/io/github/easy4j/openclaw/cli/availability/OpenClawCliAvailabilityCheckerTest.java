@@ -7,7 +7,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -50,7 +49,7 @@ class OpenClawCliAvailabilityCheckerTest {
         assertEquals(OpenClawCliAvailabilityStatus.EXECUTABLE_NOT_CONFIGURED, checker.check(config).getStatus());
 
         Path nonExecutable = tempDir.resolve("not-executable");
-        Files.write(nonExecutable, "#!/bin/sh\nexit 0\n".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(nonExecutable, "#!/bin/sh\nexit 0\n");
         nonExecutable.toFile().setExecutable(false);
         config.setExecutable(nonExecutable.toString());
         OpenClawCliAvailabilityReport nonExecutableReport = checker.check(config);
@@ -58,7 +57,7 @@ class OpenClawCliAvailabilityCheckerTest {
         assertTrue(nonExecutableReport.toDiagnosticMessage().contains("unavailable"));
 
         Path failed = tempDir.resolve("failed");
-        Files.write(failed, "#!/bin/sh\necho failure >&2\nexit 3\n".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(failed, "#!/bin/sh\necho failure >&2\nexit 3\n");
         failed.toFile().setExecutable(true);
         config.setExecutable(failed.toString());
         config.setProbeTimeoutSeconds(0);

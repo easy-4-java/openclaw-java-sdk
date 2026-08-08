@@ -6,9 +6,11 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Gateway WebSocket 帧的判别联合类型。
- * <p>三种帧：{@code req}（客户端→Gateway）、{@code res}（Gateway→客户端）、{@code event}（Gateway→客户端推送）。</p>
+ * Gateway WebSocket protocol frame base type.
+ * <p>Frame types: {@code req} (client to Gateway), {@code res} (Gateway to client), {@code event} (Gateway push).</p>
  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  * @see RequestFrame
  * @see ResponseFrame
  * @see EventFrame

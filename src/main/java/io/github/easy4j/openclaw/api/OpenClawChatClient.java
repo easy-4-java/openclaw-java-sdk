@@ -25,9 +25,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Chat Completions API 客户端。
+ * Chat Completions API client.
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Slf4j
 public class OpenClawChatClient extends OpenClawHttpClient {
@@ -128,7 +131,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 流式 chat completion。
+ * streaming chat completion.
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request) {
         return chatCompletionStream(request, (Map<String, String>) null);
@@ -147,7 +150,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 获取流式响应的原始 OkHttp Response（高级用法）。
+ * streaming OkHttp Response(usage).
      */
     public Response chatCompletionStreamRaw(ChatRequest request) {
         return chatCompletionStreamRaw(request, null);
@@ -272,10 +275,10 @@ public class OpenClawChatClient extends OpenClawHttpClient {
             public void onResponse(Call call, Response response) {
                 if (!response.isSuccessful()) {
                     activeStreamCalls.remove(call);
-                    try (Response closeableResponse = response) {
-                        String body = closeableResponse.body() != null ? closeableResponse.body().string() : "";
+                    try (response) {
+                        String body = response.body() != null ? response.body().string() : "";
                         streamResponse.onError(new OpenClawHttpException(
-                                "Stream returned status " + closeableResponse.code(), closeableResponse.code(), body));
+                                "Stream returned status " + response.code(), response.code(), body));
                     } catch (Exception e) {
                         streamResponse.onError(e);
                     }
@@ -328,12 +331,12 @@ public class OpenClawChatClient extends OpenClawHttpClient {
 
     private void consumeStream(Response httpResponse, StreamingChatResponse response) {
         SseStreamReader reader = new SseStreamReader(objectMapper);
-        try (Response closeableResponse = httpResponse) {
-            if (closeableResponse.body() == null) {
+        try (httpResponse) {
+            if (httpResponse.body() == null) {
                 response.onError(new OpenClawHttpException("SSE response body is null", null));
                 return;
             }
-            reader.readChatCompletionStream(closeableResponse.body().byteStream(), response);
+            reader.readChatCompletionStream(httpResponse.body().byteStream(), response);
         }
     }
 

@@ -7,8 +7,11 @@ import lombok.Getter;
 import java.util.List;
 
 /**
- * Gateway WS {@code connect} 握手成功响应（{@code hello-ok}）。
- * <p>与 {@code src/gateway/protocol/schema/frames.ts} 中 {@code HelloOkSchema} 对齐。</p>
+ * Gateway WS {@code connect} handshake({@code hello-ok}).
+ * <p> {@code src/gateway/protocol/schema/frames.ts} {@code HelloOkSchema} aligned.</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -32,7 +35,7 @@ public class HelloOk {
     @JsonProperty("policy")
     private PolicyInfo policy;
 
-    /** 服务端版本与连接 ID。 */
+ /** versionconnection ID. */
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ServerInfo {
@@ -40,7 +43,7 @@ public class HelloOk {
         @JsonProperty("connId") private String connId;
     }
 
-    /** 服务端支持的 method 与 event 列表。 */
+ /** method event . */
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class FeaturesInfo {
@@ -48,7 +51,7 @@ public class HelloOk {
         @JsonProperty("events") private List<String> events;
     }
 
-    /** 认证结果：角色与权限范围。 */
+ /** authentication:. */
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class AuthResult {
@@ -56,7 +59,7 @@ public class HelloOk {
         @JsonProperty("scopes") private List<String> scopes;
     }
 
-    /** 连接策略参数。 */
+ /** connection. */
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PolicyInfo {

@@ -29,9 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static io.github.easy4j.openclaw.Java8Collections.list;
-import static io.github.easy4j.openclaw.Java8Collections.map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -179,16 +176,16 @@ class OpenClawGatewayWsClientIntegrationTest {
                 String method = request.path("method").asText();
                 if (method.equals("connect")) {
                     connectRequest.set(request);
-                    conn.send(response(id, true, map(
+                    conn.send(response(id, true, Map.of(
                             "type", "hello-ok", "protocol", 1,
-                            "server", map("version", "test", "connId", "connection"),
-                            "features", map("methods", list("chat.send"), "events", list("chat")),
-                            "auth", map("role", "operator", "scopes", list("operator.read")),
-                            "policy", map("maxPayload", 1024, "maxBufferedBytes", 1024, "tickIntervalMs", 1000))));
+                            "server", Map.of("version", "test", "connId", "connection"),
+                            "features", Map.of("methods", java.util.List.of("chat.send"), "events", java.util.List.of("chat")),
+                            "auth", Map.of("role", "operator", "scopes", java.util.List.of("operator.read")),
+                            "policy", Map.of("maxPayload", 1024, "maxBufferedBytes", 1024, "tickIntervalMs", 1000))));
                     return;
                 }
                 if (method.equals("chat.send")) {
-                    conn.send(response(id, true, map("runId", id)));
+                    conn.send(response(id, true, Map.of("runId", id)));
                     conn.send("{\"type\":\"event\",\"event\":\"chat\",\"payload\":{\"runId\":\"" + id + "\",\"delta\":\"hello\"}}");
                     conn.send("{\"type\":\"event\",\"event\":\"chat\",\"payload\":{\"runId\":\"" + id + "\",\"done\":true}}");
                     return;
@@ -196,7 +193,7 @@ class OpenClawGatewayWsClientIntegrationTest {
                 if (errorNext.compareAndSet(true, false)) {
                     conn.send("{\"type\":\"res\",\"id\":\"" + id + "\",\"ok\":false,\"error\":{\"code\":\"FAILED\",\"message\":\"failed\"}}");
                 } else {
-                    conn.send(response(id, true, map()));
+                    conn.send(response(id, true, Map.of()));
                 }
             } catch (Exception e) {
                 throw new AssertionError(e);
@@ -204,7 +201,7 @@ class OpenClawGatewayWsClientIntegrationTest {
         }
 
         private String response(String id, boolean ok, Object payload) throws Exception {
-            return mapper.writeValueAsString(map("type", "res", "id", id, "ok", ok, "payload", payload));
+            return mapper.writeValueAsString(Map.of("type", "res", "id", id, "ok", ok, "payload", payload));
         }
 
         private void sendRaw(String message) {

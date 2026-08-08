@@ -13,8 +13,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static io.github.easy4j.openclaw.Java8Collections.list;
-import static io.github.easy4j.openclaw.Java8Collections.map;
 
 /**
  * CLI 选项的完整命令生成契约测试。
@@ -24,7 +22,7 @@ import static io.github.easy4j.openclaw.Java8Collections.map;
  */
 class CliOptionsComprehensiveCoverageTest {
 
-    private static final List<Class<?>> OPTION_TYPES = list(
+    private static final List<Class<?>> OPTION_TYPES = List.of(
             PluginsOptions.class,
             ChannelsOptions.class,
             AgentsOptions.class,
@@ -124,10 +122,10 @@ class CliOptionsComprehensiveCoverageTest {
             return values;
         }
         if (List.class.isAssignableFrom(type)) {
-            return list("value");
+            return List.of("value");
         }
         if (Map.class.isAssignableFrom(type)) {
-            return map("key", "value");
+            return Map.of("key", "value");
         }
         try {
             Object nestedBuilder = type.getMethod("builder").invoke(null);

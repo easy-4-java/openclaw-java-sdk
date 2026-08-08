@@ -10,31 +10,34 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenAI Chat Completions API 消息对象。
+ * OpenAI Chat Completions API messageobject.
  * <p>
- * 对应 OpenAI {@code /v1/chat/completions} 请求和响应中的 {@code messages} 数组元素。
- * 支持角色：{@code system}、{@code user}、{@code assistant}、{@code tool}。
+ * Corresponds to OpenAI {@code /v1/chat/completions} {@code messages} array.
+ * :{@code system},{@code user},{@code assistant},{@code tool}.
  * </p>
  *
- * <p>当响应中 {@code finish_reason} 为 {@code tool_calls} 时，
- * {@code tool_calls} 字段包含 agent 请求调用的工具列表。</p>
+ * <p> {@code finish_reason} {@code tool_calls} ,
+ * {@code tool_calls} field agent .</p>
  *
- * <h3>用法示例</h3>
+ * <h3>usageexample</h3>
  * <pre>{@code
- * // 创建消息
+ * // message
  * ChatMessage msg = ChatMessage.ofUser("Hello");
  * ChatMessage msg = ChatMessage.ofSystem("You are a helpful assistant");
  * ChatMessage msg = ChatMessage.ofAssistant("I can help with that.");
  *
- * // 工具调用响应
+ * // tool call
  * ChatMessage toolResult = ChatMessage.ofTool("call_abc123", "{\"result\": \"done\"}");
  *
- * // 带有工具调用的助手消息
+ * // tool callmessage
  * ChatMessage assistantMsg = ChatMessage.ofAssistant(null,
  *     List.of(ToolCall.of("call_abc", "get_weather", "{\"city\": \"Beijing\"}")));
  * }</pre>
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Setter
@@ -42,30 +45,30 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChatMessage {
 
-    /** 消息角色常量 */
+ /** message */
     public static final String ROLE_SYSTEM = OpenClawConstants.ROLE_SYSTEM;
     public static final String ROLE_USER = OpenClawConstants.ROLE_USER;
     public static final String ROLE_ASSISTANT = OpenClawConstants.ROLE_ASSISTANT;
     public static final String ROLE_TOOL = OpenClawConstants.ROLE_TOOL;
 
-    /** 消息角色 */
+ /** message */
     private String role;
 
-    /** 消息文本内容 */
+ /** message */
     private String content;
 
-    /** 工具调用列表 */
+ /** tool call */
     @JsonProperty("tool_calls")
     private List<ToolCall> toolCalls;
 
-    /** 工具调用 ID（tool 角色使用） */
+ /** tool call ID(tool ) */
     @JsonProperty("tool_call_id")
     private String toolCallId;
 
     // ==================== Factory Methods ====================
 
     /**
-     * 创建系统消息。
+ * systemmessage.
      */
     public static ChatMessage ofSystem(String content) {
         ChatMessage msg = new ChatMessage();
@@ -75,7 +78,7 @@ public class ChatMessage {
     }
 
     /**
-     * 创建用户消息。
+ * message.
      */
     public static ChatMessage ofUser(String content) {
         ChatMessage msg = new ChatMessage();
@@ -85,7 +88,7 @@ public class ChatMessage {
     }
 
     /**
-     * 创建助手消息。
+ * message.
      */
     public static ChatMessage ofAssistant(String content) {
         ChatMessage msg = new ChatMessage();
@@ -95,10 +98,10 @@ public class ChatMessage {
     }
 
     /**
-     * 创建助手消息（带工具调用）。
+ * message(tool call).
      *
-     * @param content 消息内容（可为空）
-     * @param toolCalls 工具调用列表
+ * @param content message
+ * @param toolCalls tool call
      */
     public static ChatMessage ofAssistant(String content, List<ToolCall> toolCalls) {
         ChatMessage msg = new ChatMessage();
@@ -109,10 +112,10 @@ public class ChatMessage {
     }
 
     /**
-     * 创建工具结果消息。
+ * message.
      *
-     * @param toolCallId 对应工具调用的 ID
-     * @param output 工具执行结果（JSON 字符串）
+ * @param toolCallId Corresponds totool call ID
+ * @param output (JSON characters)
      */
     public static ChatMessage ofTool(String toolCallId, String output) {
         ChatMessage msg = new ChatMessage();
@@ -125,8 +128,8 @@ public class ChatMessage {
     // ==================== Inner Classes ====================
 
     /**
-     * 工具调用对象。
-     * <p>包含工具调用的 ID、类型、函数名称和参数。</p>
+ * tool callobject.
+ * <p>tool call ID,.</p>
      */
     @Getter
     @Setter
@@ -134,21 +137,21 @@ public class ChatMessage {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ToolCall {
 
-        /** 工具调用唯一标识符，如 {@code call_abc123} */
+ /** tool call, {@code call_abc123} */
         private String id;
 
-        /** 工具类型，固定为 {@code "function"} */
+ /** , {@code "function"} */
         private String type = "function";
 
-        /** 函数调用详情 */
+ /** details */
         private FunctionCall function;
 
         /**
-         * 创建工具调用。
+ * tool call.
          *
-         * @param id 工具调用 ID
-         * @param name 函数名称
-         * @param arguments 函数参数（JSON 字符串）
+ * @param id tool call ID
+ * @param name
+ * @param arguments (JSON characters)
          */
         public static ToolCall of(String id, String name, String arguments) {
             FunctionCall fc = new FunctionCall();
@@ -163,7 +166,7 @@ public class ChatMessage {
     }
 
     /**
-     * 函数调用详情。
+ * details.
      */
     @Getter
     @Setter
@@ -171,12 +174,12 @@ public class ChatMessage {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class FunctionCall {
 
-        /** 函数名称 */
+ /** */
         private String name;
 
         /**
-         * 函数参数（JSON 字符串）。
-         * <p>调用方需自行解析此 JSON 字符串为具体参数对象。</p>
+ * (JSON characters).
+ * <p> JSON charactersobject.</p>
          */
         private String arguments;
     }

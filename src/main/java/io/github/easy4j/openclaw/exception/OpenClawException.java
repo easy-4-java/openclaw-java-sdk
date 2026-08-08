@@ -1,7 +1,10 @@
 package io.github.easy4j.openclaw.exception;
 
 /**
- * 根异常：OpenClaw SDK 调用失败时抛出。
+ * root exception:OpenClaw SDK .
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public class OpenClawException extends RuntimeException {
 

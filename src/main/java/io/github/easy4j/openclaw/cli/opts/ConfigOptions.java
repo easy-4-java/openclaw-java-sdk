@@ -8,25 +8,28 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw config}：对 {@code openclaw.json} 做非交互式读写、校验与 schema 输出；无子命令时进入与 {@code openclaw configure} 相同的向导。
- * <p>根级可重复 {@code --section} 用于向导步骤过滤，取值限于文档列出的 {@code workspace|model|web|gateway|daemon|channels|plugins|skills|health}。
- * {@link #tail(String...)} 承载 {@code get/set/unset/validate/schema/file} 等子命令及其路径、JSON 值与各类 builder flag。</p>
+ * {@code openclaw config}: {@code openclaw.json} , schema ;subcommand {@code openclaw configure} .
+ * <p> {@code --section} Used for,valuedocumentation {@code workspace|model|web|gateway|daemon|channels|plugins|skills|health}.
+ * {@link #tail(String...)} {@code get/set/unset/validate/schema/file} subcommand,JSON value builder flag.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/config">config CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ConfigOptions implements CliSubArgs {
 
     /**
-     * 根级可重复 {@code --section}：无子命令运行向导时限制出现的配置分区（可多次指定）。
+ * {@code --section}:subcommand.
      */
     private final List<String> sections;
     /**
-     * 子命令及后续 argv：如 {@code "get","agents.defaults.workspace"}、{@code "validate","--json"}、{@code "set", path, value, ...flags} 等，顺序须与 shell 一致。
+ * subcommand argv: {@code "get","agents.defaults.workspace"},{@code "validate","--json"},{@code "set", path, value, ...flags} , shell .
      */
     private final List<String> tail;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private ConfigOptions(Builder b) {
         this.sections = OpenClawLists.copyOf(b.sections);
@@ -34,7 +37,7 @@ public final class ConfigOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -57,16 +60,16 @@ public final class ConfigOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ConfigOptions} 构建器。
+ * {@link ConfigOptions} builder.
      */
     public static final class Builder {
 
-        /** 累积的 {@code --section} 值。 */
+ /** {@code --section} value. */
         private final List<String> sections = new ArrayList<>();
-        /** 子命令与尾部参数。 */
+ /** subcommand. */
         private final List<String> tail = new ArrayList<>();
 
-        /** 无子命令时向导过滤；可重复。 */
+ /** subcommand;. */
         public Builder section(String section) {
             if (section != null && !section.isEmpty()) {
                 sections.add(section);
@@ -75,7 +78,7 @@ public final class ConfigOptions implements CliSubArgs {
         }
 
         /**
-         * 子命令及后续参数（如 {@code "get", "browser.executablePath"}、{@code "validate", "--json"}）。
+ * subcommand( {@code "get", "browser.executablePath"},{@code "validate", "--json"}).
          */
         public Builder tail(String... tokens) {
             if (tokens != null) {
@@ -89,7 +92,7 @@ public final class ConfigOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link ConfigOptions}
+ * @return {@link ConfigOptions}
          */
         public ConfigOptions build() {
             return new ConfigOptions(this);

@@ -8,53 +8,56 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw uninstall}：卸载 Gateway 服务与本地数据（CLI 可保留）。
- * <p>下列布尔字段对应官方文档 Options 中的开关；可组合使用。文档建议：删除 state 或 workspace 前先执行
- * {@code openclaw backup create} 以便可恢复；{@code --non-interactive} 必须与 {@code --yes} 同用。</p>
+ * {@code openclaw uninstall}: Gateway (CLI ).
+ * <p>fieldCorresponds todocumentation Options ;Composes.documentation: state workspace
+ * {@code openclaw backup create} restore;{@code --non-interactive} {@code --yes} .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/uninstall">uninstall CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class UninstallOptions implements CliSubArgs {
 
     /**
-     * {@code --service}：移除 Gateway 托管服务（launchd/systemd 等）。
+ * {@code --service}: Gateway (launchd/systemd ).
      */
     private final boolean service;
     /**
-     * {@code --state}：删除状态与配置（本地 OpenClaw 状态/配置目录相关数据）。
+ * {@code --state}:( OpenClaw /directory).
      */
     private final boolean state;
     /**
-     * {@code --workspace}：删除 agent workspace 目录。
+ * {@code --workspace}: agent workspace directory.
      */
     private final boolean workspace;
     /**
-     * {@code --app}：移除 macOS 应用包（仅适用 macOS 安装形态）。
+ * {@code --app}: macOS (only macOS ).
      */
     private final boolean app;
     /**
-     * {@code --all}：等价于同时选择 service、state、workspace、app（文档中的合并简写）。
+ * {@code --all}:Equivalent to service,state,workspace,app(documentation).
      */
     private final boolean all;
     /**
-     * {@code --yes}：跳过交互确认提示。
+ * {@code --yes}:skips.
      */
     private final boolean yes;
     /**
-     * {@code --non-interactive}：禁用一切提示；文档要求必须与 {@code --yes} 同时使用。
+ * {@code --non-interactive}:;documentation {@code --yes} .
      */
     private final boolean nonInteractive;
     /**
-     * {@code --dry-run}：仅打印将执行的操作，不实际删除文件。
+ * {@code --dry-run}:only,.
      */
     private final boolean dryRun;
     /**
-     * 文档未单独建模的附加 argv，按与 shell 相同的顺序追加在末尾。
+ * documentation argv, shell .
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private UninstallOptions(Builder b) {
         this.service = b.service;
@@ -69,7 +72,7 @@ public final class UninstallOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -94,7 +97,7 @@ public final class UninstallOptions implements CliSubArgs {
     }
 
     /**
-     * {@link UninstallOptions} 构建器。
+ * {@link UninstallOptions} builder.
      */
     public static final class Builder {
         private boolean service;
@@ -180,7 +183,7 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
-         * @param tokens 额外 CLI token
+ * @param tokens CLI token
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -191,7 +194,7 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link UninstallOptions}
+ * @return {@link UninstallOptions}
          */
         public UninstallOptions build() {
             return new UninstallOptions(this);

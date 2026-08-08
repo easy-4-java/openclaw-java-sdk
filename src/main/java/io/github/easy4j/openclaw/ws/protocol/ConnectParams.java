@@ -8,8 +8,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Gateway WS {@code connect} 握手请求参数。
- * <p>与 {@code src/gateway/protocol/schema/frames.ts} 中 {@code ConnectParamsSchema} 对齐。</p>
+ * Gateway WS {@code connect} handshake.
+ * <p> {@code src/gateway/protocol/schema/frames.ts} {@code ConnectParamsSchema} aligned.</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -27,14 +30,14 @@ public class ConnectParams {
     }
 
     /**
-     * 完整构造（含设备身份和角色）。
+ * (device).
      *
-     * @param minProtocol 最低协议版本
-     * @param maxProtocol 最高协议版本
-     * @param client      客户端信息
-     * @param auth        认证信息
-     * @param device      设备身份信息（可选，用于 device token 流程）
-     * @param role        连接角色（可选，如 {@code "operator"} 或 {@code "node"}）
+ * @param minProtocol version
+ * @param maxProtocol version
+ * @param client
+ * @param auth authentication
+ * @param device device(Optional,Used for device token stream)
+ * @param role connection(Optional, {@code "operator"} {@code "node"})
      */
     public ConnectParams(int minProtocol, int maxProtocol, ClientInfo client, AuthInfo auth,
                          DeviceInfo device, String role) {
@@ -47,7 +50,7 @@ public class ConnectParams {
     }
 
     /**
-     * 客户端身份信息。
+ * .
      */
     @Getter
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -70,7 +73,7 @@ public class ConnectParams {
     }
 
     /**
-     * 认证信息（token 或 password 二选一）。
+ * authentication(token password mutually exclusive).
      */
     @Getter
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -88,7 +91,7 @@ public class ConnectParams {
     }
 
     /**
-     * 构建为 RPC params Map。
+ * Builds as RPC params Map.
      */
     public Map<String, Object> toParamsMap() {
         Map<String, Object> m = new LinkedHashMap<>();
@@ -113,38 +116,38 @@ public class ConnectParams {
     }
 }
     /**
-     * 设备身份信息。
+ * device.
      * <p>
-     * 用于 Gateway 的设备认证和 pairing 流程。
-     * 包含设备指纹、公钥、签名和挑战 nonce。
+ * Used for Gateway deviceauthentication pairing stream.
+ * device, nonce.
      * </p>
      *
-     * <h3>签名载荷</h3>
-     * <p>推荐 v3 签名载荷，绑定 {@code platform} 和 {@code deviceFamily}。
-     * 旧版 v2 签名仍被接受用于兼容。</p>
+ * <h3></h3>
+ * <p> v3 , {@code platform} {@code deviceFamily}.
+ * v2 Used for.</p>
      *
-     * <h3>挑战流程</h3>
+ * <h3>stream</h3>
      * <ol>
-     *   <li>Gateway 推送 {@code connect.challenge} 事件（包含 {@code nonce} 和 {@code ts}）</li>
-     *   <li>客户端使用 {@code nonce} 构建设备签名</li>
-     *   <li>在 connect 请求中回传 {@code nonce}</li>
+ * <li>Gateway {@code connect.challenge} event( {@code nonce} {@code ts})</li>
+ * <li> {@code nonce} device</li>
+ * <li> connect {@code nonce}</li>
      * </ol>
      */
     @Getter
     @JsonInclude(JsonInclude.Include.NON_NULL)
     class DeviceInfo {
-        /** 设备指纹（基于公钥派生）。 */
+ /** device. */
         private final String id;
-        /** 设备公钥。 */
+ /** device. */
         private final String publicKey;
-        /** 设备签名。 */
+ /** device. */
         private final String signature;
-        /** 签名时间戳（Unix epoch 毫秒）。 */
+ /** (Unix epoch milliseconds). */
         private final Long signedAt;
         /**
-         * 挑战 nonce（从 {@code connect.challenge} 事件获取）。
-         * <p>Gateway v4+ 要求客户端回传此值。若 nonce 不匹配将收到
-         * {@code DEVICE_AUTH_NONCE_MISMATCH} 错误。</p>
+ * nonce( {@code connect.challenge} event).
+ * <p>Gateway v4+ value. nonce
+ * {@code DEVICE_AUTH_NONCE_MISMATCH} .</p>
          */
         private final String nonce;
 

@@ -13,9 +13,12 @@ import okhttp3.*;
 import java.util.Objects;
 
 /**
- * Tools Invoke API 客户端。
+ * Tools Invoke API client.
  *
  * @see <a href="https://docs.openclaw.ai/gateway/tools-invoke-http-api">Tools Invoke API</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Slf4j
 public class OpenClawToolInvokeClient extends OpenClawHttpClient {

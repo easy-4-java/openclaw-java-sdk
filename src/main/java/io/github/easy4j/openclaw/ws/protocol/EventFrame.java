@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * Gateway→客户端推送事件帧：{@code { type: "event", event, payload, seq }}。
+ * Gateway→event:{@code { type: "event", event, payload, seq }}.
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public class EventFrame extends GatewayFrame {

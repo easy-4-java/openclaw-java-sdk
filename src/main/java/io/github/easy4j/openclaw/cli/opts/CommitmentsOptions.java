@@ -8,36 +8,39 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw commitments}：列出与管理推断的后续承诺（follow-up commitments）。
+ * {@code openclaw commitments}:(follow-up commitments).
  * <p>
- * 默认动作等价于 {@code list}；支持 {@code dismiss <ids...>} 子命令。父命令通过
- * {@code enablePositionalOptions()} 让子命令继承 {@code --json}/{@code --agent}/
- * {@code --status}/{@code --all} 选项。
+ * Equivalent to {@code list}; {@code dismiss <ids...>} subcommand.
+ * {@code enablePositionalOptions} subcommand {@code --json}/{@code --agent}/
+ * {@code --status}/{@code --all} .
  * </p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/commitments">commitments CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class CommitmentsOptions implements CliSubArgs {
 
-    /** 默认列出，或进入 {@code dismiss} 子命令。 */
+ /** , {@code dismiss} subcommand. */
     public enum Mode {
-        /** 默认列出：无子命令 token，与文档示例 {@code openclaw commitments} 一致。 */
+ /** :subcommand token,with documentationexample {@code openclaw commitments} . */
         LIST,
-        /** {@code dismiss <ids...>}：按 id 标记为已忽略。 */
+ /** {@code dismiss <ids...>}: id . */
         DISMISS
     }
 
-    /** LIST 或 DISMISS。 */
+ /** LIST DISMISS. */
     private final Mode mode;
-    /** {@code --json}：JSON 输出。 */
+ /** {@code --json}:JSON . */
     private final boolean json;
-    /** {@code --agent}：限定到指定 agent id。 */
+ /** {@code --agent}: agent id. */
     private final String agent;
-    /** {@code --status}：按状态过滤（pending/sent/dismissed/snoozed/expired）。 */
+ /** {@code --status}:(pending/sent/dismissed/snoozed/expired). */
     private final String status;
-    /** {@code --all}：显示所有状态。 */
+ /** {@code --all}:. */
     private final boolean all;
-    /** dismiss：位置参数 {@code <ids...>}，承诺 id 列表。 */
+ /** dismiss: {@code <ids...>}, id . */
     private final List<String> dismissIds;
 
     private CommitmentsOptions(Builder b) {
@@ -50,7 +53,7 @@ public final class CommitmentsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}（默认 {@link Mode#LIST}）
+ * @return {@link Builder}( {@link Mode#LIST})
      */
     public static Builder builder() {
         return new Builder();
@@ -83,7 +86,7 @@ public final class CommitmentsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link CommitmentsOptions} 构建器。
+ * {@link CommitmentsOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.LIST;
@@ -93,23 +96,23 @@ public final class CommitmentsOptions implements CliSubArgs {
         private boolean all;
         private List<String> dismissIds;
 
-        /** 切换为 {@code dismiss} 子命令模式。 */
+ /** {@code dismiss} subcommand. */
         public Builder dismiss() { this.mode = Mode.DISMISS; return this; }
-        /** 显式指定 {@link Mode}。 */
+ /** {@link Mode}. */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
-        /** {@code --json}：JSON 输出。 */
+ /** {@code --json}:JSON . */
         public Builder json(boolean json) { this.json = json; return this; }
-        /** {@code --agent}：限定到指定 agent id。 */
+ /** {@code --agent}: agent id. */
         public Builder agent(String agent) { this.agent = agent; return this; }
-        /** {@code --status}：按状态过滤（pending/sent/dismissed/snoozed/expired）。 */
+ /** {@code --status}:(pending/sent/dismissed/snoozed/expired). */
         public Builder status(String status) { this.status = status; return this; }
-        /** {@code --all}：显示所有状态。 */
+ /** {@code --all}:. */
         public Builder all(boolean all) { this.all = all; return this; }
-        /** dismiss：位置参数 {@code <ids...>}，承诺 id 列表。 */
+ /** dismiss: {@code <ids...>}, id . */
         public Builder dismissIds(List<String> ids) { this.dismissIds = ids; return this; }
 
         /**
-         * @return 不可变 {@link CommitmentsOptions}
+ * @return {@link CommitmentsOptions}
          */
         public CommitmentsOptions build() {
             return new CommitmentsOptions(this);

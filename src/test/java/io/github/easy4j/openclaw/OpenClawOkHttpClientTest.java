@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static io.github.easy4j.openclaw.Java8Collections.list;
 
 /**
  * OpenClaw OkHttpClient 复用、配置与生命周期测试。
@@ -109,7 +108,7 @@ class OpenClawOkHttpClientTest {
         config.setStartupCheckEnabled(false);
         ChatRequest request = ChatRequest.builder()
                 .agent("openclaw/default")
-                .messages(list(ChatMessage.ofUser("ping")))
+                .messages(List.of(ChatMessage.ofUser("ping")))
                 .build();
 
         try (OpenClawClient client = new OpenClawClient(config, new ObjectMapper(), external)) {
@@ -166,7 +165,7 @@ class OpenClawOkHttpClientTest {
         config.setStartupCheckEnabled(false);
         ChatRequest request = ChatRequest.builder()
                 .agent("openclaw/default")
-                .messages(list(ChatMessage.ofUser("ping")))
+                .messages(List.of(ChatMessage.ofUser("ping")))
                 .build();
 
         try (OpenClawClient client = new OpenClawClient(config, new ObjectMapper(), external)) {

@@ -8,7 +8,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code chat.abort} RPC 成功响应体。
+ * {@code chat.abort} RPC response body.
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)

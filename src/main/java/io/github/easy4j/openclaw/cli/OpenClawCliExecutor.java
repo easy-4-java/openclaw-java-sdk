@@ -16,10 +16,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
- * 使用 Apache Commons Exec 执行 {@code openclaw}，支持文档中的全局参数与子命令。
+ * Apache Commons Exec {@code openclaw},documentationglobal parameterssubcommand.
  *
  * @see <a href="https://docs.openclaw.ai/gateway/cli-backends">CLI Backends</a>
  * @see <a href="https://docs.openclaw.ai/cli">CLI Reference</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Slf4j
@@ -28,7 +31,7 @@ public class OpenClawCliExecutor {
     private final OpenClawCliConfig config;
 
     /**
-     * @param config CLI 配置，不得为 null
+ * @param config CLI ,Must not be null
      */
     public OpenClawCliExecutor(OpenClawCliConfig config) {
         this.config = Objects.requireNonNull(config, "config");
@@ -36,7 +39,7 @@ public class OpenClawCliExecutor {
     }
 
     /**
-     * 执行 CLI，始终返回 {@link OpenClawCliResult}（非 0 退出码不抛异常，由调用方处理）。
+ * CLI, {@link OpenClawCliResult}( 0 exit code).
      */
     public OpenClawCliResult execute(OpenClawCliRequest request) {
         Objects.requireNonNull(request, "request");
@@ -85,7 +88,7 @@ public class OpenClawCliExecutor {
     }
 
     /**
-     * 启动子进程（包内可见，供单测注入失败场景）。
+ * subprocess(See,inject).
      */
     SubprocessExecutionSupport.RunSession executeSubprocess(SubprocessExecutionSupport.ExecutionRequest request)
             throws Exception {
@@ -121,7 +124,7 @@ public class OpenClawCliExecutor {
     }
 
     /**
-     * 将请求转换为 {@link CommandLine}，便于测试与调试。
+ * {@link CommandLine},for easy.
      */
     public CommandLine toCommandLine(OpenClawCliRequest request) {
         CommandLine cmd = new CommandLine(config.getExecutable());
@@ -146,12 +149,12 @@ public class OpenClawCliExecutor {
     }
 
     /**
-     * 探测本机 {@code openclaw} 可执行是否可用（{@code openclaw --version}）。
+ * Probes the local {@code openclaw} ({@code openclaw --version}).
      * <p>
-     * 委托给 {@link OpenClawCliAvailabilityChecker}，使用与运行时一致的配置。
+ * Delegates to {@link OpenClawCliAvailabilityChecker},.
      * </p>
      *
-     * @return 探测报告；调用方根据 {@link OpenClawCliAvailabilityReport#isAvailable()} 决定后续动作
+ * @return probe report; {@link OpenClawCliAvailabilityReport#isAvailable}
      */
     public OpenClawCliAvailabilityReport probe() {
         return new OpenClawCliAvailabilityChecker().check(this.config);

@@ -7,47 +7,50 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * OpenClaw Gateway HTTP API 自定义请求头常量与构建器。
+ * OpenClaw Gateway HTTP API custom request header constants and builder.
  *
- * <p>对应文档中的 {@code x-openclaw-*} 系列头：</p>
+ * <p>Corresponds todocumentation {@code x-openclaw-*} :</p>
  * <ul>
- *   <li>{@code x-openclaw-model} - 覆盖后端模型（如 {@code openai/gpt-5.4}）</li>
- *   <li>{@code x-openclaw-agent-id} - 兼容性 agent 覆盖</li>
- *   <li>{@code x-openclaw-session-key} - 显式会话路由</li>
- *   <li>{@code x-openclaw-message-channel} - 合成入口通道上下文</li>
- *   <li>{@code x-openclaw-scopes} - 权限范围声明（逗号分隔）</li>
+ * <li>{@code x-openclaw-model} - ( {@code openai/gpt-5.4})</li>
+ * <li>{@code x-openclaw-agent-id} - agent </li>
+ * <li>{@code x-openclaw-session-key} - session</li>
+ * <li>{@code x-openclaw-message-channel} - channel</li>
+ * <li>{@code x-openclaw-scopes} - </li>
  * </ul>
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#agent-first-model-contract">Agent-first model contract</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class OpenClawHeaders {
 
-    /** Header: 覆盖后端模型 */
+ /** Header: */
     public static final String X_OPENCLAW_MODEL = OpenClawConstants.HEADER_X_OPENCLAW_MODEL;
 
-    /** Header: Agent ID 兼容性覆盖 */
+ /** Header: Agent ID */
     public static final String X_OPENCLAW_AGENT_ID = OpenClawConstants.HEADER_X_OPENCLAW_AGENT_ID;
 
-    /** Header: 会话路由 Key */
+ /** Header: session Key */
     public static final String X_OPENCLAW_SESSION_KEY = OpenClawConstants.HEADER_X_OPENCLAW_SESSION_KEY;
 
-    /** Header: 入口通道上下文 */
+ /** Header: channel */
     public static final String X_OPENCLAW_MESSAGE_CHANNEL = OpenClawConstants.HEADER_X_OPENCLAW_MESSAGE_CHANNEL;
 
-    /** Header: 权限范围声明 */
+ /** Header: */
     public static final String X_OPENCLAW_SCOPES = OpenClawConstants.HEADER_X_OPENCLAW_SCOPES;
 
     private OpenClawHeaders() {}
 
     /**
-     * 创建新的 Builder。
+ * Creates a new Builder.
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * OpenClaw 自定义请求头构建器。
+ * OpenClaw custom request header builder.
      */
     public static final class Builder {
         private String model;
@@ -57,7 +60,7 @@ public final class OpenClawHeaders {
         private String scopes;
 
         /**
-         * 覆盖后端模型（如 {@code openai/gpt-5.4}、{@code gpt-5.5}）。
+ * ( {@code openai/gpt-5.4},{@code gpt-5.5}).
          */
         public Builder model(String model) {
             this.model = model;
@@ -65,7 +68,7 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 兼容性 agent 覆盖。
+ * agent .
          */
         public Builder agentId(String agentId) {
             this.agentId = agentId;
@@ -73,7 +76,7 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 显式会话路由。
+ * session.
          */
         public Builder sessionKey(String sessionKey) {
             this.sessionKey = sessionKey;
@@ -81,7 +84,7 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 合成入口通道上下文（如 {@code slack}、{@code telegram}）。
+ * channel( {@code slack},{@code telegram}).
          */
         public Builder messageChannel(String messageChannel) {
             this.messageChannel = messageChannel;
@@ -89,7 +92,7 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 权限范围声明（逗号分隔，如 {@code operator.read,operator.write}）。
+ * ( {@code operator.read,operator.write}).
          */
         public Builder scopes(String scopes) {
             this.scopes = scopes;
@@ -97,7 +100,7 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 构建不可变的头 Map（仅包含非空值）。
+ * Map(onlyvalue).
          */
         public Map<String, String> build() {
             Map<String, String> headers = new LinkedHashMap<>();

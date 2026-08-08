@@ -6,6 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Represents a single Server-Sent Event (SSE) received from the OpenClaw Gateway.
+ * <p>
+ * Contains the optional event type, data payload, a parsed object (e.g. {@link io.github.easy4j.openclaw.api.model.ChatChunk}),
+ * and a terminal flag indicating stream completion.
+ * </p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see SseEventHandler
+ * @see SseStreamReader
+ */
 @Getter
 @Setter
 @NoArgsConstructor

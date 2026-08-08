@@ -9,68 +9,71 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * {@code openclaw agent} 命令参数，与官方文档 Options 一一对应。
- * <p>通过 {@link Builder#build()} 前会校验：{@code --message} 必填；且 {@code --to}、{@code --session-id}、{@code --agent} 至少填其一。</p>
- * <p>强类型字段：{@link ThinkingLevel}、{@link VerboseLevel}、超时秒数 {@link Integer}；亦可通过 {@code thinking(String)} / {@code verbose(String)} 传入 CLI 未来可能扩展的取值。</p>
+ * {@code openclaw agent} ,consistent with officialdocumentation Options Corresponds to.
+ * <p> {@link Builder#build} :{@code --message} Required; {@code --to},{@code --session-id},{@code --agent} .</p>
+ * <p>field:{@link ThinkingLevel},{@link VerboseLevel},timeoutseconds {@link Integer}; {@code thinking(String)} / {@code verbose(String)} CLI value.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/agent">agent CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class AgentOptions implements CliSubArgs {
 
     /**
-     * {@code -m} / {@code --message}：本轮发给 agent 的必填正文（Gateway 或嵌入式执行均需要）。
+ * {@code -m} / {@code --message}: agent Required(Gateway embedding).
      */
     private final String message;
     /**
-     * {@code -t} / {@code --to}：收件方标识，用于派生会话键（session key）；与 {@code --session-id}、{@code --agent} 至少其一配合使用。
+ * {@code -t} / {@code --to}:,Used forsessionkey(session key); {@code --session-id},{@code --agent} .
      */
     private final String to;
     /**
-     * {@code --session-id}：显式会话 id，绕过由 {@code --to} 推导的会话键。
+ * {@code --session-id}:session id, {@code --to} sessionkey.
      */
     private final String sessionId;
     /**
-     * {@code --agent}：目标 agent id，覆盖路由绑定所选定的 agent。
+ * {@code --agent}: agent id, agent.
      */
     private final String agent;
     /**
-     * 非空表示已设置 {@code --thinking}：agent 思考强度档位（官方枚举见 {@link ThinkingLevel}），亦可为 CLI 未来扩展的自定义 token。
+ * {@code --thinking}:agent (See {@link ThinkingLevel}), CLI token.
      */
     private final String thinking;
     /**
-     * 非空表示已设置 {@code --verbose}：将该会话的 verbose 级别持久化为 {@code on} 或 {@code off}（见 {@link VerboseLevel}），亦可为自定义 token。
+ * {@code --verbose}:session verbose {@code on} {@code off}(See {@link VerboseLevel}), token.
      */
     private final String verbose;
     /**
-     * {@code --channel}：回复投递所用渠道；省略则使用主会话渠道（文档：不影响会话路由，只影响投递）。
+ * {@code --channel}:;session(documentation:session).
      */
     private final String channel;
     /**
-     * {@code --reply-to}：覆盖回复投递目标（例如频道线程或用户 id，语义依渠道而定）。
+ * {@code --reply-to}:(channelthread id).
      */
     private final String replyTo;
     /**
-     * {@code --reply-channel}：覆盖回复所用渠道（与 {@code --channel} 分工见 agent 文档 Notes）。
+ * {@code --reply-channel}:( {@code --channel} See agent documentation Notes).
      */
     private final String replyChannel;
     /**
-     * {@code --reply-account}：覆盖回复所用渠道账号（多账号场景）。
+ * {@code --reply-account}:.
      */
     private final String replyAccount;
     /**
-     * {@code --local}：在预加载插件注册表后强制走嵌入式 agent，而非优先走 Gateway（文档：仍先加载插件侧 providers/tools/channels）。
+ * {@code --local}:pluginembedding agent, Gateway(documentation:plugin providers/tools/channels).
      */
     private final boolean local;
     /**
-     * {@code --deliver}：将 agent 产出发回所选 channel/target（与仅跑 turn 不投递相对）。
+ * {@code --deliver}: agent channel/target(only turn ).
      */
     private final boolean deliver;
     /**
-     * 覆盖本轮 agent 超时（秒）；{@code null} 表示不传 {@code --timeout}（默认约 600 秒或配置值，见文档）。
+ * agent timeout(seconds);{@code null} {@code --timeout}( 600 secondsvalue,Seedocumentation).
      */
     private final Integer timeoutSeconds;
     /**
-     * {@code --json}：以机器可读的 JSON 输出本轮结果。
+ * {@code --json}: JSON .
      */
     private final boolean json;
 
@@ -92,9 +95,9 @@ public final class AgentOptions implements CliSubArgs {
     }
 
     /**
-     * 创建 {@link AgentOptions} 构建器。
+ * {@link AgentOptions} builder.
      *
-     * @return 新的 Builder
+ * @return Builder
      */
     public static Builder builder() {
         return new Builder();
@@ -107,7 +110,7 @@ public final class AgentOptions implements CliSubArgs {
      * openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
      * openclaw agent --agent ops --message "Generate report" --deliver --reply-channel slack --reply-to "#reports"
      * openclaw agent --agent ops --message "Run locally" --local
-     * @return 命令行参数
+ * @return
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -168,7 +171,7 @@ public final class AgentOptions implements CliSubArgs {
     }
 
     /**
-     * {@link AgentOptions} 构建器；{@link #build()} 执行文档要求的必填与会话选择校验。
+ * {@link AgentOptions} builder;{@link #build} documentationRequiredsession.
      */
     public static final class Builder {
 
@@ -188,9 +191,9 @@ public final class AgentOptions implements CliSubArgs {
         private boolean json;
 
         /**
-         * {@code -m} / {@code --message}：消息正文（必填）。
+ * {@code -m} / {@code --message}:message(Required).
          *
-         * @param message 消息体
+ * @param message message
          * @return this
          */
         public Builder message(String message) {
@@ -199,9 +202,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code -t} / {@code --to}：用于派生 session 的接收方。
+ * {@code -t} / {@code --to}:Used for session .
          *
-         * @param to 接收方标识
+ * @param to
          * @return this
          */
         public Builder to(String to) {
@@ -210,9 +213,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --session-id}：显式会话 id。
+ * {@code --session-id}:session id.
          *
-         * @param sessionId 会话 id
+ * @param sessionId session id
          * @return this
          */
         public Builder sessionId(String sessionId) {
@@ -221,9 +224,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --agent}：指定 agent id，可覆盖路由绑定。
+ * {@code --agent}: agent id,.
          *
-         * @param agent agent 标识
+ * @param agent agent
          * @return this
          */
         public Builder agent(String agent) {
@@ -232,9 +235,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --thinking}：使用文档列出的档位。
+ * {@code --thinking}:documentation.
          *
-         * @param thinking 思考强度枚举
+ * @param thinking
          * @return this
          */
         public Builder thinking(ThinkingLevel thinking) {
@@ -244,9 +247,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --thinking}：自定义或未来 CLI 扩展取值（与 {@link #thinking(ThinkingLevel)} 二选一，后设者覆盖）。
+ * {@code --thinking}: CLI value( {@link #thinking(ThinkingLevel)} mutually exclusive).
          *
-         * @param thinking 原始 token
+ * @param thinking token
          * @return this
          */
         public Builder thinking(String thinking) {
@@ -255,7 +258,7 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --verbose}：会话级 verbose 持久化。
+ * {@code --verbose}:session verbose .
          *
          * @param verbose on / off
          * @return this
@@ -267,9 +270,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --verbose}：自定义取值（与 {@link #verbose(VerboseLevel)} 二选一，后设者覆盖）。
+ * {@code --verbose}:value( {@link #verbose(VerboseLevel)} mutually exclusive).
          *
-         * @param verbose 原始 token，通常为 {@code on} 或 {@code off}
+ * @param verbose token, {@code on} {@code off}
          * @return this
          */
         public Builder verbose(String verbose) {
@@ -278,9 +281,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --channel}：投递渠道；省略则使用主会话渠道。
+ * {@code --channel}:;session.
          *
-         * @param channel 渠道名
+ * @param channel
          * @return this
          */
         public Builder channel(String channel) {
@@ -289,9 +292,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --reply-to}：投递目标覆盖。
+ * {@code --reply-to}:.
          *
-         * @param replyTo 目标
+ * @param replyTo
          * @return this
          */
         public Builder replyTo(String replyTo) {
@@ -300,9 +303,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --reply-channel}：投递渠道覆盖。
+ * {@code --reply-channel}:.
          *
-         * @param replyChannel 渠道
+ * @param replyChannel
          * @return this
          */
         public Builder replyChannel(String replyChannel) {
@@ -311,9 +314,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --reply-account}：投递账号覆盖。
+ * {@code --reply-account}:.
          *
-         * @param replyAccount 账号 id
+ * @param replyAccount id
          * @return this
          */
         public Builder replyAccount(String replyAccount) {
@@ -322,9 +325,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --local}：在插件注册表预加载后直接运行嵌入式 agent。
+ * {@code --local}:pluginembedding agent.
          *
-         * @param local 是否本地嵌入式
+ * @param local embedding
          * @return this
          */
         public Builder local(boolean local) {
@@ -333,9 +336,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --deliver}：将回复发回所选 channel/target。
+ * {@code --deliver}: channel/target.
          *
-         * @param deliver 是否投递
+ * @param deliver
          * @return this
          */
         public Builder deliver(boolean deliver) {
@@ -344,9 +347,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --timeout}：覆盖 agent 超时（秒）。
+ * {@code --timeout}: agent timeout(seconds).
          *
-         * @param timeoutSeconds 秒数；{@code null} 表示不传该 flag
+ * @param timeoutSeconds seconds;{@code null} flag
          * @return this
          */
         public Builder timeoutSeconds(Integer timeoutSeconds) {
@@ -355,9 +358,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --timeout}：覆盖 agent 超时（秒）的便捷重载。
+ * {@code --timeout}: agent timeout(seconds).
          *
-         * @param timeoutSeconds 秒数
+ * @param timeoutSeconds seconds
          * @return this
          */
         public Builder timeoutSeconds(int timeoutSeconds) {
@@ -366,9 +369,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * {@code --json}：以 JSON 输出。
+ * {@code --json}: JSON .
          *
-         * @param json 是否 JSON
+ * @param json JSON
          * @return this
          */
         public Builder json(boolean json) {
@@ -377,11 +380,11 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 构建不可变 {@link AgentOptions}。
-         * <p>校验规则：{@code message} 非空白；{@code to}、{@code sessionId}、{@code agent} 至少一项非空白。</p>
+ * {@link AgentOptions}.
+ * <p>:{@code message} ;{@code to},{@code sessionId},{@code agent} .</p>
          *
-         * @return 配置完成的参数对象
-         * @throws IllegalStateException 不满足文档必填规则时
+ * @return completionobject
+ * @throws IllegalStateException documentationRequired
          */
         public AgentOptions build() {
             if (message == null || OpenClawStrings.isBlank(message)) {

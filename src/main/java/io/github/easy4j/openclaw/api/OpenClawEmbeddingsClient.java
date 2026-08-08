@@ -12,9 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Embeddings API 客户端。
+ * Embeddings API client.
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Embeddings</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Slf4j
 public class OpenClawEmbeddingsClient extends OpenClawHttpClient {

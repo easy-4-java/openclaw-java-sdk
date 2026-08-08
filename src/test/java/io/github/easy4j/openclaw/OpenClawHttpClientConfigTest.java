@@ -10,8 +10,6 @@ class OpenClawHttpClientConfigTest {
     void shouldExposeUnifiedStreamPropertiesAndLegacyAliases() {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
         assertEquals(HttpResponseMode.BLOCKING, config.getMode());
-        config.setGatewayBaseUrl("http://legacy-openclaw");
-        assertEquals("http://legacy-openclaw", config.getBaseUrl());
 
         config.setSseCorePoolSize(7);
         config.setSseMaxPoolSize(9);

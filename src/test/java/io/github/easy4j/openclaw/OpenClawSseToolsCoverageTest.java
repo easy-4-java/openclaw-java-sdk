@@ -25,8 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static io.github.easy4j.openclaw.Java8Collections.list;
-import static io.github.easy4j.openclaw.Java8Collections.map;
 
 class OpenClawSseToolsCoverageTest {
 
@@ -127,14 +125,14 @@ class OpenClawSseToolsCoverageTest {
         assertThrows(IllegalArgumentException.class, () -> Tools.parseArgsAsMap(call));
         assertThrows(NullPointerException.class, () -> Tools.parseArgs(null, Map.class));
 
-        ChatMessage message = ChatMessage.ofAssistant(null, list(call));
+        ChatMessage message = ChatMessage.ofAssistant(null, List.of(call));
         assertTrue(Tools.hasToolCalls(message));
         assertFalse(Tools.hasToolCalls(null));
         assertTrue(Tools.isToolCallFinish("tool_calls"));
         assertEquals(1, Tools.extractToolCalls(message).size());
         assertTrue(Tools.extractToolCalls(ChatMessage.ofUser("hello")).isEmpty());
         assertEquals("plain", Tools.toolResult("id", "plain").getContent());
-        assertTrue(Tools.toolResult("id", map("ok", true)).getContent().contains("true"));
+        assertTrue(Tools.toolResult("id", Map.of("ok", true)).getContent().contains("true"));
 
         assertEquals("message", ResponseRequest.InputItem.message().role("user").content("hello").build().getType());
         assertEquals("function_call_output", ResponseRequest.InputItem.functionCallOutput()
@@ -154,7 +152,7 @@ class OpenClawSseToolsCoverageTest {
         ChatChunk.DeltaMessage delta = new ChatChunk.DeltaMessage();
         delta.setRole(role);
         delta.setContent(content);
-        delta.setToolCalls(toolCall == null ? null : list(toolCall));
+        delta.setToolCalls(toolCall == null ? null : List.of(toolCall));
         ChatChunk.DeltaChoice choice = new ChatChunk.DeltaChoice();
         choice.setIndex(0);
         choice.setDelta(delta);
@@ -162,7 +160,7 @@ class OpenClawSseToolsCoverageTest {
         ChatChunk chunk = new ChatChunk();
         chunk.setId(id);
         chunk.setModel(model);
-        chunk.setChoices(list(choice));
+        chunk.setChoices(List.of(choice));
         return chunk;
     }
 
