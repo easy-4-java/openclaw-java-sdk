@@ -14,7 +14,11 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * Chat Completions API 客户端。
@@ -23,6 +27,13 @@ import java.util.concurrent.CompletableFuture;
  */
 @Slf4j
 public class OpenClawChatClient extends OpenClawHttpClient {
+
+    private final ExecutorService streamExecutor = Executors.newCachedThreadPool(runnable -> {
+        Thread thread = new Thread(runnable, "openclaw-sse-consumer");
+        thread.setDaemon(true);
+        return thread;
+    });
+    private final Set<Call> activeStreamCalls = ConcurrentHashMap.newKeySet();
 
     public OpenClawChatClient(OpenClawHttpClientConfig config) {
         super(config);
@@ -102,15 +113,13 @@ public class OpenClawChatClient extends OpenClawHttpClient {
 
     public StreamingChatResponse chatCompletionStream(ChatRequest request, Map<String, String> headers) {
         StreamingChatResponse response = new StreamingChatResponse();
-        Response httpResponse = chatCompletionStreamRaw(request, headers);
-        startStreamConsumer(httpResponse, response);
+        enqueueStream(request, headers, response);
         return response;
     }
 
     public StreamingChatResponse chatCompletionStream(ChatRequest request, StreamingChatResponse.Builder callbackBuilder) {
         StreamingChatResponse response = callbackBuilder.build();
-        Response httpResponse = chatCompletionStreamRaw(request, null);
-        startStreamConsumer(httpResponse, response);
+        enqueueStream(request, null, response);
         return response;
     }
 
@@ -125,36 +134,8 @@ public class OpenClawChatClient extends OpenClawHttpClient {
         Objects.requireNonNull(request, "request");
 
         debug("=== Chat Completion Stream Request ===");
-        request.setStream(true);
-
-        headers = buildHeaders(request, headers);
-        String bodyModel = resolveModel(request);
-
-        debug("Resolved body model: {}", bodyModel);
-
-        ChatRequest normalized = ChatRequest.builder()
-                .model(bodyModel)
-                .messages(request.getMessages())
-                .stream(true)
-                .streamOptions(request.getStreamOptions())
-                .tools(request.getTools())
-                .toolChoice(request.getToolChoice())
-                .user(request.getUser())
-                .maxCompletionTokens(request.getMaxCompletionTokens())
-                .maxTokens(request.getMaxTokens())
-                .temperature(request.getTemperature())
-                .topP(request.getTopP())
-                .frequencyPenalty(request.getFrequencyPenalty())
-                .presencePenalty(request.getPresencePenalty())
-                .seed(request.getSeed())
-                .stop(request.getStop())
-                .build();
-
-        Request.Builder builder = authedBuilder(resolveUrl(OpenClawConstants.ENDPOINT_CHAT_COMPLETIONS), headers)
-                .header("Accept", "text/event-stream");
-
         try {
-            Request req = builder.post(RequestBody.create(objectMapper.writeValueAsString(normalized), JSON)).build();
+            Request req = buildStreamRequest(request, headers);
             debug("Sending streaming request...");
 
             Response response = httpClient.newCall(req).execute();
@@ -247,14 +228,99 @@ public class OpenClawChatClient extends OpenClawHttpClient {
         return request.getModel();
     }
 
-    private void startStreamConsumer(Response httpResponse, StreamingChatResponse response) {
-        SseStreamReader reader = new SseStreamReader(objectMapper);
-        CompletableFuture.runAsync(() -> {
-            try {
-                reader.readChatCompletionStream(httpResponse.body().byteStream(), response);
-            } finally {
-                httpResponse.close();
+    private void enqueueStream(ChatRequest request, Map<String, String> headers, StreamingChatResponse streamResponse) {
+        final Request httpRequest;
+        try {
+            httpRequest = buildStreamRequest(request, headers);
+        } catch (Exception e) {
+            streamResponse.onError(new OpenClawHttpException("Stream request build failed: " + e.getMessage(), e));
+            return;
+        }
+        Call streamCall = httpClient.newCall(httpRequest);
+        activeStreamCalls.add(streamCall);
+        streamCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, java.io.IOException e) {
+                activeStreamCalls.remove(call);
+                streamResponse.onError(new OpenClawHttpException("Stream request failed: " + e.getMessage(), e));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (!response.isSuccessful()) {
+                    activeStreamCalls.remove(call);
+                    try (response) {
+                        String body = response.body() != null ? response.body().string() : "";
+                        streamResponse.onError(new OpenClawHttpException(
+                                "Stream returned status " + response.code(), response.code(), body));
+                    } catch (Exception e) {
+                        streamResponse.onError(e);
+                    }
+                    return;
+                }
+                try {
+                    streamExecutor.submit(() -> {
+                        try {
+                            consumeStream(response, streamResponse);
+                        } finally {
+                            activeStreamCalls.remove(call);
+                        }
+                    });
+                } catch (RejectedExecutionException e) {
+                    activeStreamCalls.remove(call);
+                    response.close();
+                    streamResponse.onError(new OpenClawHttpException("Streaming client is closed", e));
+                }
             }
         });
+    }
+
+    private Request buildStreamRequest(ChatRequest request, Map<String, String> headers) throws Exception {
+        Objects.requireNonNull(request, "request");
+        validateRequest(request);
+        Map<String, String> resolvedHeaders = buildHeaders(request, headers);
+        ChatRequest normalized = ChatRequest.builder()
+                .model(resolveModel(request))
+                .messages(request.getMessages())
+                .stream(true)
+                .streamOptions(request.getStreamOptions())
+                .tools(request.getTools())
+                .toolChoice(request.getToolChoice())
+                .user(request.getUser())
+                .maxCompletionTokens(request.getMaxCompletionTokens())
+                .maxTokens(request.getMaxTokens())
+                .temperature(request.getTemperature())
+                .topP(request.getTopP())
+                .frequencyPenalty(request.getFrequencyPenalty())
+                .presencePenalty(request.getPresencePenalty())
+                .seed(request.getSeed())
+                .stop(request.getStop())
+                .responseFormat(request.getResponseFormat())
+                .build();
+        return authedBuilder(resolveUrl(OpenClawConstants.ENDPOINT_CHAT_COMPLETIONS), resolvedHeaders)
+                .header("Accept", "text/event-stream")
+                .post(RequestBody.create(objectMapper.writeValueAsString(normalized), JSON))
+                .build();
+    }
+
+    private void consumeStream(Response httpResponse, StreamingChatResponse response) {
+        SseStreamReader reader = new SseStreamReader(objectMapper);
+        try (httpResponse) {
+            if (httpResponse.body() == null) {
+                response.onError(new OpenClawHttpException("SSE response body is null", null));
+                return;
+            }
+            reader.readChatCompletionStream(httpResponse.body().byteStream(), response);
+        }
+    }
+
+    @Override
+    public void close() {
+        for (Call call : activeStreamCalls) {
+            call.cancel();
+        }
+        activeStreamCalls.clear();
+        streamExecutor.shutdownNow();
+        super.close();
     }
 }

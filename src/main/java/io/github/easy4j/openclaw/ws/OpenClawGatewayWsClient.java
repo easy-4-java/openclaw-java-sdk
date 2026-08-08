@@ -485,7 +485,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      * 读取配置快照（{@code config.get}）。
      */
     public ConfigGetResult configGet() {
-        return invokeRpc("config.get", new Object(), ConfigGetResult.class, DEFAULT_RPC_TIMEOUT_MS);
+        return invokeRpc("config.get", Collections.emptyMap(), ConfigGetResult.class, DEFAULT_RPC_TIMEOUT_MS);
     }
 
     /**

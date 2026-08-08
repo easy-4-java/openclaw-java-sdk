@@ -81,6 +81,11 @@ public final class Tools {
         Objects.requireNonNull(toolCall.getFunction(), "toolCall.function");
         String args = toolCall.getFunction().getArguments();
         if (args == null || args.isEmpty()) {
+            if (clazz == Map.class) {
+                @SuppressWarnings("unchecked")
+                T emptyMap = (T) new java.util.LinkedHashMap<String, Object>();
+                return emptyMap;
+            }
             try {
                 return clazz.getDeclaredConstructor().newInstance();
             } catch (Exception e) {

@@ -66,10 +66,31 @@ public class OpenClawHttpClientConfig {
     private boolean verifySsl = true;
 
     /** 连接超时（毫秒） */
-    private int connectTimeoutMillis = 15_000;
+    private int connectTimeoutMillis = 2_000;
 
     /** 读取超时（毫秒） */
     private int readTimeoutMillis = 120_000;
+
+    /** 写入超时（毫秒） */
+    private int writeTimeoutMillis = 10_000;
+
+    /** 整个调用超时（毫秒）；0 表示不额外限制，由读取超时控制 */
+    private int callTimeoutMillis;
+
+    /** 连接池最大空闲连接数 */
+    private int maxIdleConnections = 32;
+
+    /** 空闲连接保活时间（毫秒） */
+    private long keepAliveDurationMillis = 300_000L;
+
+    /** 异步请求最大并发数 */
+    private int maxRequests = 128;
+
+    /** 单主机异步请求最大并发数 */
+    private int maxRequestsPerHost = 64;
+
+    /** 遇到失效连接等传输故障时是否允许 OkHttp 自动恢复 */
+    private boolean retryOnConnectionFailure = true;
 
     /**
      * Gateway HTTP Webhooks 基础路径，对应 {@code hooks.path}，默认 {@code /hooks}。
