@@ -46,7 +46,7 @@ class OpenClawGatewayWsClientIntegrationTest {
         gateway.start();
         assertTrue(gateway.started.await(3, TimeUnit.SECONDS));
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
-        config.setGatewayBaseUrl("http://127.0.0.1:" + gateway.getPort());
+        config.setBaseUrl("http://127.0.0.1:" + gateway.getPort());
         config.setGatewayAuthToken("token");
         client = new OpenClawGatewayWsClient(config, URI.create("ws://127.0.0.1:" + gateway.getPort()));
     }

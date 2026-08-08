@@ -115,7 +115,7 @@ public class OpenClawWebhookClient implements AutoCloseable {
     }
 
     private HttpResult postWebhook(String hookPath, Map<String, Object> body) {
-        String base = config.getGatewayBaseUrl();
+        String base = config.getBaseUrl();
         if (OpenClawStrings.isBlank(base)) throw new OpenClawHttpException("OpenClaw gatewayBaseUrl is empty", null);
         String url = base.replaceAll("/+$", "") + hookPath;
         String token = config.resolveHooksBearerToken();
