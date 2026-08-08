@@ -10,9 +10,12 @@ import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -68,10 +71,11 @@ class PublicApiBeanContractTest {
     }
 
     private List<Class<?>> discoverContractTypes() throws Exception {
-        Path classesRoot = Path.of(OpenClawClient.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        Path classesRoot = Paths.get(OpenClawClient.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         List<Class<?>> result = new ArrayList<>();
-        try (var paths = Files.walk(classesRoot)) {
-            for (Path path : paths.filter(value -> value.toString().endsWith(".class")).toList()) {
+        java.util.stream.Stream<Path> paths = Files.walk(classesRoot);
+        try {
+            for (Path path : paths.filter(value -> value.toString().endsWith(".class")).collect(Collectors.toList())) {
                 String name = classesRoot.relativize(path).toString()
                         .replace(File.separatorChar, '.')
                         .replaceAll("\\.class$", "");
@@ -80,6 +84,8 @@ class PublicApiBeanContractTest {
                     result.add(Class.forName(name));
                 }
             }
+        } finally {
+            paths.close();
         }
         result.sort(Comparator.comparing(Class::getName));
         return result;
@@ -189,13 +195,13 @@ class PublicApiBeanContractTest {
         if (type == byte.class || type == Byte.class) return (byte) 1;
         if (type == char.class || type == Character.class) return 'x';
         if (type == Duration.class) return Duration.ofSeconds(1);
-        if (type == Path.class) return Path.of("target");
+        if (type == Path.class) return Paths.get("target");
         if (type == File.class) return new File("target");
         if (type == URI.class) return URI.create("http://localhost");
         if (type == Optional.class) return Optional.of("value");
-        if (type == List.class || type == Collection.class) return List.of("value");
-        if (type == Set.class) return Set.of("value");
-        if (type == Map.class) return Map.of("key", "value");
+        if (type == List.class || type == Collection.class) return Collections.singletonList("value");
+        if (type == Set.class) return Collections.singleton("value");
+        if (type == Map.class) return Collections.singletonMap("key", "value");
         if (type == Consumer.class) return (Consumer<Object>) ignored -> { };
         if (type == Supplier.class) return (Supplier<Object>) () -> "value";
         if (type.isArray()) {
