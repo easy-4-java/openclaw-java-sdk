@@ -451,6 +451,11 @@ public class OpenClawClient implements AutoCloseable {
         return chatClient.chatCompletion(request);
     }
 
+    /** 发送支持调用方取消的 Chat Completions 请求。 */
+    public ChatResponse chatCompletion(ChatRequest request, HttpCallCancellation cancellation) {
+        return chatClient.chatCompletion(request, null, cancellation);
+    }
+
     /**
  * Chat Completions ,request header.
      */
@@ -632,6 +637,10 @@ public class OpenClawClient implements AutoCloseable {
      */
     public ToolInvokeResult toolInvoke(ToolInvokeRequest request) {
         return toolsInvokeClient.invoke(request);
+    }
+
+    public ToolInvokeResult toolInvoke(ToolInvokeRequest request, HttpCallCancellation cancellation) {
+        return toolsInvokeClient.invoke(request, cancellation);
     }
 
     // ============================================================

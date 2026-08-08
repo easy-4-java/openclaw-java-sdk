@@ -89,7 +89,19 @@ public class OpenClawHttpClientConfig {
  /** maximum concurrency */
     private int maxRequestsPerHost = 64;
 
- /** connectionWhether to allow OkHttp restore */
+    /** SSE 响应消费线程池核心线程数 */
+    private int sseCorePoolSize = 16;
+
+    /** SSE 响应消费线程池最大线程数 */
+    private int sseMaxPoolSize = 16;
+
+    /** SSE 响应消费线程池有界队列容量 */
+    private int sseQueueCapacity = 128;
+
+    /** SSE 响应消费线程空闲保活时间（毫秒） */
+    private long sseKeepAliveMillis = 60_000L;
+
+    /** 遇到失效连接等传输故障时是否允许 OkHttp 自动恢复 */
     private boolean retryOnConnectionFailure = true;
 
     /**

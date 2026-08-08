@@ -85,6 +85,13 @@ class OpenClawHttpApiCoverageTest {
 
             assertEquals("chat-id", chat.chatCompletion(agentRequest).getId());
             assertEquals("chat-id", chat.chatCompletion(modelRequest, Map.of("X-Custom", "value")).getId());
+            AtomicBoolean cancellationRegistered = new AtomicBoolean();
+            assertThrows(OpenClawHttpException.class, () -> chat.chatCompletion(agentRequest, null, callback -> {
+                cancellationRegistered.set(true);
+                callback.run();
+                return () -> { };
+            }));
+            assertTrue(cancellationRegistered.get());
             assertNotNull(chat.listModels());
             assertNotNull(chat.getModel("model with space"));
             chat.health();

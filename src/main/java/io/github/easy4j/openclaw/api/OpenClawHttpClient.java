@@ -3,6 +3,7 @@ package io.github.easy4j.openclaw.api;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
+import io.github.easy4j.openclaw.HttpCallCancellation;
 import io.github.easy4j.openclaw.OpenClawOkHttpClientFactory;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
@@ -108,6 +109,12 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
  * POST JSON ,extra headers.
      */
     protected String postJson(String path, Object body, Map<String, String> headers) {
+        return postJson(path, body, headers, null);
+    }
+
+    /** POST JSON 请求，并将调用方取消信号绑定到底层 Call。 */
+    protected String postJson(String path, Object body, Map<String, String> headers,
+                              HttpCallCancellation cancellation) {
         String url = resolveUrl(path);
         debug("POST JSON: path={}, url={}", path, url);
 
@@ -119,7 +126,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
                     .post(RequestBody.create(json, JSON))
                     .build();
 
-            return execute(request, url);
+            return execute(request, url, cancellation);
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (IOException e) {
@@ -148,10 +155,18 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
  * .
      */
     protected String execute(Request request, String url) throws IOException {
+        return execute(request, url, null);
+    }
+
+    /** 执行支持协作式取消的请求。 */
+    protected String execute(Request request, String url,
+                             HttpCallCancellation cancellation) throws IOException {
         debug("Executing request: {} {}", request.method(), request.url());
         debug("Request headers: {}", request.headers());
 
-        try (Response response = httpClient.newCall(request).execute()) {
+        Call call = httpClient.newCall(request);
+        AutoCloseable registration = cancellation != null ? cancellation.onCancel(call::cancel) : null;
+        try (Response response = call.execute()) {
             int status = response.code();
             String respBody = response.body() != null ? response.body().string() : "";
 
@@ -168,6 +183,19 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
                 throw new OpenClawHttpException("Request returned status " + status, status, respBody);
             }
             return respBody;
+        } finally {
+            closeRegistration(registration);
+        }
+    }
+
+    private void closeRegistration(AutoCloseable registration) {
+        if (registration == null) {
+            return;
+        }
+        try {
+            registration.close();
+        } catch (Exception error) {
+            debug("Failed to unregister HTTP cancellation callback: {}", error.getMessage());
         }
     }
 
