@@ -1,0 +1,188 @@
+package io.github.easy4j.openclaw;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.easy4j.openclaw.api.model.ChatMessage;
+import io.github.easy4j.openclaw.api.model.ChatRequest;
+import io.github.easy4j.openclaw.api.sse.StreamingChatResponse;
+import okhttp3.ConnectionPool;
+import okhttp3.Dispatcher;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.Buffer;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static io.github.easy4j.openclaw.Java8Collections.list;
+
+/**
+ * OpenClaw OkHttpClient 复用、配置与生命周期测试。
+ */
+class OpenClawOkHttpClientTest {
+
+    @Test
+    void shouldUseAndPreserveExternallyManagedOkHttpClient() {
+        Dispatcher dispatcher = new Dispatcher();
+        ConnectionPool connectionPool = new ConnectionPool(48, 10, TimeUnit.MINUTES);
+        OkHttpClient external = new OkHttpClient.Builder()
+                .dispatcher(dispatcher)
+                .connectionPool(connectionPool)
+                .build();
+        OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
+        config.setStartupCheckEnabled(false);
+
+        OpenClawClient client = new OpenClawClient(config, external);
+        assertSame(external, client.getOkHttpClient());
+        assertSame(external, client.chat().getHttpClient());
+        client.close();
+
+        assertFalse(dispatcher.executorService().isShutdown());
+        assertEquals(0, connectionPool.connectionCount());
+        OpenClawOkHttpClientFactory.shutdown(external);
+    }
+
+    @Test
+    void shouldBuildConfiguredHighConcurrencyClientAndCloseOwnedResources() {
+        OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
+        config.setStartupCheckEnabled(false);
+        config.setConnectTimeoutMillis(1_500);
+        config.setReadTimeoutMillis(90_000);
+        config.setWriteTimeoutMillis(8_000);
+        config.setCallTimeoutMillis(100_000);
+        config.setMaxIdleConnections(40);
+        config.setKeepAliveDurationMillis(420_000L);
+        config.setMaxRequests(160);
+        config.setMaxRequestsPerHost(80);
+
+        OkHttpClient owned;
+        try (OpenClawClient client = new OpenClawClient(config)) {
+            owned = client.chat().getHttpClient();
+            assertEquals(1_500, owned.connectTimeoutMillis());
+            assertEquals(90_000, owned.readTimeoutMillis());
+            assertEquals(8_000, owned.writeTimeoutMillis());
+            assertEquals(100_000, owned.callTimeoutMillis());
+            assertEquals(160, owned.dispatcher().getMaxRequests());
+            assertEquals(80, owned.dispatcher().getMaxRequestsPerHost());
+            assertEquals(0, owned.connectionPool().connectionCount());
+        }
+        assertTrue(owned.dispatcher().executorService().isShutdown());
+    }
+
+    @Test
+    void shouldReturnStreamingHandleBeforeResponseHeadersArrive() throws Exception {
+        AtomicReference<String> requestJson = new AtomicReference<>();
+        OkHttpClient external = new OkHttpClient.Builder()
+                .addInterceptor(chain -> {
+                    Buffer buffer = new Buffer();
+                    chain.request().body().writeTo(buffer);
+                    requestJson.set(buffer.readUtf8());
+                    try {
+                        Thread.sleep(400L);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IOException("interrupted", e);
+                    }
+                    return new Response.Builder()
+                            .request(chain.request())
+                            .protocol(Protocol.HTTP_1_1)
+                            .code(200)
+                            .message("OK")
+                            .header("Content-Type", "text/event-stream")
+                            .body(ResponseBody.create("data: [DONE]\n\n", MediaType.get("text/event-stream")))
+                            .build();
+                })
+                .build();
+        OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
+        config.setStartupCheckEnabled(false);
+        ChatRequest request = ChatRequest.builder()
+                .agent("openclaw/default")
+                .messages(list(ChatMessage.ofUser("ping")))
+                .build();
+
+        try (OpenClawClient client = new OpenClawClient(config, new ObjectMapper(), external)) {
+            long startedAt = System.nanoTime();
+            StreamingChatResponse stream = client.chatCompletionStream(request);
+            long returnMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedAt);
+
+            assertTrue(returnMillis < 200L, "streaming call blocked for " + returnMillis + "ms");
+            stream.get(2, TimeUnit.SECONDS);
+            assertTrue(requestJson.get().contains("\"stream\":true"));
+            assertFalse(Boolean.TRUE.equals(request.getStream()));
+        } finally {
+            OpenClawOkHttpClientFactory.shutdown(external);
+        }
+    }
+
+    @Test
+    void shouldKeepFiftyConcurrentStreamsIndependent() throws Exception {
+        int concurrency = 50;
+        CountDownLatch allStarted = new CountDownLatch(concurrency);
+        CountDownLatch releaseResponses = new CountDownLatch(1);
+        AtomicInteger activeCalls = new AtomicInteger();
+        AtomicInteger maxActiveCalls = new AtomicInteger();
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequests(128);
+        dispatcher.setMaxRequestsPerHost(64);
+        OkHttpClient external = new OkHttpClient.Builder()
+                .dispatcher(dispatcher)
+                .addInterceptor(chain -> {
+                    int active = activeCalls.incrementAndGet();
+                    maxActiveCalls.accumulateAndGet(active, Math::max);
+                    allStarted.countDown();
+                    try {
+                        if (!releaseResponses.await(3, TimeUnit.SECONDS)) {
+                            throw new IOException("test response release timed out");
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IOException("interrupted", e);
+                    } finally {
+                        activeCalls.decrementAndGet();
+                    }
+                    return new Response.Builder()
+                            .request(chain.request())
+                            .protocol(Protocol.HTTP_1_1)
+                            .code(200)
+                            .message("OK")
+                            .header("Content-Type", "text/event-stream")
+                            .body(ResponseBody.create("data: [DONE]\n\n", MediaType.get("text/event-stream")))
+                            .build();
+                })
+                .build();
+        OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
+        config.setStartupCheckEnabled(false);
+        ChatRequest request = ChatRequest.builder()
+                .agent("openclaw/default")
+                .messages(list(ChatMessage.ofUser("ping")))
+                .build();
+
+        try (OpenClawClient client = new OpenClawClient(config, new ObjectMapper(), external)) {
+            List<StreamingChatResponse> streams = new ArrayList<>(concurrency);
+            for (int index = 0; index < concurrency; index++) {
+                streams.add(client.chatCompletionStream(request));
+            }
+            assertTrue(allStarted.await(2, TimeUnit.SECONDS));
+            assertEquals(concurrency, maxActiveCalls.get());
+            releaseResponses.countDown();
+            for (StreamingChatResponse stream : streams) {
+                stream.get(2, TimeUnit.SECONDS);
+            }
+        } finally {
+            releaseResponses.countDown();
+            OpenClawOkHttpClientFactory.shutdown(external);
+        }
+    }
+}

@@ -3,6 +3,7 @@ package io.github.easy4j.openclaw.api;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
+import io.github.easy4j.openclaw.OpenClawOkHttpClientFactory;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
 import lombok.Getter;
@@ -12,7 +13,6 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * HTTP 客户端基类。
@@ -29,30 +29,29 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     protected final OpenClawHttpClientConfig config;
     protected final ObjectMapper objectMapper;
     protected final OkHttpClient httpClient;
+    private final boolean ownsHttpClient;
 
     protected OpenClawHttpClient(OpenClawHttpClientConfig config) {
-        this(config, null, null);
+        this(config, null, OpenClawOkHttpClientFactory.create(config), true);
     }
 
     protected OpenClawHttpClient(OpenClawHttpClientConfig config, ObjectMapper objectMapper, OkHttpClient httpClient) {
+        this(config, objectMapper,
+                Objects.isNull(httpClient) ? OpenClawOkHttpClientFactory.create(config) : httpClient,
+                Objects.isNull(httpClient));
+    }
+
+    private OpenClawHttpClient(OpenClawHttpClientConfig config, ObjectMapper objectMapper,
+                               OkHttpClient httpClient, boolean ownsHttpClient) {
         this.config = Objects.requireNonNull(config, "config");
         this.objectMapper = objectMapper != null ? objectMapper : createObjectMapper();
-        this.httpClient = httpClient != null ? httpClient : buildOkHttpClient(config);
+        this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
+        this.ownsHttpClient = ownsHttpClient;
     }
 
     protected ObjectMapper createObjectMapper() {
         return new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
-    protected OkHttpClient buildOkHttpClient(OpenClawHttpClientConfig config) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(config.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)
-                .readTimeout(config.getReadTimeoutMillis(), TimeUnit.MILLISECONDS);
-        if (!config.isVerifySsl()) {
-            builder.hostnameVerifier((hostname, session) -> true);
-        }
-        return builder.build();
     }
 
     // ============================================================
@@ -247,6 +246,8 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
 
     @Override
     public void close() {
-        // 外部传入的 OkHttpClient 不关闭，由创建者管理
+        if (ownsHttpClient) {
+            OpenClawOkHttpClientFactory.shutdown(httpClient);
+        }
     }
 }
