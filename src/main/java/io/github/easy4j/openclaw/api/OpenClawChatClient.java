@@ -275,7 +275,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
             public void onResponse(Call call, Response response) {
                 if (!response.isSuccessful()) {
                     activeStreamCalls.remove(call);
-                    try (response) {
+                    try (Response ignored = response) {
                         String body = response.body() != null ? response.body().string() : "";
                         streamResponse.onError(new OpenClawHttpException(
                                 "Stream returned status " + response.code(), response.code(), body));
@@ -331,7 +331,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
 
     private void consumeStream(Response httpResponse, StreamingChatResponse response) {
         SseStreamReader reader = new SseStreamReader(objectMapper);
-        try (httpResponse) {
+        try (Response ignored = httpResponse) {
             if (httpResponse.body() == null) {
                 response.onError(new OpenClawHttpException("SSE response body is null", null));
                 return;
