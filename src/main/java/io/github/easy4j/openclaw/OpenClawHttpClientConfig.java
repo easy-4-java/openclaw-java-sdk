@@ -51,7 +51,19 @@ public class OpenClawHttpClientConfig {
     /**
      * Gateway HTTP 根地址（Webhooks 与部分 HTTP 面共用主机），例如 {@code http://localhost:18789}。
      */
-    private String gatewayBaseUrl = "http://localhost:18789";
+    private String baseUrl = "http://localhost:18789";
+
+    /** @deprecated 使用 {@link #getBaseUrl()}。 */
+    @Deprecated
+    public String getGatewayBaseUrl() {
+        return baseUrl;
+    }
+
+    /** @deprecated 使用 {@link #setBaseUrl(String)}。 */
+    @Deprecated
+    public void setGatewayBaseUrl(String value) {
+        this.baseUrl = value;
+    }
 
     /**
      * 网关控制面共享令牌（如 {@code gateway.auth.token} 或环境变量 {@code OPENCLAW_GATEWAY_TOKEN}）。
