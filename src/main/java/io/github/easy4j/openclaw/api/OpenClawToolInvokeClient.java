@@ -2,6 +2,7 @@ package io.github.easy4j.openclaw.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
+import io.github.easy4j.openclaw.HttpCallCancellation;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
 import io.github.easy4j.openclaw.api.model.ToolInvokeRequest;
@@ -28,6 +29,10 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
     }
 
     public ToolInvokeResult invoke(ToolInvokeRequest request) {
+        return invoke(request, null);
+    }
+
+    public ToolInvokeResult invoke(ToolInvokeRequest request, HttpCallCancellation cancellation) {
         Objects.requireNonNull(request, "request");
 
         debug("=== Tool Invoke Request ===");
@@ -47,7 +52,9 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
 
             debug("Sending tool invoke request...");
 
-            try (Response response = httpClient.newCall(httpRequest).execute()) {
+            Call call = httpClient.newCall(httpRequest);
+            AutoCloseable registration = cancellation != null ? cancellation.onCancel(call::cancel) : null;
+            try (Response response = call.execute()) {
                 int status = response.code();
                 String respBody = response.body() != null ? response.body().string() : "";
 
@@ -73,11 +80,24 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
                 ToolInvokeResult result = parse(respBody, ToolInvokeResult.class);
                 debug("Tool invoke success, ok: {}", result.getOk());
                 return result;
+            } finally {
+                closeRegistration(registration);
             }
         } catch (OpenClawHttpException e) {
             throw e;
         } catch (Exception e) {
             throw new OpenClawHttpException("POST /tools/invoke failed: " + e.getMessage(), e);
+        }
+    }
+
+    private void closeRegistration(AutoCloseable registration) {
+        if (registration == null) {
+            return;
+        }
+        try {
+            registration.close();
+        } catch (Exception error) {
+            debug("Failed to unregister tool cancellation callback: {}", error.getMessage());
         }
     }
 }
