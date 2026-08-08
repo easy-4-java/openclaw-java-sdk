@@ -3,6 +3,7 @@ package io.github.easy4j.openclaw.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
+import io.github.easy4j.openclaw.OpenClawOkHttpClientFactory;
 import io.github.easy4j.openclaw.api.model.HookRequest;
 import io.github.easy4j.openclaw.api.model.HookResponse;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
@@ -14,7 +15,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * OpenClaw Gateway HTTP Webhooks 客户端（{@code /hooks/*}）。
@@ -29,29 +29,28 @@ public class OpenClawWebhookClient implements AutoCloseable {
     private final OpenClawHttpClientConfig config;
     private final ObjectMapper objectMapper;
     private final OkHttpClient httpClient;
+    private final boolean ownsHttpClient;
 
     public OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper) {
-        this(config, mapper, null);
+        this(config, mapper, OpenClawOkHttpClientFactory.create(config), true);
     }
 
     public OpenClawWebhookClient(OpenClawHttpClientConfig config) {
-        this(config, null, null);
+        this(config, null, OpenClawOkHttpClientFactory.create(config), true);
     }
 
     public OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper, OkHttpClient httpClient) {
-        this.config = Objects.requireNonNull(config, "config");
-        this.objectMapper = mapper != null ? mapper : new ObjectMapper();
-        this.httpClient = httpClient != null ? httpClient : buildOkHttpClient(config);
+        this(config, mapper,
+                Objects.isNull(httpClient) ? OpenClawOkHttpClientFactory.create(config) : httpClient,
+                Objects.isNull(httpClient));
     }
 
-    private static OkHttpClient buildOkHttpClient(OpenClawHttpClientConfig config) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(config.getConnectTimeoutMillis(), TimeUnit.MILLISECONDS)
-                .readTimeout(config.getReadTimeoutMillis(), TimeUnit.MILLISECONDS);
-        if (!config.isVerifySsl()) {
-            builder.hostnameVerifier((hostname, session) -> true);
-        }
-        return builder.build();
+    private OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper,
+                                  OkHttpClient httpClient, boolean ownsHttpClient) {
+        this.config = Objects.requireNonNull(config, "config");
+        this.objectMapper = mapper != null ? mapper : new ObjectMapper();
+        this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
+        this.ownsHttpClient = ownsHttpClient;
     }
 
     public HookResponse postHooksAgent(HookRequest request) {
@@ -173,7 +172,12 @@ public class OpenClawWebhookClient implements AutoCloseable {
         return null;
     }
 
-    @Override public void close() {}
+    @Override
+    public void close() {
+        if (ownsHttpClient) {
+            OpenClawOkHttpClientFactory.shutdown(httpClient);
+        }
+    }
 
     private static final class HttpResult {
         private final int status;

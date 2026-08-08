@@ -40,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
  * </ul>
  *
  * <h3>构造器选择</h3>
- * <p>提供 8 个重载覆盖三类场景：</p>
+ * <p>提供多种构造器覆盖三类场景：</p>
  * <ul>
  *     <li>仅 HTTP / 仅 CLI：传入单个子配置，禁用另一子系统</li>
  *     <li>HTTP + CLI：传入两个子配置，子系统都按各自 {@code enabled} 决定</li>
@@ -71,6 +71,7 @@ public class OpenClawClient implements AutoCloseable {
     private final OpenClawToolInvokeClient toolsInvokeClient;
     private final OpenClawCli cli;
     private final OpenClawGatewayWsClient wsClient;
+    private final OkHttpClient ownedHttpClient;
 
     // ============================================================
     // 构造器（单配置 / 双配置 / 组合配置 × 自动或强制）
@@ -80,35 +81,44 @@ public class OpenClawClient implements AutoCloseable {
      * 仅 HTTP 子系统（CLI 禁用）。自动创建默认 {@link ObjectMapper} 与 {@link OkHttpClient}。
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig) {
-        this(httpConfig, new OpenClawCliConfig(), new ObjectMapper(), new OkHttpClient());
+        this(httpConfig, new OpenClawCliConfig(), new ObjectMapper(),
+                OpenClawOkHttpClientFactory.create(httpConfig), true);
+    }
+
+    /**
+     * 仅 HTTP 子系统，使用调用方管理的共享 {@link OkHttpClient}。
+     * <p>适用于直接注入 Spring 容器中由 okhttp3-extension/starter 配置的客户端。</p>
+     */
+    public OpenClawClient(OpenClawHttpClientConfig httpConfig, OkHttpClient httpClient) {
+        this(httpConfig, new ObjectMapper(), httpClient);
     }
 
     /**
      * 仅 HTTP 子系统（CLI 禁用），强制注入共享 {@link ObjectMapper} 与 {@link OkHttpClient}。
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig, ObjectMapper objectMapper, OkHttpClient httpClient) {
-        this(httpConfig, new OpenClawCliConfig(), objectMapper, httpClient);
+        this(httpConfig, new OpenClawCliConfig(), objectMapper, httpClient, false);
     }
 
     /**
      * 仅 CLI 子系统（HTTP 禁用）。自动创建默认 {@link ObjectMapper} 与 {@link OkHttpClient}。
      */
     public OpenClawClient(OpenClawCliConfig cliConfig) {
-        this(new OpenClawHttpClientConfig(), cliConfig, new ObjectMapper(), new OkHttpClient());
+        this(new OpenClawHttpClientConfig(), cliConfig, new ObjectMapper(), new OkHttpClient(), true);
     }
 
     /**
      * 仅 CLI 子系统（HTTP 禁用），强制注入共享 {@link ObjectMapper} 与 {@link OkHttpClient}。
      */
     public OpenClawClient(OpenClawCliConfig cliConfig, ObjectMapper objectMapper, OkHttpClient httpClient) {
-        this(new OpenClawHttpClientConfig(), cliConfig, objectMapper, httpClient);
+        this(new OpenClawHttpClientConfig(), cliConfig, objectMapper, httpClient, false);
     }
 
     /**
      * HTTP + CLI 子系统。自动创建默认 {@link ObjectMapper} 与 {@link OkHttpClient}。
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig) {
-        this(httpConfig, cliConfig, new ObjectMapper(), new OkHttpClient());
+        this(httpConfig, cliConfig, new ObjectMapper(), OpenClawOkHttpClientFactory.create(httpConfig), true);
     }
 
     /**
@@ -121,10 +131,16 @@ public class OpenClawClient implements AutoCloseable {
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig,
                           ObjectMapper objectMapper, OkHttpClient httpClient) {
+        this(httpConfig, cliConfig, objectMapper, httpClient, false);
+    }
+
+    private OpenClawClient(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig,
+                           ObjectMapper objectMapper, OkHttpClient httpClient, boolean ownsHttpClient) {
         Objects.requireNonNull(httpConfig, "httpConfig");
         Objects.requireNonNull(cliConfig, "cliConfig");
         Objects.requireNonNull(objectMapper, "objectMapper");
         Objects.requireNonNull(httpClient, "httpClient");
+        this.ownedHttpClient = ownsHttpClient ? httpClient : null;
 
         boolean httpEnabled = httpConfig.isEnabled();
         boolean cliEnabled = cliConfig.isEnabled();
@@ -165,7 +181,16 @@ public class OpenClawClient implements AutoCloseable {
         this(Objects.requireNonNull(config, "config").getHttp(),
                 config.getCli(),
                 new ObjectMapper(),
-                new OkHttpClient());
+                OpenClawOkHttpClientFactory.create(config.getHttp()),
+                true);
+    }
+
+    /**
+     * 使用组合配置和调用方管理的共享 {@link OkHttpClient}。
+     * <p>SDK 关闭时不会关闭、清空或重建该客户端的连接池和调度器。</p>
+     */
+    public OpenClawClient(OpenClawClientConfig config, OkHttpClient httpClient) {
+        this(config, new ObjectMapper(), httpClient);
     }
 
     /**
@@ -175,7 +200,8 @@ public class OpenClawClient implements AutoCloseable {
         this(Objects.requireNonNull(config, "config").getHttp(),
                 config.getCli(),
                 objectMapper,
-                httpClient);
+                httpClient,
+                false);
     }
 
     /**
@@ -198,6 +224,7 @@ public class OpenClawClient implements AutoCloseable {
         this.toolsInvokeClient = toolsInvokeClient;
         this.cli = cli;
         this.wsClient = wsClient;
+        this.ownedHttpClient = null;
     }
 
     /**
@@ -384,6 +411,16 @@ public class OpenClawClient implements AutoCloseable {
      */
     public OpenClawChatClient chat() {
         return chatClient;
+    }
+
+    /**
+     * 获取 HTTP 子系统实际使用的 {@link OkHttpClient}。
+     * <p>通过注入构造器传入时返回同一个实例，其生命周期仍由调用方管理。</p>
+     *
+     * @return HTTP 子系统使用的 OkHttpClient；HTTP 子系统禁用时返回 {@code null}
+     */
+    public OkHttpClient getOkHttpClient() {
+        return Objects.nonNull(chatClient) ? chatClient.getHttpClient() : null;
     }
 
     /**
@@ -618,6 +655,7 @@ public class OpenClawClient implements AutoCloseable {
         closeQuietly(responsesClient);
         closeQuietly(toolsInvokeClient);
         closeQuietly(wsClient);
+        OpenClawOkHttpClientFactory.shutdown(ownedHttpClient);
     }
 
     /**
