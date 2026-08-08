@@ -3,14 +3,17 @@ package io.github.easy4j.openclaw.exception;
 import lombok.Getter;
 
 /**
- * 本地命令行执行 OpenClaw 失败时抛出。
+ * OpenClaw .
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public class OpenClawLocalExecutionException extends OpenClawException {
 
     private static final long serialVersionUID = 1L;
 
-    /** 进程退出码；未执行完成时为 {@link Integer#MIN_VALUE} */
+ /** processexit code;completion {@link Integer#MIN_VALUE} */
     private final int exitCode;
 
     public OpenClawLocalExecutionException(String message, int exitCode) {

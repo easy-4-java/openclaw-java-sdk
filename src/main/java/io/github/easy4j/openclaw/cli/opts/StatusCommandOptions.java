@@ -7,33 +7,36 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 顶层 {@code openclaw status}：渠道与会话诊断（非 {@code gateway status}）。
- * <p>文档说明：{@code --deep} 会对 WhatsApp Web、Telegram、Discord、Slack、Signal 等做实时探测；
- * {@code --usage} 将各提供商用量窗口规范为「剩余 X%」形式输出；{@code --all} 会扩展 Secrets 概览与诊断摘要等（见官方 Notes）。</p>
+ * {@code openclaw status}:sessiondiagnostic( {@code gateway status}).
+ * <p>documentation:{@code --deep} WhatsApp Web,Telegram,Discord,Slack,Signal ;
+ * {@code --usage} Provides" X%";{@code --all} Secrets diagnostic(See Notes).</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/status">status CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class StatusCommandOptions implements CliSubArgs {
 
     /**
-     * {@code --all}：扩展输出（含 Secrets 概览行、secret 诊断摘要等，文档只读路径仍尽量解析 SecretRef）。
+ * {@code --all}:( Secrets ,secret diagnostic,documentation SecretRef).
      */
     private final boolean all;
     /**
-     * {@code --deep}：对各支持渠道执行实时在线探测（文档列举的 IM 渠道集合）。
+ * {@code --deep}:(documentation IM ).
      */
     private final boolean deep;
     /**
-     * {@code --usage}：打印规范化后的提供商用量窗口（文档：显示为 {@code X% left} 等格式）。
+ * {@code --usage}:NormalizesProvides(documentation: {@code X% left} ).
      */
     private final boolean usage;
     /**
-     * {@code --json}：机器可读 JSON（文档 Notes 中与 {@code status --json} 等只读形态一致）。
+ * {@code --json}: JSON(documentation Notes {@code status --json} ).
      */
     private final boolean json;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private StatusCommandOptions(Builder b) {
         this.all = b.all;
@@ -43,7 +46,7 @@ public final class StatusCommandOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -71,7 +74,7 @@ public final class StatusCommandOptions implements CliSubArgs {
     }
 
     /**
-     * {@link StatusCommandOptions} 构建器。
+ * {@link StatusCommandOptions} builder.
      */
     public static final class Builder {
 
@@ -117,7 +120,7 @@ public final class StatusCommandOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link StatusCommandOptions}
+ * @return {@link StatusCommandOptions}
          */
         public StatusCommandOptions build() {
             return new StatusCommandOptions(this);

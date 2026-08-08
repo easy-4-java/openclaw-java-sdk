@@ -2,6 +2,7 @@ package io.github.easy4j.openclaw.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
+import io.github.easy4j.openclaw.HttpCallCancellation;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
 import io.github.easy4j.openclaw.api.model.*;
@@ -17,30 +18,49 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Chat Completions API 客户端。
+ * Chat Completions API client.
  *
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Slf4j
 public class OpenClawChatClient extends OpenClawHttpClient {
 
-    private final ExecutorService streamExecutor = Executors.newCachedThreadPool(runnable -> {
-        Thread thread = new Thread(runnable, "openclaw-sse-consumer");
-        thread.setDaemon(true);
-        return thread;
-    });
+    private final ExecutorService streamExecutor;
     private final Set<Call> activeStreamCalls = ConcurrentHashMap.newKeySet();
 
     public OpenClawChatClient(OpenClawHttpClientConfig config) {
         super(config);
+        this.streamExecutor = createStreamExecutor(config);
     }
 
     public OpenClawChatClient(OpenClawHttpClientConfig config, ObjectMapper objectMapper, OkHttpClient httpClient) {
         super(config, objectMapper, httpClient);
+        this.streamExecutor = createStreamExecutor(config);
+    }
+
+    private static ExecutorService createStreamExecutor(OpenClawHttpClientConfig config) {
+        int corePoolSize = Math.max(1, config.getStreamCorePoolSize());
+        int maxPoolSize = Math.max(corePoolSize, config.getStreamMaxPoolSize());
+        int queueCapacity = Math.max(1, config.getStreamQueueCapacity());
+        long keepAliveMillis = Math.max(1L, config.getStreamKeepAliveMillis());
+        AtomicInteger threadIndex = new AtomicInteger();
+        return new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveMillis, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(queueCapacity), runnable -> {
+                    Thread thread = new Thread(runnable,
+                            "openclaw-sse-consumer-" + threadIndex.incrementAndGet());
+                    thread.setDaemon(true);
+                    return thread;
+                }, new ThreadPoolExecutor.AbortPolicy());
     }
 
     // ============================================================
@@ -52,6 +72,12 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     public ChatResponse chatCompletion(ChatRequest request, Map<String, String> headers) {
+        return chatCompletion(request, headers, null);
+    }
+
+    /** 发送支持调用方取消的 Chat Completion。 */
+    public ChatResponse chatCompletion(ChatRequest request, Map<String, String> headers,
+                                       HttpCallCancellation cancellation) {
         Objects.requireNonNull(request, "request");
 
         debug("=== Chat Completion Request ===");
@@ -91,7 +117,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
 
         String json;
         try {
-            json = postJson(OpenClawConstants.ENDPOINT_CHAT_COMPLETIONS, normalized, headers);
+            json = postJson(OpenClawConstants.ENDPOINT_CHAT_COMPLETIONS, normalized, headers, cancellation);
         } catch (OpenClawHttpException e) {
             error("Chat completion failed: status={}, message={}", e.getStatusCode(), e.getMessage());
             throw e;
@@ -105,7 +131,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 流式 chat completion。
+ * streaming chat completion.
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request) {
         return chatCompletionStream(request, (Map<String, String>) null);
@@ -124,7 +150,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 获取流式响应的原始 OkHttp Response（高级用法）。
+ * streaming OkHttp Response(usage).
      */
     public Response chatCompletionStreamRaw(ChatRequest request) {
         return chatCompletionStreamRaw(request, null);

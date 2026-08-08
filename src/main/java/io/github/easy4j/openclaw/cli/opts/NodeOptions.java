@@ -8,77 +8,80 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw node}：无头 node host，连接 Gateway WebSocket 并在本机暴露 {@code system.run} / {@code system.which} 等执行面。
- * <p>首次连接会在 Gateway 上创建 {@code role: node} 的待配对请求，需用 {@code openclaw devices approve} 批准。
- * {@code run} 与 {@code install} 的网关认证只解析环境变量与本地/remote 配置，不接受 CLI 内联 {@code --token}（见 node 文档 Gateway auth 节）。</p>
+ * {@code openclaw node}: node host,connection Gateway WebSocket {@code system.run} / {@code system.which} .
+ * <p>connection Gateway {@code role: node} pairing, {@code openclaw devices approve} .
+ * {@code run} {@code install} Gatewayauthentication/remote , CLI {@code --token}(See node documentation Gateway auth ).</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/node">node CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class NodeOptions implements CliSubArgs {
 
     /**
-     * node 子命令：前台运行、安装用户服务或管理服务生命周期。
+ * node subcommand:,lifecycle.
      */
     public enum Verb {
-        /** {@code node run}：前台 node host。 */
+ /** {@code node run}: node host. */
         RUN,
-        /** {@code node install}：安装后台用户服务。 */
+ /** {@code node install}:. */
         INSTALL,
-        /** {@code node status}：查看服务状态。 */
+ /** {@code node status}:. */
         STATUS,
-        /** {@code node stop}：停止服务。 */
+ /** {@code node stop}:. */
         STOP,
-        /** {@code node restart}：重启服务。 */
+ /** {@code node restart}:. */
         RESTART,
-        /** {@code node uninstall}：卸载服务单元。 */
+ /** {@code node uninstall}:. */
         UNINSTALL
     }
 
-    /** run / install / 服务管理 之一。 */
+ /** run / install / . */
     private final Verb verb;
     /**
-     * run / install：{@code --host} Gateway WebSocket 主机（默认 loopback）。
+ * run / install:{@code --host} Gateway WebSocket ( loopback).
      */
     private final String host;
     /**
-     * run / install：{@code --port} Gateway WebSocket 端口（默认 18789）。
+ * run / install:{@code --port} Gateway WebSocket ( 18789).
      */
     private final String port;
     /**
-     * run / install：{@code --tls} 使用 TLS 连接网关。
+ * run / install:{@code --tls} TLS connectionGateway.
      */
     private final boolean tls;
     /**
-     * run / install：{@code --tls-fingerprint} 期望的服务器证书 sha256 指纹。
+ * run / install:{@code --tls-fingerprint} sha256 .
      */
     private final String tlsFingerprint;
     /**
-     * run / install：{@code --node-id} 覆盖节点 id（会清配对 token，见文档）。
+ * run / install:{@code --node-id} node id(pairing token,Seedocumentation).
      */
     private final String nodeId;
     /**
-     * run / install：{@code --display-name} 覆盖节点展示名。
+ * run / install:{@code --display-name} node.
      */
     private final String displayName;
     /**
-     * install：{@code --runtime} 服务运行时（{@code node} 或 {@code bun}）。
+ * install:{@code --runtime} ({@code node} {@code bun}).
      */
     private final String runtime;
     /**
-     * install：{@code --force} 覆盖已存在安装。
+ * install:{@code --force} .
      */
     private final boolean force;
     /**
-     * status / stop / restart / uninstall：{@code --json} 机器可读输出。
+ * status / stop / restart / uninstall:{@code --json} .
      */
     private final boolean json;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private NodeOptions(Builder b) {
         this.verb = b.verb;
@@ -95,7 +98,7 @@ public final class NodeOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -149,7 +152,7 @@ public final class NodeOptions implements CliSubArgs {
     }
 
     /**
-     * {@link NodeOptions} 构建器。
+ * {@link NodeOptions} builder.
      */
     public static final class Builder {
         private Verb verb = Verb.RUN;
@@ -294,9 +297,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -307,7 +310,7 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link NodeOptions}
+ * @return {@link NodeOptions}
          */
         public NodeOptions build() {
             return new NodeOptions(this);

@@ -7,45 +7,48 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw doctor}：针对 Gateway 与渠道的体检与快速修复。
- * <p>{@code --repair} 与 {@code --fix} 等价；{@code --fix} 会备份 {@code ~/.openclaw/openclaw.json.bak} 并剔除未知配置键。
- * 交互式提示仅在 TTY 且未指定 {@code --non-interactive} 时运行。</p>
+ * {@code openclaw doctor}: Gateway repair.
+ * <p>{@code --repair} {@code --fix} ;{@code --fix} backup {@code ~/.openclaw/openclaw.json.bak} key.
+ * only TTY {@code --non-interactive} .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/doctor">doctor CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class DoctorOptions implements CliSubArgs {
 
     /**
-     * {@code --no-workspace-suggestions}：关闭工作区 memory/search 相关建议。
+ * {@code --no-workspace-suggestions}: memory/search .
      */
     private final boolean noWorkspaceSuggestions;
     /**
-     * {@code --yes}：不再逐项确认，直接接受默认建议。
+ * {@code --yes}:,.
      */
     private final boolean yes;
     /**
-     * {@code --repair}：应用推荐修复（无需再确认）；CLI 输出层使用 {@code --repair}（{@code --fix} 为文档别名）。
+ * {@code --repair}:repair;CLI {@code --repair}({@code --fix} documentation).
      */
     private final boolean repair;
     /**
-     * {@code --force}：更激进的修复，必要时覆盖自定义服务配置等。
+ * {@code --force}:repair,.
      */
     private final boolean force;
     /**
-     * {@code --non-interactive}：无提示运行，仅执行文档所称「安全迁移」类操作。
+ * {@code --non-interactive}:,onlydocumentation"securitymigrate".
      */
     private final boolean nonInteractive;
     /**
-     * {@code --generate-gateway-token}：生成并写入网关 token 配置。
+ * {@code --generate-gateway-token}:Gateway token .
      */
     private final boolean generateGatewayToken;
     /**
-     * {@code --deep}：扫描系统级服务，查找额外的 Gateway 安装实例。
+ * {@code --deep}:system, Gateway .
      */
     private final boolean deep;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private DoctorOptions(Builder b) {
         this.noWorkspaceSuggestions = b.noWorkspaceSuggestions;
@@ -58,7 +61,7 @@ public final class DoctorOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -95,7 +98,7 @@ public final class DoctorOptions implements CliSubArgs {
     }
 
     /**
-     * {@link DoctorOptions} 构建器。
+ * {@link DoctorOptions} builder.
      */
     public static final class Builder {
 
@@ -125,7 +128,7 @@ public final class DoctorOptions implements CliSubArgs {
             return this;
         }
 
-        /** {@code --repair}（{@code --fix} 为别名，此处用 repair 输出）。 */
+ /** {@code --repair}({@code --fix} , repair ). */
         public Builder repair(boolean repair) {
             this.repair = repair;
             return this;
@@ -168,7 +171,7 @@ public final class DoctorOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link DoctorOptions}
+ * @return {@link DoctorOptions}
          */
         public DoctorOptions build() {
             return new DoctorOptions(this);

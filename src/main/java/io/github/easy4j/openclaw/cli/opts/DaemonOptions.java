@@ -8,15 +8,18 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * {@code openclaw daemon}：<strong>遗留别名</strong>，与 {@code openclaw gateway} 的服务管理子命令等价（status/install/start/stop/restart/uninstall）。
- * <p>选项与 {@code gateway} 文档「Manage the Gateway service」一致；新集成请优先使用 {@link GatewayCommandOptions} 或官方 gateway CLI。</p>
+ * {@code openclaw daemon}:<strong></strong>, {@code openclaw gateway} subcommand(status/install/start/stop/restart/uninstall).
+ * <p> {@code gateway} documentation"Manage the Gateway service"; {@link GatewayCommandOptions} gateway CLI.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/daemon">daemon CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class DaemonOptions implements CliSubArgs {
 
     /**
-     * 文档列出的子命令。
+ * documentationsubcommand.
      */
     public enum Subcommand {
         STATUS("status"),
@@ -26,18 +29,18 @@ public final class DaemonOptions implements CliSubArgs {
         STOP("stop"),
         RESTART("restart");
 
-        /** CLI 子命令名（小写）。 */
+ /** CLI subcommand. */
         private final String cliName;
 
         /**
-         * @param cliName 非 null，与 openclaw 一致
+ * @param cliName null, openclaw
          */
         Subcommand(String cliName) {
             this.cliName = cliName;
         }
 
         /**
-         * @return 子命令 token（如 {@code "status"}）
+ * @return subcommand token( {@code "status"})
          */
         public String cliName() {
             return cliName;
@@ -45,40 +48,40 @@ public final class DaemonOptions implements CliSubArgs {
     }
 
     /**
-     * 服务子命令：文档列出的 {@code status|install|uninstall|start|stop|restart}。
+ * subcommand:documentation {@code status|install|uninstall|start|stop|restart}.
      */
     private final Subcommand subcommand;
     /**
-     * 仅 {@link Subcommand#STATUS}：探测用 RPC 共享选项（{@code --url}、{@code --token} 等，见 {@link GatewayRpcOptions}）。
+ * only {@link Subcommand#STATUS}: RPC ({@code --url},{@code --token} ,See {@link GatewayRpcOptions}).
      */
     private final GatewayRpcOptions statusRpc;
     /**
-     * 仅 {@link Subcommand#STATUS}：{@code --no-probe}、{@code --deep}、{@code --require-rpc}（与 gateway status 文档一致）。
+ * only {@link Subcommand#STATUS}:{@code --no-probe},{@code --deep},{@code --require-rpc}( gateway status documentation).
      */
     private final GatewayCliArgv.GatewayStatusOptions statusExtra;
     /**
-     * 仅 {@link Subcommand#INSTALL}：{@code --port} WebSocket 监听端口。
+ * only {@link Subcommand#INSTALL}:{@code --port} WebSocket .
      */
     private final String installPort;
     /**
-     * 仅 {@link Subcommand#INSTALL}：{@code --runtime} Node/Bun 等运行时选择。
+ * only {@link Subcommand#INSTALL}:{@code --runtime} Node/Bun .
      */
     private final String installRuntime;
     /**
-     * 仅 {@link Subcommand#INSTALL}：{@code --token} 服务安装用令牌（SecretRef 校验行为见 gateway 文档）。
+ * only {@link Subcommand#INSTALL}:{@code --token} token(SecretRef See gateway documentation).
      */
     private final String installToken;
     /**
-     * 仅 {@link Subcommand#INSTALL}：{@code --force} 在安装前终止占用端口的旧进程。
+ * only {@link Subcommand#INSTALL}:{@code --force} process.
      */
     private final boolean installForce;
     /**
-     * {@code --json}：各子命令的机器可读输出（文档：生命周期命令均支持）。
+ * {@code --json}:subcommand(documentation:lifecycle).
      */
     private final boolean json;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private DaemonOptions(Builder b) {
         this.subcommand = Objects.requireNonNull(b.subcommand, "subcommand");
@@ -92,7 +95,7 @@ public final class DaemonOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -155,7 +158,7 @@ public final class DaemonOptions implements CliSubArgs {
     }
 
     /**
-     * {@link DaemonOptions} 构建器。
+ * {@link DaemonOptions} builder.
      */
     public static final class Builder {
 
@@ -169,7 +172,7 @@ public final class DaemonOptions implements CliSubArgs {
         private boolean json;
 
         /**
-         * @param subcommand 非 null
+ * @param subcommand null
          * @return {@code this}
          */
         public Builder subcommand(Subcommand subcommand) {
@@ -177,13 +180,13 @@ public final class DaemonOptions implements CliSubArgs {
             return this;
         }
 
-        /** 仅 {@link Subcommand#STATUS}：探针与 RPC 共享选项。 */
+ /** only {@link Subcommand#STATUS}: RPC . */
         public Builder statusRpc(GatewayRpcOptions statusRpc) {
             this.statusRpc = statusRpc;
             return this;
         }
 
-        /** 仅 {@link Subcommand#STATUS}：{@code --no-probe} / {@code --deep} / {@code --require-rpc}。 */
+ /** only {@link Subcommand#STATUS}:{@code --no-probe} / {@code --deep} / {@code --require-rpc}. */
         public Builder statusExtra(GatewayCliArgv.GatewayStatusOptions statusExtra) {
             this.statusExtra = statusExtra;
             return this;
@@ -208,7 +211,7 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * @param installToken {@code --token}（install 场景）
+ * @param installToken {@code --token}(install )
          * @return {@code this}
          */
         public Builder installToken(String installToken) {
@@ -235,7 +238,7 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link DaemonOptions}
+ * @return {@link DaemonOptions}
          */
         public DaemonOptions build() {
             return new DaemonOptions(this);

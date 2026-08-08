@@ -8,22 +8,25 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw reset}：重置本地配置与状态目录（不卸载 CLI）；破坏性操作前建议先 {@code openclaw backup create}。
- * <p>省略 {@code --scope} 时进入交互选择清除范围；{@code --non-interactive} 必须同时提供 {@code --scope} 与 {@code --yes}。</p>
+ * {@code openclaw reset}:resetdirectory( CLI); {@code openclaw backup create}.
+ * <p> {@code --scope} ;{@code --non-interactive} Provides {@code --scope} {@code --yes}.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/reset">reset CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ResetOptions implements CliSubArgs {
 
     /**
-     * {@code --scope} 取值，与 reset 文档一致。
+ * {@code --scope} value, reset documentation.
      */
     public enum Scope {
-        /** 仅重置配置相关范围 {@code config}。 */
+ /** onlyreset {@code config}. */
         CONFIG("config"),
-        /** 配置加凭据与会话等 {@code config+creds+sessions}。 */
+ /** session {@code config+creds+sessions}. */
         CONFIG_CREDS_SESSIONS("config+creds+sessions"),
-        /** 完整重置范围 {@code full}。 */
+ /** reset {@code full}. */
         FULL("full");
 
         private final String cliValue;
@@ -38,28 +41,28 @@ public final class ResetOptions implements CliSubArgs {
     }
 
     /**
-     * {@code --scope}：非交互模式下指定清除深度；{@code null} 表示不传该 flag（走交互或默认）。
+ * {@code --scope}:;{@code null} flag.
      */
     private final Scope scope;
     /**
-     * {@code --yes}：跳过交互确认。
+ * {@code --yes}:skips.
      */
     private final boolean yes;
     /**
-     * {@code --non-interactive}：禁止一切提示；文档要求与 {@code --scope}、{@code --yes} 同用。
+ * {@code --non-interactive}:;documentation {@code --scope},{@code --yes} .
      */
     private final boolean nonInteractive;
     /**
-     * {@code --dry-run}：只打印将执行的动作，不删除文件。
+ * {@code --dry-run}:,.
      */
     private final boolean dryRun;
     /**
-     * 文档未单独建模的附加 argv。
+ * documentation argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private ResetOptions(Builder b) {
         this.scope = b.scope;
@@ -70,7 +73,7 @@ public final class ResetOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -94,7 +97,7 @@ public final class ResetOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ResetOptions} 构建器。
+ * {@link ResetOptions} builder.
      */
     public static final class Builder {
         private Scope scope;
@@ -140,9 +143,9 @@ public final class ResetOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -153,7 +156,7 @@ public final class ResetOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link ResetOptions}
+ * @return {@link ResetOptions}
          */
         public ResetOptions build() {
             return new ResetOptions(this);

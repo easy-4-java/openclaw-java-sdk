@@ -9,77 +9,80 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw message}：统一出站消息与渠道动作入口（send、poll、react、thread、moderation 等），覆盖多聊天提供商。
- * <p>配置多个渠道时通常必须 {@code --channel}；{@code --target} 格式随 provider 变化（Telegram chat id、Slack {@code channel:} 等）。
- * 支持 SecretRef 的凭据会在执行前按当前 action 目标解析；未解析到所选渠道/账号会 fail closed。子命令极多，未建模部分用 {@link Builder#extra(String...)}。</p>
+ * {@code openclaw message}:message(send,poll,react,thread,moderation ),Provides.
+ * <p> {@code --channel};{@code --target} provider (Telegram chat id,Slack {@code channel:} ).
+ * SecretRef action ;/ fail closed.subcommand, {@link Builder#extra(String...)}.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/message">message CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class MessageOptions implements CliSubArgs {
 
     /**
-     * 子命令路径前缀（如 {@code send}、{@code thread}、{@code create}），按官方 CLI 顺序拼接。
+ * subcommand( {@code send},{@code thread},{@code create}), CLI .
      */
     private final List<String> action;
     /**
-     * {@code --channel}：discord、slack、telegram 等渠道 id；多渠道配置时通常必填。
+ * {@code --channel}:discord,slack,telegram id;Required.
      */
     private final String channel;
     /**
-     * {@code --account}：多账号渠道的账号 id。
+ * {@code --account}: id.
      */
     private final String account;
     /**
-     * {@code --target}：单播目标（用户、频道、会话 id 等，格式见 message 文档 Target formats）。
+ * {@code --target}:(channel,session id ,See message documentation Target formats).
      */
     private final String target;
     /**
-     * {@code --targets} 可重复：广播等多目标场景。
+ * {@code --targets} :.
      */
     private final List<String> targets;
     /**
-     * {@code --message}：文本正文（send/edit 等子命令）。
+ * {@code --message}:(send/edit subcommand).
      */
     private final String message;
     /**
-     * {@code --media}：附件或媒体路径/url。
+ * {@code --media}:/url.
      */
     private final String media;
     /**
-     * {@code --message-id}：反应、编辑、删除等动作引用的消息 id。
+ * {@code --message-id}:,message id.
      */
     private final String messageId;
     /**
-     * {@code --emoji}：反应动作使用的 emoji。
+ * {@code --emoji}: emoji.
      */
     private final String emoji;
     /**
-     * {@code --json}：机器可读输出。
+ * {@code --json}:.
      */
     private final boolean json;
     /**
-     * {@code --dry-run}：校验参数与路由而不实际发送（如 broadcast）。
+ * {@code --dry-run}:( broadcast).
      */
     private final boolean dryRun;
     /**
-     * {@code --verbose}：更详细的 CLI 日志。
+ * {@code --verbose}: CLI .
      */
     private final boolean verbose;
     /**
-     * {@code --poll-question}：投票题干。
+ * {@code --poll-question}:.
      */
     private final String pollQuestion;
     /**
-     * {@code --poll-option} 可重复：投票选项列表。
+ * {@code --poll-option} :.
      */
     private final List<String> pollOptions;
     /**
-     * 其它 argv（例如各渠道专有 flag）。
+ * argv( flag).
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private MessageOptions(Builder b) {
         this.action = b.action == null ? OpenClawLists.empty() : OpenClawLists.copyOf(b.action);
@@ -100,7 +103,7 @@ public final class MessageOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -136,7 +139,7 @@ public final class MessageOptions implements CliSubArgs {
     }
 
     /**
-     * {@link MessageOptions} 构建器。
+ * {@link MessageOptions} builder.
      */
     public static final class Builder {
         private List<String> action = new ArrayList<>();
@@ -156,9 +159,9 @@ public final class MessageOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 子命令路径，例如 {@code action("send")}、{@code action("thread", "create")}。
+ * subcommand, {@code action("send")},{@code action("thread", "create")}.
          *
-         * @param parts 子命令片段
+ * @param parts subcommand
          * @return {@code this}
          */
         public Builder action(String... parts) {
@@ -201,7 +204,7 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param t 追加 {@code --targets}
+ * @param t {@code --targets}
          * @return {@code this}
          */
         public Builder addTarget(String t) {
@@ -284,7 +287,7 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param option 追加 {@code --poll-option}
+ * @param option {@code --poll-option}
          * @return {@code this}
          */
         public Builder pollOption(String option) {
@@ -295,9 +298,9 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -308,7 +311,7 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link MessageOptions}
+ * @return {@link MessageOptions}
          */
         public MessageOptions build() {
             return new MessageOptions(this);

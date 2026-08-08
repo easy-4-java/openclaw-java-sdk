@@ -7,8 +7,11 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * {@code chat.history} RPC 参数。
- * <p>对齐 {@code ChatHistoryParamsSchema}（{@code src/gateway/protocol/schema/logs-chat.ts}）。</p>
+ * {@code chat.history} RPC .
+ * <p>aligned {@code ChatHistoryParamsSchema}({@code src/gateway/protocol/schema/logs-chat.ts}).</p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @Builder
@@ -20,8 +23,8 @@ public class ChatHistoryParams {
     private final Integer maxChars;
 
     /**
-     * @param sessionKey 会话键（必填）
-     * @param limit      最大消息条数（可选，Gateway 默认 200，上限 1000）
+ * @param sessionKey sessionkey(Required)
+ * @param limit message(Optional,Gateway 200, 1000)
      */
     public static ChatHistoryParams of(String sessionKey, Integer limit) {
         Objects.requireNonNull(sessionKey, "sessionKey");

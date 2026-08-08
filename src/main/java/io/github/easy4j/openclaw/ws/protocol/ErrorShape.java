@@ -6,7 +6,10 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Gateway RPC 错误结构。
+ * Gateway RPC error structure.
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @ToString(of = {"code", "message"})

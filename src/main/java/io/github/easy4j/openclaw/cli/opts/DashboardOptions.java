@@ -8,25 +8,28 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw dashboard}：用当前认证打开 Control UI。
- * <p>文档说明：会解析 {@code gateway.auth.token} 的 SecretRef；对 SecretRef 管理的 token，打印/复制/打开的 URL 为<strong>不含 token</strong>的形式，
- * 避免终端、剪贴板或浏览器启动参数泄露外部密钥。</p>
+ * {@code openclaw dashboard}:authentication Control UI.
+ * <p>documentation: {@code gateway.auth.token} SecretRef; SecretRef token,// URL <strong> token</strong>,
+ * terminal,secret.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/dashboard">dashboard CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class DashboardOptions implements CliSubArgs {
 
     /**
-     * {@code --no-open}：只输出 URL（或按文档复制），不自动拉起浏览器。
+ * {@code --no-open}: URL(documentation),.
      */
     private final boolean noOpen;
     /**
-     * 文档未覆盖的附加 CLI token。
+ * documentation CLI token.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private DashboardOptions(Builder b) {
         this.noOpen = b.noOpen;
@@ -34,7 +37,7 @@ public final class DashboardOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -52,7 +55,7 @@ public final class DashboardOptions implements CliSubArgs {
     }
 
     /**
-     * {@link DashboardOptions} 构建器。
+ * {@link DashboardOptions} builder.
      */
     public static final class Builder {
         private boolean noOpen;
@@ -68,9 +71,9 @@ public final class DashboardOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 CLI token。
+ * appends extra CLI token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -81,7 +84,7 @@ public final class DashboardOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link DashboardOptions}
+ * @return {@link DashboardOptions}
          */
         public DashboardOptions build() {
             return new DashboardOptions(this);

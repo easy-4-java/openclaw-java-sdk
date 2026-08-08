@@ -19,6 +19,9 @@ import java.util.List;
  * Most models (Qwen 3, DeepSeek-v3.1, DeepSeek R1) accept boolean enable/disable.
  * GPT-OSS model requires string levels: "low", "medium", or "high".
  * </p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @JsonSerialize(using = ThinkOption.ThinkOptionSerializer.class)
 @JsonDeserialize(using = ThinkOption.ThinkOptionDeserializer.class)

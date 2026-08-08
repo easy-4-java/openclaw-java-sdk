@@ -8,62 +8,65 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw update}：在 stable/beta/dev 通道间安全切换并同步安装方式（npm 与 git 工作区流程见文档）。
- * <p>{@code --dry-run} 仅预览计划步骤；{@code --yes} 用于跳过降级等确认；{@code openclaw --update} 为等价简写。</p>
+ * {@code openclaw update}: stable/beta/dev channelsecurity(npm git streamSeedocumentation).
+ * <p>{@code --dry-run} only;{@code --yes} Used forskips;{@code openclaw --update} .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/update">update CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class UpdateOptions implements CliSubArgs {
 
     /**
-     * update 子命令表面：默认执行更新、{@code update status} 查看通道与可用性、{@code update wizard} 交互选通道。
+ * update subcommand:,{@code update status} channel,{@code update wizard} channel.
      */
     public enum Mode {
-        /** 顶层 {@code openclaw update}（无子命令），执行更新主流程。 */
+ /** {@code openclaw update}(subcommand),stream. */
         DEFAULT,
-        /** {@code update status}：展示当前通道、git 指针或 npm 版本与是否有可用更新。 */
+ /** {@code update status}:channel,git npm version. */
         STATUS,
-        /** {@code update wizard}：交互选择通道并确认是否在更新后重启 Gateway。 */
+ /** {@code update wizard}:channel Gateway. */
         WIZARD
     }
 
-    /** 当前为默认更新、status 还是 wizard。 */
+ /** ,status wizard. */
     private final Mode mode;
     /**
-     * {@code --channel}：持久化更新通道（stable/beta/dev 等，文档说明与安装方式联动）。
+ * {@code --channel}:channel(stable/beta/dev ,documentation).
      */
     private final String channel;
     /**
-     * {@code --tag}：仅本次更新覆盖包目标（例如 git 分支或 npm dist-tag；{@code main} 对包安装有专门映射）。
+ * {@code --tag}:only( git npm dist-tag;{@code main} map).
      */
     private final String tag;
     /**
-     * {@code --dry-run}：预览计划更新、通道与重启路径，不写配置、不安装、不重启。
+ * {@code --dry-run}:,channel,,.
      */
     private final boolean dryRun;
     /**
-     * {@code --no-restart}：更新成功后不重启 Gateway 服务。
+ * {@code --no-restart}: Gateway .
      */
     private final boolean noRestart;
     /**
-     * {@code --yes}：跳过确认（例如降级风险提示）。
+ * {@code --yes}:skips.
      */
     private final boolean yes;
     /**
-     * {@code --json}：输出机器可读的 {@code UpdateRunResult} 或 status JSON。
+ * {@code --json}: {@code UpdateRunResult} status JSON.
      */
     private final boolean json;
     /**
-     * {@code --timeout}：各步骤超时（默认更新流程约 1200 秒，status 默认较短，见文档）。
+ * {@code --timeout}:timeout(stream 1200 seconds,status ,Seedocumentation).
      */
     private final String timeout;
     /**
-     * 文档未建模的 argv 追加片段。
+ * documentation argv .
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private UpdateOptions(Builder b) {
         this.mode = b.mode;
@@ -78,7 +81,7 @@ public final class UpdateOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -117,7 +120,7 @@ public final class UpdateOptions implements CliSubArgs {
     }
 
     /**
-     * {@link UpdateOptions} 构建器。
+ * {@link UpdateOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.DEFAULT;
@@ -131,7 +134,7 @@ public final class UpdateOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 顶层 {@code openclaw update}（无子命令）。
+ * {@code openclaw update}(subcommand).
          *
          * @return {@code this}
          */
@@ -220,9 +223,9 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -233,7 +236,7 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link UpdateOptions}
+ * @return {@link UpdateOptions}
          */
         public UpdateOptions build() {
             return new UpdateOptions(this);

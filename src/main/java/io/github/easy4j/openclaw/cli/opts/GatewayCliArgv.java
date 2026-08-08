@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 生成 {@code openclaw gateway &lt;subcommand&gt; ...} 的参数序列（不含可执行文件名与全局 {@code --dev} 等，由 {@link io.github.easy4j.openclaw.cli.OpenClawCliRequest} 处理）。
+ * {@code openclaw gateway &lt;subcommand&gt; ...} argument sequence(executable name {@code --dev} , {@link io.github.easy4j.openclaw.cli.OpenClawCliRequest} ).
  *
  * @see <a href="https://docs.openclaw.ai/cli/gateway">gateway CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class GatewayCliArgv {
 
@@ -16,11 +19,11 @@ public final class GatewayCliArgv {
     }
 
     /**
-     * {@code gateway health} 参数，例如文档：
+ * {@code gateway health} ,documentation:
      * {@code openclaw gateway health --url ws://127.0.0.1:18789}
      *
-     * @param rpc 非 null，共享 RPC 选项（URL、token 等）
-     * @return 不可变参数列表，首元素为 {@code "health"}
+ * @param rpc null, RPC (URL,token )
+ * @return argument list, {@code "health"}
      */
     public static List<String> health(GatewayRpcOptions rpc) {
         Objects.requireNonNull(rpc, "rpc");
@@ -31,11 +34,11 @@ public final class GatewayCliArgv {
     }
 
     /**
-     * {@code gateway status} 参数；额外选项见 {@link GatewayCliArgv.GatewayStatusOptions}。
+ * {@code gateway status} ;See {@link GatewayCliArgv.GatewayStatusOptions}.
      *
-     * @param rpc   非 null
-     * @param extra 可为 null，等价于 {@link GatewayStatusOptions#none()}
-     * @return 不可变参数列表，首元素为 {@code "status"}
+ * @param rpc null
+ * @param extra null,Equivalent to {@link GatewayStatusOptions#none}
+ * @return argument list, {@code "status"}
      */
     public static List<String> status(GatewayRpcOptions rpc, GatewayStatusOptions extra) {
         Objects.requireNonNull(rpc, "rpc");
@@ -56,11 +59,11 @@ public final class GatewayCliArgv {
     }
 
     /**
-     * {@code gateway probe} 参数；SSH 相关见 {@link GatewayCliArgv.GatewayProbeOptions}。
+ * {@code gateway probe} ;SSH See {@link GatewayCliArgv.GatewayProbeOptions}.
      *
-     * @param rpc   非 null
-     * @param extra 可为 null，等价于 {@link GatewayProbeOptions#none()}
-     * @return 不可变参数列表，首元素为 {@code "probe"}
+ * @param rpc null
+ * @param extra null,Equivalent to {@link GatewayProbeOptions#none}
+ * @return argument list, {@code "probe"}
      */
     public static List<String> probe(GatewayRpcOptions rpc, GatewayProbeOptions extra) {
         Objects.requireNonNull(rpc, "rpc");
@@ -83,20 +86,20 @@ public final class GatewayCliArgv {
     }
 
     /**
-     * {@code gateway status} 特有选项（文档：{@code --no-probe}、{@code --deep}、{@code --require-rpc}）。
+ * {@code gateway status} (documentation:{@code --no-probe},{@code --deep},{@code --require-rpc}).
      */
     public static final class GatewayStatusOptions {
 
         /**
-         * {@code --no-probe}：只做本机 Gateway 服务（launchd/systemd 等）视图，跳过 WebSocket RPC 探测。
+ * {@code --no-probe}: Gateway (launchd/systemd ),skips WebSocket RPC .
          */
         private final boolean noProbe;
         /**
-         * {@code --deep}：扩大扫描范围，尽力发现额外的系统级安装单元（文档：多实例时人类输出会提示清理建议）。
+ * {@code --deep}:,system(documentation:).
          */
         private final boolean deep;
         /**
-         * {@code --require-rpc}：若 RPC 探测失败则非零退出（脚本用：仅有监听服务不够时需 RPC 健康）。
+ * {@code --require-rpc}: RPC probe failed(:only RPC ).
          */
         private final boolean requireRpc;
 
@@ -112,42 +115,42 @@ public final class GatewayCliArgv {
         }
 
         /**
-         * @return 全为 false 的默认选项
+ * @return when false
          */
         public static GatewayStatusOptions none() {
             return new GatewayStatusOptions(false, false, false);
         }
 
         /**
-         * @return 新 {@link Builder}
+ * @return {@link Builder}
          */
         public static Builder builder() {
             return new Builder();
         }
 
         /**
-         * @return 是否 {@code --no-probe}
+ * @return {@code --no-probe}
          */
         public boolean isNoProbe() {
             return noProbe;
         }
 
         /**
-         * @return 是否 {@code --deep}
+ * @return {@code --deep}
          */
         public boolean isDeep() {
             return deep;
         }
 
         /**
-         * @return 是否 {@code --require-rpc}
+ * @return {@code --require-rpc}
          */
         public boolean isRequireRpc() {
             return requireRpc;
         }
 
         /**
-         * {@link GatewayStatusOptions} 构建器。
+ * {@link GatewayStatusOptions} builder.
          */
         public static final class Builder {
 
@@ -183,7 +186,7 @@ public final class GatewayCliArgv {
             }
 
             /**
-             * @return 不可变 {@link GatewayStatusOptions}
+ * @return {@link GatewayStatusOptions}
              */
             public GatewayStatusOptions build() {
                 return new GatewayStatusOptions(noProbe, deep, requireRpc);
@@ -192,20 +195,20 @@ public final class GatewayCliArgv {
     }
 
     /**
-     * {@code gateway probe} 的 SSH 相关选项（文档：{@code --ssh}、{@code --ssh-identity}、{@code --ssh-auto}）。
+ * {@code gateway probe} SSH (documentation:{@code --ssh},{@code --ssh-identity},{@code --ssh-auto}).
      */
     public static final class GatewayProbeOptions {
 
         /**
-         * {@code --ssh}：经 SSH 本地端口转发探测远端仅监听 loopback 的 Gateway（文档 Remote over SSH 节，形如 {@code user@host}）。
+ * {@code --ssh}: SSH only loopback Gateway(documentation Remote over SSH , {@code user@host}).
          */
         private final String ssh;
         /**
-         * {@code --ssh-identity}：SSH 登录使用的身份私钥文件路径。
+ * {@code --ssh-identity}:SSH .
          */
         private final String sshIdentity;
         /**
-         * {@code --ssh-auto}：从解析到的发现端点自动选取第一个 gateway host 作为 SSH 目标（文档：TXT 提示单独不足以定目标）。
+ * {@code --ssh-auto}: gateway host SSH (documentation:TXT ).
          */
         private final boolean sshAuto;
 
@@ -221,42 +224,42 @@ public final class GatewayCliArgv {
         }
 
         /**
-         * @return 无 SSH 选项的默认值
+ * @return SSH default value
          */
         public static GatewayProbeOptions none() {
             return new GatewayProbeOptions(null, null, false);
         }
 
         /**
-         * @return 新 {@link Builder}
+ * @return {@link Builder}
          */
         public static Builder builder() {
             return new Builder();
         }
 
         /**
-         * @return {@code --ssh}，可为 null
+ * @return {@code --ssh}, null
          */
         public String getSsh() {
             return ssh;
         }
 
         /**
-         * @return {@code --ssh-identity}，可为 null
+ * @return {@code --ssh-identity}, null
          */
         public String getSshIdentity() {
             return sshIdentity;
         }
 
         /**
-         * @return 是否 {@code --ssh-auto}
+ * @return {@code --ssh-auto}
          */
         public boolean isSshAuto() {
             return sshAuto;
         }
 
         /**
-         * {@link GatewayProbeOptions} 构建器。
+ * {@link GatewayProbeOptions} builder.
          */
         public static final class Builder {
 
@@ -292,7 +295,7 @@ public final class GatewayCliArgv {
             }
 
             /**
-             * @return 不可变 {@link GatewayProbeOptions}
+ * @return {@link GatewayProbeOptions}
              */
             public GatewayProbeOptions build() {
                 return new GatewayProbeOptions(ssh, sshIdentity, sshAuto);

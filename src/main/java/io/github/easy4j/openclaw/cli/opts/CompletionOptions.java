@@ -8,15 +8,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw completion}：生成 shell 补全脚本，可选安装到 profile 或写入 state 目录。
- * <p>无 {@code --install} 且无 {@code --write-state} 时脚本打印到 stdout；{@code --install} 会在 profile 中写入指向缓存脚本的 source 块。</p>
+ * {@code openclaw completion}: shell ,Optional profile state directory.
+ * <p> {@code --install} {@code --write-state} stdout;{@code --install} profile source .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/completion">completion CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class CompletionOptions implements CliSubArgs {
 
     /**
-     * {@code --shell} 目标（文档列出的取值）。
+ * {@code --shell} (documentationvalue).
      */
     public enum Shell {
         ZSH("zsh"),
@@ -24,18 +27,18 @@ public final class CompletionOptions implements CliSubArgs {
         POWERSHELL("powershell"),
         FISH("fish");
 
-        /** 传给 {@code --shell} 的 CLI 字面量。 */
+ /** {@code --shell} CLI . */
         private final String cliValue;
 
         /**
-         * @param cliValue 非 null shell 名
+ * @param cliValue null shell
          */
         Shell(String cliValue) {
             this.cliValue = cliValue;
         }
 
         /**
-         * @return 与 CLI 一致的 shell token
+ * @return CLI shell token
          */
         String cliValue() {
             return cliValue;
@@ -43,28 +46,28 @@ public final class CompletionOptions implements CliSubArgs {
     }
 
     /**
-     * {@code -s} / {@code --shell}：目标 shell（文档：{@code zsh}、{@code bash}、{@code powershell}、{@code fish}；默认 {@code zsh}）。
+ * {@code -s} / {@code --shell}: shell(documentation:{@code zsh},{@code bash},{@code powershell},{@code fish}; {@code zsh}).
      */
     private final Shell shell;
     /**
-     * {@code -i} / {@code --install}：向 shell profile 追加 source 行以启用补全。
+ * {@code -i} / {@code --install}: shell profile source .
      */
     private final boolean install;
     /**
-     * {@code --write-state}：将补全脚本写入 {@code $OPENCLAW_STATE_DIR/completions}，不打印到 stdout。
+ * {@code --write-state}: {@code $OPENCLAW_STATE_DIR/completions}, stdout.
      */
     private final boolean writeState;
     /**
-     * {@code -y} / {@code --yes}：安装时跳过确认提示。
+ * {@code -y} / {@code --yes}:skips.
      */
     private final boolean yes;
     /**
-     * 其它 argv 片段。
+ * argv .
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private CompletionOptions(Builder b) {
         this.shell = b.shell;
@@ -75,7 +78,7 @@ public final class CompletionOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -99,7 +102,7 @@ public final class CompletionOptions implements CliSubArgs {
     }
 
     /**
-     * {@link CompletionOptions} 构建器。
+ * {@link CompletionOptions} builder.
      */
     public static final class Builder {
         private Shell shell;
@@ -145,7 +148,7 @@ public final class CompletionOptions implements CliSubArgs {
         }
 
         /**
-         * @param tokens 额外 CLI token
+ * @param tokens CLI token
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -156,7 +159,7 @@ public final class CompletionOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link CompletionOptions}
+ * @return {@link CompletionOptions}
          */
         public CompletionOptions build() {
             return new CompletionOptions(this);

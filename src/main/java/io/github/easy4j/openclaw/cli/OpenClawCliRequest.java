@@ -8,10 +8,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 本地 CLI 调用描述：全局参数 + {@code openclaw} 之后的参数序列。
+ * CLI :global parameters + {@code openclaw} argument sequence.
  * <p>
- * 全局参数顺序与文档一致：<code>[--dev] [--profile &lt;name&gt;] [--container &lt;name&gt;] [--no-color]</code>，再接子命令与 flag。
+ * global parametersconsistent with documentation:<code>[--dev] [--profile &lt;name&gt;] [--container &lt;name&gt;] [--no-color]</code>,subcommand and flags.
  * </p>
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public final class OpenClawCliRequest {
@@ -20,7 +23,7 @@ public final class OpenClawCliRequest {
     private final String profile;
     private final String container;
     private final boolean noColor;
-    /** null 表示使用 {@link io.github.easy4j.openclaw.OpenClawClientConfig#getLocalTimeoutSeconds()} */
+ /** null {@link io.github.easy4j.openclaw.OpenClawClientConfig#getLocalTimeoutSeconds} */
     private final Integer timeoutSeconds;
     private final List<String> arguments;
 
@@ -49,7 +52,7 @@ public final class OpenClawCliRequest {
     }
 
     /**
-     * 构建器。
+ * builder.
      */
     public static final class Builder {
 
@@ -81,7 +84,7 @@ public final class OpenClawCliRequest {
         }
 
         /**
-         * 进程执行超时（秒）；不设置则使用配置中的默认本地/CLI 超时。
+ * processtimeout(seconds);/CLI timeout.
          */
         public Builder timeoutSeconds(Integer timeoutSeconds) {
             this.timeoutSeconds = timeoutSeconds;
@@ -89,7 +92,7 @@ public final class OpenClawCliRequest {
         }
 
         /**
-         * 设置完整参数序列（不含可执行文件名与全局参数），例如 {@code "gateway", "health"}。
+ * argument sequence(executable nameglobal parameters), {@code "gateway", "health"}.
          */
         public Builder arguments(String... args) {
             this.arguments.clear();

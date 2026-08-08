@@ -9,46 +9,49 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw channels}：管理各聊天提供商账号配置，并在 Gateway 上查看实时连通、能力与日志。
- * <p>{@code status --probe} 在网关可达时对每账号跑 {@code probeAccount} 等实时检查；不可达则退回仅配置摘要。
- * {@code add} 的 per-channel flag 很多，请用 {@link Builder#extra(String...)} 或查阅 {@code channels add --help}。</p>
+ * {@code openclaw channels}:Provides, Gateway ,.
+ * <p>{@code status --probe} Gateway {@code probeAccount} ;only.
+ * {@code add} per-channel flag , {@link Builder#extra(String...)} {@code channels add --help}.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/channels">channels CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class ChannelsOptions implements CliSubArgs {
 
     /**
-     * channels 子命令：列举、探测状态、能力探针、名称解析、日志或账号增删与登录登出。
+ * channels subcommand:,,.
      */
     public enum Verb {
-        /** {@code channels list}：打印已配置账号。 */
+ /** {@code channels list}:. */
         LIST,
-        /** {@code channels status}：运行时状态，可选 live probe。 */
+ /** {@code channels status}:,Optional live probe. */
         STATUS,
-        /** {@code channels capabilities}：提供商能力提示与权限探测。 */
+ /** {@code channels capabilities}:Provides. */
         CAPABILITIES,
-        /** {@code channels resolve}：把名称解析为 id。 */
+ /** {@code channels resolve}: id. */
         RESOLVE,
-        /** {@code channels logs}：拉取渠道相关日志尾部。 */
+ /** {@code channels logs}:. */
         LOGS,
-        /** {@code channels add}：非交互或向导式添加账号。 */
+ /** {@code channels add}:. */
         ADD,
-        /** {@code channels remove}：移除账号记录。 */
+ /** {@code channels remove}:. */
         REMOVE,
-        /** {@code channels login}：交互式登录（如 QR 流程）。 */
+ /** {@code channels login}:( QR stream). */
         LOGIN,
-        /** {@code channels logout}：登出并清理会话态。 */
+ /** {@code channels logout}:session. */
         LOGOUT
     }
 
-    /** 当前 channels 子命令。 */
+ /** channels subcommand. */
     private final Verb verb;
     /**
-     * status：{@code --probe} 启用实时账号探测与审计输出。
+ * status:{@code --probe} .
      */
     private final boolean statusProbe;
     /**
-     * status / capabilities：{@code --timeout} 单次操作超时。
+ * status / capabilities:{@code --timeout} timeout.
      */
     private final String timeout;
     /**
@@ -56,44 +59,44 @@ public final class ChannelsOptions implements CliSubArgs {
      */
     private final boolean json;
     /**
-     * 多数子命令：{@code --channel} 选择提供商 id。
+ * subcommand:{@code --channel} Provides id.
      */
     private final String channel;
     /**
-     * capabilities / resolve：{@code --account} 仅在同时指定 {@code --channel} 时有效。
+ * capabilities / resolve:{@code --account} only {@code --channel} .
      */
     private final String account;
     /**
-     * capabilities：{@code --target} Discord 等渠道的探测目标描述。
+ * capabilities:{@code --target} Discord .
      */
     private final String target;
     /**
-     * resolve：{@code --kind} 强制解析为用户、群组或自动。
+ * resolve:{@code --kind} ,.
      */
     private final String kind;
     /**
-     * resolve：待解析的名称位置参数列表。
+ * resolve:argument list.
      */
     private final List<String> resolvePositional;
     /**
-     * logs：{@code --lines} 尾部行数。
+ * logs:{@code --lines} .
      */
     private final Integer logLines;
     /**
-     * remove：{@code --delete} 同时删除远端/本地持久数据（per-channel 语义）。
+ * remove:{@code --delete} /(per-channel ).
      */
     private final boolean removeDelete;
     /**
-     * login：{@code --verbose} 更详细输出。
+ * login:{@code --verbose} .
      */
     private final boolean loginVerbose;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private ChannelsOptions(Builder b) {
         this.verb = b.verb;
@@ -112,7 +115,7 @@ public final class ChannelsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -182,7 +185,7 @@ public final class ChannelsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link ChannelsOptions} 构建器。
+ * {@link ChannelsOptions} builder.
      */
     public static final class Builder {
         private Verb verb = Verb.LIST;
@@ -233,7 +236,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * @param positionalNames resolve：位置参数
+ * @param positionalNames resolve:
          * @return {@code this}
          */
         public Builder resolve(String... positionalNames) {
@@ -371,9 +374,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -384,7 +387,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link ChannelsOptions}
+ * @return {@link ChannelsOptions}
          */
         public ChannelsOptions build() {
             return new ChannelsOptions(this);

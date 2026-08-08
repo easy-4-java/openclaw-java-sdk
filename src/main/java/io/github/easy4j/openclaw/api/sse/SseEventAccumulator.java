@@ -10,6 +10,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Accumulates streaming {@link ChatChunk} deltas into a single complete response.
+ * <p>
+ * Merges incremental content, tool call fragments, and metadata from multiple SSE events
+ * into one consolidated {@link ChatChunk}. Supports reset for reuse across streams.
+ * </p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see StreamingChatResponse
+ * @see SseEvent
+ */
 public class SseEventAccumulator {
 
     private String id;

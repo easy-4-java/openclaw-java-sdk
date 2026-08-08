@@ -17,14 +17,14 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * 基于 Apache Commons Exec 的子进程执行辅助：Watchdog 超时、有界 {@code waitFor}、并发限流。
+ * Apache Commons Exec subprocess:Watchdog timeout, {@code waitFor},concurrencystream.
  *
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
  */
 public final class SubprocessExecutionSupport {
 
-    /** Watchdog 触发后，handler 收尾等待的上限（毫秒）。 */
+ /** Watchdog ,handler (milliseconds). */
     public static final long WAIT_GRACE_MILLIS = 5_000L;
 
     private static final int DEFAULT_MAX_CONCURRENT = Math.max(2, Runtime.getRuntime().availableProcessors());
@@ -36,9 +36,9 @@ public final class SubprocessExecutionSupport {
     }
 
     /**
-     * 配置本机 CLI 子进程全局并发上限；{@code maxConcurrent <= 0} 时恢复为默认值。
+ * CLI subprocessconcurrency;{@code maxConcurrent <= 0} restoredefault value.
      *
-     * @param maxConcurrent 允许同时运行的子进程数
+ * @param maxConcurrent subprocess
      */
     public static void configureMaxConcurrentExecutions(int maxConcurrent) {
         if (maxConcurrent <= 0) {
@@ -49,14 +49,14 @@ public final class SubprocessExecutionSupport {
     }
 
     /**
-     * @return 未显式配置时的默认并发上限
+ * @return concurrency
      */
     public static int defaultMaxConcurrentExecutions() {
         return DEFAULT_MAX_CONCURRENT;
     }
 
     /**
-     * 在并发许可内启动子进程并阻塞至结束、超时或被强制销毁。
+ * concurrencysubprocess,timeout.
      */
     public static RunSession execute(ExecutionRequest request) throws IOException, InterruptedException {
         Objects.requireNonNull(request, "request");

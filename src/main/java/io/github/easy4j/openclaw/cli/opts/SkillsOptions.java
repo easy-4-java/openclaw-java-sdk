@@ -9,43 +9,46 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw skills}：在 ClawHub/本地注册表搜索、安装与更新 agent skills，并检查工作区技能是否满足依赖。
- * <p>裸 {@code openclaw skills} 与 {@code skills list} 等价；安装流与插件生态相关，具体源与版本解析以官方 skills CLI 为准。</p>
+ * {@code openclaw skills}: ClawHub/, agent skills,skill.
+ * <p> {@code openclaw skills} {@code skills list} ;streamplugin,version skills CLI .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/skills">skills CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class SkillsOptions implements CliSubArgs {
 
     /**
-     * skills 子命令：默认列表、搜索、安装、更新、信息与依赖检查。
+ * skills subcommand:,,.
      */
     public enum Verb {
         /**
-         * 与裸 {@code openclaw skills} 一致：不显式 {@code list} token，由 CLI 走默认 list 行为。
+ * {@code openclaw skills} : {@code list} token, CLI list .
          */
         DEFAULT_LIST,
-        /** {@code skills search}：按关键词检索 ClawHub 等目录。 */
+ /** {@code skills search}:key ClawHub directory. */
         SEARCH,
-        /** {@code skills install}：按 slug 安装到工作区技能目录。 */
+ /** {@code skills install}: slug skilldirectory. */
         INSTALL,
-        /** {@code skills update}：更新单个 skill 或 {@code --all}。 */
+ /** {@code skills update}: skill {@code --all}. */
         UPDATE,
-        /** {@code skills list}：列出已安装/可见技能。 */
+ /** {@code skills list}:/Seeskill. */
         LIST,
-        /** {@code skills info}：展示元数据与入口文件路径。 */
+ /** {@code skills info}:. */
         INFO,
-        /** {@code skills check}：验证当前 workspace 技能依赖是否满足。 */
+ /** {@code skills check}: workspace skill. */
         CHECK
     }
 
-    /** search / install / update / list / info / check 或默认 list。 */
+ /** search / install / update / list / info / check list. */
     private final Verb verb;
     /**
-     * search：关键词位置参数列表。
+ * search:keyargument list.
      */
     private final List<String> searchWords;
     /**
-     * search：{@code --limit} 返回条数上限。
+ * search:{@code --limit} .
      */
     private final Integer searchLimit;
     /**
@@ -53,39 +56,39 @@ public final class SkillsOptions implements CliSubArgs {
      */
     private final boolean searchJson;
     /**
-     * install：skill slug 位置参数。
+ * install:skill slug .
      */
     private final String installSlug;
     /**
-     * install：{@code --version} 固定版本或 tag。
+ * install:{@code --version} version tag.
      */
     private final String installVersion;
     /**
-     * install：{@code --force} 覆盖已存在安装。
+ * install:{@code --force} .
      */
     private final boolean installForce;
     /**
-     * update：目标 slug；与 {@code updateAll} 二选一语义由 Builder 保证。
+ * update: slug; {@code updateAll} mutually exclusive semantics Builder .
      */
     private final String updateSlug;
     /**
-     * update：{@code --all} 更新全部已安装 skills。
+ * update:{@code --all} skills.
      */
     private final boolean updateAll;
     /**
-     * list / 默认：{@code --eligible} 只显示依赖已就绪的技能。
+ * list / :{@code --eligible} skill.
      */
     private final boolean listEligible;
     /**
-     * list / 默认：{@code --json}。
+ * list / :{@code --json}.
      */
     private final boolean listJson;
     /**
-     * list / 默认：{@code --verbose} 更详细条目。
+ * list / :{@code --verbose} .
      */
     private final boolean listVerbose;
     /**
-     * info：skill 名称位置参数。
+ * info:skill .
      */
     private final String infoName;
     /**
@@ -93,16 +96,16 @@ public final class SkillsOptions implements CliSubArgs {
      */
     private final boolean infoJson;
     /**
-     * check：{@code --json} 输出检查结果。
+ * check:{@code --json} .
      */
     private final boolean checkJson;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private SkillsOptions(Builder b) {
         this.verb = b.verb;
@@ -124,7 +127,7 @@ public final class SkillsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -191,7 +194,7 @@ public final class SkillsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link SkillsOptions} 构建器。
+ * {@link SkillsOptions} builder.
      */
     public static final class Builder {
         private Verb verb = Verb.DEFAULT_LIST;
@@ -212,7 +215,7 @@ public final class SkillsOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}（无子命令，等同 list flag 表面）
+ * @return {@code this}(subcommand, list flag )
          */
         public Builder defaultList() {
             this.verb = Verb.DEFAULT_LIST;
@@ -222,7 +225,7 @@ public final class SkillsOptions implements CliSubArgs {
         /**
          * {@code skills search [words...]}。
          *
-         * @param queryWords 搜索词
+ * @param queryWords
          * @return {@code this}
          */
         public Builder search(String... queryWords) {
@@ -342,7 +345,7 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param name info：skill 名
+ * @param name info:skill
          * @return {@code this}
          */
         public Builder info(String name) {
@@ -378,9 +381,9 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * 追加原始 token。
+ * token.
          *
-         * @param tokens argv 片段
+ * @param tokens argv
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -391,7 +394,7 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link SkillsOptions}
+ * @return {@link SkillsOptions}
          */
         public SkillsOptions build() {
             return new SkillsOptions(this);

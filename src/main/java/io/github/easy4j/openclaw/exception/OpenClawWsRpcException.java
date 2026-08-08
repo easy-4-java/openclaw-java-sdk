@@ -4,17 +4,20 @@ import io.github.easy4j.openclaw.ws.protocol.ErrorShape;
 import lombok.Getter;
 
 /**
- * Gateway WebSocket RPC 返回 {@code ok: false} 时抛出。
+ * Gateway WebSocket RPC {@code ok: false} .
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public class OpenClawWsRpcException extends OpenClawException {
 
     private static final long serialVersionUID = 1L;
 
-    /** RPC 方法名，例如 {@code sessions.list} */
+ /** RPC , {@code sessions.list} */
     private final String method;
 
-    /** Gateway 错误结构 */
+ /** Gateway error structure */
     private final ErrorShape error;
 
     public OpenClawWsRpcException(String method, ErrorShape error) {

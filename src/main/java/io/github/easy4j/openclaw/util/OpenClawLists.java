@@ -7,7 +7,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 列表工具（Java 8 兼容），用于替代 {@link List#of()}、{@link List#copyOf(Collection)} 等 JDK 9+ API。
+ * list utility(Java 8 ),Used forReplacement for {@link List#of},{@link List#copyOf(Collection)} JDK 9+ API.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class OpenClawLists {
 
@@ -15,14 +18,14 @@ public final class OpenClawLists {
     }
 
     /**
-     * 返回不可变空列表（等价于 {@code List.of()}）。
+ * Returns an immutable(Equivalent to {@code List.of}).
      */
     public static <T> List<T> empty() {
         return Collections.emptyList();
     }
 
     /**
-     * 由可变参数构造不可变列表（等价于 {@code List.of(e1, e2, ...)}）。
+ * Constructs from varargs(Equivalent to {@code List.of(e1, e2, ...)}).
      */
     @SafeVarargs
     public static <T> List<T> of(T... elements) {
@@ -33,7 +36,7 @@ public final class OpenClawLists {
     }
 
     /**
-     * 复制为不可变列表（等价于 {@code List.copyOf(source)}）。
+ * Copies as(Equivalent to {@code List.copyOf(source)}).
      */
     public static <T> List<T> copyOf(Collection<? extends T> source) {
         if (source == null || source.isEmpty()) {

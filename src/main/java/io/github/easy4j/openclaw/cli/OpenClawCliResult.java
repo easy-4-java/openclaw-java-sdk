@@ -5,7 +5,10 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * {@code openclaw} 进程执行结果（不解析业务语义；{@code --json} 输出在 {@link #stdout}）。
+ * {@code openclaw} process execution result(;{@code --json} {@link #stdout}).
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 public final class OpenClawCliResult {
@@ -21,7 +24,7 @@ public final class OpenClawCliResult {
     }
 
     /**
-     * @return 进程是否以 0 退出
+ * @return process 0
      */
     public boolean isSuccess() {
         return exitCode == 0;

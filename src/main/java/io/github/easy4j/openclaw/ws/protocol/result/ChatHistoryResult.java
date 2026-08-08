@@ -8,7 +8,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code chat.history} RPC 成功响应体。
+ * {@code chat.history} RPC response body.
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,7 +36,7 @@ public class ChatHistoryResult {
     private String verboseLevel;
 
     /**
-     * @return 非 null 的消息列表（元素结构由 Gateway 定义，可用 Jackson 二次解析）
+ * @return null message( Gateway , Jackson )
      */
     public List<Object> getMessages() {
         return messages != null ? messages : Collections.emptyList();

@@ -9,128 +9,131 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw plugins}：安装、启用、检查与更新 Gateway 插件、hook 包与兼容 bundle（Codex/Claude/Cursor）。
- * <p>安装等同运行第三方代码：优先固定版本；{@code --dangerously-force-unsafe-install} 仅绕过内置危险扫描误报，不绕过 {@code before_install} 策略阻止。</p>
+ * {@code openclaw plugins}:, Gateway plugin,hook bundle(Codex/Claude/Cursor).
+ * <p>:version;{@code --dangerously-force-unsafe-install} only, {@code before_install} .</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/plugins">plugins CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class PluginsOptions implements CliSubArgs {
 
     /**
-     * plugins 子命令：清单、安装、深度检查、开关、卸载、诊断、更新与 marketplace 列举。
+ * plugins subcommand:,,,diagnostic, marketplace .
      */
     public enum Mode {
-        /** {@code plugins list}：展示已发现插件与格式（openclaw 或 bundle）。 */
+ /** {@code plugins list}:plugin(openclaw bundle). */
         LIST,
-        /** {@code plugins install}：从 ClawHub、npm、本地路径或 marketplace 安装。 */
+ /** {@code plugins install}: ClawHub,npm, marketplace . */
         INSTALL,
-        /** {@code plugins inspect}：运行时注册面、工具、hook、路由等深度自省。 */
+ /** {@code plugins inspect}:,hook,. */
         INSPECT,
-        /** {@code plugins info}：{@code inspect} 的别名。 */
+ /** {@code plugins info}:{@code inspect} . */
         INFO,
-        /** {@code plugins enable}：打开某插件 id。 */
+ /** {@code plugins enable}:plugin id. */
         ENABLE,
-        /** {@code plugins disable}：关闭某插件 id。 */
+ /** {@code plugins disable}:plugin id. */
         DISABLE,
-        /** {@code plugins uninstall}：移除配置记录并默认删除安装目录。 */
+ /** {@code plugins uninstall}:directory. */
         UNINSTALL,
-        /** {@code plugins doctor}：汇总加载错误与兼容性提示。 */
+ /** {@code plugins doctor}:. */
         DOCTOR,
-        /** {@code plugins update}：按 {@code plugins.installs} 记录升级单个或全部。 */
+ /** {@code plugins update}: {@code plugins.installs} . */
         UPDATE,
-        /** {@code plugins marketplace list}：解析并列出 marketplace 清单中的插件条目。 */
+ /** {@code plugins marketplace list}: marketplace plugin. */
         MARKETPLACE_LIST
     }
 
-    /** 当前 plugins 子命令。 */
+ /** plugins subcommand. */
     private final Mode mode;
     /**
-     * list：{@code --enabled} 仅显示已加载插件。
+ * list:{@code --enabled} onlyplugin.
      */
     private final boolean listEnabled;
     /**
-     * list：{@code --verbose} 逐条详细行而非表格摘要。
+ * list:{@code --verbose} .
      */
     private final boolean listVerbose;
     /**
-     * list：{@code --json} 机器可读库存加固态诊断。
+ * list:{@code --json} diagnostic.
      */
     private final boolean listJson;
     /**
-     * install：包 spec、路径或 {@code clawhub:} 定位子的位置参数。
+ * install: spec, {@code clawhub:} .
      */
     private final String installSpec;
     /**
-     * install：{@code --force} 覆盖已存在同名安装目标。
+ * install:{@code --force} .
      */
     private final boolean installForce;
     /**
-     * install：{@code --pin} npm 安装时写入精确解析版本到 {@code plugins.installs}。
+ * install:{@code --pin} npm version {@code plugins.installs}.
      */
     private final boolean installPin;
     /**
-     * install：{@code --dangerously-force-unsafe-install} 在扫描报 critical 时仍继续（break-glass）。
+ * install:{@code --dangerously-force-unsafe-install} critical (break-glass).
      */
     private final boolean dangerouslyForceUnsafeInstall;
     /**
-     * install：{@code --marketplace} 显式 marketplace 源（名称、owner/repo 或 URL）。
+ * install:{@code --marketplace} marketplace (owner/repo URL).
      */
     private final String marketplace;
     /**
-     * install：{@code --link} 将本地目录加入 {@code plugins.load.paths} 而不复制。
+ * install:{@code --link} directory {@code plugins.load.paths} .
      */
     private final boolean installLink;
     /**
-     * inspect / info：插件 id，或配合 {@code inspectAll} 使用。
+ * inspect / info:plugin id, {@code inspectAll} .
      */
     private final String inspectId;
     /**
-     * inspect / info：{@code --json} 输出完整报告。
+ * inspect / info:{@code --json} .
      */
     private final boolean inspectJson;
     /**
-     * inspect：{@code --all}  fleet 级表格视图。
+ * inspect:{@code --all} fleet .
      */
     private final boolean inspectAll;
     /**
-     * enable / disable / uninstall / update：目标插件 id 或 npm spec（update 文档语义）。
+ * enable / disable / uninstall / update:plugin id npm spec(update documentation).
      */
     private final String pluginId;
     /**
-     * uninstall：{@code --dry-run} 只展示将删除的配置项。
+ * uninstall:{@code --dry-run} .
      */
     private final boolean uninstallDryRun;
     /**
-     * uninstall：{@code --keep-files} 保留磁盘上的插件目录。
+ * uninstall:{@code --keep-files} plugindirectory.
      */
     private final boolean uninstallKeepFiles;
     /**
-     * update：{@code --all} 更新所有已跟踪安装。
+ * update:{@code --all} .
      */
     private final boolean updateAll;
     /**
-     * update：{@code --dry-run} 预览变更。
+ * update:{@code --dry-run} .
      */
     private final boolean updateDryRun;
     /**
-     * update：{@code --yes} 在完整性哈希变化等场景跳过交互确认。
+ * update:{@code --yes} skips.
      */
     private final boolean yes;
     /**
-     * marketplace list：marketplace 源位置参数（路径、{@code owner/repo}、git URL 等）。
+ * marketplace list:marketplace ({@code owner/repo},git URL ).
      */
     private final String marketplaceSource;
     /**
-     * marketplace list：{@code --json} 输出 manifest 解析结果。
+ * marketplace list:{@code --json} manifest .
      */
     private final boolean marketplaceJson;
     /**
-     * 其它 argv。
+ * argv.
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private PluginsOptions(Builder b) {
         this.mode = b.mode;
@@ -158,7 +161,7 @@ public final class PluginsOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -248,7 +251,7 @@ public final class PluginsOptions implements CliSubArgs {
     }
 
     /**
-     * {@link PluginsOptions} 构建器。
+ * {@link PluginsOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.LIST;
@@ -310,7 +313,7 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param spec install：包 spec
+ * @param spec install: spec
          * @return {@code this}
          */
         public Builder install(String spec) {
@@ -365,7 +368,7 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param id inspect：插件 ID
+ * @param id inspect:plugin ID
          * @return {@code this}
          */
         public Builder inspect(String id) {
@@ -398,7 +401,7 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param id info：插件 ID
+ * @param id info:plugin ID
          * @return {@code this}
          */
         public Builder info(String id) {
@@ -408,7 +411,7 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param id enable：插件 ID
+ * @param id enable:plugin ID
          * @return {@code this}
          */
         public Builder enable(String id) {
@@ -418,7 +421,7 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param id disable：插件 ID
+ * @param id disable:plugin ID
          * @return {@code this}
          */
         public Builder disable(String id) {
@@ -428,7 +431,7 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param id uninstall：插件 ID
+ * @param id uninstall:plugin ID
          * @return {@code this}
          */
         public Builder uninstall(String id) {
@@ -464,7 +467,7 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param idOrSpec update：插件 ID 或 spec
+ * @param idOrSpec update:plugin ID spec
          * @return {@code this}
          */
         public Builder update(String idOrSpec) {
@@ -504,7 +507,7 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param source marketplace list：来源
+ * @param source marketplace list:
          * @return {@code this}
          */
         public Builder marketplaceList(String source) {
@@ -523,9 +526,9 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * 追加额外 argv token。
+ * appends extra argv token.
          *
-         * @param tokens 可为 null（忽略）
+ * @param tokens null
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -536,7 +539,7 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link PluginsOptions}
+ * @return {@link PluginsOptions}
          */
         public PluginsOptions build() {
             return new PluginsOptions(this);

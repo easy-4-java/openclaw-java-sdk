@@ -8,50 +8,53 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw security}：安全审计工具，可选应用文档所列的确定性修复（{@code audit --fix}）。
- * <p>{@code --token}/{@code --password} 仅覆盖本次深度探测认证，不写回配置；{@code --deep} 扩大检查面；{@code --json} 适合 CI/策略门禁。</p>
+ * {@code openclaw security}:security,Optionaldocumentationrepair({@code audit --fix}).
+ * <p>{@code --token}/{@code --password} onlyauthentication,;{@code --deep} ;{@code --json} CI/.</p>
  *
  * @see <a href="https://docs.openclaw.ai/cli/security">security CLI</a>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
  */
 public final class SecurityOptions implements CliSubArgs {
 
-    /** 顶层子命令族（当前实现 {@code audit}）。 */
+ /** subcommand( {@code audit}). */
     public enum Mode {
         /** {@code security audit} */
         AUDIT
     }
 
     /**
-     * 顶层模式；当前实现为 {@link Mode#AUDIT}（{@code security audit}）。
+ * ; {@link Mode#AUDIT}({@code security audit}).
      */
     private final Mode mode;
     /**
-     * {@code --deep}：启用更深的安全检查与探测（文档示例与 CI 过滤配合）。
+ * {@code --deep}:security(documentationexample CI ).
      */
     private final boolean deep;
     /**
-     * {@code --password}：深度探测时使用的网关密码（一次性覆盖，不修改 SecretRef/配置文件）。
+ * {@code --password}:Gateway( SecretRef/).
      */
     private final String password;
     /**
-     * {@code --token}：深度探测时使用的 token（同上，仅当次命令）。
+ * {@code --token}: token(only).
      */
     private final String token;
     /**
-     * {@code --fix}：应用文档列出的安全加固项（如 groupPolicy、日志脱敏、关键文件权限等）；不轮换密钥、不禁用工具。
+ * {@code --fix}:documentationsecurity( groupPolicy,key);secret,.
      */
     private final boolean fix;
     /**
-     * {@code --json}：结构化报告（可与 {@code --fix} 同时输出修复结果与最终摘要）。
+ * {@code --json}:( {@code --fix} repair).
      */
     private final boolean json;
     /**
-     * 其它参数。
+ * .
      */
     private final List<String> extra;
 
     /**
-     * @param b 构建器快照
+ * @param b builder
      */
     private SecurityOptions(Builder b) {
         this.mode = b.mode;
@@ -64,7 +67,7 @@ public final class SecurityOptions implements CliSubArgs {
     }
 
     /**
-     * @return 新 {@link Builder}
+ * @return {@link Builder}
      */
     public static Builder builder() {
         return new Builder();
@@ -89,7 +92,7 @@ public final class SecurityOptions implements CliSubArgs {
     }
 
     /**
-     * {@link SecurityOptions} 构建器。
+ * {@link SecurityOptions} builder.
      */
     public static final class Builder {
         private Mode mode = Mode.AUDIT;
@@ -101,7 +104,7 @@ public final class SecurityOptions implements CliSubArgs {
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}，选择 {@link Mode#AUDIT}
+ * @return {@code this}, {@link Mode#AUDIT}
          */
         public Builder audit() {
             this.mode = Mode.AUDIT;
@@ -154,7 +157,7 @@ public final class SecurityOptions implements CliSubArgs {
         }
 
         /**
-         * @param tokens 额外 CLI token
+ * @param tokens CLI token
          * @return {@code this}
          */
         public Builder extra(String... tokens) {
@@ -165,7 +168,7 @@ public final class SecurityOptions implements CliSubArgs {
         }
 
         /**
-         * @return 不可变 {@link SecurityOptions}
+ * @return {@link SecurityOptions}
          */
         public SecurityOptions build() {
             return new SecurityOptions(this);

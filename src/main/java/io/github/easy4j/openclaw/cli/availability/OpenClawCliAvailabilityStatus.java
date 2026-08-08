@@ -1,34 +1,34 @@
 package io.github.easy4j.openclaw.cli.availability;
 
 /**
- * OpenClaw CLI 可用性探测结论分类。
+ * OpenClaw CLI .
  *
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
  */
 public enum OpenClawCliAvailabilityStatus {
 
-    /** {@code openclaw --version} 探测成功。 */
+ /** {@code openclaw --version} . */
     AVAILABLE,
 
-    /** 未配置可执行文件。 */
+ /** executable. */
     EXECUTABLE_NOT_CONFIGURED,
 
-    /** 路径不存在或 PATH 中找不到。 */
+ /** PATH . */
     EXECUTABLE_NOT_FOUND,
 
-    /** 存在但不可执行。 */
+ /** . */
     EXECUTABLE_NOT_EXECUTABLE,
 
-    /** 进程无法启动。 */
+ /** process. */
     SPAWN_FAILED,
 
-    /** 非零退出。 */
+ /** . */
     NON_ZERO_EXIT,
 
-    /** 探测超时。 */
+ /** timeout. */
     TIMEOUT,
 
-    /** 其它失败。 */
+ /** . */
     FAILED
 }

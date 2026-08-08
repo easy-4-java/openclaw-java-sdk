@@ -30,36 +30,39 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * 门面：<b>HTTP Webhooks</b>（{@code /hooks/*}）+ <b>OpenAI 兼容 API</b>（{@code /v1/*}）+ <b>Tools Invoke</b>（{@code /tools/invoke}）+ <b>WebSocket 控制面</b> + 通用本地 CLI（{@link #cli()}）。
+ * Facade:<b>HTTP Webhooks</b>({@code /hooks/*})+ <b>OpenAI API</b>({@code /v1/*})+ <b>Tools Invoke</b>({@code /tools/invoke})+ <b>WebSocket control plane</b> + CLI({@link #cli}).
  * <p>
- * 五条通信通道相互独立，按各自子配置的 {@code enabled} 决定是否创建对应客户端：
+ * channel,per their respective sub-config {@code enabled} determines whether to createCorresponds to:
  * </p>
  * <ul>
- *     <li>{@link OpenClawHttpClientConfig#isEnabled()} = false → HTTP / WS 子客户端为 {@code null}</li>
- *     <li>{@link OpenClawCliConfig#isEnabled()} = false → CLI 子客户端为 {@code null}</li>
+ * <li>{@link OpenClawHttpClientConfig#isEnabled} = false → HTTP / WS {@code null}</li>
+ * <li>{@link OpenClawCliConfig#isEnabled} = false → CLI {@code null}</li>
  * </ul>
  *
- * <h3>构造器选择</h3>
- * <p>提供多种构造器覆盖三类场景：</p>
+ * <h3></h3>
+ * <p>Provides multiple:</p>
  * <ul>
- *     <li>仅 HTTP / 仅 CLI：传入单个子配置，禁用另一子系统</li>
- *     <li>HTTP + CLI：传入两个子配置，子系统都按各自 {@code enabled} 决定</li>
- *     <li>组合配置：传入 {@link OpenClawClientConfig}，内部拆分为两个子配置</li>
+ * <li>only HTTP / only CLI:,system</li>
+ * <li>HTTP + CLI:,systemaccording to their respective {@code enabled} </li>
+ * <li>Composes: {@link OpenClawClientConfig},</li>
  * </ul>
- * <p>每种场景再分「自动 ObjectMapper/OkHttpClient」与「强制注入」两个变体。
- * 强制注入的版本对 {@code ObjectMapper}/{@code OkHttpClient} 进行 {@code requireNonNull} 校验，
- * 便于在多实例间共享连接池。</p>
+ * <p>" ObjectMapper/OkHttpClient""inject".
+ * injectversion {@code ObjectMapper}/{@code OkHttpClient} {@code requireNonNull} ,
+ * for easyshared connection pool.</p>
  *
- * <h3>启动自检</h3>
- * <p>主构造器在子系统初始化后按 {@code startupCheckEnabled} 与 {@code failFastOnUnavailable}
- * 执行健康探测（HTTP：{@code GET /v1/models}；CLI：{@code openclaw --version}）。
- * 探测失败但未开启 fail-fast 时仅 WARN，不中断构造；开启 fail-fast 时抛 {@link IllegalStateException}。</p>
+ * <h3></h3>
+ * <p>Primary constructorsystem {@code startupCheckEnabled} {@code failFastOnUnavailable}
+ * performs health probe(HTTP:{@code GET /v1/models};CLI:{@code openclaw --version}).
+ * probe failed fail-fast only warning,does not interrupt construction; fail-fast {@link IllegalStateException}.</p>
  *
  * @see OpenClawGatewayWsClient
  * @see OpenClawChatClient
  * @see OpenClawEmbeddingsClient
  * @see OpenClawResponsesClient
  * @see OpenClawToolInvokeClient
+  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+  * @since 3.0.0
  */
 @Slf4j
 public class OpenClawClient implements AutoCloseable {
@@ -78,7 +81,7 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 仅 HTTP 子系统（CLI 禁用）。自动创建默认 {@link ObjectMapper} 与 {@link OkHttpClient}。
+ * only HTTP system(CLI ).auto-creates default {@link ObjectMapper} {@link OkHttpClient}.
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig) {
         this(httpConfig, new OpenClawCliConfig(), new ObjectMapper(),
@@ -86,47 +89,47 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 仅 HTTP 子系统，使用调用方管理的共享 {@link OkHttpClient}。
-     * <p>适用于直接注入 Spring 容器中由 okhttp3-extension/starter 配置的客户端。</p>
+ * only HTTP system,uses caller-managed {@link OkHttpClient}.
+ * <p>Applicable toinject Spring okhttp3-extension/starter .</p>
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig, OkHttpClient httpClient) {
         this(httpConfig, new ObjectMapper(), httpClient);
     }
 
     /**
-     * 仅 HTTP 子系统（CLI 禁用），强制注入共享 {@link ObjectMapper} 与 {@link OkHttpClient}。
+ * only HTTP system(CLI ),inject {@link ObjectMapper} {@link OkHttpClient}.
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig, ObjectMapper objectMapper, OkHttpClient httpClient) {
         this(httpConfig, new OpenClawCliConfig(), objectMapper, httpClient, false);
     }
 
     /**
-     * 仅 CLI 子系统（HTTP 禁用）。自动创建默认 {@link ObjectMapper} 与 {@link OkHttpClient}。
+ * only CLI system(HTTP ).auto-creates default {@link ObjectMapper} {@link OkHttpClient}.
      */
     public OpenClawClient(OpenClawCliConfig cliConfig) {
         this(new OpenClawHttpClientConfig(), cliConfig, new ObjectMapper(), new OkHttpClient(), true);
     }
 
     /**
-     * 仅 CLI 子系统（HTTP 禁用），强制注入共享 {@link ObjectMapper} 与 {@link OkHttpClient}。
+ * only CLI system(HTTP ),inject {@link ObjectMapper} {@link OkHttpClient}.
      */
     public OpenClawClient(OpenClawCliConfig cliConfig, ObjectMapper objectMapper, OkHttpClient httpClient) {
         this(new OpenClawHttpClientConfig(), cliConfig, objectMapper, httpClient, false);
     }
 
     /**
-     * HTTP + CLI 子系统。自动创建默认 {@link ObjectMapper} 与 {@link OkHttpClient}。
+ * HTTP + CLI system.auto-creates default {@link ObjectMapper} {@link OkHttpClient}.
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig) {
         this(httpConfig, cliConfig, new ObjectMapper(), OpenClawOkHttpClientFactory.create(httpConfig), true);
     }
 
     /**
-     * HTTP + CLI 子系统，强制注入共享 {@link ObjectMapper} 与 {@link OkHttpClient}。
+ * HTTP + CLI system,inject {@link ObjectMapper} {@link OkHttpClient}.
      * <p>
-     * <b>主构造器</b>：所有参数 {@code requireNonNull}；HTTP/CLI 子客户端按各自
-     * {@code enabled} 决定是否创建（禁用时为 {@code null}）；构造完成后按
-     * {@code startupCheckEnabled} 与 {@code failFastOnUnavailable} 执行启动自检。
+ * <b>Primary constructor</b>:All parameters {@code requireNonNull};HTTP/CLI according to their respective
+ * {@code enabled} determines whether to create(when disabled, is {@code null});After construction completes
+ * {@code startupCheckEnabled} {@code failFastOnUnavailable} Executes startup self-check.
      * </p>
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig,
@@ -175,7 +178,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 组合配置，自动创建默认 {@link ObjectMapper} 与 {@link OkHttpClient}。
+ * Composes,auto-creates default {@link ObjectMapper} {@link OkHttpClient}.
      */
     public OpenClawClient(OpenClawClientConfig config) {
         this(Objects.requireNonNull(config, "config").getHttp(),
@@ -186,15 +189,15 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 使用组合配置和调用方管理的共享 {@link OkHttpClient}。
-     * <p>SDK 关闭时不会关闭、清空或重建该客户端的连接池和调度器。</p>
+ * Composes {@link OkHttpClient}.
+ * <p>SDK ,connection pooldispatcher.</p>
      */
     public OpenClawClient(OpenClawClientConfig config, OkHttpClient httpClient) {
         this(config, new ObjectMapper(), httpClient);
     }
 
     /**
-     * 组合配置，强制注入共享 {@link ObjectMapper} 与 {@link OkHttpClient}。
+ * Composes,inject {@link ObjectMapper} {@link OkHttpClient}.
      */
     public OpenClawClient(OpenClawClientConfig config, ObjectMapper objectMapper, OkHttpClient httpClient) {
         this(Objects.requireNonNull(config, "config").getHttp(),
@@ -205,8 +208,8 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 全量依赖注入（用于测试或自定义组件）。
-     * <p>使用此构造器<b>不会</b>执行任何启动自检；HTTP/CLI 字段由调用方决定。</p>
+ * inject(Used for).
+ * <p><b></b>;HTTP/CLI fielddetermined by caller.</p>
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig,
                           OpenClawCliConfig cliConfig,
@@ -228,10 +231,10 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 在构造阶段执行启动自检；按各自子配置的 fail-fast 决定是否抛异常。
+ * Executes during construction phase;per their respective sub-config fail-fast .
      * <p>
-     * HTTP 探测在 {@code gatewayBaseUrl} 为空或 {@code enabled=false} 时跳过；
-     * CLI 探测在 {@code enabled=false} 时跳过。
+ * HTTP {@code gatewayBaseUrl} {@code enabled=false} skips;
+ * CLI {@code enabled=false} skips.
      * </p>
      */
     private void runStartupChecks(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig) {
@@ -271,12 +274,12 @@ public class OpenClawClient implements AutoCloseable {
     // 子系统启用状态查询
     // ============================================================
 
-    /** HTTP 子系统是否启用（{@code enabled=true} 且 HTTP 客户端非 null）。 */
+ /** HTTP systemWhether to enable({@code enabled=true} HTTP null). */
     public boolean isHttpEnabled() {
         return chatClient != null;
     }
 
-    /** CLI 子系统是否启用（{@code enabled=true} 且 CLI 非 null）。 */
+ /** CLI systemWhether to enable({@code enabled=true} CLI null). */
     public boolean isCliEnabled() {
         return cli != null;
     }
@@ -287,35 +290,35 @@ public class OpenClawClient implements AutoCloseable {
 
 
     /**
-     * 注入系统事件。
-     * <p>对应 {@code POST /hooks/wake}。</p>
+ * injectsystemevent.
+ * <p>Corresponds to {@code POST /hooks/wake}.</p>
      *
-     * @param text 事件文本
-     * @param mode 唤醒模式（如 {@code "now"}）
-     * @return 响应结果
+ * @param text event
+ * @param mode wake( {@code "now"})
+ * @return
      */
     public String wake(String text, String mode) {
         return gatewayHttpClient.postHooksWake(text, mode);
     }
 
     /**
-     * 调用映射 webhook。
-     * <p>对应 {@code POST /hooks/<name>}。</p>
+ * map webhook.
+ * <p>Corresponds to {@code POST /hooks/<name>}.</p>
      *
-     * @param hookName webhook 名称
-     * @param payload 请求数据
-     * @return 响应结果
+ * @param hookName webhook
+ * @param payload
+ * @return
      */
     public String hook(String hookName, Map<String, Object> payload) {
         return gatewayHttpClient.postMappedHook(hookName, payload);
     }
 
     /**
-     * 触发智能体。
-     * <p>对应 {@code POST /hooks/agent}。</p>
+ * agent.
+ * <p>Corresponds to {@code POST /hooks/agent}.</p>
      *
-     * @param request 请求体
-     * @return 智能体响应
+ * @param request request body
+ * @return agent
      */
     public HookResponse hook(HookRequest request) {
         return gatewayHttpClient.postHooksAgent(request);
@@ -326,26 +329,26 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 获取 WebSocket 客户端实例。
-     * <p>通过 WS 客户端可实现：流式对话（{@code chat.send}）、会话管理、cron 管理、配置管理等。</p>
+ * WebSocket .
+ * <p> WS :streaming({@code chat.send}),session,cron ,.</p>
      *
      * <pre>{@code
      * OpenClawGatewayWsClient ws = client.ws();
      * ws.addListener(new OpenClawWsListener() { ... });
      * ws.connectBlocking();
-     * ws.chatSend(ChatSendParams.builder().message("你好").build(), handler);
+ * ws.chatSend(ChatSendParams.builder.message("").build, handler);
      * }</pre>
      *
-     * @return WebSocket 客户端
+ * @return WebSocket
      */
     public OpenClawGatewayWsClient ws() {
         return wsClient;
     }
 
     /**
-     * 连接 WebSocket 并阻塞等待握手完成。
+ * connection WebSocket handshakecompletion.
      *
-     * @return 握手结果
+ * @return handshake
      */
     public HelloOk connect() {
         try {
@@ -357,28 +360,28 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 异步连接 WebSocket。
+ * connection WebSocket.
      */
     public CompletableFuture<HelloOk> connectAsync() {
         return wsClient.connectHandshakeAsync();
     }
 
     /**
-     * 通过 WebSocket 发送流式聊天。
+ * WebSocket streaming.
      *
-     * @param message 消息文本
-     * @param handler 流式处理器
+ * @param message message
+ * @param handler streaming
      */
     public void chatSend(String message, ChatStreamHandler handler) {
         wsClient.chatSend(ChatSendParams.builder().message(message).build(), handler);
     }
 
     /**
-     * 通过 WebSocket 发送流式聊天（指定会话）。
+ * WebSocket streaming(session).
      *
-     * @param sessionKey 会话键
-     * @param message    消息文本
-     * @param handler    流式处理器
+ * @param sessionKey sessionkey
+ * @param message message
+ * @param handler streaming
      */
     public void chatSend(String sessionKey, String message, ChatStreamHandler handler) {
         wsClient.chatSend(
@@ -387,7 +390,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 通过 WebSocket 向指定会话发消息（非流式 RPC）。
+ * WebSocket sessionmessage(non-streaming RPC).
      */
     public SessionsSendResult sessionsSend(String sessionKey, String message) {
         return wsClient.sessionsSend(
@@ -395,7 +398,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 添加 WebSocket 事件监听器。
+ * WebSocket event listener.
      */
     public OpenClawClient addWsListener(OpenClawWsListener listener) {
         wsClient.addListener(listener);
@@ -407,31 +410,31 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 获取 Chat Completions 客户端。
+ * Chat Completions .
      */
     public OpenClawChatClient chat() {
         return chatClient;
     }
 
     /**
-     * 获取 HTTP 子系统实际使用的 {@link OkHttpClient}。
-     * <p>通过注入构造器传入时返回同一个实例，其生命周期仍由调用方管理。</p>
+ * HTTP system {@link OkHttpClient}.
+ * <p>inject,lifecyclemanaged by caller.</p>
      *
-     * @return HTTP 子系统使用的 OkHttpClient；HTTP 子系统禁用时返回 {@code null}
+ * @return HTTP system OkHttpClient;HTTP system {@code null}
      */
     public OkHttpClient getOkHttpClient() {
         return Objects.nonNull(chatClient) ? chatClient.getHttpClient() : null;
     }
 
     /**
-     * 获取 Embeddings 客户端。
+ * Embeddings .
      */
     public OpenClawEmbeddingsClient embeddings() {
         return embeddingsClient;
     }
 
     /**
-     * 获取 Responses 客户端。
+ * Responses .
      */
     public OpenClawResponsesClient responses() {
         return responsesClient;
@@ -442,14 +445,19 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 发送 Chat Completions 请求（非流式）。
+ * Chat Completions (non-streaming).
      */
     public ChatResponse chatCompletion(ChatRequest request) {
         return chatClient.chatCompletion(request);
     }
 
+    /** 发送支持调用方取消的 Chat Completions 请求。 */
+    public ChatResponse chatCompletion(ChatRequest request, HttpCallCancellation cancellation) {
+        return chatClient.chatCompletion(request, null, cancellation);
+    }
+
     /**
-     * 发送 Chat Completions 请求，携带自定义请求头。
+ * Chat Completions ,request header.
      */
     public ChatResponse chatCompletion(ChatRequest request, OpenClawHeaders.Builder headersBuilder) {
         Map<String, String> headers = headersBuilder != null ? headersBuilder.build() : null;
@@ -461,84 +469,84 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 发送 chat completion 请求（简洁写法）。
+ * chat completion .
      * <p>
-     * 示例：
+ * example:
      * <pre>{@code
      * client.chatCompletion("openclaw/default", List.of(ChatMessage.ofUser("Hello")));
      * }</pre>
      * </p>
      *
-     * @param agent    Agent 目标（如 {@code "openclaw/default"}）
-     * @param messages 消息列表
-     * @return Chat Completions 响应
+ * @param agent Agent ( {@code "openclaw/default"})
+ * @param messages message
+ * @return Chat Completions
      */
     public ChatResponse chatCompletion(String agent, List<ChatMessage> messages) {
         return this.chatCompletion(ChatRequest.builder().agent(agent).messages(messages).build());
     }
 
     /**
-     * 发送 chat completion 请求（指定 Agent 和后端模型）。
+ * chat completion ( Agent ).
      * <p>
-     * 示例：
+ * example:
      * <pre>{@code
      * client.chatCompletion("openclaw/default", "gpt-4o", List.of(ChatMessage.ofUser("Hello")));
      * }</pre>
      * </p>
      *
-     * @param agent    Agent 目标（如 {@code "openclaw/default"}）
-     * @param model    后端 LLM 模型（如 {@code "gpt-4o"}）
-     * @param messages 消息列表
-     * @return Chat Completions 响应
+ * @param agent Agent ( {@code "openclaw/default"})
+ * @param model LLM ( {@code "gpt-4o"})
+ * @param messages message
+ * @return Chat Completions
      */
     public ChatResponse chatCompletion(String agent, String model, List<ChatMessage> messages) {
         return this.chatCompletion(ChatRequest.builder().agent(agent).model(model).messages(messages).build());
     }
 
     /**
-     * 发送 chat completion 请求（指定 Agent、模型和用户标识）。
+ * chat completion ( Agent).
      *
-     * @param agent    Agent 目标
-     * @param model    后端 LLM 模型
-     * @param user     用户标识（用于派生稳定 session）
-     * @param messages 消息列表
-     * @return Chat Completions 响应
+ * @param agent Agent
+ * @param model LLM
+ * @param user (Used for session)
+ * @param messages message
+ * @return Chat Completions
      */
     public ChatResponse chatCompletion(String agent, String model, String user, List<ChatMessage> messages) {
         return this.chatCompletion(ChatRequest.builder().agent(agent).model(model).user(user).messages(messages).build());
     }
 
     /**
-     * 发送流式 chat completion 请求（指定 Agent）。
+ * streaming chat completion ( Agent).
      *
-     * @param agent    Agent 目标
-     * @param messages 消息列表
-     * @return 流式响应
+ * @param agent Agent
+ * @param messages message
+ * @return streaming
      */
     public StreamingChatResponse chatCompletionStream(String agent, List<ChatMessage> messages) {
         return this.chatCompletionStream(ChatRequest.builder().agent(agent).messages(messages).build());
     }
 
     /**
-     * 发送流式 chat completion 请求（指定 Agent 和后端模型）。
+ * streaming chat completion ( Agent ).
      *
-     * @param agent    Agent 目标
-     * @param model    后端 LLM 模型
-     * @param messages 消息列表
-     * @return 流式响应
+ * @param agent Agent
+ * @param model LLM
+ * @param messages message
+ * @return streaming
      */
     public StreamingChatResponse chatCompletionStream(String agent, String model, List<ChatMessage> messages) {
         return this.chatCompletionStream(ChatRequest.builder().agent(agent).model(model).messages(messages).build());
     }
 
     /**
-     * 发送流式 chat completion 请求（指定 Agent、模型和用户标识）。
+ * streaming chat completion ( Agent).
      *
-     * @param agent    Agent 目标
-     * @param model    后端 LLM 模型
-     * @param user     用户标识（用于派生稳定 session）
-     * @param messages 消息列表
-     * @return 流式响应
+ * @param agent Agent
+ * @param model LLM
+ * @param user (Used for session)
+ * @param messages message
+ * @return streaming
      */
     public StreamingChatResponse chatCompletionStream(String agent, String model, String user, List<ChatMessage> messages) {
         return this.chatCompletionStream(ChatRequest.builder().agent(agent).model(model).user(user).messages(messages).build());
@@ -549,31 +557,31 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 流式 chat completion，返回 {@link StreamingChatResponse}。
+ * streaming chat completion, {@link StreamingChatResponse}.
      *
      * <pre>{@code
      * client.chatCompletionStream(request)
      *     .onDelta(delta -> System.out.print(delta))
-     *     .onComplete(text -> System.out.println("\n完成"))
+ * .onComplete(text -> System.out.println("\ncompletion"))
      *     .onError(error -> error.printStackTrace());
      * }</pre>
      *
-     * @param request 请求体（自动设 stream=true）
-     * @return 流式响应，支持链式回调
+ * @param request request body( stream=true)
+ * @return streaming,
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request) {
         return chatClient.chatCompletionStream(request);
     }
 
     /**
-     * 流式 chat completion，使用 Builder 模式注册回调。
+ * streaming chat completion, Builder .
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request, StreamingChatResponse.Builder callbackBuilder) {
         return chatClient.chatCompletionStream(request, callbackBuilder);
     }
 
     /**
-     * 流式 chat completion，按 sessionKey 路由。
+ * streaming chat completion, sessionKey .
      */
     public StreamingChatResponse chatCompletionStreamWithSession(ChatRequest request, String sessionKey) {
         Map<String, String> headers = OpenClawHeaders.builder().sessionKey(sessionKey).build();
@@ -585,7 +593,7 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 获取可用模型/agent 目标列表。
+ * /agent .
      */
     public ModelsResponse listModels() {
         return chatClient.listModels();
@@ -596,7 +604,7 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 创建嵌入向量。
+ * embedding vector.
      */
     public EmbeddingsResponse createEmbeddings(EmbeddingsRequest request) {
         return embeddingsClient.createEmbeddings(request);
@@ -607,7 +615,7 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 发送 OpenResponses 请求。
+ * OpenResponses .
      */
     public ResponseResult createResponse(ResponseRequest request) {
         return responsesClient.createResponse(request);
@@ -618,17 +626,21 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 获取 Tools Invoke 客户端实例。
+ * Tools Invoke .
      */
     public OpenClawToolInvokeClient toolsInvoke() {
         return toolsInvokeClient;
     }
 
     /**
-     * 调用单个工具。
+ * .
      */
     public ToolInvokeResult toolInvoke(ToolInvokeRequest request) {
         return toolsInvokeClient.invoke(request);
+    }
+
+    public ToolInvokeResult toolInvoke(ToolInvokeRequest request, HttpCallCancellation cancellation) {
+        return toolsInvokeClient.invoke(request, cancellation);
     }
 
     // ============================================================
@@ -636,7 +648,7 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 官方 CLI 顶层命令封装。
+ * top-level CLI command facade.
      */
     public OpenClawCli cli() {
         return cli;
@@ -659,7 +671,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 安全关闭资源（失败不抛异常、不影响后续释放）。
+ * Quietly closes().
      */
     private static void closeQuietly(AutoCloseable resource) {
         if (resource == null) {
