@@ -46,10 +46,10 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     private static ExecutorService createStreamExecutor(OpenClawHttpClientConfig config) {
-        int corePoolSize = Math.max(1, config.getSseCorePoolSize());
-        int maxPoolSize = Math.max(corePoolSize, config.getSseMaxPoolSize());
-        int queueCapacity = Math.max(1, config.getSseQueueCapacity());
-        long keepAliveMillis = Math.max(1L, config.getSseKeepAliveMillis());
+        int corePoolSize = Math.max(1, config.getStreamCorePoolSize());
+        int maxPoolSize = Math.max(corePoolSize, config.getStreamMaxPoolSize());
+        int queueCapacity = Math.max(1, config.getStreamQueueCapacity());
+        long keepAliveMillis = Math.max(1L, config.getStreamKeepAliveMillis());
         AtomicInteger threadIndex = new AtomicInteger();
         return new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveMillis, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<>(queueCapacity), runnable -> {
