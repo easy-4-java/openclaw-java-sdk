@@ -22,6 +22,11 @@ import org.junit.jupiter.api.Test;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -176,16 +181,11 @@ class OpenClawGatewayWsClientIntegrationTest {
                 String method = request.path("method").asText();
                 if (method.equals("connect")) {
                     connectRequest.set(request);
-                    conn.send(response(id, true, Map.of(
-                            "type", "hello-ok", "protocol", 1,
-                            "server", Map.of("version", "test", "connId", "connection"),
-                            "features", Map.of("methods", java.util.List.of("chat.send"), "events", java.util.List.of("chat")),
-                            "auth", Map.of("role", "operator", "scopes", java.util.List.of("operator.read")),
-                            "policy", Map.of("maxPayload", 1024, "maxBufferedBytes", 1024, "tickIntervalMs", 1000))));
+                    conn.send(response(id, true, buildHelloOkMap()));
                     return;
                 }
                 if (method.equals("chat.send")) {
-                    conn.send(response(id, true, Map.of("runId", id)));
+                    conn.send(response(id, true, Collections.singletonMap("runId", id)));
                     conn.send("{\"type\":\"event\",\"event\":\"chat\",\"payload\":{\"runId\":\"" + id + "\",\"delta\":\"hello\"}}");
                     conn.send("{\"type\":\"event\",\"event\":\"chat\",\"payload\":{\"runId\":\"" + id + "\",\"done\":true}}");
                     return;
@@ -193,7 +193,7 @@ class OpenClawGatewayWsClientIntegrationTest {
                 if (errorNext.compareAndSet(true, false)) {
                     conn.send("{\"type\":\"res\",\"id\":\"" + id + "\",\"ok\":false,\"error\":{\"code\":\"FAILED\",\"message\":\"failed\"}}");
                 } else {
-                    conn.send(response(id, true, Map.of()));
+                    conn.send(response(id, true, Collections.emptyMap()));
                 }
             } catch (Exception e) {
                 throw new AssertionError(e);
@@ -201,7 +201,36 @@ class OpenClawGatewayWsClientIntegrationTest {
         }
 
         private String response(String id, boolean ok, Object payload) throws Exception {
-            return mapper.writeValueAsString(Map.of("type", "res", "id", id, "ok", ok, "payload", payload));
+            Map<String, Object> responseMap = new LinkedHashMap<String, Object>();
+            responseMap.put("type", "res");
+            responseMap.put("id", id);
+            responseMap.put("ok", ok);
+            responseMap.put("payload", payload);
+            return mapper.writeValueAsString(responseMap);
+        }
+
+        private Map<String, Object> buildHelloOkMap() {
+            Map<String, Object> server = new LinkedHashMap<String, Object>();
+            server.put("version", "test");
+            server.put("connId", "connection");
+            Map<String, Object> features = new LinkedHashMap<String, Object>();
+            features.put("methods", Arrays.asList("chat.send"));
+            features.put("events", Arrays.asList("chat"));
+            Map<String, Object> auth = new LinkedHashMap<String, Object>();
+            auth.put("role", "operator");
+            auth.put("scopes", Arrays.asList("operator.read"));
+            Map<String, Object> policy = new LinkedHashMap<String, Object>();
+            policy.put("maxPayload", 1024);
+            policy.put("maxBufferedBytes", 1024);
+            policy.put("tickIntervalMs", 1000);
+            Map<String, Object> helloOk = new LinkedHashMap<String, Object>();
+            helloOk.put("type", "hello-ok");
+            helloOk.put("protocol", 1);
+            helloOk.put("server", server);
+            helloOk.put("features", features);
+            helloOk.put("auth", auth);
+            helloOk.put("policy", policy);
+            return helloOk;
         }
 
         private void sendRaw(String message) {

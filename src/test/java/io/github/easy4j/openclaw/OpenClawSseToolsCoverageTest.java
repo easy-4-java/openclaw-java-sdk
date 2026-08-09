@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -125,14 +127,14 @@ class OpenClawSseToolsCoverageTest {
         assertThrows(IllegalArgumentException.class, () -> Tools.parseArgsAsMap(call));
         assertThrows(NullPointerException.class, () -> Tools.parseArgs(null, Map.class));
 
-        ChatMessage message = ChatMessage.ofAssistant(null, List.of(call));
+        ChatMessage message = ChatMessage.ofAssistant(null, Arrays.asList(call));
         assertTrue(Tools.hasToolCalls(message));
         assertFalse(Tools.hasToolCalls(null));
         assertTrue(Tools.isToolCallFinish("tool_calls"));
         assertEquals(1, Tools.extractToolCalls(message).size());
         assertTrue(Tools.extractToolCalls(ChatMessage.ofUser("hello")).isEmpty());
         assertEquals("plain", Tools.toolResult("id", "plain").getContent());
-        assertTrue(Tools.toolResult("id", Map.of("ok", true)).getContent().contains("true"));
+        assertTrue(Tools.toolResult("id", Collections.singletonMap("ok", true)).getContent().contains("true"));
 
         assertEquals("message", ResponseRequest.InputItem.message().role("user").content("hello").build().getType());
         assertEquals("function_call_output", ResponseRequest.InputItem.functionCallOutput()
@@ -152,7 +154,7 @@ class OpenClawSseToolsCoverageTest {
         ChatChunk.DeltaMessage delta = new ChatChunk.DeltaMessage();
         delta.setRole(role);
         delta.setContent(content);
-        delta.setToolCalls(toolCall == null ? null : List.of(toolCall));
+        delta.setToolCalls(toolCall == null ? null : Arrays.asList(toolCall));
         ChatChunk.DeltaChoice choice = new ChatChunk.DeltaChoice();
         choice.setIndex(0);
         choice.setDelta(delta);
@@ -160,7 +162,7 @@ class OpenClawSseToolsCoverageTest {
         ChatChunk chunk = new ChatChunk();
         chunk.setId(id);
         chunk.setModel(model);
-        chunk.setChoices(List.of(choice));
+        chunk.setChoices(Arrays.asList(choice));
         return chunk;
     }
 

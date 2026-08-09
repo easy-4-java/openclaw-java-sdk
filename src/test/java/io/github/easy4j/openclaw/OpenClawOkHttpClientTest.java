@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -108,7 +109,7 @@ class OpenClawOkHttpClientTest {
         config.setStartupCheckEnabled(false);
         ChatRequest request = ChatRequest.builder()
                 .agent("openclaw/default")
-                .messages(List.of(ChatMessage.ofUser("ping")))
+                .messages(Arrays.asList(ChatMessage.ofUser("ping")))
                 .build();
 
         try (OpenClawClient client = new OpenClawClient(config, new ObjectMapper(), external)) {
@@ -165,7 +166,7 @@ class OpenClawOkHttpClientTest {
         config.setStartupCheckEnabled(false);
         ChatRequest request = ChatRequest.builder()
                 .agent("openclaw/default")
-                .messages(List.of(ChatMessage.ofUser("ping")))
+                .messages(Arrays.asList(ChatMessage.ofUser("ping")))
                 .build();
 
         try (OpenClawClient client = new OpenClawClient(config, new ObjectMapper(), external)) {

@@ -27,6 +27,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -79,12 +81,12 @@ class OpenClawHttpApiCoverageTest {
     void shouldCoverChatModelsStreamingAndValidation() throws Exception {
         try (OpenClawChatClient chat = new OpenClawChatClient(config, new ObjectMapper(), client)) {
             ChatRequest agentRequest = ChatRequest.builder().agent("openclaw/default")
-                    .messages(List.of(ChatMessage.ofUser("hello"))).build();
+                    .messages(Arrays.asList(ChatMessage.ofUser("hello"))).build();
             ChatRequest modelRequest = ChatRequest.builder().model("gpt-5.4")
-                    .messages(List.of(ChatMessage.ofUser("hello"))).build();
+                    .messages(Arrays.asList(ChatMessage.ofUser("hello"))).build();
 
             assertEquals("chat-id", chat.chatCompletion(agentRequest).getId());
-            assertEquals("chat-id", chat.chatCompletion(modelRequest, Map.of("X-Custom", "value")).getId());
+            assertEquals("chat-id", chat.chatCompletion(modelRequest, Collections.singletonMap("X-Custom", "value")).getId());
             AtomicBoolean cancellationRegistered = new AtomicBoolean();
             assertThrows(OpenClawHttpException.class, () -> chat.chatCompletion(agentRequest, null, callback -> {
                 cancellationRegistered.set(true);
@@ -100,9 +102,9 @@ class OpenClawHttpApiCoverageTest {
 
             assertThrows(NullPointerException.class, () -> chat.chatCompletion(null));
             assertThrows(IllegalArgumentException.class, () -> chat.chatCompletion(ChatRequest.builder()
-                    .messages(List.of(ChatMessage.ofUser("hello"))).build()));
+                    .messages(Arrays.asList(ChatMessage.ofUser("hello"))).build()));
             assertThrows(IllegalArgumentException.class, () -> chat.chatCompletion(ChatRequest.builder()
-                    .agent("openclaw/default").messages(List.of()).build()));
+                    .agent("openclaw/default").messages(Collections.emptyList()).build()));
 
             StreamingChatResponse stream = chat.chatCompletionStream(agentRequest);
             assertEquals("hello", stream.get(3, TimeUnit.SECONDS).getChoices().get(0).getDelta().getContent());
@@ -110,7 +112,7 @@ class OpenClawHttpApiCoverageTest {
                     StreamingChatResponse.builder().onDelta(ignored -> { }).onChunk(ignored -> { })
                             .onToolCall(ignored -> { }).onComplete(ignored -> { }).onError(ignored -> { }));
             assertEquals("hello", callbackStream.get(3, TimeUnit.SECONDS).getChoices().get(0).getDelta().getContent());
-            try (Response raw = chat.chatCompletionStreamRaw(agentRequest, Map.of("X-Raw", "yes"))) {
+            try (Response raw = chat.chatCompletionStreamRaw(agentRequest, Collections.singletonMap("X-Raw", "yes"))) {
                 assertEquals(200, raw.code());
             }
 
@@ -126,19 +128,19 @@ class OpenClawHttpApiCoverageTest {
              OpenClawEmbeddingsClient embeddings = new OpenClawEmbeddingsClient(config, null, client);
              OpenClawToolInvokeClient tools = new OpenClawToolInvokeClient(config, null, client)) {
             assertNotNull(responses.createResponse(ResponseRequest.builder().agent("openclaw/default").input("hello").build()));
-            assertNotNull(responses.createResponse(ResponseRequest.builder().model("gpt-5.4").input(List.of("hello")).build()));
+            assertNotNull(responses.createResponse(ResponseRequest.builder().model("gpt-5.4").input(Arrays.asList("hello")).build()));
             assertThrows(IllegalArgumentException.class, () -> responses.createResponse(ResponseRequest.builder().input("hello").build()));
             assertThrows(IllegalArgumentException.class, () -> responses.createResponse(ResponseRequest.builder().agent("a").build()));
 
             assertNotNull(embeddings.createEmbeddings(EmbeddingsRequest.builder().agent("openclaw/default").input("hello").build()));
-            assertNotNull(embeddings.createEmbeddings(EmbeddingsRequest.builder().model("embed-model").input(List.of("hello")).build()));
+            assertNotNull(embeddings.createEmbeddings(EmbeddingsRequest.builder().model("embed-model").input(Arrays.asList("hello")).build()));
             assertThrows(IllegalArgumentException.class, () -> embeddings.createEmbeddings(EmbeddingsRequest.builder().input("hello").build()));
             assertThrows(IllegalArgumentException.class, () -> embeddings.createEmbeddings(EmbeddingsRequest.builder().agent("a").build()));
 
             ToolInvokeRequest request = new ToolInvokeRequest();
             request.setTool("browser");
             request.setAction("open");
-            request.setArgs(Map.of("url", "http://localhost"));
+            request.setArgs(Collections.singletonMap("url", "http://localhost"));
             assertTrue(tools.invoke(request).getOk());
             assertThrows(NullPointerException.class, () -> tools.invoke(null));
             assertThrows(IllegalArgumentException.class, () -> tools.invoke(new ToolInvokeRequest()));
@@ -181,7 +183,7 @@ class OpenClawHttpApiCoverageTest {
             assertTrue(webhooks.postHooksWake("wake", "later").contains("runId"));
             assertTrue(webhooks.postMappedHook("/hooks/custom", null).contains("runId"));
             assertThrows(IllegalArgumentException.class, () -> webhooks.postHooksWake(" ", "now"));
-            assertThrows(IllegalArgumentException.class, () -> webhooks.postMappedHook("bad/name", Map.of()));
+            assertThrows(IllegalArgumentException.class, () -> webhooks.postMappedHook("bad/name", Collections.emptyMap()));
             assertThrows(IllegalArgumentException.class, () -> OpenClawWebhookClient.buildHooksAgentBody(new HookRequest()));
             assertEquals("custom", OpenClawWebhookClient.normalizeHookName(" /hooks/custom "));
             assertTrue(OpenClawWebhookClient.parseOk("{\"ok\":true}"));
@@ -192,9 +194,9 @@ class OpenClawHttpApiCoverageTest {
             assertNull(OpenClawWebhookClient.parseRunId("invalid"));
 
             status.set(500);
-            assertThrows(OpenClawHttpException.class, () -> webhooks.postMappedHook("custom", Map.of()));
+            assertThrows(OpenClawHttpException.class, () -> webhooks.postMappedHook("custom", Collections.emptyMap()));
             transportFailure.set(true);
-            assertThrows(OpenClawHttpException.class, () -> webhooks.postMappedHook("custom", Map.of()));
+            assertThrows(OpenClawHttpException.class, () -> webhooks.postMappedHook("custom", Collections.emptyMap()));
         }
     }
 
@@ -219,7 +221,7 @@ class OpenClawHttpApiCoverageTest {
         assertEquals("system", ChatMessage.ofSystem("s").getRole());
         assertEquals("user", ChatMessage.ofUser("u").getRole());
         assertEquals("assistant", ChatMessage.ofAssistant("a").getRole());
-        assertEquals(toolCall, ChatMessage.ofAssistant(null, List.of(toolCall)).getToolCalls().get(0));
+        assertEquals(toolCall, ChatMessage.ofAssistant(null, Arrays.asList(toolCall)).getToolCalls().get(0));
         assertEquals("tool", ChatMessage.ofTool("id", "result").getRole());
     }
 

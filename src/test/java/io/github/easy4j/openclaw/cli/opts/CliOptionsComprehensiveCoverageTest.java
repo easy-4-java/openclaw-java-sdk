@@ -7,6 +7,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 class CliOptionsComprehensiveCoverageTest {
 
-    private static final List<Class<?>> OPTION_TYPES = List.of(
+    private static final List<Class<?>> OPTION_TYPES = Collections.unmodifiableList(Arrays.asList(
             PluginsOptions.class,
             ChannelsOptions.class,
             AgentsOptions.class,
@@ -42,7 +44,7 @@ class CliOptionsComprehensiveCoverageTest {
             DoctorOptions.class,
             WorktreesOptions.class,
             HealthCommandOptions.class
-    );
+    ));
 
     @Test
     void everyPublicBuilderPathMustGenerateValidImmutableArguments() throws Exception {
@@ -122,10 +124,10 @@ class CliOptionsComprehensiveCoverageTest {
             return values;
         }
         if (List.class.isAssignableFrom(type)) {
-            return List.of("value");
+            return Arrays.asList("value");
         }
         if (Map.class.isAssignableFrom(type)) {
-            return Map.of("key", "value");
+            return Collections.singletonMap("key", "value");
         }
         try {
             Object nestedBuilder = type.getMethod("builder").invoke(null);
