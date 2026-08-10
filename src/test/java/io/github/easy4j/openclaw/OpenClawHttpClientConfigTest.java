@@ -6,6 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OpenClawHttpClientConfigTest {
 
+    @org.junit.jupiter.api.Test
+    void detailedLoggingIsOptIn() {
+        OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
+        org.junit.jupiter.api.Assertions.assertFalse(config.isDetailedLoggingEnabled());
+        org.junit.jupiter.api.Assertions.assertEquals(2_000, config.getMaxLoggedBodyLength());
+    }
+
     @Test
     void shouldExposeUnifiedStreamPropertiesAndLegacyAliases() {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();

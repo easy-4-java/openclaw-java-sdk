@@ -108,6 +108,15 @@ public class OpenClawHttpClientConfig {
     private boolean retryOnConnectionFailure = true;
 
     /**
+     * 是否输出请求头、请求体及响应体等详细诊断信息。
+     * <p>默认关闭，避免业务内容或凭证进入日志；基础请求追踪仍以 DEBUG 级别输出。</p>
+     */
+    private boolean detailedLoggingEnabled = false;
+
+    /** 详细日志中请求体、响应体的最大字符数。 */
+    private int maxLoggedBodyLength = 2_000;
+
+    /**
  * Gateway HTTP Webhooks base path,Corresponds to {@code hooks.path}, {@code /hooks}.
      */
     private String hooksPath = "/hooks";
