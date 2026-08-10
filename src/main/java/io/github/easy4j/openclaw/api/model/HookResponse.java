@@ -6,20 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
- * agent(HTTP CLI).
+ * OpenClaw JSON 协议中的 `HookResponse` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <p>Gateway {@code POST /hooks/agent} :
- * <pre>{@code
- * { "ok": true, "runId": "..." }
- * }</pre>
- * :
- * <pre>{@code
- * { "ok": false, "error": "..." }
- * }</pre>
- * </p>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Data
 @NoArgsConstructor
@@ -29,22 +19,34 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HookResponse {
 
- /** ( {@code ok} map) */
+    /**
+     * 映射 OpenClaw JSON 字段 `success` 的 布尔开关。
+     */
     @JsonProperty("ok")
     private boolean success;
 
- /** HTTP status code; -1 */
+    /**
+     * 映射 OpenClaw JSON 字段 `httpStatus` 的 协议内容。
+     */
     private int httpStatus = -1;
 
- /** runId(Corresponds to {@code runId} field) */
+    /**
+     * 映射 OpenClaw JSON 字段 `runId` 的 关联标识。
+     */
     private String runId;
 
- /** process */
+    /**
+     * 映射 OpenClaw JSON 字段 `rawBody` 的 协议内容。
+     */
     private String rawBody;
 
- /** error message( {@code error} field) */
+    /**
+     * 映射 OpenClaw JSON 字段 `error` 的 协议内容。
+     */
     private String error;
 
- /** CLI completion */
+    /**
+     * 映射 OpenClaw JSON 字段 `localInvocation` 的 布尔开关。
+     */
     private boolean localInvocation;
 }

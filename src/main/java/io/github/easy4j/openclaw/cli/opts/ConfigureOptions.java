@@ -8,19 +8,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw configure}:,Used for,device agent default value; {@code --section} .
- * <p> {@code openclaw config}(subcommand);key {@code openclaw config get|set|unset}.
- * Model {@code agents.defaults.models} ; provider authentication provider directory.</p>
+ * openclaw `configure` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/configure">configure CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class ConfigureOptions implements CliSubArgs {
 
     /**
- * {@code --section} value,Used for(workspace,model,web,gateway,daemon,channels,plugins,skills,health).
+     * 传给 openclaw 子命令 `--sections` 选项的内容；为 null 时通常省略。
      */
     private final List<String> sections;
 
@@ -32,14 +28,18 @@ public final class ConfigureOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `ConfigureOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -54,15 +54,23 @@ public final class ConfigureOptions implements CliSubArgs {
     }
 
     /**
- * {@link ConfigureOptions} builder.
+     * 链式构建器，逐项收集 ConfigureOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ConfigureOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
 
- /** section . */
+        /**
+         * 传给 openclaw 子命令 `--sections` 选项的内容；为 null 时通常省略。
+         */
         private final List<String> sections = new ArrayList<>();
 
         /**
- * {@code --section}(;documentation workspace,model,web,gateway,daemon,channels,plugins,skills,health).
+         * 设置 `--section` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param section 写入 `--section` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder section(String section) {
             if (section != null && !section.isEmpty()) {
@@ -72,7 +80,9 @@ public final class ConfigureOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link ConfigureOptions}
+         * 校验并复制当前构建器字段，创建独立的 `ConfigureOptions`。
+         *
+         * @return 按当前字段创建的 ConfigureOptions
          */
         public ConfigureOptions build() {
             return new ConfigureOptions(this);

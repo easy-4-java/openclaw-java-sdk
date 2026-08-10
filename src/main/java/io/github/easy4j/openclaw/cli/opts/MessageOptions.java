@@ -9,75 +9,71 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw message}:message(send,poll,react,thread,moderation ),Provides.
- * <p> {@code --channel};{@code --target} provider (Telegram chat id,Slack {@code channel:} ).
- * SecretRef action ;/ fail closed.subcommand, {@link Builder#extra(String...)}.</p>
+ * openclaw `message` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/message">message CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class MessageOptions implements CliSubArgs {
 
     /**
- * subcommand( {@code send},{@code thread},{@code create}), CLI .
+     * 传给 openclaw 子命令 `--action` 选项的内容；为 null 时通常省略。
      */
     private final List<String> action;
     /**
- * {@code --channel}:discord,slack,telegram id;Required.
+     * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
      */
     private final String channel;
     /**
- * {@code --account}: id.
+     * 传给 openclaw 子命令 `--account` 选项的内容；为 null 时通常省略。
      */
     private final String account;
     /**
- * {@code --target}:(channel,session id ,See message documentation Target formats).
+     * 传给 openclaw 子命令 `--target` 选项的内容；为 null 时通常省略。
      */
     private final String target;
     /**
- * {@code --targets} :.
+     * 传给 openclaw 子命令 `--targets` 选项的内容；为 null 时通常省略。
      */
     private final List<String> targets;
     /**
- * {@code --message}:(send/edit subcommand).
+     * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
      */
     private final String message;
     /**
- * {@code --media}:/url.
+     * 传给 openclaw 子命令 `--media` 选项的内容；为 null 时通常省略。
      */
     private final String media;
     /**
- * {@code --message-id}:,message id.
+     * 传给 openclaw 子命令 `--message-id` 选项的内容；为 null 时通常省略。
      */
     private final String messageId;
     /**
- * {@code --emoji}: emoji.
+     * 传给 openclaw 子命令 `--emoji` 选项的内容；为 null 时通常省略。
      */
     private final String emoji;
     /**
- * {@code --json}:.
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
     /**
- * {@code --dry-run}:( broadcast).
+     * 是否向 openclaw 子命令追加 `--dry-run` 开关。
      */
     private final boolean dryRun;
     /**
- * {@code --verbose}: CLI .
+     * 是否向 openclaw 子命令追加 `--verbose` 开关。
      */
     private final boolean verbose;
     /**
- * {@code --poll-question}:.
+     * 传给 openclaw 子命令 `--poll-question` 选项的内容；为 null 时通常省略。
      */
     private final String pollQuestion;
     /**
- * {@code --poll-option} :.
+     * 传给 openclaw 子命令 `--poll-options` 选项的内容；为 null 时通常省略。
      */
     private final List<String> pollOptions;
     /**
- * argv( flag).
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -103,14 +99,18 @@ public final class MessageOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `MessageOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -139,30 +139,78 @@ public final class MessageOptions implements CliSubArgs {
     }
 
     /**
- * {@link MessageOptions} builder.
+     * 链式构建器，逐项收集 MessageOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 MessageOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--action` 选项的内容；为 null 时通常省略。
+         */
         private List<String> action = new ArrayList<>();
+        /**
+         * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+         */
         private String channel;
+        /**
+         * 传给 openclaw 子命令 `--account` 选项的内容；为 null 时通常省略。
+         */
         private String account;
+        /**
+         * 传给 openclaw 子命令 `--target` 选项的内容；为 null 时通常省略。
+         */
         private String target;
+        /**
+         * 传给 openclaw 子命令 `--targets` 选项的内容；为 null 时通常省略。
+         */
         private List<String> targets = new ArrayList<>();
+        /**
+         * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
+         */
         private String message;
+        /**
+         * 传给 openclaw 子命令 `--media` 选项的内容；为 null 时通常省略。
+         */
         private String media;
+        /**
+         * 传给 openclaw 子命令 `--message-id` 选项的内容；为 null 时通常省略。
+         */
         private String messageId;
+        /**
+         * 传给 openclaw 子命令 `--emoji` 选项的内容；为 null 时通常省略。
+         */
         private String emoji;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
+        /**
+         * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+         */
         private boolean dryRun;
+        /**
+         * 是否向 openclaw 子命令追加 `--verbose` 开关。
+         */
         private boolean verbose;
+        /**
+         * 传给 openclaw 子命令 `--poll-question` 选项的内容；为 null 时通常省略。
+         */
         private String pollQuestion;
+        /**
+         * 传给 openclaw 子命令 `--poll-options` 选项的内容；为 null 时通常省略。
+         */
         private List<String> pollOptions = new ArrayList<>();
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
- * subcommand, {@code action("send")},{@code action("thread", "create")}.
+         * 设置 `--action` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param parts subcommand
-         * @return {@code this}
+         * @param parts 写入 `--action` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder action(String... parts) {
             this.action = new ArrayList<>();
@@ -177,8 +225,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param channel {@code --channel}
-         * @return {@code this}
+         * 设置 `--channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param channel 写入 `--channel` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder channel(String channel) {
             this.channel = channel;
@@ -186,8 +236,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param account {@code --account}
-         * @return {@code this}
+         * 设置 `--account` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param account 写入 `--account` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder account(String account) {
             this.account = account;
@@ -195,8 +247,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param target {@code --target}
-         * @return {@code this}
+         * 设置 `--target` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param target 写入 `--target` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder target(String target) {
             this.target = target;
@@ -204,8 +258,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
- * @param t {@code --targets}
-         * @return {@code this}
+         * 设置 `--add-target` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param t 写入 `--add-target` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder addTarget(String t) {
             if (t != null && OpenClawStrings.isNotBlank(t)) {
@@ -215,8 +271,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param message {@code --message}
-         * @return {@code this}
+         * 设置 `--message` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param message 消息正文
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder message(String message) {
             this.message = message;
@@ -224,8 +282,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param media {@code --media}
-         * @return {@code this}
+         * 设置 `--media` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param media 写入 `--media` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder media(String media) {
             this.media = media;
@@ -233,8 +293,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param messageId {@code --message-id}
-         * @return {@code this}
+         * 设置 `--message-id` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param messageId 写入 `--message-id` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder messageId(String messageId) {
             this.messageId = messageId;
@@ -242,8 +304,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param emoji {@code --emoji}
-         * @return {@code this}
+         * 设置 `--emoji` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param emoji 写入 `--emoji` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder emoji(String emoji) {
             this.emoji = emoji;
@@ -251,8 +315,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --json}
-         * @return {@code this}
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -260,8 +326,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param dryRun {@code --dry-run}
-         * @return {@code this}
+         * 设置 `--dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param dryRun 是否向命令行追加 `--dry-run` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder dryRun(boolean dryRun) {
             this.dryRun = dryRun;
@@ -269,8 +337,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param verbose {@code --verbose}
-         * @return {@code this}
+         * 设置 `--verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param verbose 是否向命令行追加 `--verbose` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder verbose(boolean verbose) {
             this.verbose = verbose;
@@ -278,8 +348,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
-         * @param q {@code --poll-question}
-         * @return {@code this}
+         * 设置 `--poll-question` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param q 写入 `--poll-question` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder pollQuestion(String q) {
             this.pollQuestion = q;
@@ -287,8 +359,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
- * @param option {@code --poll-option}
-         * @return {@code this}
+         * 设置 `--poll-option` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param option 写入 `--poll-option` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder pollOption(String option) {
             if (option != null && OpenClawStrings.isNotBlank(option)) {
@@ -298,10 +372,10 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -311,7 +385,9 @@ public final class MessageOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link MessageOptions}
+         * 校验并复制当前构建器字段，创建独立的 `MessageOptions`。
+         *
+         * @return 按当前字段创建的 MessageOptions
          */
         public MessageOptions build() {
             return new MessageOptions(this);

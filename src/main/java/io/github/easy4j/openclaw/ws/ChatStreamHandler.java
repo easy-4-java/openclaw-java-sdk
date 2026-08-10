@@ -1,35 +1,31 @@
 package io.github.easy4j.openclaw.ws;
 
 /**
- * {@code chat.send} streaming reply handler.
- * <p>Gateway {@code chat.send} {@code event: "chat"} event,
- * {@code delta: true} delta text,{@code done: true} completion.</p>
+ * `ChatStreamHandler` 生命周期回调契约；实现方应避免在网络回调线程中执行长时间阻塞任务。
  *
- * @see <a href="https://docs.openclaw.ai/gateway/protocol">Gateway Protocol</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public interface ChatStreamHandler {
 
     /**
- * delta text.
+     * 接收并处理 Delta 生命周期事件；实现不会改变事件顺序。
      *
- * @param text delta text
+     * @param text 写入 `text` 协议字段的内容
      */
     void onDelta(String text);
 
     /**
- * completion.
+     * 接收并处理 Complete 生命周期事件；实现不会改变事件顺序。
      *
- * @param fullText
+     * @param fullText 写入 `fullText` 协议字段的内容
      */
     void onComplete(String fullText);
 
     /**
- * .
+     * 接收并处理 Error 生命周期事件；实现不会改变事件顺序。
      *
- * @param error error message
+     * @param error 导致调用失败的异常
      */
     void onError(String error);
 }

@@ -21,75 +21,70 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * OpenClaw Gateway WebSocket protocol client.
+ * Gateway WebSocket 控制面客户端。它实现 challenge 握手、请求与响应关联、RPC 超时、chat 事件路由以及断线时的等待者清理。
  *
- * <h3></h3>
- * <ul>
- * <li>:{@code req}(RPC ),{@code res}(RPC ),{@code event}(event)</li>
- * <li>handshake:connection {@code method: "connect"}, {@code hello-ok} RPC</li>
- * <li>streaming:{@code chat.send} → {@code event: "chat", delta: true} → {@code event: "chat", done: true}</li>
- * </ul>
- *
- * <h3>example</h3>
- * <pre>{@code
- * OpenClawClientConfig config = new OpenClawClientConfig();
- * config.setBaseUrl("http://localhost:18789");
- * config.setGatewayAuthToken("my-gateway-token");
- *
- * OpenClawGatewayWsClient ws = new OpenClawGatewayWsClient(config);
- * ws.addListener(new OpenClawWsListener() { ... });
- * ws.connectBlocking();
- *
- * // streaming
- * ws.chatSend(ChatSendParams.builder()
- *     .sessionKey("main")
- * .message("")
- *     .build(),
- *     new ChatStreamHandler() {
- *         public void onDelta(String text) { System.out.print(text); }
- *         public void onComplete(String fullText) { System.out.println(); }
- *         public void onError(String error) { System.err.println(error); }
- *     });
- *
- * ws.close();
- * }</pre>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/protocol">Gateway Protocol</a>
- * @see <a href="https://docs.openclaw.ai/gateway/bridge-protocol">Bridge Protocol (legacy)</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Slf4j
 public class OpenClawGatewayWsClient extends WebSocketClient implements AutoCloseable {
 
+    /**
+     * OpenClaw 协议固定值 {@code 1}；调用方不应在运行时修改。
+     */
     private static final int PROTOCOL_VERSION = 1;
 
- /** RPC timeout(milliseconds) */
+    /**
+     * 用于限制等待时间的默认值 {@code 120_000L}，单位由字段名声明。
+     */
     private static final long DEFAULT_RPC_TIMEOUT_MS = 120_000L;
 
+    /**
+     * SDK 配置。
+     */
     private final OpenClawHttpClientConfig config;
+    /**
+     * JSON 映射器。
+     */
     private final ObjectMapper objectMapper;
+    /**
+     * `OpenClawGatewayWsClient` 生命周期内保存的 `listeners` 对应状态。
+     */
     private final List<OpenClawWsListener> listeners = new CopyOnWriteArrayList<>();
 
- /** RPC ID → PendingRpc */
+    /**
+     * 请求标识到待完成 RPC 的并发表；响应、超时和断线都必须移除对应项。
+     */
     private final Map<String, PendingRpc> pendingRpcs = new ConcurrentHashMap<>();
 
- /** chat.send ID → ChatStreamCollector */
+    /**
+     * 请求或运行标识到活动 chat 流的并发表；完成、失败和断线时清理。
+     */
     private final Map<String, ChatStreamCollector> activeChatStreams = new ConcurrentHashMap<>();
 
- /** connection/handshake/,thread connect completion connectFuture */
+    /**
+     * 跨线程生命周期协调状态，保证并发更新的可见性、互斥或容量上限。
+     */
     private final ReentrantLock connectLock = new ReentrantLock();
 
- /** WebSocket (Java-WebSocket send threadsecurity) */
+    /**
+     * 跨线程生命周期协调状态，保证并发更新的可见性、互斥或容量上限。
+     */
     private final ReentrantLock writeLock = new ReentrantLock();
 
+    /**
+     * 跨线程生命周期协调状态，保证并发更新的可见性、互斥或容量上限。
+     */
     private final AtomicReference<HelloOk> helloOkRef = new AtomicReference<>();
 
- /** connection Future, */
+    /**
+     * `OpenClawGatewayWsClient` 生命周期内保存的 `connectFuture` 对应状态。
+     */
     private volatile CompletableFuture<HelloOk> connectFuture = new CompletableFuture<>();
 
- /** dispatcher(thread,connectionthread) */
+    /**
+     * `OpenClawGatewayWsClient` 生命周期内保存的 `challengeScheduler` 对应状态。
+     */
     private final ScheduledExecutorService challengeScheduler =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r, "openclaw-ws-challenge");
@@ -101,10 +96,21 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     // 构造
     // ============================================================
 
+    /**
+     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     *
+     * @param config SDK 配置
+     */
     public OpenClawGatewayWsClient(OpenClawHttpClientConfig config) {
         this(config, buildWsUri(config));
     }
 
+    /**
+     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     *
+     * @param config SDK 配置
+     * @param serverUri 目标服务地址
+     */
     public OpenClawGatewayWsClient(OpenClawHttpClientConfig config, URI serverUri) {
         super(serverUri);
         this.config = config;
@@ -126,18 +132,12 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     /**
- * connection nonce( {@code connect.challenge} event).
-     * <p>
- * Gateway v4,Gateway connect
- * {@code connect.challenge} event, nonce connect .
- * Gateway event, nonce null,connect nonce.
-     * </p>
+     * 跨线程生命周期协调状态，保证并发更新的可见性、互斥或容量上限。
      */
     private final AtomicReference<String> challengeNonce = new AtomicReference<>();
 
     /**
- * timeout(milliseconds).
- * <p> connect.challenge, connect ( Gateway).</p>
+     * 用于限制等待时间的默认值 {@code 3_000L}，单位由字段名声明。
      */
     private static final long CHALLENGE_TIMEOUT_MS = 3_000L;
 
@@ -145,11 +145,16 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     // 生命周期
     // ============================================================
 
+    /**
+     * 接收并处理 Open 生命周期事件；实现不会改变事件顺序。
+     *
+     * @param handshake 写入 `handshake` 协议字段的内容
+     */
     @Override
     public void onOpen(ServerHandshake handshake) {
         log.info("WebSocket connected to {}, waiting for connect.challenge or timeout", getURI());
         challengeNonce.set(null);
-        // 使用共享的调度器：超时后直接发送 connect（兼容旧版 Gateway）
+        // 新版 Gateway 先发 challenge；超时后无 nonce 握手兼容旧协议，connectFuture 防止重复发送。
         challengeScheduler.schedule(() -> {
                     if (!connectFuture.isDone()) {
                         String nonce = challengeNonce.get();
@@ -161,6 +166,11 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
                 }, CHALLENGE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * 接收并处理 Message 生命周期事件；实现不会改变事件顺序。
+     *
+     * @param message 消息正文
+     */
     @Override
     public void onMessage(String message) {
         try {
@@ -190,18 +200,25 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         }
     }
 
+    /**
+     * 接收并处理 Close 生命周期事件；实现不会改变事件顺序。
+     *
+     * @param code 写入 `code` 协议字段的内容
+     * @param reason 写入 `reason` 协议字段的内容
+     * @param remote 写入 `remote` 协议字段的内容
+     */
     @Override
     public void onClose(int code, String reason, boolean remote) {
         log.info("WebSocket closed: code={}, reason={}, remote={}", code, reason, remote);
         failConnectFuture(new RuntimeException("WebSocket closed: " + reason));
         helloOkRef.set(null);
-        // 取消所有 pending RPC
+        // 断线后响应不可能再到达，必须失败并清空所有等待 Future，避免永久悬挂。
         for (Map.Entry<String, PendingRpc> entry : pendingRpcs.entrySet()) {
             entry.getValue().future.completeExceptionally(
                     new RuntimeException("WebSocket closed: " + reason));
         }
         pendingRpcs.clear();
-        // 清理 chat streams
+        // 活动流也以错误结束，保证每个 handler 都观察到明确终态。
         for (Map.Entry<String, ChatStreamCollector> entry : activeChatStreams.entrySet()) {
             entry.getValue().handler.onError("WebSocket closed: " + reason);
         }
@@ -210,6 +227,11 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         listeners.forEach(l -> l.onDisconnected(code, reason, remote));
     }
 
+    /**
+     * 接收并处理 Error 生命周期事件；实现不会改变事件顺序。
+     *
+     * @param ex 写入 `ex` 协议字段的内容
+     */
     @Override
     public void onError(Exception ex) {
         log.error("WebSocket error", ex);
@@ -344,12 +366,11 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     /**
- * connection Gateway WebSocket handshakecompletion.
- * <p> {@code super.connectBlocking} TCP connection, {@code connect} RPC handshake.</p>
- * <p>threadconcurrency {@link #connectLock} ;connectionhandshake {@link HelloOk}.</p>
+     * 建立 WebSocket 连接，完成 challenge/connect 握手，并在超时或断线时失败所有等待者。
      *
- * @return handshake(hello-ok)
- * @throws InterruptedException threadinterrupt
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 HelloOk
+     * @throws InterruptedException 等待线程被中断时抛出，并恢复中断标记
+     * @throws RuntimeException 远程响应、协议解析或本地执行失败时抛出
      */
     public HelloOk connectHandshake() throws InterruptedException {
         CompletableFuture<HelloOk> handshakeFuture = beginConnectAttempt();
@@ -370,8 +391,9 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     /**
- * connectionhandshakecompletion.
- * <p>threadsecurity: {@link #connectHandshake} connection.</p>
+     * 使用 OkHttp/WebSocket 的异步机制发起 `connectHandshake`，调用线程不会等待远程响应。
+     *
+     * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
     public CompletableFuture<HelloOk> connectHandshakeAsync() {
         CompletableFuture<HelloOk> handshakeFuture = beginConnectAttempt();
@@ -384,6 +406,9 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         return handshakeFuture;
     }
 
+    /**
+     * 结束当前生命周期：取消仍在运行的调用，并释放当前对象拥有的连接、执行器或订阅；重复关闭保持安全。
+     */
     @Override
     public void close() {
         // 安全关闭调度器（防重复关闭）
@@ -397,7 +422,9 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     /**
- * handshake(onlyhandshakecompletion).
+     * 读取当前对象保存的 `helloOk` 对应状态，不触发网络或子进程调用。
+     *
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 HelloOk
      */
     public HelloOk getHelloOk() {
         return helloOkRef.get();
@@ -408,21 +435,29 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     // ============================================================
 
     /**
- * session({@code sessions.list}).
+     * 通过已完成握手的 WebSocket 控制面调用 `sessionsList`，并按请求标识关联响应。
+     *
+     * @param params 写入 `params` 协议字段的内容
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 SessionsListResult
      */
     public SessionsListResult sessionsList(SessionsListParams params) {
         return invokeRpc("sessions.list", params, SessionsListResult.class, DEFAULT_RPC_TIMEOUT_MS);
     }
 
     /**
- * session.
+     * 通过已完成握手的 WebSocket 控制面调用 `sessionsList`，并按请求标识关联响应。
+     *
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 SessionsListResult
      */
     public SessionsListResult sessionsList() {
         return sessionsList(SessionsListParams.defaults());
     }
 
     /**
- * ({@code chat.history}).
+     * 通过已完成握手的 WebSocket 控制面调用 `chatHistory`，并按请求标识关联响应。
+     *
+     * @param params 写入 `params` 协议字段的内容
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatHistoryResult
      */
     public ChatHistoryResult chatHistory(ChatHistoryParams params) {
         Objects.requireNonNull(params, "params");
@@ -430,17 +465,21 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     /**
- * .
+     * 通过已完成握手的 WebSocket 控制面调用 `chatHistory`，并按请求标识关联响应。
      *
- * @param sessionKey sessionkey
- * @param limit (Optional)
+     * @param sessionKey 会话路由键
+     * @param limit 写入 `limit` 协议字段的内容
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatHistoryResult
      */
     public ChatHistoryResult chatHistory(String sessionKey, Integer limit) {
         return chatHistory(ChatHistoryParams.of(sessionKey, limit));
     }
 
     /**
- * run({@code chat.abort}).
+     * 通过已完成握手的 WebSocket 控制面调用 `chatAbort`，并按请求标识关联响应。
+     *
+     * @param params 写入 `params` 协议字段的内容
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatAbortResult
      */
     public ChatAbortResult chatAbort(ChatAbortParams params) {
         Objects.requireNonNull(params, "params");
@@ -448,14 +487,20 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     /**
- * session run.
+     * 通过已完成握手的 WebSocket 控制面调用 `chatAbort`，并按请求标识关联响应。
+     *
+     * @param sessionKey 会话路由键
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatAbortResult
      */
     public ChatAbortResult chatAbort(String sessionKey) {
         return chatAbort(ChatAbortParams.abortSession(sessionKey));
     }
 
     /**
- * agent({@code agent.identity.get}).
+     * 通过已完成握手的 WebSocket 控制面调用 `agentIdentityGet`，并按请求标识关联响应。
+     *
+     * @param params 写入 `params` 协议字段的内容
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 AgentIdentityGetResult
      */
     public AgentIdentityGetResult agentIdentityGet(AgentIdentityGetParams params) {
         Objects.requireNonNull(params, "params");
@@ -463,14 +508,19 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     /**
- * agent.
+     * 通过已完成握手的 WebSocket 控制面调用 `agentIdentityGet`，并按请求标识关联响应。
+     *
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 AgentIdentityGetResult
      */
     public AgentIdentityGetResult agentIdentityGet() {
         return agentIdentityGet(AgentIdentityGetParams.empty());
     }
 
     /**
- * cron ({@code cron.list}).
+     * 通过已完成握手的 WebSocket 控制面调用 `cronList`，并按请求标识关联响应。
+     *
+     * @param params 写入 `params` 协议字段的内容
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 CronListResult
      */
     public CronListResult cronList(CronListParams params) {
         Objects.requireNonNull(params, "params");
@@ -478,14 +528,18 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     /**
- * cron .
+     * 通过已完成握手的 WebSocket 控制面调用 `cronList`，并按请求标识关联响应。
+     *
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 CronListResult
      */
     public CronListResult cronList() {
         return cronList(CronListParams.defaults());
     }
 
     /**
- * ({@code config.get}).
+     * 通过已完成握手的 WebSocket 控制面调用 `configGet`，并按请求标识关联响应。
+     *
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ConfigGetResult
      */
     public ConfigGetResult configGet() {
         return invokeRpc("config.get", Collections.emptyMap(), ConfigGetResult.class, DEFAULT_RPC_TIMEOUT_MS);
@@ -515,6 +569,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         requireHandshakeComplete(method);
         String reqId = generateId();
         PendingRpc pending = new PendingRpc(reqId, method, System.currentTimeMillis());
+        // 先登记再发送，避免极快响应在映射建立前到达而无法关联。
         pendingRpcs.put(reqId, pending);
 
         try {
@@ -571,10 +626,10 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     // ============================================================
 
     /**
- * {@code chat.send} messageagent,streaming.
+     * 通过已完成握手的 WebSocket 控制面调用 `chatSend`，并按请求标识关联响应。
      *
- * @param params (Required message)
- * @param handler streaming reply handler
+     * @param params 写入 `params` 协议字段的内容
+     * @param handler 事件处理器
      */
     public void chatSend(ChatSendParams params, ChatStreamHandler handler) {
         String reqId = generateId();
@@ -600,10 +655,10 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     // ============================================================
 
     /**
- * {@code sessions.send} sessionmessage(non-streaming).
+     * 通过已完成握手的 WebSocket 控制面调用 `sessionsSend`，并按请求标识关联响应。
      *
- * @param params session({@code key},{@code message} Required)
- * @return ( {@code runId} )
+     * @param params 写入 `params` 协议字段的内容
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 SessionsSendResult
      */
     public SessionsSendResult sessionsSend(SessionsSendParams params) {
         Objects.requireNonNull(params, "params");
@@ -614,10 +669,20 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     // 监听器管理
     // ============================================================
 
+    /**
+     * 通过已完成握手的 WebSocket 控制面调用 `addListener`，并按请求标识关联响应。
+     *
+     * @param listener 生命周期监听器
+     */
     public void addListener(OpenClawWsListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * 通过已完成握手的 WebSocket 控制面调用 `removeListener`，并按请求标识关联响应。
+     *
+     * @param listener 生命周期监听器
+     */
     public void removeListener(OpenClawWsListener listener) {
         listeners.remove(listener);
     }
@@ -727,7 +792,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         if (runId != null) {
             collector = activeChatStreams.get(runId);
         }
-        // runId 匹配不到时，尝试匹配最后一个（兼容）
+        // 旧版 Gateway 可能省略 runId；仅作兼容性回退，优先最近登记的活动流。
         if (collector == null && !activeChatStreams.isEmpty()) {
             collector = activeChatStreams.values().stream()
                     .reduce((first, second) -> second)
@@ -754,10 +819,28 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     // 内部类
     // ============================================================
 
+    /**
+     * 尚未完成的 WebSocket RPC 上下文，记录请求标识、方法、开始时间以及等待响应的 Future。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
+     */
     private static class PendingRpc {
+        /**
+         * `PendingRpc` 生命周期内保存的 `id` 对应状态。
+         */
         final String id;
+        /**
+         * `PendingRpc` 生命周期内保存的 `method` 对应状态。
+         */
         final String method;
+        /**
+         * `PendingRpc` 生命周期内保存的 `timestamp` 对应状态。
+         */
         final long timestamp;
+        /**
+         * `PendingRpc` 生命周期内保存的 `future` 对应状态。
+         */
         final CompletableFuture<ResponseFrame> future = new CompletableFuture<>();
 
         PendingRpc(String id, String method, long timestamp) {
@@ -767,9 +850,24 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         }
     }
 
+    /**
+     * 单次 chat.send 的流式聚合状态，保存回调、已接收文本和用于清理活动流的请求标识。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
+     */
     private static class ChatStreamCollector {
+        /**
+         * `ChatStreamCollector` 生命周期内保存的 `reqId` 对应状态。
+         */
         final String reqId;
+        /**
+         * 事件处理器。
+         */
         final ChatStreamHandler handler;
+        /**
+         * `ChatStreamCollector` 生命周期内保存的 `textBuilder` 对应状态。
+         */
         final StringBuilder textBuilder = new StringBuilder();
 
         ChatStreamCollector(String reqId, ChatStreamHandler handler) {

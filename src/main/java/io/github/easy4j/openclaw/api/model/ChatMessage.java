@@ -10,34 +10,10 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenAI Chat Completions API messageobject.
- * <p>
- * Corresponds to OpenAI {@code /v1/chat/completions} {@code messages} array.
- * :{@code system},{@code user},{@code assistant},{@code tool}.
- * </p>
+ * OpenClaw JSON 协议中的 `ChatMessage` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <p> {@code finish_reason} {@code tool_calls} ,
- * {@code tool_calls} field agent .</p>
- *
- * <h3>usageexample</h3>
- * <pre>{@code
- * // message
- * ChatMessage msg = ChatMessage.ofUser("Hello");
- * ChatMessage msg = ChatMessage.ofSystem("You are a helpful assistant");
- * ChatMessage msg = ChatMessage.ofAssistant("I can help with that.");
- *
- * // tool call
- * ChatMessage toolResult = ChatMessage.ofTool("call_abc123", "{\"result\": \"done\"}");
- *
- * // tool callmessage
- * ChatMessage assistantMsg = ChatMessage.ofAssistant(null,
- *     List.of(ToolCall.of("call_abc", "get_weather", "{\"city\": \"Beijing\"}")));
- * }</pre>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -45,30 +21,52 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChatMessage {
 
- /** message */
+    /**
+     * OpenClaw 协议固定值 {@code OpenClawConstants.ROLE_SYSTEM}；调用方不应在运行时修改。
+     */
     public static final String ROLE_SYSTEM = OpenClawConstants.ROLE_SYSTEM;
+    /**
+     * OpenClaw 协议固定值 {@code OpenClawConstants.ROLE_USER}；调用方不应在运行时修改。
+     */
     public static final String ROLE_USER = OpenClawConstants.ROLE_USER;
+    /**
+     * OpenClaw 协议固定值 {@code OpenClawConstants.ROLE_ASSISTANT}；调用方不应在运行时修改。
+     */
     public static final String ROLE_ASSISTANT = OpenClawConstants.ROLE_ASSISTANT;
+    /**
+     * OpenClaw 协议固定值 {@code OpenClawConstants.ROLE_TOOL}；调用方不应在运行时修改。
+     */
     public static final String ROLE_TOOL = OpenClawConstants.ROLE_TOOL;
 
- /** message */
+    /**
+     * 映射 OpenClaw JSON 字段 `role` 的 协议内容。
+     */
     private String role;
 
- /** message */
+    /**
+     * 映射 OpenClaw JSON 字段 `content` 的 协议内容。
+     */
     private String content;
 
- /** tool call */
+    /**
+     * 映射 OpenClaw JSON 字段 `toolCalls` 的 有序数组。
+     */
     @JsonProperty("tool_calls")
     private List<ToolCall> toolCalls;
 
- /** tool call ID(tool ) */
+    /**
+     * 映射 OpenClaw JSON 字段 `toolCallId` 的 关联标识。
+     */
     @JsonProperty("tool_call_id")
     private String toolCallId;
 
     // ==================== Factory Methods ====================
 
     /**
- * systemmessage.
+     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
+     *
+     * @param content 写入 `content` 协议字段的内容
+     * @return 按当前参数创建、查询或解析得到的 ChatMessage
      */
     public static ChatMessage ofSystem(String content) {
         ChatMessage msg = new ChatMessage();
@@ -78,7 +76,10 @@ public class ChatMessage {
     }
 
     /**
- * message.
+     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
+     *
+     * @param content 写入 `content` 协议字段的内容
+     * @return 按当前参数创建、查询或解析得到的 ChatMessage
      */
     public static ChatMessage ofUser(String content) {
         ChatMessage msg = new ChatMessage();
@@ -88,7 +89,10 @@ public class ChatMessage {
     }
 
     /**
- * message.
+     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
+     *
+     * @param content 写入 `content` 协议字段的内容
+     * @return 按当前参数创建、查询或解析得到的 ChatMessage
      */
     public static ChatMessage ofAssistant(String content) {
         ChatMessage msg = new ChatMessage();
@@ -98,10 +102,11 @@ public class ChatMessage {
     }
 
     /**
- * message(tool call).
+     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
      *
- * @param content message
- * @param toolCalls tool call
+     * @param content 写入 `content` 协议字段的内容
+     * @param toolCalls 写入 `toolCalls` 协议字段的内容
+     * @return 按当前参数创建、查询或解析得到的 ChatMessage
      */
     public static ChatMessage ofAssistant(String content, List<ToolCall> toolCalls) {
         ChatMessage msg = new ChatMessage();
@@ -112,10 +117,11 @@ public class ChatMessage {
     }
 
     /**
- * message.
+     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
      *
- * @param toolCallId Corresponds totool call ID
- * @param output (JSON characters)
+     * @param toolCallId 用于关联协议对象的 `toolCallId` 标识
+     * @param output 写入 `output` 协议字段的内容
+     * @return 按当前参数创建、查询或解析得到的 ChatMessage
      */
     public static ChatMessage ofTool(String toolCallId, String output) {
         ChatMessage msg = new ChatMessage();
@@ -128,8 +134,10 @@ public class ChatMessage {
     // ==================== Inner Classes ====================
 
     /**
- * tool callobject.
- * <p>tool call ID,.</p>
+     * OpenClaw JSON 协议中的 `ToolCall` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -137,21 +145,28 @@ public class ChatMessage {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ToolCall {
 
- /** tool call, {@code call_abc123} */
+        /**
+         * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+         */
         private String id;
 
- /** , {@code "function"} */
+        /**
+         * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+         */
         private String type = "function";
 
- /** details */
+        /**
+         * 映射 OpenClaw JSON 字段 `function` 的 协议内容。
+         */
         private FunctionCall function;
 
         /**
- * tool call.
+         * 根据参数创建符合 OpenClaw 协议约束的 `ToolCall`。
          *
- * @param id tool call ID
- * @param name
- * @param arguments (JSON characters)
+         * @param id 用于关联协议对象的 `id` 标识
+         * @param name 写入 `name` 协议字段的内容
+         * @param arguments 写入 `arguments` 协议字段的内容
+         * @return 按当前参数创建、查询或解析得到的 ToolCall
          */
         public static ToolCall of(String id, String name, String arguments) {
             FunctionCall fc = new FunctionCall();
@@ -166,7 +181,10 @@ public class ChatMessage {
     }
 
     /**
- * details.
+     * OpenClaw JSON 协议中的 `FunctionCall` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -174,12 +192,13 @@ public class ChatMessage {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class FunctionCall {
 
- /** */
+        /**
+         * 映射 OpenClaw JSON 字段 `name` 的 协议内容。
+         */
         private String name;
 
         /**
- * (JSON characters).
- * <p> JSON charactersobject.</p>
+         * 映射 OpenClaw JSON 字段 `arguments` 的 协议内容。
          */
         private String arguments;
     }

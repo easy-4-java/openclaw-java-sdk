@@ -8,41 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpenAI Chat Completions API request body.
- * <p>
- * Corresponds to {@code POST /v1/chat/completions} JSON.
- * </p>
+ * OpenClaw JSON 协议中的 `ChatRequest` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3>field</h3>
- * <ul>
- * <li>{@code agent} - Agent ( {@code "openclaw/default"})
- * <li>{@code model} - <b> LLM </b>( {@code "gpt-4o"})
- * </ul>
- *
- * <h3>usageexample</h3>
- * <pre>{@code
- * // 1: Builder
- * ChatRequest request = ChatRequest.builder()
- *     .agent("openclaw/default")
- *     .model("gpt-4o")
- *     .messages(List.of(ChatMessage.ofUser("Hello")))
- *     .build();
- *
- * // 2: setter
- * ChatRequest request = new ChatRequest();
- * request.setAgent("openclaw/default");
- * request.setModel("gpt-4o");
- * request.setMessages(List.of(ChatMessage.ofUser("Hello")));
- * }</pre>
- *
- * <h3>session</h3>
- * <p>(session key). {@code user} characters,
- * Gateway session key, agent session.</p>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Data
 @Builder
@@ -50,115 +19,95 @@ import java.util.Map;
 public class ChatRequest {
 
     /**
- * Agent .
- * <p> {@code "openclaw"},{@code "openclaw/default"} {@code "openclaw/<agentId>"}.
- * {@code "openclaw:<agentId>"} {@code "agent:<agentId>"} .</p>
+     * 映射 OpenClaw JSON 字段 `agent` 的 协议内容。
      */
     private String agent;
 
     /**
- * LLM .
- * <p>Corresponds to OpenAI model field, {@code "gpt-4o"},{@code "claude-3-opus"} .
- * , Agent .</p>
+     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
      */
     private String model;
 
     /**
- * messagearray. OpenAI , {@code system},{@code user},{@code assistant},{@code tool} .
+     * 映射 OpenClaw JSON 字段 `messages` 的 有序数组。
      */
     private List<ChatMessage> messages;
 
     /**
- * Whether to enable SSE streaming.
- * <p> {@code true} , Content-Type {@code text/event-stream},
- * {@code data: <json>}, {@code data: [DONE]} .</p>
+     * 映射 OpenClaw JSON 字段 `stream` 的 布尔开关。
      */
     private Boolean stream;
 
     /**
- * streaming. {@code stream} {@code true} .
- * <p> {@code include_usage} {@code true}, {@code [DONE]} usage .</p>
+     * 映射 OpenClaw JSON 字段 `streamOptions` 的 键值对象。
      */
     @JsonProperty("stream_options")
     private Map<String, Object> streamOptions;
 
     /**
- * array.
- * <p>:{@code { "type": "function", "function": { "name": "...", "description": "...", "parameters": {...} } }}</p>
+     * 映射 OpenClaw JSON 字段 `tools` 的 有序数组。
      */
     private List<Map<String, Object>> tools;
 
     /**
- * tool choice.
- * <p>:{@code "auto"},{@code "none"},{@code "required"},
- * {@code { "type": "function", "function": { "name": "..." } }}.</p>
+     * 映射 OpenClaw JSON 字段 `toolChoice` 的 协议内容。
      */
     @JsonProperty("tool_choice")
     private Object toolChoice;
 
     /**
- * (Used for session key).
- * <p> {@code conv:<conversationId>} ,
- * thread user value agent session.</p>
+     * 映射 OpenClaw JSON 字段 `user` 的 协议内容。
      */
     private String user;
 
     /**
- * completion token ( token).
- * <p> {@code maxTokens}. agent stream-param channel.</p>
+     * 映射 OpenClaw JSON 字段 `maxCompletionTokens` 的 协议内容。
      */
     @JsonProperty("max_completion_tokens")
     private Integer maxCompletionTokens;
 
     /**
- * token (field, {@code maxCompletionTokens} ).
+     * 映射 OpenClaw JSON 字段 `maxTokens` 的 协议内容。
      */
     @JsonProperty("max_tokens")
     private Integer maxTokens;
 
     /**
- * (0-2). provider.
+     * 映射 OpenClaw JSON 字段 `temperature` 的 协议内容。
      */
     private Double temperature;
 
     /**
- * nucleus (0-1). provider.
+     * 映射 OpenClaw JSON 字段 `topP` 的 协议内容。
      */
     @JsonProperty("top_p")
     private Double topP;
 
     /**
- * (-2.0 2.0). {@code 400 invalid_request_error}.
+     * 映射 OpenClaw JSON 字段 `frequencyPenalty` 的 协议内容。
      */
     @JsonProperty("frequency_penalty")
     private Double frequencyPenalty;
 
     /**
- * (-2.0 2.0). {@code 400 invalid_request_error}.
+     * 映射 OpenClaw JSON 字段 `presencePenalty` 的 协议内容。
      */
     @JsonProperty("presence_penalty")
     private Double presencePenalty;
 
     /**
- * . provider.
+     * 映射 OpenClaw JSON 字段 `seed` 的 协议内容。
      */
     private Integer seed;
 
     /**
- * .
- * <p> {@link ResponseFormat} ,:
- * {@link ResponseFormat#jsonObject} JSON ,
- * {@link ResponseFormatType#JSON_SCHEMA} ,
- * {@link ResponseFormatType#TEXT} .</p>
-     *
-     * @see ResponseFormat
+     * 映射 OpenClaw JSON 字段 `responseFormat` 的 协议内容。
      */
     @JsonProperty("response_format")
     private ResponseFormat responseFormat;
 
     /**
- * (characters 4 charactersarray).
- * <p> 4 characters/ {@code 400 invalid_request_error}.</p>
+     * 映射 OpenClaw JSON 字段 `stop` 的 协议内容。
      */
     private Object stop;
 }

@@ -13,32 +13,50 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * OpenResponses API client.
+ * OpenClaw SDK 的 `OpenClawResponsesClient` 类型，封装其公开契约和生命周期边界。
  *
- * @see <a href="https://docs.openclaw.ai/gateway/openresponses-http-api">OpenResponses API</a>
-  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
-  * @since 3.0.0
+ * @since 1.0.0
  */
 @Slf4j
 public class OpenClawResponsesClient extends OpenClawHttpClient {
 
+    /**
+     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     *
+     * @param config SDK 配置
+     */
     public OpenClawResponsesClient(OpenClawHttpClientConfig config) {
         super(config);
     }
 
+    /**
+     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     *
+     * @param config SDK 配置
+     * @param objectMapper JSON 映射器
+     * @param httpClient 复用连接池和 Dispatcher 的 OkHttpClient
+     */
     public OpenClawResponsesClient(OpenClawHttpClientConfig config, ObjectMapper objectMapper, OkHttpClient httpClient) {
         super(config, objectMapper, httpClient);
     }
 
     /**
- * OpenResponses .
+     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawResponsesClient`。
+     *
+     * @param request 请求对象
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ResponseResult
      */
     public ResponseResult createResponse(ResponseRequest request) {
         return awaitFuture(createResponseAsync(request));
     }
 
-    /** 异步创建 OpenResponses 响应。 */
+    /**
+     * 使用 OkHttp/WebSocket 的异步机制发起 `createResponse`，调用线程不会等待远程响应。
+     *
+     * @param request 请求对象
+     * @return 在远程响应、取消或失败时完成的 CompletableFuture
+     */
     public CompletableFuture<ResponseResult> createResponseAsync(ResponseRequest request) {
         debug("=== Response Request ===");
         debug("agent: {}", request.getAgent());

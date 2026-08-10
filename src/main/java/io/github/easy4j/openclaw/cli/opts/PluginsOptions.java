@@ -9,126 +9,148 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw plugins}:, Gateway plugin,hook bundle(Codex/Claude/Cursor).
- * <p>:version;{@code --dangerously-force-unsafe-install} only, {@code before_install} .</p>
+ * openclaw `plugins` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/plugins">plugins CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class PluginsOptions implements CliSubArgs {
 
     /**
- * plugins subcommand:,,,diagnostic, marketplace .
+     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum Mode {
- /** {@code plugins list}:plugin(openclaw bundle). */
+        /**
+         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         */
         LIST,
- /** {@code plugins install}: ClawHub,npm, marketplace . */
+        /**
+         * 选择 `install` 协议模式；序列化时使用该固定取值。
+         */
         INSTALL,
- /** {@code plugins inspect}:,hook,. */
+        /**
+         * 选择 `inspect` 协议模式；序列化时使用该固定取值。
+         */
         INSPECT,
- /** {@code plugins info}:{@code inspect} . */
+        /**
+         * 选择 `info` 协议模式；序列化时使用该固定取值。
+         */
         INFO,
- /** {@code plugins enable}:plugin id. */
+        /**
+         * 选择 `enable` 协议模式；序列化时使用该固定取值。
+         */
         ENABLE,
- /** {@code plugins disable}:plugin id. */
+        /**
+         * 选择 `disable` 协议模式；序列化时使用该固定取值。
+         */
         DISABLE,
- /** {@code plugins uninstall}:directory. */
+        /**
+         * 选择 `uninstall` 协议模式；序列化时使用该固定取值。
+         */
         UNINSTALL,
- /** {@code plugins doctor}:. */
+        /**
+         * 选择 `doctor` 协议模式；序列化时使用该固定取值。
+         */
         DOCTOR,
- /** {@code plugins update}: {@code plugins.installs} . */
+        /**
+         * 选择 `update` 协议模式；序列化时使用该固定取值。
+         */
         UPDATE,
- /** {@code plugins marketplace list}: marketplace plugin. */
+        /**
+         * 选择 `marketplace_list` 协议模式；序列化时使用该固定取值。
+         */
         MARKETPLACE_LIST
     }
 
- /** plugins subcommand. */
+    /**
+     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     */
     private final Mode mode;
     /**
- * list:{@code --enabled} onlyplugin.
+     * 是否向 openclaw 子命令追加 `--list-enabled` 开关。
      */
     private final boolean listEnabled;
     /**
- * list:{@code --verbose} .
+     * 是否向 openclaw 子命令追加 `--list-verbose` 开关。
      */
     private final boolean listVerbose;
     /**
- * list:{@code --json} diagnostic.
+     * 是否向 openclaw 子命令追加 `--list-json` 开关。
      */
     private final boolean listJson;
     /**
- * install: spec, {@code clawhub:} .
+     * 传给 openclaw 子命令 `--install-spec` 选项的内容；为 null 时通常省略。
      */
     private final String installSpec;
     /**
- * install:{@code --force} .
+     * 是否向 openclaw 子命令追加 `--install-force` 开关。
      */
     private final boolean installForce;
     /**
- * install:{@code --pin} npm version {@code plugins.installs}.
+     * 是否向 openclaw 子命令追加 `--install-pin` 开关。
      */
     private final boolean installPin;
     /**
- * install:{@code --dangerously-force-unsafe-install} critical (break-glass).
+     * 是否向 openclaw 子命令追加 `--dangerously-force-unsafe-install` 开关。
      */
     private final boolean dangerouslyForceUnsafeInstall;
     /**
- * install:{@code --marketplace} marketplace (owner/repo URL).
+     * 传给 openclaw 子命令 `--marketplace` 选项的内容；为 null 时通常省略。
      */
     private final String marketplace;
     /**
- * install:{@code --link} directory {@code plugins.load.paths} .
+     * 是否向 openclaw 子命令追加 `--install-link` 开关。
      */
     private final boolean installLink;
     /**
- * inspect / info:plugin id, {@code inspectAll} .
+     * 传给 openclaw 子命令 `--inspect-id` 选项的内容；为 null 时通常省略。
      */
     private final String inspectId;
     /**
- * inspect / info:{@code --json} .
+     * 是否向 openclaw 子命令追加 `--inspect-json` 开关。
      */
     private final boolean inspectJson;
     /**
- * inspect:{@code --all} fleet .
+     * 是否向 openclaw 子命令追加 `--inspect-all` 开关。
      */
     private final boolean inspectAll;
     /**
- * enable / disable / uninstall / update:plugin id npm spec(update documentation).
+     * 传给 openclaw 子命令 `--plugin-id` 选项的内容；为 null 时通常省略。
      */
     private final String pluginId;
     /**
- * uninstall:{@code --dry-run} .
+     * 是否向 openclaw 子命令追加 `--uninstall-dry-run` 开关。
      */
     private final boolean uninstallDryRun;
     /**
- * uninstall:{@code --keep-files} plugindirectory.
+     * 是否向 openclaw 子命令追加 `--uninstall-keep-files` 开关。
      */
     private final boolean uninstallKeepFiles;
     /**
- * update:{@code --all} .
+     * 是否向 openclaw 子命令追加 `--update-all` 开关。
      */
     private final boolean updateAll;
     /**
- * update:{@code --dry-run} .
+     * 是否向 openclaw 子命令追加 `--update-dry-run` 开关。
      */
     private final boolean updateDryRun;
     /**
- * update:{@code --yes} skips.
+     * 是否向 openclaw 子命令追加 `--yes` 开关。
      */
     private final boolean yes;
     /**
- * marketplace list:marketplace ({@code owner/repo},git URL ).
+     * 传给 openclaw 子命令 `--marketplace-source` 选项的内容；为 null 时通常省略。
      */
     private final String marketplaceSource;
     /**
- * marketplace list:{@code --json} manifest .
+     * 是否向 openclaw 子命令追加 `--marketplace-json` 开关。
      */
     private final boolean marketplaceJson;
     /**
- * argv.
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -161,14 +183,18 @@ public final class PluginsOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `PluginsOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -251,34 +277,105 @@ public final class PluginsOptions implements CliSubArgs {
     }
 
     /**
- * {@link PluginsOptions} builder.
+     * 链式构建器，逐项收集 PluginsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 PluginsOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         */
         private Mode mode = Mode.LIST;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-enabled` 开关。
+         */
         private boolean listEnabled;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-verbose` 开关。
+         */
         private boolean listVerbose;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-json` 开关。
+         */
         private boolean listJson;
+        /**
+         * 传给 openclaw 子命令 `--install-spec` 选项的内容；为 null 时通常省略。
+         */
         private String installSpec;
+        /**
+         * 是否向 openclaw 子命令追加 `--install-force` 开关。
+         */
         private boolean installForce;
+        /**
+         * 是否向 openclaw 子命令追加 `--install-pin` 开关。
+         */
         private boolean installPin;
+        /**
+         * 是否向 openclaw 子命令追加 `--dangerously-force-unsafe-install` 开关。
+         */
         private boolean dangerouslyForceUnsafeInstall;
+        /**
+         * 传给 openclaw 子命令 `--marketplace` 选项的内容；为 null 时通常省略。
+         */
         private String marketplace;
+        /**
+         * 是否向 openclaw 子命令追加 `--install-link` 开关。
+         */
         private boolean installLink;
+        /**
+         * 传给 openclaw 子命令 `--inspect-id` 选项的内容；为 null 时通常省略。
+         */
         private String inspectId;
+        /**
+         * 是否向 openclaw 子命令追加 `--inspect-json` 开关。
+         */
         private boolean inspectJson;
+        /**
+         * 是否向 openclaw 子命令追加 `--inspect-all` 开关。
+         */
         private boolean inspectAll;
+        /**
+         * 传给 openclaw 子命令 `--plugin-id` 选项的内容；为 null 时通常省略。
+         */
         private String pluginId;
+        /**
+         * 是否向 openclaw 子命令追加 `--uninstall-dry-run` 开关。
+         */
         private boolean uninstallDryRun;
+        /**
+         * 是否向 openclaw 子命令追加 `--uninstall-keep-files` 开关。
+         */
         private boolean uninstallKeepFiles;
+        /**
+         * 是否向 openclaw 子命令追加 `--update-all` 开关。
+         */
         private boolean updateAll;
+        /**
+         * 是否向 openclaw 子命令追加 `--update-dry-run` 开关。
+         */
         private boolean updateDryRun;
+        /**
+         * 是否向 openclaw 子命令追加 `--yes` 开关。
+         */
         private boolean yes;
+        /**
+         * 传给 openclaw 子命令 `--marketplace-source` 选项的内容；为 null 时通常省略。
+         */
         private String marketplaceSource;
+        /**
+         * 是否向 openclaw 子命令追加 `--marketplace-json` 开关。
+         */
         private boolean marketplaceJson;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}（{@code plugins list}）
+         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder list() {
             this.mode = Mode.LIST;
@@ -286,8 +383,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param enabled list：{@code --enabled}
-         * @return {@code this}
+         * 设置 `--list-enabled` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param enabled 是否向命令行追加 `--list-enabled` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listEnabled(boolean enabled) {
             this.listEnabled = enabled;
@@ -295,8 +394,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param verbose list：{@code --verbose}
-         * @return {@code this}
+         * 设置 `--list-verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param verbose 是否向命令行追加 `--list-verbose` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listVerbose(boolean verbose) {
             this.listVerbose = verbose;
@@ -304,8 +405,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param json list：{@code --json}
-         * @return {@code this}
+         * 设置 `--list-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listJson(boolean json) {
             this.listJson = json;
@@ -313,8 +416,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * @param spec install: spec
-         * @return {@code this}
+         * 设置 `--install` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param spec 写入 `--install` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder install(String spec) {
             this.mode = Mode.INSTALL;
@@ -323,8 +428,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param force {@code --force}
-         * @return {@code this}
+         * 设置 `--install-force` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param force 是否向命令行追加 `--install-force` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder installForce(boolean force) {
             this.installForce = force;
@@ -332,8 +439,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param pin {@code --pin}
-         * @return {@code this}
+         * 设置 `--install-pin` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param pin 是否向命令行追加 `--install-pin` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder installPin(boolean pin) {
             this.installPin = pin;
@@ -341,8 +450,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param unsafe {@code --dangerously-force-unsafe-install}
-         * @return {@code this}
+         * 设置 `--dangerously-force-unsafe-install` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param unsafe 是否向命令行追加 `--dangerously-force-unsafe-install` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder dangerouslyForceUnsafeInstall(boolean unsafe) {
             this.dangerouslyForceUnsafeInstall = unsafe;
@@ -350,8 +461,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param marketplace {@code --marketplace}
-         * @return {@code this}
+         * 设置 `--marketplace` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param marketplace 写入 `--marketplace` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder marketplace(String marketplace) {
             this.marketplace = marketplace;
@@ -359,8 +472,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param link install：{@code -l}
-         * @return {@code this}
+         * 设置 `--install-link` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param link 是否向命令行追加 `--install-link` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder installLink(boolean link) {
             this.installLink = link;
@@ -368,8 +483,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * @param id inspect:plugin ID
-         * @return {@code this}
+         * 设置 `--inspect` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param id 写入 `--inspect` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder inspect(String id) {
             this.mode = Mode.INSPECT;
@@ -379,8 +496,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param all inspect：{@code --all}
-         * @return {@code this}
+         * 设置 `--inspect-all` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param all 是否向命令行追加 `--inspect-all` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder inspectAll(boolean all) {
             this.inspectAll = all;
@@ -392,8 +511,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param json inspect：{@code --json}
-         * @return {@code this}
+         * 设置 `--inspect-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder inspectJson(boolean json) {
             this.inspectJson = json;
@@ -401,8 +522,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * @param id info:plugin ID
-         * @return {@code this}
+         * 设置 `--info` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param id 写入 `--info` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder info(String id) {
             this.mode = Mode.INFO;
@@ -411,8 +534,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * @param id enable:plugin ID
-         * @return {@code this}
+         * 设置 `--enable` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param id 写入 `--enable` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder enable(String id) {
             this.mode = Mode.ENABLE;
@@ -421,8 +546,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * @param id disable:plugin ID
-         * @return {@code this}
+         * 设置 `--disable` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param id 写入 `--disable` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder disable(String id) {
             this.mode = Mode.DISABLE;
@@ -431,8 +558,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * @param id uninstall:plugin ID
-         * @return {@code this}
+         * 设置 `--uninstall` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param id 写入 `--uninstall` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder uninstall(String id) {
             this.mode = Mode.UNINSTALL;
@@ -441,8 +570,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param dryRun {@code --dry-run}
-         * @return {@code this}
+         * 设置 `--uninstall-dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param dryRun 是否向命令行追加 `--uninstall-dry-run` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder uninstallDryRun(boolean dryRun) {
             this.uninstallDryRun = dryRun;
@@ -450,8 +581,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param keep {@code --keep-files}
-         * @return {@code this}
+         * 设置 `--uninstall-keep-files` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param keep 是否向命令行追加 `--uninstall-keep-files` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder uninstallKeepFiles(boolean keep) {
             this.uninstallKeepFiles = keep;
@@ -459,7 +592,9 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code plugins doctor}）
+         * 选择 `doctor` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder doctor() {
             this.mode = Mode.DOCTOR;
@@ -467,8 +602,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * @param idOrSpec update:plugin ID spec
-         * @return {@code this}
+         * 设置 `--update` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param idOrSpec 写入 `--update` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder update(String idOrSpec) {
             this.mode = Mode.UPDATE;
@@ -478,8 +615,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param all update：{@code --all}
-         * @return {@code this}
+         * 设置 `--update-all` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param all 是否向命令行追加 `--update-all` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder updateAll(boolean all) {
             this.mode = Mode.UPDATE;
@@ -489,8 +628,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param dryRun update：{@code --dry-run}
-         * @return {@code this}
+         * 设置 `--update-dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param dryRun 是否向命令行追加 `--update-dry-run` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder updateDryRun(boolean dryRun) {
             this.updateDryRun = dryRun;
@@ -498,8 +639,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param yes update：{@code --yes}
-         * @return {@code this}
+         * 设置 `--yes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param yes 是否向命令行追加 `--yes` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder yes(boolean yes) {
             this.yes = yes;
@@ -507,8 +650,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * @param source marketplace list:
-         * @return {@code this}
+         * 设置 `--marketplace-list` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param source 写入 `--marketplace-list` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder marketplaceList(String source) {
             this.mode = Mode.MARKETPLACE_LIST;
@@ -517,8 +662,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
-         * @param json marketplace：{@code --json}
-         * @return {@code this}
+         * 设置 `--marketplace-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder marketplaceJson(boolean json) {
             this.marketplaceJson = json;
@@ -526,10 +673,10 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -539,7 +686,9 @@ public final class PluginsOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link PluginsOptions}
+         * 校验并复制当前构建器字段，创建独立的 `PluginsOptions`。
+         *
+         * @return 按当前字段创建的 PluginsOptions
          */
         public PluginsOptions build() {
             return new PluginsOptions(this);

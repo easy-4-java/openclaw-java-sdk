@@ -6,43 +6,34 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw tools}:help(root help alias), CLI .
- * <p>
- * openclaw ({@code src/cli/run-main-policy.ts}),{@code tools}
- * {@code ROOT_HELP_ALIASES} ,{@code openclaw tools --help} help.
- * Commander {@code .option(...)} .
- * </p>
- * <p>
- * :"tools" {@code mcp tools} subcommand( MCP include/exclude ),
- * {@link McpOptions} Wraps;only {@code tools} .
- * </p>
+ * openclaw `tools` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see McpOptions
- * @see <a href="https://docs.openclaw.ai/cli/tools">tools CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class ToolsOptions implements CliSubArgs {
 
     /**
- * :Corresponds to {@code openclaw tools}(help).
+     * 选择或编码 `tools` 子命令的 `empty` 行为，并保留未设置选项的省略语义。
      *
- * @return
+     * @return 按当前参数创建、查询或解析得到的 ToolsOptions
      */
     public static ToolsOptions empty() {
         return INSTANCE;
     }
 
+    /**
+     * OpenClaw 协议固定值 {@code new ToolsOptions()}；调用方不应在运行时修改。
+     */
     private static final ToolsOptions INSTANCE = new ToolsOptions();
 
     private ToolsOptions() {
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
      *
- * @return (subcommand token )
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {

@@ -11,25 +11,10 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenAI Chat Completions API non-streaming.
- * <p>
- * Corresponds to {@code POST /v1/chat/completions}({@code stream: false}) JSON.
- * agent ,{@code choices[0].finish_reason} {@code "tool_calls"},
- * {@code choices[0].message.toolCalls} tool call.
- * </p>
+ * OpenClaw JSON 协议中的 `ChatResponse` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3></h3>
- * <p>tool call,Corresponds to,:</p>
- * <ul>
- * <li> assistant tool callmessage</li>
- * <li> {@code role: "tool"} message, {@code toolCallId}</li>
- * </ul>
- * <p> Gateway agent .</p>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -38,26 +23,41 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatResponse {
 
- /** . */
+    /**
+     * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+     */
     private String id;
 
- /** object, {@code "chat.completion"}. */
+    /**
+     * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+     */
     private String object = OpenClawConstants.OBJECT_CHAT_COMPLETION;
 
- /** (Unix epoch seconds). */
+    /**
+     * 映射 OpenClaw JSON 字段 `created` 的 协议内容。
+     */
     private Long created;
 
- /** agent . */
+    /**
+     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     */
     private String model;
 
- /** . */
+    /**
+     * 映射 OpenClaw JSON 字段 `choices` 的 有序数组。
+     */
     private List<Choice> choices;
 
- /** Token . */
+    /**
+     * 映射 OpenClaw JSON 字段 `usage` 的 协议内容。
+     */
     private Usage usage;
 
     /**
- * .
+     * OpenClaw JSON 协议中的 `Choice` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -66,46 +66,55 @@ public class ChatResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Choice {
 
- /** array. */
+        /**
+         * 映射 OpenClaw JSON 字段 `index` 的 协议内容。
+         */
         private Integer index;
 
         /**
- * agent message.
- * <p> {@code finishReason} {@code "tool_calls"} ,
- * message {@code toolCalls} tool call,
- * {@code content} characters( agent ).</p>
+         * 映射 OpenClaw JSON 字段 `message` 的 协议内容。
          */
         private ChatMessage message;
 
         /**
- * completion.
-         * <ul>
- * <li>{@code "stop"} - completion</li>
- * <li>{@code "tool_calls"} - agent </li>
- * <li>{@code "length"} - token </li>
-         * </ul>
+         * 映射 OpenClaw JSON 字段 `finishReason` 的 协议内容。
          */
         @JsonProperty("finish_reason")
         private String finishReason;
 
- /** completion */
+        /**
+         * 判断 `stop` 对应状态 是否满足协议或生命周期条件。
+         *
+         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         */
         public boolean isStop() {
             return OpenClawConstants.FINISH_REASON_STOP.equals(finishReason);
         }
 
- /** tool call */
+        /**
+         * 判断 `toolCalls` 对应状态 是否满足协议或生命周期条件。
+         *
+         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         */
         public boolean isToolCalls() {
             return OpenClawConstants.FINISH_REASON_TOOL_CALLS.equals(finishReason);
         }
 
- /** */
+        /**
+         * 判断 `length` 对应状态 是否满足协议或生命周期条件。
+         *
+         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         */
         public boolean isLength() {
             return OpenClawConstants.FINISH_REASON_LENGTH.equals(finishReason);
         }
     }
 
     /**
- * Token .
+     * OpenClaw JSON 协议中的 `Usage` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -113,13 +122,19 @@ public class ChatResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Usage {
- /** token ( prompt token). */
+        /**
+         * 映射 OpenClaw JSON 字段 `promptTokens` 的 协议内容。
+         */
         @JsonProperty("prompt_tokens")
         private Integer promptTokens;
- /** token ( completion token). */
+        /**
+         * 映射 OpenClaw JSON 字段 `completionTokens` 的 协议内容。
+         */
         @JsonProperty("completion_tokens")
         private Integer completionTokens;
- /** token . */
+        /**
+         * 映射 OpenClaw JSON 字段 `totalTokens` 的 协议内容。
+         */
         @JsonProperty("total_tokens")
         private Integer totalTokens;
     }

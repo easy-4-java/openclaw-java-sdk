@@ -13,48 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpenResponses API request body.
- * <p>
- * Corresponds to {@code POST /v1/responses} JSON.
- * </p>
+ * OpenClaw JSON 协议中的 `ResponseRequest` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3>field</h3>
- * <ul>
- * <li>{@code agent} - Agent ( {@code "openclaw/default"})
- * <li>{@code model} - LLM ( {@code "gpt-4o"})
- * </ul>
- *
- * <h3>usageexample</h3>
- * <pre>{@code
- * // 1:characters
- * ResponseRequest request = ResponseRequest.builder()
- *     .agent("openclaw/default")
- *     .input("What is the weather?")
- *     .build();
- *
- * // 2:Item array
- * ResponseRequest request = ResponseRequest.builder()
- *     .agent("openclaw/default")
- *     .input(List.of(
- *         InputItem.message().role("user").content("What is the weather?").build(),
- *         InputItem.imageSource("url", "https://example.com/photo.jpg").build()
- *     ))
- *     .build();
- *
- * // 3:tool call
- * ResponseRequest request = ResponseRequest.builder()
- *     .agent("openclaw/default")
- *     .input(List.of(
- *         InputItem.message().role("assistant").content(null).build(),
- *         InputItem.functionCallOutput().callId("call_abc").output("{\"temperature\":\"25C\"}").build()
- *     ))
- *     .build();
- * }</pre>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/openresponses-http-api">OpenResponses API</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -65,68 +27,65 @@ import java.util.Map;
 public class ResponseRequest {
 
     /**
- * Agent .
+     * 映射 OpenClaw JSON 字段 `agent` 的 协议内容。
      */
     private String agent;
 
     /**
- * LLM .
+     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
      */
     private String model;
 
     /**
- * .
- * <p>characters Item objectarray.</p>
+     * 映射 OpenClaw JSON 字段 `input` 的 协议内容。
      */
     private Object input;
 
     /**
- * system(system).
+     * 映射 OpenClaw JSON 字段 `instructions` 的 协议内容。
      */
     private String instructions;
 
     /**
- * .
+     * 映射 OpenClaw JSON 字段 `tools` 的 有序数组。
      */
     private List<Map<String, Object>> tools;
 
     /**
- * tool choice.
- * <p>:{@code "auto"},{@code "none"},{@code "required"},
- * {@code { "type": "function", "name": "..." }}.</p>
+     * 映射 OpenClaw JSON 字段 `toolChoice` 的 协议内容。
      */
     @JsonProperty("tool_choice")
     private Object toolChoice;
 
     /**
- * Whether to enable SSE streaming.
+     * 映射 OpenClaw JSON 字段 `stream` 的 布尔开关。
      */
     private Boolean stream;
 
     /**
- * token .
+     * 映射 OpenClaw JSON 字段 `maxOutputTokens` 的 协议内容。
      */
     @JsonProperty("max_output_tokens")
     private Integer maxOutputTokens;
 
     /**
- * .
+     * 映射 OpenClaw JSON 字段 `temperature` 的 协议内容。
      */
     private Double temperature;
 
     /**
- * nucleus .
+     * 映射 OpenClaw JSON 字段 `topP` 的 协议内容。
      */
     @JsonProperty("top_p")
     private Double topP;
 
     /**
- * .
+     * 映射 OpenClaw JSON 字段 `user` 的 协议内容。
      */
     private String user;
 
     /**
- * ID.
+     * 映射 OpenClaw JSON 字段 `previousResponseId` 的 关联标识。
      */
     @JsonProperty("previous_response_id")
     private String previousResponseId;
@@ -134,25 +93,10 @@ public class ResponseRequest {
     // ==================== Inner Classes ====================
 
     /**
- * Response API Input Item .
-     * <p>
- * :message,function_call_output,input_image,input_file
-     * </p>
+     * OpenClaw JSON 协议中的 `InputItem` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
      *
- * <h3>usageexample</h3>
-     * <pre>{@code
- * // (URL)
-     * InputItem.imageSource("url", "https://example.com/photo.jpg")
-     *
- * // (base64)
-     * InputItem.imageSource("base64", "data:image/png;base64,...")
-     *
- * // (URL, MIME )
-     * InputItem.fileSource("url", "https://example.com/doc.pdf", "application/pdf")
-     *
- * // (base64)
-     * InputItem.fileSource("base64", "data:application/pdf;base64,...", "application/pdf")
-     * }</pre>
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -162,42 +106,61 @@ public class ResponseRequest {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class InputItem {
 
- /** Item :message,function_call_output,input_image,input_file */
+        /**
+         * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+         */
         private String type;
 
-        // message 类型字段
+        /**
+         * 映射 OpenClaw JSON 字段 `role` 的 协议内容。
+         */
         private String role;
+        /**
+         * 映射 OpenClaw JSON 字段 `content` 的 协议内容。
+         */
         private String content;
 
-        // function_call_output 类型字段
+        /**
+         * 映射 OpenClaw JSON 字段 `callId` 的 关联标识。
+         */
         @JsonProperty("call_id")
         private String callId;
+        /**
+         * 映射 OpenClaw JSON 字段 `output` 的 协议内容。
+         */
         private String output;
 
-        // input_image / input_file 共享 source 字段
+        /**
+         * 映射 OpenClaw JSON 字段 `source` 的 协议内容。
+         */
         private Source source;
 
         // ==================== Factory Methods ====================
 
         /**
- * message Item.
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `message` 数据。
+         *
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder message() {
             return InputItem.builder().type(OpenClawConstants.INPUT_TYPE_MESSAGE);
         }
 
         /**
- * Item.
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `functionCallOutput` 数据。
+         *
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder functionCallOutput() {
             return InputItem.builder().type(OpenClawConstants.INPUT_TYPE_FUNCTION_CALL_OUTPUT);
         }
 
         /**
- * Item.
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `imageSource` 数据。
          *
- * @param sourceType :{@code "url"} {@code "base64"}
- * @param value URL base64
+         * @param sourceType 写入 `sourceType` 协议字段的内容
+         * @param value 写入 `value` 协议字段的内容
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder imageSource(String sourceType, String value) {
             return InputItem.builder()
@@ -209,25 +172,32 @@ public class ResponseRequest {
         }
 
         /**
- * Item(URL).
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `imageUrl` 数据。
+         *
+         * @param url 完整目标 URL
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder imageUrl(String url) {
             return imageSource("url", url);
         }
 
         /**
- * Item(base64).
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `imageBase64` 数据。
+         *
+         * @param base64Data 写入 `base64Data` 协议字段的内容
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder imageBase64(String base64Data) {
             return imageSource("base64", base64Data);
         }
 
         /**
- * Item.
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileSource` 数据。
          *
- * @param sourceType :{@code "url"} {@code "base64"}
- * @param value URL base64
- * @param mediaType MIME ( {@code "text/plain"},{@code "application/pdf"})
+         * @param sourceType 写入 `sourceType` 协议字段的内容
+         * @param value 写入 `value` 协议字段的内容
+         * @param mediaType 写入 `mediaType` 协议字段的内容
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder fileSource(String sourceType, String value, String mediaType) {
             return InputItem.builder()
@@ -240,28 +210,42 @@ public class ResponseRequest {
         }
 
         /**
- * Item(URL).
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileUrl` 数据。
+         *
+         * @param url 完整目标 URL
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder fileUrl(String url) {
             return fileUrl(url, null);
         }
 
         /**
- * Item(URL, MIME ).
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileUrl` 数据。
+         *
+         * @param url 完整目标 URL
+         * @param mediaType 写入 `mediaType` 协议字段的内容
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder fileUrl(String url, String mediaType) {
             return fileSource("url", url, mediaType);
         }
 
         /**
- * Item(base64).
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileBase64` 数据。
+         *
+         * @param base64Data 写入 `base64Data` 协议字段的内容
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder fileBase64(String base64Data) {
             return fileBase64(base64Data, null);
         }
 
         /**
- * Item(base64, MIME ).
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileBase64` 数据。
+         *
+         * @param base64Data 写入 `base64Data` 协议字段的内容
+         * @param mediaType 写入 `mediaType` 协议字段的内容
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
          */
         public static InputItemBuilder fileBase64(String base64Data, String mediaType) {
             return fileSource("base64", base64Data, mediaType);
@@ -270,10 +254,10 @@ public class ResponseRequest {
         // ==================== Source Inner Class ====================
 
         /**
- * /.
-         * <p>
- * :{@code { type: "url" | "base64", url?: string, media_type?: string, filename?: string, detail?: string }}
-         * </p>
+         * OpenClaw JSON 协议中的 `Source` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+         *
+         * @author <a href="https://github.com/loong10k">Loong Wan</a>
+         * @since 1.0.0
          */
         @Getter
         @Setter
@@ -281,20 +265,30 @@ public class ResponseRequest {
         @AllArgsConstructor
         @Builder
         public static class Source {
- /** :{@code "url"} {@code "base64"} */
+            /**
+             * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+             */
             private String type;
 
- /** URL base64 */
+            /**
+             * 映射 OpenClaw JSON 字段 `url` 的 协议内容。
+             */
             private String url;
 
- /** MIME */
+            /**
+             * 映射 OpenClaw JSON 字段 `mediaType` 的 协议内容。
+             */
             @JsonProperty("media_type")
             private String mediaType;
 
- /** */
+            /**
+             * 映射 OpenClaw JSON 字段 `filename` 的 协议内容。
+             */
             private String filename;
 
- /** detail :{@code "low"},{@code "high"},{@code "auto"} */
+            /**
+             * 映射 OpenClaw JSON 字段 `detail` 的 协议内容。
+             */
             private String detail;
         }
     }

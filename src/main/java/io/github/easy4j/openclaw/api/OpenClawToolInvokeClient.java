@@ -14,38 +14,63 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Tools Invoke API client.
+ * OpenClaw SDK 的 `OpenClawToolInvokeClient` 类型，封装其公开契约和生命周期边界。
  *
- * @see <a href="https://docs.openclaw.ai/gateway/tools-invoke-http-api">Tools Invoke API</a>
-  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
-  * @since 3.0.0
+ * @since 1.0.0
  */
 @Slf4j
 public class OpenClawToolInvokeClient extends OpenClawHttpClient {
 
+    /**
+     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     *
+     * @param config SDK 配置
+     */
     public OpenClawToolInvokeClient(OpenClawHttpClientConfig config) {
         super(config);
     }
 
+    /**
+     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     *
+     * @param config SDK 配置
+     * @param objectMapper JSON 映射器
+     * @param httpClient 复用连接池和 Dispatcher 的 OkHttpClient
+     */
     public OpenClawToolInvokeClient(OpenClawHttpClientConfig config, ObjectMapper objectMapper, OkHttpClient httpClient) {
         super(config, objectMapper, httpClient);
     }
 
+    /**
+     * 调用 OpenClaw 的 `invoke` API，并复用统一认证、序列化、取消和异常处理。
+     *
+     * @param request 请求对象
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ToolInvokeResult
+     */
     public ToolInvokeResult invoke(ToolInvokeRequest request) {
         return invoke(request, null);
     }
 
+    /**
+     * 调用 OpenClaw 的 `invoke` API，并复用统一认证、序列化、取消和异常处理。
+     *
+     * @param request 请求对象
+     * @param cancellation 可选调用取消令牌
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ToolInvokeResult
+     */
     public ToolInvokeResult invoke(ToolInvokeRequest request, HttpCallCancellation cancellation) {
         return awaitFuture(invokeAsync(request, cancellation));
     }
 
     /**
-     * 异步调用工具，不占用请求工作线程等待网络响应。
+     * 使用 OkHttp/WebSocket 的异步机制发起 `invoke`，调用线程不会等待远程响应。
      *
-     * @param request 工具调用请求
-     * @param cancellation 可选取消信号
-     * @return 异步工具调用结果
+     * @param request 请求对象
+     * @param cancellation 可选调用取消令牌
+     * @return 在远程响应、取消或失败时完成的 CompletableFuture
+     * @throws IllegalArgumentException 必填参数缺失、格式错误或超出范围时抛出
+     * @throws OpenClawHttpException 远程响应、协议解析或本地执行失败时抛出
      */
     public CompletableFuture<ToolInvokeResult> invokeAsync(ToolInvokeRequest request,
                                                            HttpCallCancellation cancellation) {
@@ -101,7 +126,12 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
         }
     }
 
-    /** 异步调用工具。 */
+    /**
+     * 使用 OkHttp/WebSocket 的异步机制发起 `invoke`，调用线程不会等待远程响应。
+     *
+     * @param request 请求对象
+     * @return 在远程响应、取消或失败时完成的 CompletableFuture
+     */
     public CompletableFuture<ToolInvokeResult> invokeAsync(ToolInvokeRequest request) {
         return invokeAsync(request, null);
     }

@@ -9,71 +9,67 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * {@code openclaw agent} ,consistent with officialdocumentation Options Corresponds to.
- * <p> {@link Builder#build} :{@code --message} Required; {@code --to},{@code --session-id},{@code --agent} .</p>
- * <p>field:{@link ThinkingLevel},{@link VerboseLevel},timeoutseconds {@link Integer}; {@code thinking(String)} / {@code verbose(String)} CLI value.</p>
+ * openclaw `agent` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/agent">agent CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class AgentOptions implements CliSubArgs {
 
     /**
- * {@code -m} / {@code --message}: agent Required(Gateway embedding).
+     * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
      */
     private final String message;
     /**
- * {@code -t} / {@code --to}:,Used forsessionkey(session key); {@code --session-id},{@code --agent} .
+     * 传给 openclaw 子命令 `--to` 选项的内容；为 null 时通常省略。
      */
     private final String to;
     /**
- * {@code --session-id}:session id, {@code --to} sessionkey.
+     * 传给 openclaw 子命令 `--session-id` 选项的内容；为 null 时通常省略。
      */
     private final String sessionId;
     /**
- * {@code --agent}: agent id, agent.
+     * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
      */
     private final String agent;
     /**
- * {@code --thinking}:agent (See {@link ThinkingLevel}), CLI token.
+     * 传给 openclaw 子命令 `--thinking` 选项的内容；为 null 时通常省略。
      */
     private final String thinking;
     /**
- * {@code --verbose}:session verbose {@code on} {@code off}(See {@link VerboseLevel}), token.
+     * 传给 openclaw 子命令 `--verbose` 选项的内容；为 null 时通常省略。
      */
     private final String verbose;
     /**
- * {@code --channel}:;session(documentation:session).
+     * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
      */
     private final String channel;
     /**
- * {@code --reply-to}:(channelthread id).
+     * 传给 openclaw 子命令 `--reply-to` 选项的内容；为 null 时通常省略。
      */
     private final String replyTo;
     /**
- * {@code --reply-channel}:( {@code --channel} See agent documentation Notes).
+     * 传给 openclaw 子命令 `--reply-channel` 选项的内容；为 null 时通常省略。
      */
     private final String replyChannel;
     /**
- * {@code --reply-account}:.
+     * 传给 openclaw 子命令 `--reply-account` 选项的内容；为 null 时通常省略。
      */
     private final String replyAccount;
     /**
- * {@code --local}:pluginembedding agent, Gateway(documentation:plugin providers/tools/channels).
+     * 是否向 openclaw 子命令追加 `--local` 开关。
      */
     private final boolean local;
     /**
- * {@code --deliver}: agent channel/target(only turn ).
+     * 是否向 openclaw 子命令追加 `--deliver` 开关。
      */
     private final boolean deliver;
     /**
- * agent timeout(seconds);{@code null} {@code --timeout}( 600 secondsvalue,Seedocumentation).
+     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
      */
     private final Integer timeoutSeconds;
     /**
- * {@code --json}: JSON .
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
 
@@ -95,22 +91,18 @@ public final class AgentOptions implements CliSubArgs {
     }
 
     /**
- * {@link AgentOptions} builder.
+     * 创建空白构建器，供调用方链式设置 `AgentOptions` 字段。
      *
- * @return Builder
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * openclaw agent --to +15555550123 --message "status update" --deliver
-     * openclaw agent --agent ops --message "Summarize logs"
-     * openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
-     * openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
-     * openclaw agent --agent ops --message "Generate report" --deliver --reply-channel slack --reply-to "#reports"
-     * openclaw agent --agent ops --message "Run locally" --local
- * @return
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -171,30 +163,75 @@ public final class AgentOptions implements CliSubArgs {
     }
 
     /**
- * {@link AgentOptions} builder;{@link #build} documentationRequiredsession.
+     * 链式构建器，逐项收集 AgentOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 AgentOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
 
+        /**
+         * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
+         */
         private String message;
+        /**
+         * 传给 openclaw 子命令 `--to` 选项的内容；为 null 时通常省略。
+         */
         private String to;
+        /**
+         * 传给 openclaw 子命令 `--session-id` 选项的内容；为 null 时通常省略。
+         */
         private String sessionId;
+        /**
+         * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+         */
         private String agent;
+        /**
+         * 传给 openclaw 子命令 `--thinking` 选项的内容；为 null 时通常省略。
+         */
         private String thinking;
+        /**
+         * 传给 openclaw 子命令 `--verbose` 选项的内容；为 null 时通常省略。
+         */
         private String verbose;
+        /**
+         * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+         */
         private String channel;
+        /**
+         * 传给 openclaw 子命令 `--reply-to` 选项的内容；为 null 时通常省略。
+         */
         private String replyTo;
+        /**
+         * 传给 openclaw 子命令 `--reply-channel` 选项的内容；为 null 时通常省略。
+         */
         private String replyChannel;
+        /**
+         * 传给 openclaw 子命令 `--reply-account` 选项的内容；为 null 时通常省略。
+         */
         private String replyAccount;
+        /**
+         * 是否向 openclaw 子命令追加 `--local` 开关。
+         */
         private boolean local;
+        /**
+         * 是否向 openclaw 子命令追加 `--deliver` 开关。
+         */
         private boolean deliver;
+        /**
+         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         */
         private Integer timeoutSeconds;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
 
         /**
- * {@code -m} / {@code --message}:message(Required).
+         * 设置 `--message` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param message message
-         * @return this
+         * @param message 消息正文
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder message(String message) {
             this.message = message;
@@ -202,10 +239,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code -t} / {@code --to}:Used for session .
+         * 设置 `--to` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param to
-         * @return this
+         * @param to 写入 `--to` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder to(String to) {
             this.to = to;
@@ -213,10 +250,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --session-id}:session id.
+         * 设置 `--session-id` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param sessionId session id
-         * @return this
+         * @param sessionId 写入 `--session-id` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder sessionId(String sessionId) {
             this.sessionId = sessionId;
@@ -224,10 +261,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --agent}: agent id,.
+         * 设置 `--agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param agent agent
-         * @return this
+         * @param agent 写入 `--agent` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder agent(String agent) {
             this.agent = agent;
@@ -235,10 +272,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --thinking}:documentation.
+         * 设置 `--thinking` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param thinking
-         * @return this
+         * @param thinking 写入 `--thinking` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder thinking(ThinkingLevel thinking) {
             Objects.requireNonNull(thinking, "thinking");
@@ -247,10 +284,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --thinking}: CLI value( {@link #thinking(ThinkingLevel)} mutually exclusive).
+         * 设置 `--thinking` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param thinking token
-         * @return this
+         * @param thinking 写入 `--thinking` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder thinking(String thinking) {
             this.thinking = thinking;
@@ -258,10 +295,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --verbose}:session verbose .
+         * 设置 `--verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param verbose on / off
-         * @return this
+         * @param verbose 写入 `--verbose` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder verbose(VerboseLevel verbose) {
             Objects.requireNonNull(verbose, "verbose");
@@ -270,10 +307,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --verbose}:value( {@link #verbose(VerboseLevel)} mutually exclusive).
+         * 设置 `--verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param verbose token, {@code on} {@code off}
-         * @return this
+         * @param verbose 写入 `--verbose` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder verbose(String verbose) {
             this.verbose = verbose;
@@ -281,10 +318,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --channel}:;session.
+         * 设置 `--channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param channel
-         * @return this
+         * @param channel 写入 `--channel` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder channel(String channel) {
             this.channel = channel;
@@ -292,10 +329,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --reply-to}:.
+         * 设置 `--reply-to` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param replyTo
-         * @return this
+         * @param replyTo 写入 `--reply-to` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder replyTo(String replyTo) {
             this.replyTo = replyTo;
@@ -303,10 +340,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --reply-channel}:.
+         * 设置 `--reply-channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param replyChannel
-         * @return this
+         * @param replyChannel 写入 `--reply-channel` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder replyChannel(String replyChannel) {
             this.replyChannel = replyChannel;
@@ -314,10 +351,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --reply-account}:.
+         * 设置 `--reply-account` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param replyAccount id
-         * @return this
+         * @param replyAccount 写入 `--reply-account` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder replyAccount(String replyAccount) {
             this.replyAccount = replyAccount;
@@ -325,10 +362,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --local}:pluginembedding agent.
+         * 设置 `--local` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param local embedding
-         * @return this
+         * @param local 是否向命令行追加 `--local` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder local(boolean local) {
             this.local = local;
@@ -336,10 +373,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --deliver}: channel/target.
+         * 设置 `--deliver` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param deliver
-         * @return this
+         * @param deliver 是否向命令行追加 `--deliver` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder deliver(boolean deliver) {
             this.deliver = deliver;
@@ -347,10 +384,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --timeout}: agent timeout(seconds).
+         * 设置 `--timeout-seconds` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param timeoutSeconds seconds;{@code null} flag
-         * @return this
+         * @param timeoutSeconds 超时时间，单位为秒
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder timeoutSeconds(Integer timeoutSeconds) {
             this.timeoutSeconds = timeoutSeconds;
@@ -358,10 +395,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --timeout}: agent timeout(seconds).
+         * 设置 `--timeout-seconds` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param timeoutSeconds seconds
-         * @return this
+         * @param timeoutSeconds 超时时间，单位为秒
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder timeoutSeconds(int timeoutSeconds) {
             this.timeoutSeconds = timeoutSeconds;
@@ -369,10 +406,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@code --json}: JSON .
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param json JSON
-         * @return this
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -380,11 +417,10 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
- * {@link AgentOptions}.
- * <p>:{@code message} ;{@code to},{@code sessionId},{@code agent} .</p>
+         * 校验并复制当前构建器字段，创建独立的 `AgentOptions`。
          *
- * @return completionobject
- * @throws IllegalStateException documentationRequired
+         * @return 按当前字段创建的 AgentOptions
+         * @throws IllegalStateException 当前连接或生命周期状态不允许调用时抛出
          */
         public AgentOptions build() {
             if (message == null || OpenClawStrings.isBlank(message)) {

@@ -5,37 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
- * OpenAI/OpenClaw .
+ * OpenClaw JSON 协议中的 `ResponseFormat` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3></h3>
- * <table>
- * <tr><th>type</th><th></th><th>json_schema?</th></tr>
- * <tr><td>{@code "text"}</td><td></td><td></td></tr>
- * <tr><td>{@code "json_object"}</td><td> JSON</td><td></td></tr>
- * <tr><td>{@code "json_schema"}</td><td>( JSON Schema)</td><td><b></b></td></tr>
- * </table>
- *
- * <h3>usageexample</h3>
- * <pre>{@code
- * // JSON
- * ResponseFormat.jsonObject()
- *
- * // (JSON Schema)
- * ResponseFormat.builder()
- *     .type(ResponseFormatType.JSON_SCHEMA)
- *     .jsonSchema(ResponseFormatJsonSchema.builder()
- *         .name("article")
- *         .strict(true)
- *         .schema(Map.of("type", "object", "properties", ...))
- *         .build())
- *     .build();
- * }</pre>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
- * @see <a href="https://platform.openai.com/docs/guides/structured-outputs">Structured Outputs</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Data
 @Builder
@@ -45,14 +18,13 @@ import lombok.*;
 public class ResponseFormat {
 
     /**
- * .
+     * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
      */
     @JsonProperty("type")
     private ResponseFormatType type;
 
     /**
- * only {@code type = "json_schema"} .
- * <p> name,schema,strict field.</p>
+     * 映射 OpenClaw JSON 字段 `jsonSchema` 的 协议内容。
      */
     @JsonProperty("json_schema")
     private ResponseFormatJsonSchema jsonSchema;
@@ -60,7 +32,9 @@ public class ResponseFormat {
     // ---- 便捷工厂方法 ----
 
     /**
- * JSON .
+     * 根据 OpenClaw JSON 语义构造、提取或更新 `ResponseFormat` 中的 `jsonObject` 数据。
+     *
+     * @return 按当前参数创建、查询或解析得到的 ResponseFormat
      */
     public static ResponseFormat jsonObject() {
         return ResponseFormat.builder()
@@ -69,7 +43,9 @@ public class ResponseFormat {
     }
 
     /**
- * .
+     * 根据 OpenClaw JSON 语义构造、提取或更新 `ResponseFormat` 中的 `text` 数据。
+     *
+     * @return 按当前参数创建、查询或解析得到的 ResponseFormat
      */
     public static ResponseFormat text() {
         return ResponseFormat.builder()

@@ -11,15 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpenResponses API non-streaming.
- * <p>
- * Corresponds to {@code POST /v1/responses}({@code stream: false}) JSON.
- * </p>
+ * OpenClaw JSON 协议中的 `ResponseResult` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * @see <a href="https://docs.openclaw.ai/gateway/openresponses-http-api">OpenResponses API</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -28,38 +23,41 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResponseResult {
 
- /** . */
+    /**
+     * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+     */
     private String id;
 
- /** object, {@code "response"}. */
+    /**
+     * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+     */
     private String object;
 
     /**
- * .
-     * <ul>
- * <li>{@code "completed"} - completion</li>
- * <li>{@code "failed"} - </li>
- * <li>{@code "in_progress"} - (streaming)</li>
-     * </ul>
+     * 映射 OpenClaw JSON 字段 `status` 的 协议内容。
      */
     private String status;
 
- /** agent . */
+    /**
+     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     */
     private String model;
 
     /**
- * .
- * <p>messageobject, {@code type},{@code role},{@code content} field.</p>
+     * 映射 OpenClaw JSON 字段 `output` 的 有序数组。
      */
     private List<Map<String, Object>> output;
 
     /**
- * Token .
+     * 映射 OpenClaw JSON 字段 `usage` 的 协议内容。
      */
     private Usage usage;
 
     /**
- * Token .
+     * OpenClaw JSON 协议中的 `Usage` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -67,10 +65,19 @@ public class ResponseResult {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Usage {
+        /**
+         * 映射 OpenClaw JSON 字段 `inputTokens` 的 协议内容。
+         */
         @JsonProperty("input_tokens")
         private Integer inputTokens;
+        /**
+         * 映射 OpenClaw JSON 字段 `outputTokens` 的 协议内容。
+         */
         @JsonProperty("output_tokens")
         private Integer outputTokens;
+        /**
+         * 映射 OpenClaw JSON 字段 `totalTokens` 的 协议内容。
+         */
         @JsonProperty("total_tokens")
         private Integer totalTokens;
     }

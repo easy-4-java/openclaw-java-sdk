@@ -16,22 +16,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
- * Apache Commons Exec {@code openclaw},documentationglobal parameterssubcommand.
+ * 本地 openclaw 进程执行器，负责全局参数组装、工作目录和超时解析，并把进程退出、超时和启动失败归一化为 OpenClawCliResult。
  *
- * @see <a href="https://docs.openclaw.ai/gateway/cli-backends">CLI Backends</a>
- * @see <a href="https://docs.openclaw.ai/cli">CLI Reference</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Getter
 @Slf4j
 public class OpenClawCliExecutor {
 
+    /**
+     * SDK 配置。
+     */
     private final OpenClawCliConfig config;
 
     /**
- * @param config CLI ,Must not be null
+     * 按给定配置创建 `OpenClawCliExecutor`，构造过程不隐式执行远程业务请求。
+     *
+     * @param config SDK 配置
      */
     public OpenClawCliExecutor(OpenClawCliConfig config) {
         this.config = Objects.requireNonNull(config, "config");
@@ -39,7 +41,10 @@ public class OpenClawCliExecutor {
     }
 
     /**
- * CLI, {@link OpenClawCliResult}( 0 exit code).
+     * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
+     *
+     * @param request 请求对象
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult execute(OpenClawCliRequest request) {
         Objects.requireNonNull(request, "request");
@@ -124,7 +129,10 @@ public class OpenClawCliExecutor {
     }
 
     /**
- * {@link CommandLine},for easy.
+     * 把请求中的全局开关和子命令参数转换为 Commons Exec CommandLine，参数按原顺序保留。
+     *
+     * @param request 请求对象
+     * @return 已按原顺序转义并组装全局参数和子命令参数的命令行
      */
     public CommandLine toCommandLine(OpenClawCliRequest request) {
         CommandLine cmd = new CommandLine(config.getExecutable());
@@ -149,12 +157,9 @@ public class OpenClawCliExecutor {
     }
 
     /**
- * Probes the local {@code openclaw} ({@code openclaw --version}).
-     * <p>
- * Delegates to {@link OpenClawCliAvailabilityChecker},.
-     * </p>
+     * 执行轻量级 `openclaw --version` 探测并返回可用性、版本和失败原因。
      *
- * @return probe report; {@link OpenClawCliAvailabilityReport#isAvailable}
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 OpenClawCliAvailabilityReport
      */
     public OpenClawCliAvailabilityReport probe() {
         return new OpenClawCliAvailabilityChecker().check(this.config);

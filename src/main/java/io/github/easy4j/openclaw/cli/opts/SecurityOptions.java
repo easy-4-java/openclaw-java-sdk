@@ -8,48 +8,52 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw security}:security,Optionaldocumentationrepair({@code audit --fix}).
- * <p>{@code --token}/{@code --password} onlyauthentication,;{@code --deep} ;{@code --json} CI/.</p>
+ * openclaw `security` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/security">security CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class SecurityOptions implements CliSubArgs {
 
- /** subcommand( {@code audit}). */
+    /**
+     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
+     */
     public enum Mode {
-        /** {@code security audit} */
+        /**
+         * 选择 `audit` 协议模式；序列化时使用该固定取值。
+         */
         AUDIT
     }
 
     /**
- * ; {@link Mode#AUDIT}({@code security audit}).
+     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
      */
     private final Mode mode;
     /**
- * {@code --deep}:security(documentationexample CI ).
+     * 是否向 openclaw 子命令追加 `--deep` 开关。
      */
     private final boolean deep;
     /**
- * {@code --password}:Gateway( SecretRef/).
+     * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
      */
     private final String password;
     /**
- * {@code --token}: token(only).
+     * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
      */
     private final String token;
     /**
- * {@code --fix}:documentationsecurity( groupPolicy,key);secret,.
+     * 是否向 openclaw 子命令追加 `--fix` 开关。
      */
     private final boolean fix;
     /**
- * {@code --json}:( {@code --fix} repair).
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
     /**
- * .
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -67,14 +71,18 @@ public final class SecurityOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `SecurityOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -92,19 +100,45 @@ public final class SecurityOptions implements CliSubArgs {
     }
 
     /**
- * {@link SecurityOptions} builder.
+     * 链式构建器，逐项收集 SecurityOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 SecurityOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         */
         private Mode mode = Mode.AUDIT;
+        /**
+         * 是否向 openclaw 子命令追加 `--deep` 开关。
+         */
         private boolean deep;
+        /**
+         * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+         */
         private String password;
+        /**
+         * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+         */
         private String token;
+        /**
+         * 是否向 openclaw 子命令追加 `--fix` 开关。
+         */
         private boolean fix;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
- * @return {@code this}, {@link Mode#AUDIT}
+         * 选择 `audit` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder audit() {
             this.mode = Mode.AUDIT;
@@ -112,8 +146,10 @@ public final class SecurityOptions implements CliSubArgs {
         }
 
         /**
-         * @param deep {@code --deep}
-         * @return {@code this}
+         * 设置 `--deep` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param deep 是否向命令行追加 `--deep` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder deep(boolean deep) {
             this.deep = deep;
@@ -121,8 +157,10 @@ public final class SecurityOptions implements CliSubArgs {
         }
 
         /**
-         * @param password {@code --password}
-         * @return {@code this}
+         * 设置 `--password` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param password 写入 `--password` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder password(String password) {
             this.password = password;
@@ -130,8 +168,10 @@ public final class SecurityOptions implements CliSubArgs {
         }
 
         /**
-         * @param token {@code --token}
-         * @return {@code this}
+         * 设置 `--token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param token 写入 `--token` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder token(String token) {
             this.token = token;
@@ -139,8 +179,10 @@ public final class SecurityOptions implements CliSubArgs {
         }
 
         /**
-         * @param fix {@code --fix}
-         * @return {@code this}
+         * 设置 `--fix` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param fix 是否向命令行追加 `--fix` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder fix(boolean fix) {
             this.fix = fix;
@@ -148,8 +190,10 @@ public final class SecurityOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --json}
-         * @return {@code this}
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -157,8 +201,10 @@ public final class SecurityOptions implements CliSubArgs {
         }
 
         /**
- * @param tokens CLI token
-         * @return {@code this}
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -168,7 +214,9 @@ public final class SecurityOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link SecurityOptions}
+         * 校验并复制当前构建器字段，创建独立的 `SecurityOptions`。
+         *
+         * @return 按当前字段创建的 SecurityOptions
          */
         public SecurityOptions build() {
             return new SecurityOptions(this);
