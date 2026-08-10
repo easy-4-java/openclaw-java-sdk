@@ -57,6 +57,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @see OpenClawGatewayWsClient
  * @see OpenClawChatClient
+ * @see OpenClawSseClient
  * @see OpenClawEmbeddingsClient
  * @see OpenClawResponsesClient
  * @see OpenClawToolInvokeClient
@@ -69,6 +70,7 @@ public class OpenClawClient implements AutoCloseable {
 
     private final OpenClawWebhookClient gatewayHttpClient;
     private final OpenClawChatClient chatClient;
+    private final OpenClawSseClient sseClient;
     private final OpenClawEmbeddingsClient embeddingsClient;
     private final OpenClawResponsesClient responsesClient;
     private final OpenClawToolInvokeClient toolsInvokeClient;
@@ -151,7 +153,9 @@ public class OpenClawClient implements AutoCloseable {
         // HTTP 子系统初始化（enabled=false 时不创建，字段为 null）
         if (httpEnabled) {
             this.gatewayHttpClient = new OpenClawWebhookClient(httpConfig, objectMapper, httpClient);
-            this.chatClient = new OpenClawChatClient(httpConfig, objectMapper, httpClient);
+            this.sseClient = new OpenClawSseClient(httpConfig, objectMapper, httpClient);
+            this.chatClient = new OpenClawChatClient(
+                    httpConfig, objectMapper, httpClient, sseClient);
             this.embeddingsClient = new OpenClawEmbeddingsClient(httpConfig, objectMapper, httpClient);
             this.responsesClient = new OpenClawResponsesClient(httpConfig, objectMapper, httpClient);
             this.toolsInvokeClient = new OpenClawToolInvokeClient(httpConfig, objectMapper, httpClient);
@@ -159,6 +163,7 @@ public class OpenClawClient implements AutoCloseable {
         } else {
             this.gatewayHttpClient = null;
             this.chatClient = null;
+            this.sseClient = null;
             this.embeddingsClient = null;
             this.responsesClient = null;
             this.toolsInvokeClient = null;
@@ -215,6 +220,7 @@ public class OpenClawClient implements AutoCloseable {
                           OpenClawCliConfig cliConfig,
                           OpenClawWebhookClient gatewayHttpClient,
                           OpenClawChatClient chatClient,
+                          OpenClawSseClient sseClient,
                           OpenClawEmbeddingsClient embeddingsClient,
                           OpenClawResponsesClient responsesClient,
                           OpenClawToolInvokeClient toolsInvokeClient,
@@ -222,6 +228,7 @@ public class OpenClawClient implements AutoCloseable {
                           OpenClawGatewayWsClient wsClient) {
         this.gatewayHttpClient = gatewayHttpClient;
         this.chatClient = chatClient;
+        this.sseClient = sseClient;
         this.embeddingsClient = embeddingsClient;
         this.responsesClient = responsesClient;
         this.toolsInvokeClient = toolsInvokeClient;
@@ -414,6 +421,15 @@ public class OpenClawClient implements AutoCloseable {
      */
     public OpenClawChatClient chat() {
         return chatClient;
+    }
+
+    /**
+     * 返回 SSE 场景客户端。
+     *
+     * @return SSE 客户端；HTTP 子系统未启用时为 {@code null}
+     */
+    public OpenClawSseClient sse() {
+        return sseClient;
     }
 
     /**
@@ -686,6 +702,7 @@ public class OpenClawClient implements AutoCloseable {
     @Override
     public void close() {
         // 逐一释放所有子客户端资源，任一失败不影响其他
+        closeQuietly(sseClient);
         closeQuietly(gatewayHttpClient);
         closeQuietly(chatClient);
         closeQuietly(embeddingsClient);
