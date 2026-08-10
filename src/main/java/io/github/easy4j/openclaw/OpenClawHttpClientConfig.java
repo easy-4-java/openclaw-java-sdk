@@ -22,7 +22,7 @@ import lombok.Data;
  *
  * @see <a href="https://docs.openclaw.ai/gateway/protocol">Gateway Protocol</a>
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#authentication">OpenAI HTTP API Authentication</a>
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Data
@@ -87,19 +87,10 @@ public class OpenClawHttpClientConfig {
     private long keepAliveDurationMillis = 300_000L;
 
  /** maximum concurrency */
-    private int maxRequests = 1_024;
+    private int maxRequests = 128;
 
  /** maximum concurrency */
-    private int maxRequestsPerHost = 512;
-
-    /** Netty 非阻塞传输 I/O 线程数；固定小线程池承载大量并发连接。 */
-    private int ioThreadsCount = Math.max(4, Math.min(16, Runtime.getRuntime().availableProcessors()));
-
-    /**
-     * 是否为旧式注入 OkHttp interceptor 的场景启用兼容传输。
-     * <p>默认关闭；生产并发路径应使用 Netty 非阻塞传输。</p>
-     */
-    private boolean legacyInjectedOkHttpTransportEnabled = false;
+    private int maxRequestsPerHost = 128;
 
     /** 流式响应消费线程池核心线程数。 */
     private int streamCorePoolSize = 16;
@@ -108,7 +99,7 @@ public class OpenClawHttpClientConfig {
     private int streamMaxPoolSize = 16;
 
     /** SSE 响应消费线程池有界队列容量 */
-    private int streamQueueCapacity = 128;
+    private int streamQueueCapacity = 1_024;
 
     /** SSE 响应消费线程空闲保活时间（毫秒） */
     private long streamKeepAliveMillis = 60_000L;

@@ -5,7 +5,10 @@ import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 
 import java.util.Objects;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * OpenClaw default OkHttpClient factory.
@@ -13,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Spring Provides {@link OkHttpClient} inject;
  * SDK , Chat,Tools,Responses connection pool.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public final class OpenClawOkHttpClientFactory {
@@ -29,8 +32,18 @@ public final class OpenClawOkHttpClientFactory {
      */
     public static OkHttpClient create(OpenClawHttpClientConfig config) {
         Objects.requireNonNull(config, "config");
-        Dispatcher dispatcher = new Dispatcher();
-        dispatcher.setMaxRequests(Math.max(1, config.getMaxRequests()));
+        int maxRequests = Math.max(1, config.getMaxRequests());
+        AtomicInteger threadIndex = new AtomicInteger();
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(maxRequests, maxRequests, 60L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(maxRequests), runnable -> {
+                    Thread thread = new Thread(runnable,
+                            "openclaw-okhttp-dispatcher-" + threadIndex.incrementAndGet());
+                    thread.setDaemon(true);
+                    return thread;
+                });
+        executor.allowCoreThreadTimeOut(true);
+        Dispatcher dispatcher = new Dispatcher(executor);
+        dispatcher.setMaxRequests(maxRequests);
         dispatcher.setMaxRequestsPerHost(Math.max(1, config.getMaxRequestsPerHost()));
         ConnectionPool connectionPool = new ConnectionPool(
                 Math.max(1, config.getMaxIdleConnections()),
