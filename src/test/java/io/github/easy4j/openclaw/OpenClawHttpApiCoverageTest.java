@@ -57,6 +57,7 @@ class OpenClawHttpApiCoverageTest {
         config.setBaseUrl("http://localhost:18789");
         config.setGatewayAuthToken("gateway-token");
         config.setHooksToken("hook-token");
+        config.setLegacyInjectedOkHttpTransportEnabled(true);
         client = new OkHttpClient.Builder().addInterceptor(chain -> {
             Request request = chain.request();
             requests.add(request);
