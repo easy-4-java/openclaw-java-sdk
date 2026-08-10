@@ -8,51 +8,47 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw uninstall}: Gateway (CLI ).
- * <p>fieldCorresponds todocumentation Options ;Composes.documentation: state workspace
- * {@code openclaw backup create} restore;{@code --non-interactive} {@code --yes} .</p>
- *
- * @see <a href="https://docs.openclaw.ai/cli/uninstall">uninstall CLI</a>
+ * openclaw `uninstall` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class UninstallOptions implements CliSubArgs {
 
     /**
- * {@code --service}: Gateway (launchd/systemd ).
+     * 是否向 openclaw 子命令追加 `--service` 开关。
      */
     private final boolean service;
     /**
- * {@code --state}:( OpenClaw /directory).
+     * 是否向 openclaw 子命令追加 `--state` 开关。
      */
     private final boolean state;
     /**
- * {@code --workspace}: agent workspace directory.
+     * 是否向 openclaw 子命令追加 `--workspace` 开关。
      */
     private final boolean workspace;
     /**
- * {@code --app}: macOS (only macOS ).
+     * 是否向 openclaw 子命令追加 `--app` 开关。
      */
     private final boolean app;
     /**
- * {@code --all}:Equivalent to service,state,workspace,app(documentation).
+     * 是否向 openclaw 子命令追加 `--all` 开关。
      */
     private final boolean all;
     /**
- * {@code --yes}:skips.
+     * 是否向 openclaw 子命令追加 `--yes` 开关。
      */
     private final boolean yes;
     /**
- * {@code --non-interactive}:;documentation {@code --yes} .
+     * 是否向 openclaw 子命令追加 `--non-interactive` 开关。
      */
     private final boolean nonInteractive;
     /**
- * {@code --dry-run}:only,.
+     * 是否向 openclaw 子命令追加 `--dry-run` 开关。
      */
     private final boolean dryRun;
     /**
- * documentation argv, shell .
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -72,14 +68,18 @@ public final class UninstallOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `UninstallOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -97,22 +97,54 @@ public final class UninstallOptions implements CliSubArgs {
     }
 
     /**
- * {@link UninstallOptions} builder.
+     * 链式构建器，逐项收集 UninstallOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 UninstallOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 是否向 openclaw 子命令追加 `--service` 开关。
+         */
         private boolean service;
+        /**
+         * 是否向 openclaw 子命令追加 `--state` 开关。
+         */
         private boolean state;
+        /**
+         * 是否向 openclaw 子命令追加 `--workspace` 开关。
+         */
         private boolean workspace;
+        /**
+         * 是否向 openclaw 子命令追加 `--app` 开关。
+         */
         private boolean app;
+        /**
+         * 是否向 openclaw 子命令追加 `--all` 开关。
+         */
         private boolean all;
+        /**
+         * 是否向 openclaw 子命令追加 `--yes` 开关。
+         */
         private boolean yes;
+        /**
+         * 是否向 openclaw 子命令追加 `--non-interactive` 开关。
+         */
         private boolean nonInteractive;
+        /**
+         * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+         */
         private boolean dryRun;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @param service {@code --service}
-         * @return {@code this}
+         * 设置 `--service` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param service 是否向命令行追加 `--service` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder service(boolean service) {
             this.service = service;
@@ -120,8 +152,10 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
-         * @param state {@code --state}
-         * @return {@code this}
+         * 设置 `--state` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param state 是否向命令行追加 `--state` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder state(boolean state) {
             this.state = state;
@@ -129,8 +163,10 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
-         * @param workspace {@code --workspace}
-         * @return {@code this}
+         * 设置 `--workspace` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param workspace 是否向命令行追加 `--workspace` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder workspace(boolean workspace) {
             this.workspace = workspace;
@@ -138,8 +174,10 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
-         * @param app {@code --app}
-         * @return {@code this}
+         * 设置 `--app` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param app 是否向命令行追加 `--app` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder app(boolean app) {
             this.app = app;
@@ -147,8 +185,10 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
-         * @param all {@code --all}
-         * @return {@code this}
+         * 设置 `--all` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param all 是否向命令行追加 `--all` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder all(boolean all) {
             this.all = all;
@@ -156,8 +196,10 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
-         * @param yes {@code --yes}
-         * @return {@code this}
+         * 设置 `--yes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param yes 是否向命令行追加 `--yes` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder yes(boolean yes) {
             this.yes = yes;
@@ -165,8 +207,10 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
-         * @param nonInteractive {@code --non-interactive}
-         * @return {@code this}
+         * 设置 `--non-interactive` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param nonInteractive 是否向命令行追加 `--non-interactive` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder nonInteractive(boolean nonInteractive) {
             this.nonInteractive = nonInteractive;
@@ -174,8 +218,10 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
-         * @param dryRun {@code --dry-run}
-         * @return {@code this}
+         * 设置 `--dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param dryRun 是否向命令行追加 `--dry-run` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder dryRun(boolean dryRun) {
             this.dryRun = dryRun;
@@ -183,8 +229,10 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
- * @param tokens CLI token
-         * @return {@code this}
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -194,7 +242,9 @@ public final class UninstallOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link UninstallOptions}
+         * 校验并复制当前构建器字段，创建独立的 `UninstallOptions`。
+         *
+         * @return 按当前字段创建的 UninstallOptions
          */
         public UninstallOptions build() {
             return new UninstallOptions(this);

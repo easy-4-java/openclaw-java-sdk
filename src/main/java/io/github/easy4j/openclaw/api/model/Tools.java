@@ -11,53 +11,36 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * OpenAI tool call.
- * <p>
- * Provides,.
- * </p>
- *
- * <h3>usageexample</h3>
- * <pre>{@code
- * //
- * Map<String, Object> getWeatherTool = Tools.function("get_weather", "Get weather info")
- *     .param("city", "string", "City name")
- *     .param("country", "string", "Country code", true)
- *     .build();
- *
- * // tool call
- * ToolCall call = response.getChoices().get(0).getMessage().getToolCalls().get(0);
- * Map<String, Object> args = Tools.parseArgs(call, Map.class);
- * String city = (String) args.get("city")
- *
- * // message
- * String result = executeTool(call, args);
- * ChatMessage resultMsg = Tools.toolResult(call.getId(), result);
- * }</pre>
- *
- * @see ChatMessage.ToolCall
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#chat-tool-contract">Chat tool contract</a>
+ * OpenClaw JSON 协议中的 `Tools` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class Tools {
 
+    /**
+     * OpenClaw 协议固定值 {@code new ObjectMapper()}；调用方不应在运行时修改。
+     */
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private Tools() {}
 
     /**
- * .
+     * 根据 OpenClaw JSON 语义构造、提取或更新 `Tools` 中的 `function` 数据。
      *
- * @param name
- * @param description
+     * @param name 写入 `name` 协议字段的内容
+     * @param description 写入 `description` 协议字段的内容
+     * @return 预填充当前工厂方法字段、可继续链式补充内容的 FunctionBuilder
      */
     public static FunctionBuilder function(String name, String description) {
         return new FunctionBuilder(name, description);
     }
 
     /**
- * messagetool call.
+     * 判断 `toolCalls` 对应状态 是否满足协议或生命周期条件。
+     *
+     * @param message 消息正文
+     * @return 条件成立返回 {@code true}，否则返回 {@code false}
      */
     public static boolean hasToolCalls(ChatMessage message) {
         return message != null
@@ -66,18 +49,23 @@ public final class Tools {
     }
 
     /**
- * chunk tool callcompletion.
+     * 判断 `toolCallFinish` 对应状态 是否满足协议或生命周期条件。
+     *
+     * @param finishReason 写入 `finishReason` 协议字段的内容
+     * @return 条件成立返回 {@code true}，否则返回 {@code false}
      */
     public static boolean isToolCallFinish(String finishReason) {
         return OpenClawConstants.FINISH_REASON_TOOL_CALLS.equals(finishReason);
     }
 
     /**
- * tool call.
+     * 使用受控 ObjectMapper 把输入解析为目标类型，解析失败时保留原始异常原因。
      *
- * @param toolCall tool call
- * @param clazz ( Map.class )
- * @return object
+     * @param <T> 方法使用的泛型类型
+     * @param toolCall 写入 `toolCall` 协议字段的内容
+     * @param clazz 写入 `clazz` 协议字段的内容
+     * @return 按声明类型解析的值；ThinkOption 标量保持布尔或字符串形式
+     * @throws IllegalArgumentException 必填参数缺失、格式错误或超出范围时抛出
      */
     public static <T> T parseArgs(ToolCall toolCall, Class<T> clazz) {
         Objects.requireNonNull(toolCall, "toolCall");
@@ -103,17 +91,21 @@ public final class Tools {
     }
 
     /**
- * tool call Map.
+     * 使用受控 ObjectMapper 把输入解析为目标类型，解析失败时保留原始异常原因。
+     *
+     * @param toolCall 写入 `toolCall` 协议字段的内容
+     * @return 键名与 OpenClaw JSON/CLI 协议一致的映射
      */
     public static Map<String, Object> parseArgsAsMap(ToolCall toolCall) {
         return parseArgs(toolCall, Map.class);
     }
 
     /**
- * message.
+     * 根据 OpenClaw JSON 语义构造、提取或更新 `Tools` 中的 `toolResult` 数据。
      *
- * @param toolCallId Corresponds totool call ID
- * @param output (object, JSON)
+     * @param toolCallId 用于关联协议对象的 `toolCallId` 标识
+     * @param output 写入 `output` 协议字段的内容
+     * @return 按当前参数创建、查询或解析得到的 ChatMessage
      */
     public static ChatMessage toolResult(String toolCallId, Object output) {
         String content;
@@ -130,7 +122,10 @@ public final class Tools {
     }
 
     /**
- * messagetool call.
+     * 根据 OpenClaw JSON 语义构造、提取或更新 `Tools` 中的 `extractToolCalls` 数据。
+     *
+     * @param message 消息正文
+     * @return 按协议顺序返回的数据列表；没有数据时为空列表
      */
     public static List<ToolCall> extractToolCalls(ChatMessage message) {
         if (!hasToolCalls(message)) {
@@ -140,12 +135,27 @@ public final class Tools {
     }
 
     /**
- * builder.
+     * 链式构建器，逐项收集 Tools 的字段；build() 会复制当前快照，后续修改不会影响已构造的 Tools。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static class FunctionBuilder {
+        /**
+         * 映射 OpenClaw JSON 字段 `name` 的 协议内容。
+         */
         private final String name;
+        /**
+         * 映射 OpenClaw JSON 字段 `description` 的 协议内容。
+         */
         private final String description;
+        /**
+         * 映射 OpenClaw JSON 字段 `parameters` 的 键值对象。
+         */
         private final Map<String, Parameter> parameters = new java.util.LinkedHashMap<>();
+        /**
+         * 映射 OpenClaw JSON 字段 `required` 的 布尔开关。
+         */
         private boolean required = false;
 
         FunctionBuilder(String name, String description) {
@@ -154,19 +164,25 @@ public final class Tools {
         }
 
         /**
- * Optional.
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `FunctionBuilder` 中的 `param` 数据。
+         *
+         * @param name 写入 `name` 协议字段的内容
+         * @param type 写入 `type` 协议字段的内容
+         * @param description 写入 `description` 协议字段的内容
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 FunctionBuilder
          */
         public FunctionBuilder param(String name, String type, String description) {
             return param(name, type, description, false);
         }
 
         /**
- * .
+         * 根据 OpenClaw JSON 语义构造、提取或更新 `FunctionBuilder` 中的 `param` 数据。
          *
- * @param name
- * @param type :string, number, integer, boolean, array, object
- * @param description
- * @param required Required
+         * @param name 写入 `name` 协议字段的内容
+         * @param type 写入 `type` 协议字段的内容
+         * @param description 写入 `description` 协议字段的内容
+         * @param required 写入 `required` 协议字段的内容
+         * @return 预填充当前工厂方法字段、可继续链式补充内容的 FunctionBuilder
          */
         public FunctionBuilder param(String name, String type, String description, boolean required) {
             parameters.put(name, new Parameter(name, type, description, required));
@@ -177,7 +193,9 @@ public final class Tools {
         }
 
         /**
- * Map(Used for HTTP ).
+         * 校验并复制当前构建器字段，创建独立的 `Tools`。
+         *
+         * @return 按当前字段创建的 Tools
          */
         @SuppressWarnings("unchecked")
         public Map<String, Object> build() {
@@ -208,10 +226,28 @@ public final class Tools {
             return tool;
         }
 
+        /**
+         * OpenClaw JSON 协议中的 `Parameter` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+         *
+         * @author <a href="https://github.com/loong10k">Loong Wan</a>
+         * @since 1.0.0
+         */
         private static class Parameter {
+            /**
+             * 映射 OpenClaw JSON 字段 `name` 的 协议内容。
+             */
             final String name;
+            /**
+             * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+             */
             final String type;
+            /**
+             * 映射 OpenClaw JSON 字段 `description` 的 协议内容。
+             */
             final String description;
+            /**
+             * 映射 OpenClaw JSON 字段 `required` 的 布尔开关。
+             */
             final boolean required;
 
             Parameter(String name, String type, String description, boolean required) {

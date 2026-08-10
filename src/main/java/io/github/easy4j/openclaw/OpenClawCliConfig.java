@@ -3,10 +3,7 @@ package io.github.easy4j.openclaw;
 import lombok.Data;
 
 /**
- * OpenClaw local CLI client configuration.
- * <p>
- * Covers {@code openclaw} executable,timeout,concurrency,working directory CLI .
- * </p>
+ * 本地 CLI 通道配置，定义可执行文件、工作目录、启动探测、命令超时和最大并发子进程数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,44 +12,42 @@ import lombok.Data;
 public class OpenClawCliConfig {
 
     /**
- * Whether to enable CLI system.
- * <p>When false,skips CLI .</p>
+     * 是否创建并开放对应通信通道；关闭后门面不会初始化该子系统。
      */
     private boolean enabled = true;
 
     /**
- * At startupWhether to probe {@code openclaw --version}.
+     * 是否在客户端构造阶段执行可用性探测；默认关闭以避免启动阻塞。
      */
     private boolean startupCheckEnabled = false;
 
     /**
- * CLI Whether to fail fast(interrupts construction).
- * <p>Defaults to false only logs a warning;productionwhen true.</p>
+     * 启动探测失败时是否中断客户端构造；关闭时仅记录警告。
      */
     private boolean failFastOnUnavailable = false;
 
     /**
- * executable name
+     * 本地 openclaw 可执行文件名或绝对路径。
      */
     private String executable = "openclaw";
 
     /**
- * agent timeout(seconds)
+     * 单次 CLI 命令默认超时，单位为秒。
      */
     private int timeout = 300;
 
     /**
- * CLI subprocessworking directory;When empty, JVM directory.
+     * CLI 子进程工作目录；为空时继承当前 JVM 工作目录。
      */
     private String workingDirectory;
 
     /**
- * CLI subprocessmaximum concurrency; 0 CPU 2 value.
+     * 允许同时运行的 CLI 子进程数；非正数使用按 CPU 核心数计算的默认值。
      */
     private int maxConcurrentExecutions = 0;
 
     /**
- * timeout(seconds)
+     * 执行 openclaw --version 启动探测的超时，单位为秒。
      */
     private int probeTimeoutSeconds = 5;
 

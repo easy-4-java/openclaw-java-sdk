@@ -11,13 +11,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * OpenClaw default OkHttpClient factory.
- *
- * <p>Spring Provides {@link OkHttpClient} inject;
- * SDK , Chat,Tools,Responses connection pool.</p>
+ * OkHttpClient 工厂，把 SDK 的超时、连接池、Dispatcher 并发和连接失败重试配置转换为线程安全客户端。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class OpenClawOkHttpClientFactory {
 
@@ -25,10 +22,10 @@ public final class OpenClawOkHttpClientFactory {
     }
 
     /**
- * Creates from HTTP configurationhigh concurrencyconnection reuse.
+     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawOkHttpClientFactory`。
      *
- * @param config HTTP
- * @return SDK OkHttpClient
+     * @param config SDK 配置
+     * @return 当前门面持有的 OkHttpClient；对应通道未启用时不可调用
      */
     public static OkHttpClient create(OpenClawHttpClientConfig config) {
         Objects.requireNonNull(config, "config");
@@ -64,9 +61,9 @@ public final class OpenClawOkHttpClientFactory {
     }
 
     /**
- * Shuts down SDK .inject.
+     * 关闭工厂创建客户端的 Dispatcher 线程池并清空连接池；调用方必须确认客户端未被其他组件复用。
      *
- * @param client SDK
+     * @param client 写入 `client` 协议字段的内容
      */
     public static void shutdown(OkHttpClient client) {
         if (Objects.isNull(client)) {

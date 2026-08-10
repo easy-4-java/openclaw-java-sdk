@@ -8,51 +8,47 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw qr}: Gateway pairingQR code setup code( {@code bootstrapToken},Gateway).
- * <p>documentation:{@code --token} {@code --password} ;{@code --remote} {@code gateway.remote.url}
- * {@code gateway.tailscale.mode=serve|funnel};/Tailscale {@code ws://} , {@code wss://} Tailscale Serve/Funnel.</p>
- *
- * @see <a href="https://docs.openclaw.ai/cli/qr">qr CLI</a>
+ * openclaw `qr` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class QrOptions implements CliSubArgs {
 
     /**
- * {@code --remote}: {@code gateway.remote.url}; {@code gateway.tailscale.mode=serve|funnel} Provides URL.
+     * 是否向 openclaw 子命令追加 `--remote` 开关。
      */
     private final boolean remote;
     /**
- * {@code --url}: Gateway WebSocket URL.
+     * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
      */
     private final String url;
     /**
- * {@code --public-url}:See URL( {@code --url} Seedocumentation).
+     * 传给 openclaw 子命令 `--public-url` 选项的内容；为 null 时通常省略。
      */
     private final String publicUrl;
     /**
- * {@code --token}:streamauthenticationGateway token( {@code --password} ).
+     * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
      */
     private final String token;
     /**
- * {@code --password}:streamauthenticationGateway( {@code --token} ).
+     * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
      */
     private final String password;
     /**
- * {@code --setup-code-only}:only setup code, QR .
+     * 是否向 openclaw 子命令追加 `--setup-code-only` 开关。
      */
     private final boolean setupCodeOnly;
     /**
- * {@code --no-ascii}:skipsterminal ASCII QR code.
+     * 是否向 openclaw 子命令追加 `--no-ascii` 开关。
      */
     private final boolean noAscii;
     /**
- * {@code --json}: JSON( {@code setupCode},{@code gatewayUrl},{@code auth},{@code urlSource} field,Seedocumentation).
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
     /**
- * documentation, shell .
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -72,14 +68,18 @@ public final class QrOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `QrOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -97,22 +97,54 @@ public final class QrOptions implements CliSubArgs {
     }
 
     /**
- * {@link QrOptions} builder.
+     * 链式构建器，逐项收集 QrOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 QrOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 是否向 openclaw 子命令追加 `--remote` 开关。
+         */
         private boolean remote;
+        /**
+         * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+         */
         private String url;
+        /**
+         * 传给 openclaw 子命令 `--public-url` 选项的内容；为 null 时通常省略。
+         */
         private String publicUrl;
+        /**
+         * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+         */
         private String token;
+        /**
+         * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+         */
         private String password;
+        /**
+         * 是否向 openclaw 子命令追加 `--setup-code-only` 开关。
+         */
         private boolean setupCodeOnly;
+        /**
+         * 是否向 openclaw 子命令追加 `--no-ascii` 开关。
+         */
         private boolean noAscii;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @param remote {@code --remote}
-         * @return {@code this}
+         * 设置 `--remote` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param remote 是否向命令行追加 `--remote` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder remote(boolean remote) {
             this.remote = remote;
@@ -120,8 +152,10 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
-         * @param url {@code --url}
-         * @return {@code this}
+         * 设置 `--url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param url 完整目标 URL
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder url(String url) {
             this.url = url;
@@ -129,8 +163,10 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
-         * @param publicUrl {@code --public-url}
-         * @return {@code this}
+         * 设置 `--public-url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param publicUrl 写入 `--public-url` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder publicUrl(String publicUrl) {
             this.publicUrl = publicUrl;
@@ -138,8 +174,10 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
-         * @param token {@code --token}
-         * @return {@code this}
+         * 设置 `--token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param token 写入 `--token` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder token(String token) {
             this.token = token;
@@ -147,8 +185,10 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
-         * @param password {@code --password}
-         * @return {@code this}
+         * 设置 `--password` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param password 写入 `--password` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder password(String password) {
             this.password = password;
@@ -156,8 +196,10 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
-         * @param setupCodeOnly {@code --setup-code-only}
-         * @return {@code this}
+         * 设置 `--setup-code-only` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param setupCodeOnly 是否向命令行追加 `--setup-code-only` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder setupCodeOnly(boolean setupCodeOnly) {
             this.setupCodeOnly = setupCodeOnly;
@@ -165,8 +207,10 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
-         * @param noAscii {@code --no-ascii}
-         * @return {@code this}
+         * 设置 `--no-ascii` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param noAscii 是否向命令行追加 `--no-ascii` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder noAscii(boolean noAscii) {
             this.noAscii = noAscii;
@@ -174,8 +218,10 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --json}
-         * @return {@code this}
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -183,10 +229,10 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -196,7 +242,9 @@ public final class QrOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link QrOptions}
+         * 校验并复制当前构建器字段，创建独立的 `QrOptions`。
+         *
+         * @return 按当前字段创建的 QrOptions
          */
         public QrOptions build() {
             return new QrOptions(this);

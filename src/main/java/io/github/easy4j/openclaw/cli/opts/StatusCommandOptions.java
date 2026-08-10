@@ -7,31 +7,27 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw status}:sessiondiagnostic( {@code gateway status}).
- * <p>documentation:{@code --deep} WhatsApp Web,Telegram,Discord,Slack,Signal ;
- * {@code --usage} Provides" X%";{@code --all} Secrets diagnostic(See Notes).</p>
- *
- * @see <a href="https://docs.openclaw.ai/cli/status">status CLI</a>
+ * openclaw `status-command` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class StatusCommandOptions implements CliSubArgs {
 
     /**
- * {@code --all}:( Secrets ,secret diagnostic,documentation SecretRef).
+     * 是否向 openclaw 子命令追加 `--all` 开关。
      */
     private final boolean all;
     /**
- * {@code --deep}:(documentation IM ).
+     * 是否向 openclaw 子命令追加 `--deep` 开关。
      */
     private final boolean deep;
     /**
- * {@code --usage}:NormalizesProvides(documentation: {@code X% left} ).
+     * 是否向 openclaw 子命令追加 `--usage` 开关。
      */
     private final boolean usage;
     /**
- * {@code --json}: JSON(documentation Notes {@code status --json} ).
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
 
@@ -46,14 +42,18 @@ public final class StatusCommandOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `StatusCommandOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -74,18 +74,35 @@ public final class StatusCommandOptions implements CliSubArgs {
     }
 
     /**
- * {@link StatusCommandOptions} builder.
+     * 链式构建器，逐项收集 StatusCommandOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 StatusCommandOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
 
+        /**
+         * 是否向 openclaw 子命令追加 `--all` 开关。
+         */
         private boolean all;
+        /**
+         * 是否向 openclaw 子命令追加 `--deep` 开关。
+         */
         private boolean deep;
+        /**
+         * 是否向 openclaw 子命令追加 `--usage` 开关。
+         */
         private boolean usage;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
 
         /**
-         * @param all {@code --all}
-         * @return {@code this}
+         * 设置 `--all` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param all 是否向命令行追加 `--all` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder all(boolean all) {
             this.all = all;
@@ -93,8 +110,10 @@ public final class StatusCommandOptions implements CliSubArgs {
         }
 
         /**
-         * @param deep {@code --deep}
-         * @return {@code this}
+         * 设置 `--deep` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param deep 是否向命令行追加 `--deep` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder deep(boolean deep) {
             this.deep = deep;
@@ -102,8 +121,10 @@ public final class StatusCommandOptions implements CliSubArgs {
         }
 
         /**
-         * @param usage {@code --usage}
-         * @return {@code this}
+         * 设置 `--usage` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param usage 是否向命令行追加 `--usage` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder usage(boolean usage) {
             this.usage = usage;
@@ -111,8 +132,10 @@ public final class StatusCommandOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --json}
-         * @return {@code this}
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -120,7 +143,9 @@ public final class StatusCommandOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link StatusCommandOptions}
+         * 校验并复制当前构建器字段，创建独立的 `StatusCommandOptions`。
+         *
+         * @return 按当前字段创建的 StatusCommandOptions
          */
         public StatusCommandOptions build() {
             return new StatusCommandOptions(this);

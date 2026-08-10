@@ -12,44 +12,48 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * SSE stream parser.
- * <p>
- * HTTP {@code text/event-stream} SSE event.
- * :
- * </p>
- * <ul>
- *   <li>Chat Completions SSE：{@code data: <json>} + {@code data: [DONE]}</li>
- *   <li>OpenResponses SSE：{@code event: <type>} + {@code data: <json>} + {@code data: [DONE]}</li>
- * </ul>
+ * SSE 协议读取器，识别事件边界与 data 行，将 JSON 数据解析为 ChatChunk，并在 [DONE] 时发出完成事件。
  *
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#streaming-sse">OpenAI Streaming (SSE)</a>
- * @see <a href="https://docs.openclaw.ai/gateway/openresponses-http-api#streaming-sse">OpenResponses Streaming (SSE)</a>
-  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
-  * @since 3.0.0
+ * @since 1.0.0
  */
 @Slf4j
 public class SseStreamReader {
 
+    /**
+     * OpenClaw 协议固定值 {@code "[DONE]"}；调用方不应在运行时修改。
+     */
     private static final String DONE_MARKER = "[DONE]";
 
+    /**
+     * JSON 映射器。
+     */
     private final ObjectMapper objectMapper;
 
+    /**
+     * 按给定配置创建 `SseStreamReader`，构造过程不隐式执行远程业务请求。
+     *
+     * @param objectMapper JSON 映射器
+     */
     public SseStreamReader(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    /**
+     * 按给定配置创建 `SseStreamReader`，构造过程不隐式执行远程业务请求。
+     */
     public SseStreamReader() {
         this(null);
     }
 
     /**
- * SSE stream,event.
+     * 持续读取 SSE 输入，按空行切分事件，并把 data 内容交给事件处理器。
      *
- * @param inputStream HTTP stream
- * @param handler event
- * @param chunkClass Chat Completions chunk ( {@code null} data)
+     * @param <T> 方法使用的泛型类型
+     * @param inputStream SSE 字节输入流
+     * @param handler 事件处理器
+     * @param chunkClass 写入 `chunkClass` 协议字段的内容
      */
     public <T> void readStream(InputStream inputStream, SseEventHandler handler, Class<T> chunkClass) {
         if (inputStream == null) {
@@ -111,14 +115,20 @@ public class SseStreamReader {
     }
 
     /**
- * Chat Completions SSE stream.
+     * 持续读取 SSE 输入，按空行切分事件，并把 data 内容交给事件处理器。
+     *
+     * @param inputStream SSE 字节输入流
+     * @param handler 事件处理器
      */
     public void readChatCompletionStream(InputStream inputStream, SseEventHandler handler) {
         readStream(inputStream, handler, ChatChunk.class);
     }
 
     /**
- * OpenResponses SSE stream( data,only event + data).
+     * 持续读取 SSE 输入，按空行切分事件，并把 data 内容交给事件处理器。
+     *
+     * @param inputStream SSE 字节输入流
+     * @param handler 事件处理器
      */
     public void readResponseStream(InputStream inputStream, SseEventHandler handler) {
         readStream(inputStream, handler, null);

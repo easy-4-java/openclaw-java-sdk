@@ -9,79 +9,88 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw approvals}( {@code exec-approvals}):,Gateway node exec approval glob allowlist.
- * <p> {@code ~/.openclaw/exec-approvals.json};{@code --gateway} {@code --node} .
- * {@code set} JSON5, {@code --file} {@code --stdin} mutually exclusive.</p>
- *
- * @see <a href="https://docs.openclaw.ai/cli/approvals">approvals CLI</a>
+ * openclaw `approvals` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class ApprovalsOptions implements CliSubArgs {
 
     /**
- * approvals subcommand:, allowlist.
+     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum Verb {
- /** {@code approvals get}: exec Priority. */
+        /**
+         * 选择 `get` 协议模式；序列化时使用该固定取值。
+         */
         GET,
- /** {@code approvals set}:approval JSON. */
+        /**
+         * 选择 `set` 协议模式；序列化时使用该固定取值。
+         */
         SET,
- /** {@code approvals allowlist add}: agent glob. */
+        /**
+         * 选择 `allowlist_add` 协议模式；序列化时使用该固定取值。
+         */
         ALLOWLIST_ADD,
- /** {@code approvals allowlist remove}: glob. */
+        /**
+         * 选择 `allowlist_remove` 协议模式；序列化时使用该固定取值。
+         */
         ALLOWLIST_REMOVE
     }
 
- /** get / set / allowlist . */
+    /**
+     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     */
     private final Verb verb;
     /**
- * {@code --node}: {@code openclaw nodes} node.
+     * 传给 openclaw 子命令 `--node` 选项的内容；为 null 时通常省略。
      */
     private final String node;
     /**
- * {@code --gateway}:Gatewayapproval.
+     * 是否向 openclaw 子命令追加 `--gateway` 开关。
      */
     private final boolean gateway;
     /**
- * {@code --url}:node/gateway RPC WebSocket(with documentation Common options ).
+     * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
      */
     private final String url;
     /**
- * {@code --token}:Gateway token.
+     * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
      */
     private final String token;
     /**
- * {@code --password}:Gateway.
+     * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
      */
     private final String password;
     /**
- * {@code --timeout}:RPC timeout.
+     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
      */
     private final String timeout;
     /**
- * {@code --json}:.
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
     /**
- * set:{@code --file} approval JSON .
+     * 传给 openclaw 子命令 `--file` 选项的内容；为 null 时通常省略。
      */
     private final String file;
     /**
- * set:{@code --stdin} JSON5.
+     * 是否向 openclaw 子命令追加 `--stdin` 开关。
      */
     private final boolean stdin;
     /**
- * allowlist add/remove:glob .
+     * 传给 openclaw 子命令 `--allowlist-pattern` 选项的内容；为 null 时通常省略。
      */
     private final String allowlistPattern;
     /**
- * allowlist:{@code --agent} ( {@code *} agent).
+     * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
      */
     private final String agent;
     /**
- * argv.
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -105,14 +114,18 @@ public final class ApprovalsOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `ApprovalsOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -158,25 +171,69 @@ public final class ApprovalsOptions implements CliSubArgs {
     }
 
     /**
- * {@link ApprovalsOptions} builder.
+     * 链式构建器，逐项收集 ApprovalsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ApprovalsOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         */
         private Verb verb = Verb.GET;
+        /**
+         * 传给 openclaw 子命令 `--node` 选项的内容；为 null 时通常省略。
+         */
         private String node;
+        /**
+         * 是否向 openclaw 子命令追加 `--gateway` 开关。
+         */
         private boolean gateway;
+        /**
+         * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+         */
         private String url;
+        /**
+         * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+         */
         private String token;
+        /**
+         * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+         */
         private String password;
+        /**
+         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         */
         private String timeout;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
+        /**
+         * 传给 openclaw 子命令 `--file` 选项的内容；为 null 时通常省略。
+         */
         private String file;
+        /**
+         * 是否向 openclaw 子命令追加 `--stdin` 开关。
+         */
         private boolean stdin;
+        /**
+         * 传给 openclaw 子命令 `--allowlist-pattern` 选项的内容；为 null 时通常省略。
+         */
         private String allowlistPattern;
+        /**
+         * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+         */
         private String agent;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}（{@code approvals get}）
+         * 选择 `get` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder get() {
             this.verb = Verb.GET;
@@ -184,7 +241,9 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code approvals set}）
+         * 选择 `set` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder set() {
             this.verb = Verb.SET;
@@ -192,8 +251,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param path set：{@code --file}
-         * @return {@code this}
+         * 设置 `--file` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param path 相对于 Gateway 根地址的端点路径
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder file(String path) {
             this.file = path;
@@ -201,8 +262,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param stdin set：{@code --stdin}
-         * @return {@code this}
+         * 设置 `--stdin` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param stdin 是否向命令行追加 `--stdin` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder stdin(boolean stdin) {
             this.stdin = stdin;
@@ -210,8 +273,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
- * @param pattern allowlist add:
-         * @return {@code this}
+         * 设置 `--allowlist-add` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param pattern 写入 `--allowlist-add` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder allowlistAdd(String pattern) {
             this.verb = Verb.ALLOWLIST_ADD;
@@ -220,8 +285,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
- * @param pattern allowlist remove:
-         * @return {@code this}
+         * 设置 `--allowlist-remove` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param pattern 写入 `--allowlist-remove` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder allowlistRemove(String pattern) {
             this.verb = Verb.ALLOWLIST_REMOVE;
@@ -230,8 +297,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param node {@code --node}
-         * @return {@code this}
+         * 设置 `--node` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param node 写入 `--node` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder node(String node) {
             this.node = node;
@@ -239,8 +308,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param gateway {@code --gateway}
-         * @return {@code this}
+         * 设置 `--gateway` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param gateway 是否向命令行追加 `--gateway` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder gateway(boolean gateway) {
             this.gateway = gateway;
@@ -248,8 +319,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param url {@code --url}
-         * @return {@code this}
+         * 设置 `--url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param url 完整目标 URL
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder url(String url) {
             this.url = url;
@@ -257,8 +330,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param token {@code --token}
-         * @return {@code this}
+         * 设置 `--token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param token 写入 `--token` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder token(String token) {
             this.token = token;
@@ -266,8 +341,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param password {@code --password}
-         * @return {@code this}
+         * 设置 `--password` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param password 写入 `--password` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder password(String password) {
             this.password = password;
@@ -275,8 +352,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param timeout {@code --timeout}
-         * @return {@code this}
+         * 设置 `--timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param timeout 写入 `--timeout` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder timeout(String timeout) {
             this.timeout = timeout;
@@ -284,8 +363,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --json}
-         * @return {@code this}
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -293,8 +374,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
-         * @param agent {@code --agent}
-         * @return {@code this}
+         * 设置 `--agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param agent 写入 `--agent` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder agent(String agent) {
             this.agent = agent;
@@ -302,10 +385,10 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -315,7 +398,9 @@ public final class ApprovalsOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link ApprovalsOptions}
+         * 校验并复制当前构建器字段，创建独立的 `ApprovalsOptions`。
+         *
+         * @return 按当前字段创建的 ApprovalsOptions
          */
         public ApprovalsOptions build() {
             return new ApprovalsOptions(this);

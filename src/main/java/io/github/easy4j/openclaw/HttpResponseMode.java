@@ -1,16 +1,25 @@
 package io.github.easy4j.openclaw;
 
 /**
- * HTTP 对话响应模式。
+ * HTTP 响应消费模式，区分一次性读取完整响应、持续消费流以及由客户端按端点自动选择。
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public enum HttpResponseMode {
 
-    /** 等待完整响应后一次性返回。 */
+    /**
+     * 选择 `blocking` 协议模式；序列化时使用该固定取值。
+     */
     BLOCKING,
 
-    /** 消费 Provider SSE 并逐段回调。 */
+    /**
+     * 选择 `stream` 协议模式；序列化时使用该固定取值。
+     */
     STREAM,
 
-    /** 由调用方根据结构化输出、工具调用等请求特征选择。 */
+    /**
+     * 选择 `auto` 协议模式；序列化时使用该固定取值。
+     */
     AUTO
 }

@@ -9,27 +9,36 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw mcp}:{@code mcp serve} OpenClaw stdio MCP Gateway session;
- * {@code list|show|set|unset} {@code mcp.servers} ().
- *
- * @see <a href="https://docs.openclaw.ai/cli/mcp">mcp CLI</a>
+ * openclaw `mcp` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class McpOptions implements CliSubArgs {
 
     /**
- * {@code mcp serve --claude-channel-mode}: Claude channel.
+     * `ClaudeChannelMode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum ClaudeChannelMode {
- /** {@code off}:only MCP , Claude . */
+        /**
+         * 选择 `off` 协议模式；序列化时使用该固定取值。
+         */
         OFF("off"),
- /** {@code on}: {@code notifications/claude/channel} . */
+        /**
+         * 选择 `on` 协议模式；序列化时使用该固定取值。
+         */
         ON("on"),
- /** {@code auto}: {@code on} (documentation:). */
+        /**
+         * 选择 `auto` 协议模式；序列化时使用该固定取值。
+         */
         AUTO("auto");
 
+        /**
+         * 传给 openclaw 子命令 `--cli-value` 选项的内容；为 null 时通常省略。
+         */
         private final String cliValue;
 
         ClaudeChannelMode(String cliValue) {
@@ -42,73 +51,88 @@ public final class McpOptions implements CliSubArgs {
     }
 
     /**
- * mcp subcommand:stdio serve, MCP server .
+     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum Mode {
- /** {@code mcp serve}:connection Gateway MCP sessionevent. */
+        /**
+         * 选择 `serve` 协议模式；序列化时使用该固定取值。
+         */
         SERVE,
- /** {@code mcp list}: {@code mcp.servers} . */
+        /**
+         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         */
         LIST,
- /** {@code mcp show}: server JSON. */
+        /**
+         * 选择 `show` 协议模式；序列化时使用该固定取值。
+         */
         SHOW,
- /** {@code mcp set}: server (JSON objectcharacters). */
+        /**
+         * 选择 `set` 协议模式；序列化时使用该固定取值。
+         */
         SET,
- /** {@code mcp unset}: server. */
+        /**
+         * 选择 `unset` 协议模式；序列化时使用该固定取值。
+         */
         UNSET
     }
 
- /** serve registry subcommand. */
+    /**
+     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     */
     private final Mode mode;
     /**
- * serve:{@code --url} Gateway WebSocket( acp ).
+     * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
      */
     private final String url;
     /**
- * serve:{@code --token} Gateway token(process).
+     * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
      */
     private final String token;
     /**
- * serve:{@code --token-file} token.
+     * 传给 openclaw 子命令 `--token-file` 选项的内容；为 null 时通常省略。
      */
     private final String tokenFile;
     /**
- * serve:{@code --password} Gateway.
+     * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
      */
     private final String password;
     /**
- * serve:{@code --password-file} .
+     * 传给 openclaw 子命令 `--password-file` 选项的内容；为 null 时通常省略。
      */
     private final String passwordFile;
     /**
- * serve:{@code --claude-channel-mode} See {@link ClaudeChannelMode}.
+     * 传给 openclaw 子命令 `--claude-channel-mode` 选项的内容；为 null 时通常省略。
      */
     private final ClaudeChannelMode claudeChannelMode;
     /**
- * serve:{@code --verbose} stderr diagnostic.
+     * 是否向 openclaw 子命令追加 `--verbose` 开关。
      */
     private final boolean verbose;
     /**
- * show:server ;object(documentation).
+     * 传给 openclaw 子命令 `--show-name` 选项的内容；为 null 时通常省略。
      */
     private final String showName;
     /**
-     * show：{@code --json}。
+     * 是否向 openclaw 子命令追加 `--show-json` 开关。
      */
     private final boolean showJson;
     /**
- * set:server .
+     * 传给 openclaw 子命令 `--set-name` 选项的内容；为 null 时通常省略。
      */
     private final String setName;
     /**
- * set: JSON object( server ).
+     * 传给 openclaw 子命令 `--set-json` 选项的内容；为 null 时通常省略。
      */
     private final String setJson;
     /**
- * unset: server .
+     * 传给 openclaw 子命令 `--unset-name` 选项的内容；为 null 时通常省略。
      */
     private final String unsetName;
     /**
- * argv.
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -133,14 +157,18 @@ public final class McpOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `McpOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -192,26 +220,73 @@ public final class McpOptions implements CliSubArgs {
     }
 
     /**
- * {@link McpOptions} builder.
+     * 链式构建器，逐项收集 McpOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 McpOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         */
         private Mode mode = Mode.SERVE;
+        /**
+         * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+         */
         private String url;
+        /**
+         * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+         */
         private String token;
+        /**
+         * 传给 openclaw 子命令 `--token-file` 选项的内容；为 null 时通常省略。
+         */
         private String tokenFile;
+        /**
+         * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+         */
         private String password;
+        /**
+         * 传给 openclaw 子命令 `--password-file` 选项的内容；为 null 时通常省略。
+         */
         private String passwordFile;
+        /**
+         * 传给 openclaw 子命令 `--claude-channel-mode` 选项的内容；为 null 时通常省略。
+         */
         private ClaudeChannelMode claudeChannelMode;
+        /**
+         * 是否向 openclaw 子命令追加 `--verbose` 开关。
+         */
         private boolean verbose;
+        /**
+         * 传给 openclaw 子命令 `--show-name` 选项的内容；为 null 时通常省略。
+         */
         private String showName;
+        /**
+         * 是否向 openclaw 子命令追加 `--show-json` 开关。
+         */
         private boolean showJson;
+        /**
+         * 传给 openclaw 子命令 `--set-name` 选项的内容；为 null 时通常省略。
+         */
         private String setName;
+        /**
+         * 传给 openclaw 子命令 `--set-json` 选项的内容；为 null 时通常省略。
+         */
         private String setJson;
+        /**
+         * 传给 openclaw 子命令 `--unset-name` 选项的内容；为 null 时通常省略。
+         */
         private String unsetName;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}（{@code mcp serve}）
+         * 选择 `serve` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder serve() {
             this.mode = Mode.SERVE;
@@ -219,8 +294,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @param url {@code --url}
-         * @return {@code this}
+         * 设置 `--url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param url 完整目标 URL
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder url(String url) {
             this.url = url;
@@ -228,8 +305,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @param token {@code --token}
-         * @return {@code this}
+         * 设置 `--token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param token 写入 `--token` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder token(String token) {
             this.token = token;
@@ -237,8 +316,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @param path {@code --token-file}
-         * @return {@code this}
+         * 设置 `--token-file` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param path 相对于 Gateway 根地址的端点路径
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder tokenFile(String path) {
             this.tokenFile = path;
@@ -246,8 +327,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @param password {@code --password}
-         * @return {@code this}
+         * 设置 `--password` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param password 写入 `--password` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder password(String password) {
             this.password = password;
@@ -255,8 +338,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @param path {@code --password-file}
-         * @return {@code this}
+         * 设置 `--password-file` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param path 相对于 Gateway 根地址的端点路径
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder passwordFile(String path) {
             this.passwordFile = path;
@@ -264,8 +349,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @param mode {@code --claude-channel-mode}
-         * @return {@code this}
+         * 设置 `--claude-channel-mode` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param mode 写入 `--claude-channel-mode` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder claudeChannelMode(ClaudeChannelMode mode) {
             this.claudeChannelMode = mode;
@@ -273,8 +360,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @param verbose {@code --verbose}
-         * @return {@code this}
+         * 设置 `--verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param verbose 是否向命令行追加 `--verbose` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder verbose(boolean verbose) {
             this.verbose = verbose;
@@ -282,7 +371,9 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code mcp list}）
+         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder list() {
             this.mode = Mode.LIST;
@@ -290,10 +381,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
- * {@code show};{@code name} When empty,Equivalent todocumentation""object.
+         * 设置 `--show` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param name MCP ( null)
-         * @return {@code this}
+         * @param name 写入 `--show` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder show(String name) {
             this.mode = Mode.SHOW;
@@ -302,8 +393,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
-         * @param json show：{@code --json}
-         * @return {@code this}
+         * 设置 `--show-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder showJson(boolean json) {
             this.showJson = json;
@@ -311,11 +404,11 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
- * {@code set <name> <json>},{@code json} JSON characters.
+         * 设置 `--set` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param name MCP
- * @param json JSON
-         * @return {@code this}
+         * @param name 写入 `--set` 选项的内容
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder set(String name, String json) {
             this.mode = Mode.SET;
@@ -325,8 +418,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
- * @param name unset:
-         * @return {@code this}
+         * 设置 `--unset` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param name 写入 `--unset` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder unset(String name) {
             this.mode = Mode.UNSET;
@@ -335,10 +430,10 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -348,7 +443,9 @@ public final class McpOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link McpOptions}
+         * 校验并复制当前构建器字段，创建独立的 `McpOptions`。
+         *
+         * @return 按当前字段创建的 McpOptions
          */
         public McpOptions build() {
             return new McpOptions(this);

@@ -7,32 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Gateway WebSocket connection({@code connect.challenge} event).
- * <p>
- * Gateway v4,Gateway {@code connect} ,
- * {@code connect.challenge} event,:
- * <ul>
- * <li>{@code nonce} - , connect </li>
- * <li>{@code ts} - (Unix epoch milliseconds)</li>
- * </ul>
- * </p>
+ * OpenClaw JSON 协议中的 `ConnectChallenge` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3>handshakestream</h3>
- * <ol>
- * <li> WebSocket connection</li>
- * <li>Gateway {@code connect.challenge} event( {@code nonce} {@code ts})</li>
- * <li> {@code nonce} device(Optional), {@code connect} </li>
- * <li>Gateway {@code hello-ok} </li>
- * </ol>
- *
- * <h3></h3>
- * <p>version v3, {@code platform} {@code deviceFamily}.
- * v2 Used for.</p>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/protocol">Gateway Protocol</a>
-  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
-  * @since 3.0.0
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -42,15 +20,12 @@ import lombok.Setter;
 public class ConnectChallenge {
 
     /**
- * .
- * <p> {@code connect} {@code device.nonce} fieldvalue.</p>
- * <p> nonce , {@code DEVICE_AUTH_NONCE_MISMATCH} .</p>
+     * 映射 OpenClaw JSON 字段 `nonce` 的 协议内容。
      */
     private String nonce;
 
     /**
- * (Unix epoch milliseconds).
- * <p>Used for., {@code DEVICE_AUTH_SIGNATURE_EXPIRED} .</p>
+     * 映射 OpenClaw JSON 字段 `ts` 的 协议内容。
      */
     private Long ts;
 }

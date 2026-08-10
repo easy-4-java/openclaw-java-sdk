@@ -9,58 +9,64 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw backup}:directory,directory,sessionOptional workspace {@code .tar.gz},.
- * <p> {@code manifest.json}; {@code --no-include-workspace} {@code --only-config}.</p>
- *
- * @see <a href="https://docs.openclaw.ai/cli/backup">backup CLI</a>
+ * openclaw `backup` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class BackupOptions implements CliSubArgs {
 
     /**
- * backup subcommand:.
+     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum Mode {
- /** {@code backup create}:. */
+        /**
+         * 选择 `create` 协议模式；序列化时使用该固定取值。
+         */
         CREATE,
- /** {@code backup verify}: tarball manifest . */
+        /**
+         * 选择 `verify` 协议模式；序列化时使用该固定取值。
+         */
         VERIFY
     }
 
- /** {@code create} {@code verify}. */
+    /**
+     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     */
     private final Mode mode;
     /**
- * create:{@code --output} directory(documentation:directory home ).
+     * 传给 openclaw 子命令 `--output-dir` 选项的内容；为 null 时通常省略。
      */
     private final String outputDir;
     /**
- * create:{@code --dry-run} ( {@code --json} ComposesSeedocumentationexample).
+     * 是否向 openclaw 子命令追加 `--dry-run` 开关。
      */
     private final boolean dryRun;
     /**
- * create:{@code --json} .
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
     /**
- * create:{@code --verify} {@code backup verify} .
+     * 是否向 openclaw 子命令追加 `--verify-after-create` 开关。
      */
     private final boolean verifyAfterCreate;
     /**
- * create:{@code --no-include-workspace} skips workspace (backup).
+     * 是否向 openclaw 子命令追加 `--no-include-workspace` 开关。
      */
     private final boolean noIncludeWorkspace;
     /**
- * create:{@code --only-config} JSON .
+     * 是否向 openclaw 子命令追加 `--only-config` 开关。
      */
     private final boolean onlyConfig;
     /**
- * verify: {@code .tar.gz} .
+     * 传给 openclaw 子命令 `--verify-archive-path` 选项的内容；为 null 时通常省略。
      */
     private final String verifyArchivePath;
     /**
- * argv.
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -80,14 +86,18 @@ public final class BackupOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `BackupOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -111,21 +121,53 @@ public final class BackupOptions implements CliSubArgs {
     }
 
     /**
- * {@link BackupOptions} builder.
+     * 链式构建器，逐项收集 BackupOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 BackupOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         */
         private Mode mode = Mode.CREATE;
+        /**
+         * 传给 openclaw 子命令 `--output-dir` 选项的内容；为 null 时通常省略。
+         */
         private String outputDir;
+        /**
+         * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+         */
         private boolean dryRun;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
+        /**
+         * 是否向 openclaw 子命令追加 `--verify-after-create` 开关。
+         */
         private boolean verifyAfterCreate;
+        /**
+         * 是否向 openclaw 子命令追加 `--no-include-workspace` 开关。
+         */
         private boolean noIncludeWorkspace;
+        /**
+         * 是否向 openclaw 子命令追加 `--only-config` 开关。
+         */
         private boolean onlyConfig;
+        /**
+         * 传给 openclaw 子命令 `--verify-archive-path` 选项的内容；为 null 时通常省略。
+         */
         private String verifyArchivePath;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}（{@code backup create}）
+         * 选择 `create` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder create() {
             this.mode = Mode.CREATE;
@@ -133,8 +175,10 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
-         * @param outputDirOrFile create：{@code --output}
-         * @return {@code this}
+         * 设置 `--output` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param outputDirOrFile 写入 `--output` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder output(String outputDirOrFile) {
             this.outputDir = outputDirOrFile;
@@ -142,8 +186,10 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
-         * @param dryRun {@code --dry-run}
-         * @return {@code this}
+         * 设置 `--dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param dryRun 是否向命令行追加 `--dry-run` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder dryRun(boolean dryRun) {
             this.dryRun = dryRun;
@@ -151,8 +197,10 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --json}
-         * @return {@code this}
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -160,8 +208,10 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
-         * @param verify create：{@code --verify}
-         * @return {@code this}
+         * 设置 `--verify-after-create` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param verify 是否向命令行追加 `--verify-after-create` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder verifyAfterCreate(boolean verify) {
             this.verifyAfterCreate = verify;
@@ -169,8 +219,10 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
-         * @param noWorkspace {@code --no-include-workspace}
-         * @return {@code this}
+         * 设置 `--no-include-workspace` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param noWorkspace 是否向命令行追加 `--no-include-workspace` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder noIncludeWorkspace(boolean noWorkspace) {
             this.noIncludeWorkspace = noWorkspace;
@@ -178,8 +230,10 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
-         * @param onlyConfig {@code --only-config}
-         * @return {@code this}
+         * 设置 `--only-config` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param onlyConfig 是否向命令行追加 `--only-config` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder onlyConfig(boolean onlyConfig) {
             this.onlyConfig = onlyConfig;
@@ -187,8 +241,10 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
- * @param archivePath verify:
-         * @return {@code this}
+         * 设置 `--verify` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param archivePath 写入 `--verify` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder verify(String archivePath) {
             this.mode = Mode.VERIFY;
@@ -197,10 +253,10 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -210,7 +266,9 @@ public final class BackupOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link BackupOptions}
+         * 校验并复制当前构建器字段，创建独立的 `BackupOptions`。
+         *
+         * @return 按当前字段创建的 BackupOptions
          */
         public BackupOptions build() {
             return new BackupOptions(this);

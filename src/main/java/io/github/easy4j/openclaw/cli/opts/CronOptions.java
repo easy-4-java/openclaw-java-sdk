@@ -9,123 +9,136 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw cron}:Gateway (isolated session),.
- * <p>documentation:isolated {@code --announce} ;{@code --no-deliver} ;{@code --at} {@code --keep-after-run}.
- * subcommand {@code openclaw cron --help} , {@link Builder#extra(String...)}.</p>
- *
- * @see <a href="https://docs.openclaw.ai/cli/cron">cron CLI</a>
+ * openclaw `cron` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class CronOptions implements CliSubArgs {
 
     /**
- * cron subcommand:,.
+     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum Verb {
- /** {@code cron run}:;{@code --due} only. */
+        /**
+         * 选择 `run` 协议模式；序列化时使用该固定取值。
+         */
         RUN,
- /** {@code cron runs}: job id . */
+        /**
+         * 选择 `runs` 协议模式；序列化时使用该固定取值。
+         */
         RUNS,
- /** {@code cron add}:. */
+        /**
+         * 选择 `add` 协议模式；序列化时使用该固定取值。
+         */
         ADD,
- /** {@code cron edit}:. */
+        /**
+         * 选择 `edit` 协议模式；序列化时使用该固定取值。
+         */
         EDIT,
- /** {@code cron list}:. */
+        /**
+         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         */
         LIST,
- /** {@code cron delete}:. */
+        /**
+         * 选择 `delete` 协议模式；序列化时使用该固定取值。
+         */
         DELETE
     }
 
- /** cron subcommand. */
+    /**
+     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     */
     private final Verb verb;
     /**
- * run / edit / delete: id .
+     * 传给 openclaw 子命令 `--job-id` 选项的内容；为 null 时通常省略。
      */
     private final String jobId;
     /**
- * run:{@code --due} only( force-run ).
+     * 是否向 openclaw 子命令追加 `--run-due` 开关。
      */
     private final boolean runDue;
     /**
- * runs:{@code --id} job.
+     * 传给 openclaw 子命令 `--runs-id` 选项的内容；为 null 时通常省略。
      */
     private final String runsId;
     /**
- * runs:{@code --limit} .
+     * 传给 openclaw 子命令 `--runs-limit` 选项的内容；为 null 时通常省略。
      */
     private final Integer runsLimit;
     /**
- * add / edit:{@code --name} .
+     * 传给 openclaw 子命令 `--name` 选项的内容；为 null 时通常省略。
      */
     private final String name;
     /**
- * add / edit:{@code --cron} cron .
+     * 传给 openclaw 子命令 `--cron-expr` 选项的内容；为 null 时通常省略。
      */
     private final String cronExpr;
     /**
- * add / edit:{@code --session} sessionkey({@code main},{@code isolated},{@code current},{@code session:...} ,Seedocumentation).
+     * 传给 openclaw 子命令 `--session` 选项的内容；为 null 时通常省略。
      */
     private final String session;
     /**
- * add / edit:{@code --message} agent .
+     * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
      */
     private final String message;
     /**
- * add / edit:{@code --at} ; UTC Provides {@code --tz}.
+     * 传给 openclaw 子命令 `--at` 选项的内容；为 null 时通常省略。
      */
     private final String at;
     /**
- * add / edit:{@code --tz} {@code --at} .
+     * 传给 openclaw 子命令 `--tz` 选项的内容；为 null 时通常省略。
      */
     private final String tz;
     /**
- * add / edit:{@code --keep-after-run} .
+     * 是否向 openclaw 子命令追加 `--keep-after-run` 开关。
      */
     private final boolean keepAfterRun;
     /**
- * add / edit:{@code --announce} /webhook (isolated ,Seedocumentation).
+     * 是否向 openclaw 子命令追加 `--announce` 开关。
      */
     private final boolean announce;
     /**
- * add / edit:{@code --no-deliver} ,(Equivalent tomessage).
+     * 是否向 openclaw 子命令追加 `--no-deliver` 开关。
      */
     private final boolean noDeliver;
     /**
- * add / edit:{@code --light-context} isolated agent bootstrap(inject workspace ).
+     * 是否向 openclaw 子命令追加 `--light-context` 开关。
      */
     private final boolean lightContext;
     /**
- * add / edit:{@code --announce} {@code --channel}.
+     * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
      */
     private final String channel;
     /**
- * add / edit:{@code --announce} {@code --to} .
+     * 传给 openclaw 子命令 `--to` 选项的内容；为 null 时通常省略。
      */
     private final String to;
     /**
- * add / edit:{@code --model} ( allowlist ,Seedocumentation).
+     * 传给 openclaw 子命令 `--model` 选项的内容；为 null 时通常省略。
      */
     private final String model;
     /**
- * add / edit:{@code --agent} agent.
+     * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
      */
     private final String agent;
     /**
- * add / edit:{@code --clear-agent} agent .
+     * 是否向 openclaw 子命令追加 `--clear-agent` 开关。
      */
     private final boolean clearAgent;
     /**
- * add / edit: {@code true} {@code --best-effort-deliver};{@code null} flag.
+     * 是否向 openclaw 子命令追加 `--best-effort-deliver` 开关。
      */
     private final Boolean bestEffortDeliver;
     /**
- * add / edit: {@code true} {@code --no-best-effort-deliver};{@code null} .
+     * 是否向 openclaw 子命令追加 `--no-best-effort-deliver` 开关。
      */
     private final Boolean noBestEffortDeliver;
     /**
- * argv.
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -159,14 +172,18 @@ public final class CronOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `CronOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -236,36 +253,110 @@ public final class CronOptions implements CliSubArgs {
     }
 
     /**
- * {@link CronOptions} builder.
+     * 链式构建器，逐项收集 CronOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 CronOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         */
         private Verb verb = Verb.LIST;
+        /**
+         * 传给 openclaw 子命令 `--job-id` 选项的内容；为 null 时通常省略。
+         */
         private String jobId;
+        /**
+         * 是否向 openclaw 子命令追加 `--run-due` 开关。
+         */
         private boolean runDue;
+        /**
+         * 传给 openclaw 子命令 `--runs-id` 选项的内容；为 null 时通常省略。
+         */
         private String runsId;
+        /**
+         * 传给 openclaw 子命令 `--runs-limit` 选项的内容；为 null 时通常省略。
+         */
         private Integer runsLimit;
+        /**
+         * 传给 openclaw 子命令 `--name` 选项的内容；为 null 时通常省略。
+         */
         private String name;
+        /**
+         * 传给 openclaw 子命令 `--cron-expr` 选项的内容；为 null 时通常省略。
+         */
         private String cronExpr;
+        /**
+         * 传给 openclaw 子命令 `--session` 选项的内容；为 null 时通常省略。
+         */
         private String session;
+        /**
+         * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
+         */
         private String message;
+        /**
+         * 传给 openclaw 子命令 `--at` 选项的内容；为 null 时通常省略。
+         */
         private String at;
+        /**
+         * 传给 openclaw 子命令 `--tz` 选项的内容；为 null 时通常省略。
+         */
         private String tz;
+        /**
+         * 是否向 openclaw 子命令追加 `--keep-after-run` 开关。
+         */
         private boolean keepAfterRun;
+        /**
+         * 是否向 openclaw 子命令追加 `--announce` 开关。
+         */
         private boolean announce;
+        /**
+         * 是否向 openclaw 子命令追加 `--no-deliver` 开关。
+         */
         private boolean noDeliver;
+        /**
+         * 是否向 openclaw 子命令追加 `--light-context` 开关。
+         */
         private boolean lightContext;
+        /**
+         * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+         */
         private String channel;
+        /**
+         * 传给 openclaw 子命令 `--to` 选项的内容；为 null 时通常省略。
+         */
         private String to;
+        /**
+         * 传给 openclaw 子命令 `--model` 选项的内容；为 null 时通常省略。
+         */
         private String model;
+        /**
+         * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+         */
         private String agent;
+        /**
+         * 是否向 openclaw 子命令追加 `--clear-agent` 开关。
+         */
         private boolean clearAgent;
+        /**
+         * 是否向 openclaw 子命令追加 `--best-effort-deliver` 开关。
+         */
         private Boolean bestEffortDeliver;
+        /**
+         * 是否向 openclaw 子命令追加 `--no-best-effort-deliver` 开关。
+         */
         private Boolean noBestEffortDeliver;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
- * @param jobId ID( null)
-         * @return {@code this}
+         * 设置 `--run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param jobId 写入 `--run` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder run(String jobId) {
             this.verb = Verb.RUN;
@@ -274,8 +365,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param due run：{@code --due}
-         * @return {@code this}
+         * 设置 `--run-due` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param due 是否向命令行追加 `--run-due` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder runDue(boolean due) {
             this.runDue = due;
@@ -283,8 +376,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param jobId runs：{@code --id}
-         * @return {@code this}
+         * 设置 `--runs` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param jobId 写入 `--runs` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder runs(String jobId) {
             this.verb = Verb.RUNS;
@@ -293,8 +388,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param limit runs：{@code --limit}
-         * @return {@code this}
+         * 设置 `--runs-limit` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param limit 写入 `--runs-limit` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder runsLimit(int limit) {
             this.runsLimit = limit;
@@ -302,7 +399,9 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code cron add}）
+         * 选择 `add` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder add() {
             this.verb = Verb.ADD;
@@ -310,8 +409,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
- * @param jobId ID
-         * @return {@code this}
+         * 设置 `--edit` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param jobId 写入 `--edit` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder edit(String jobId) {
             this.verb = Verb.EDIT;
@@ -320,7 +421,9 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code cron list}）
+         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder list() {
             this.verb = Verb.LIST;
@@ -328,8 +431,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
- * @param jobId ID
-         * @return {@code this}
+         * 设置 `--delete` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param jobId 写入 `--delete` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder delete(String jobId) {
             this.verb = Verb.DELETE;
@@ -338,8 +443,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param name {@code --name}
-         * @return {@code this}
+         * 设置 `--name` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param name 写入 `--name` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder name(String name) {
             this.name = name;
@@ -347,8 +454,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param expr {@code --cron}
-         * @return {@code this}
+         * 设置 `--cron-expr` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param expr 写入 `--cron-expr` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder cronExpr(String expr) {
             this.cronExpr = expr;
@@ -356,8 +465,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param session {@code --session}
-         * @return {@code this}
+         * 设置 `--session` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param session 写入 `--session` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder session(String session) {
             this.session = session;
@@ -365,8 +476,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param message {@code --message}
-         * @return {@code this}
+         * 设置 `--message` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param message 消息正文
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder message(String message) {
             this.message = message;
@@ -374,8 +487,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param at {@code --at}
-         * @return {@code this}
+         * 设置 `--at` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param at 写入 `--at` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder at(String at) {
             this.at = at;
@@ -383,8 +498,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param tz {@code --tz}
-         * @return {@code this}
+         * 设置 `--tz` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param tz 写入 `--tz` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder tz(String tz) {
             this.tz = tz;
@@ -392,8 +509,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param keep {@code --keep-after-run}
-         * @return {@code this}
+         * 设置 `--keep-after-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param keep 是否向命令行追加 `--keep-after-run` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder keepAfterRun(boolean keep) {
             this.keepAfterRun = keep;
@@ -401,8 +520,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param announce {@code --announce}
-         * @return {@code this}
+         * 设置 `--announce` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param announce 是否向命令行追加 `--announce` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder announce(boolean announce) {
             this.announce = announce;
@@ -410,8 +531,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param noDeliver {@code --no-deliver}
-         * @return {@code this}
+         * 设置 `--no-deliver` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param noDeliver 是否向命令行追加 `--no-deliver` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder noDeliver(boolean noDeliver) {
             this.noDeliver = noDeliver;
@@ -419,8 +542,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param lightContext {@code --light-context}
-         * @return {@code this}
+         * 设置 `--light-context` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param lightContext 是否向命令行追加 `--light-context` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder lightContext(boolean lightContext) {
             this.lightContext = lightContext;
@@ -428,8 +553,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param channel {@code --channel}
-         * @return {@code this}
+         * 设置 `--channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param channel 写入 `--channel` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder channel(String channel) {
             this.channel = channel;
@@ -437,8 +564,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param to {@code --to}
-         * @return {@code this}
+         * 设置 `--to` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param to 写入 `--to` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder to(String to) {
             this.to = to;
@@ -446,8 +575,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param model {@code --model}
-         * @return {@code this}
+         * 设置 `--model` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param model 模型标识
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder model(String model) {
             this.model = model;
@@ -455,8 +586,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param agent {@code --agent}
-         * @return {@code this}
+         * 设置 `--agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param agent 写入 `--agent` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder agent(String agent) {
             this.agent = agent;
@@ -464,8 +597,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
-         * @param clear {@code --clear-agent}
-         * @return {@code this}
+         * 设置 `--clear-agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param clear 是否向命令行追加 `--clear-agent` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder clearAgent(boolean clear) {
             this.clearAgent = clear;
@@ -473,8 +608,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
- * @param v When true, {@code --best-effort-deliver}
-         * @return {@code this}
+         * 设置 `--best-effort-deliver` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param v 是否向命令行追加 `--best-effort-deliver` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder bestEffortDeliver(boolean v) {
             this.bestEffortDeliver = v ? Boolean.TRUE : null;
@@ -482,8 +619,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
- * @param v When true, {@code --no-best-effort-deliver}
-         * @return {@code this}
+         * 设置 `--no-best-effort-deliver` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param v 是否向命令行追加 `--no-best-effort-deliver` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder noBestEffortDeliver(boolean v) {
             this.noBestEffortDeliver = v ? Boolean.TRUE : null;
@@ -491,10 +630,10 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -504,7 +643,9 @@ public final class CronOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link CronOptions}
+         * 校验并复制当前构建器字段，创建独立的 `CronOptions`。
+         *
+         * @return 按当前字段创建的 CronOptions
          */
         public CronOptions build() {
             return new CronOptions(this);

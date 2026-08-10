@@ -9,97 +9,112 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw nodes}:pairing node host(approval) {@code invoke} .
- * <p>{@code system.run} shell exec {@code host=node};{@code nodes invoke} , RPC.
- * {@code --url},{@code --token},{@code --password},{@code --timeout},{@code --json} devices documentationGateway.</p>
- *
- * @see <a href="https://docs.openclaw.ai/cli/nodes">nodes CLI</a>
+ * openclaw `nodes` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class NodesOptions implements CliSubArgs {
 
     /**
- * nodes subcommand:,pairing, invoke.
+     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum Verb {
- /** {@code nodes list}:pairingpairing, {@code --connected} {@code --last-connected} . */
+        /**
+         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         */
         LIST,
- /** {@code nodes pending}:onlyapproval( pairing scope). */
+        /**
+         * 选择 `pending` 协议模式；序列化时使用该固定取值。
+         */
         PENDING,
- /** {@code nodes approve}:( scope ). */
+        /**
+         * 选择 `approve` 协议模式；序列化时使用该固定取值。
+         */
         APPROVE,
- /** {@code nodes reject}:. */
+        /**
+         * 选择 `reject` 协议模式；序列化时使用该固定取值。
+         */
         REJECT,
- /** {@code nodes rename}:. */
+        /**
+         * 选择 `rename` 协议模式；序列化时使用该固定取值。
+         */
         RENAME,
- /** {@code nodes status}: list . */
+        /**
+         * 选择 `status` 协议模式；序列化时使用该固定取值。
+         */
         STATUS,
- /** {@code nodes invoke}:node command JSON params. */
+        /**
+         * 选择 `invoke` 协议模式；序列化时使用该固定取值。
+         */
         INVOKE
     }
 
- /** nodes subcommand. */
+    /**
+     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     */
     private final Verb verb;
     /**
- * list / status:{@code --connected} node.
+     * 是否向 openclaw 子命令追加 `--list-connected` 开关。
      */
     private final boolean listConnected;
     /**
- * list / status:{@code --last-connected} node( {@code 24h}).
+     * 传给 openclaw 子命令 `--last-connected` 选项的内容；为 null 时通常省略。
      */
     private final String lastConnected;
     /**
- * approve / reject:pairing id.
+     * 传给 openclaw 子命令 `--request-id` 选项的内容；为 null 时通常省略。
      */
     private final String requestId;
     /**
- * rename / invoke:{@code --node} (id, IP,Seedocumentation).
+     * 传给 openclaw 子命令 `--node-ref` 选项的内容；为 null 时通常省略。
      */
     private final String nodeRef;
     /**
- * rename:{@code --name} .
+     * 传给 openclaw 子命令 `--name` 选项的内容；为 null 时通常省略。
      */
     private final String name;
     /**
- * invoke:{@code --command} .
+     * 传给 openclaw 子命令 `--command` 选项的内容；为 null 时通常省略。
      */
     private final String command;
     /**
- * invoke:{@code --params} JSON objectcharacters, {@code {}}.
+     * 传给 openclaw 子命令 `--params-json` 选项的内容；为 null 时通常省略。
      */
     private final String paramsJson;
     /**
- * invoke:{@code --invoke-timeout} timeoutmilliseconds( 15000).
+     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
      */
     private final String invokeTimeout;
     /**
- * invoke:{@code --idempotency-key} Optionalkey.
+     * 传给 openclaw 子命令 `--idempotency-key` 选项的内容；为 null 时通常省略。
      */
     private final String idempotencyKey;
     /**
- * :{@code --url} Gateway WebSocket.
+     * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
      */
     private final String url;
     /**
- * :{@code --token}.
+     * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
      */
     private final String token;
     /**
- * :{@code --password}.
+     * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
      */
     private final String password;
     /**
- * :{@code --timeout} RPC .
+     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
      */
     private final String timeout;
     /**
- * :{@code --json}.
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
     /**
- * argv.
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -126,14 +141,18 @@ public final class NodesOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `NodesOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -190,28 +209,81 @@ public final class NodesOptions implements CliSubArgs {
     }
 
     /**
- * {@link NodesOptions} builder.
+     * 链式构建器，逐项收集 NodesOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 NodesOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         */
         private Verb verb = Verb.LIST;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-connected` 开关。
+         */
         private boolean listConnected;
+        /**
+         * 传给 openclaw 子命令 `--last-connected` 选项的内容；为 null 时通常省略。
+         */
         private String lastConnected;
+        /**
+         * 传给 openclaw 子命令 `--request-id` 选项的内容；为 null 时通常省略。
+         */
         private String requestId;
+        /**
+         * 传给 openclaw 子命令 `--node-ref` 选项的内容；为 null 时通常省略。
+         */
         private String nodeRef;
+        /**
+         * 传给 openclaw 子命令 `--name` 选项的内容；为 null 时通常省略。
+         */
         private String name;
+        /**
+         * 传给 openclaw 子命令 `--command` 选项的内容；为 null 时通常省略。
+         */
         private String command;
+        /**
+         * 传给 openclaw 子命令 `--params-json` 选项的内容；为 null 时通常省略。
+         */
         private String paramsJson;
+        /**
+         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         */
         private String invokeTimeout;
+        /**
+         * 传给 openclaw 子命令 `--idempotency-key` 选项的内容；为 null 时通常省略。
+         */
         private String idempotencyKey;
+        /**
+         * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+         */
         private String url;
+        /**
+         * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+         */
         private String token;
+        /**
+         * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+         */
         private String password;
+        /**
+         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         */
         private String timeout;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}（{@code nodes list}）
+         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder list() {
             this.verb = Verb.LIST;
@@ -219,8 +291,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param connected list：{@code --connected}
-         * @return {@code this}
+         * 设置 `--list-connected` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param connected 是否向命令行追加 `--list-connected` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listConnected(boolean connected) {
             this.listConnected = connected;
@@ -228,8 +302,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param duration list：{@code --last-connected}
-         * @return {@code this}
+         * 设置 `--last-connected` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param duration 写入 `--last-connected` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder lastConnected(String duration) {
             this.lastConnected = duration;
@@ -237,7 +313,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code nodes pending}）
+         * 选择 `pending` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder pending() {
             this.verb = Verb.PENDING;
@@ -245,8 +323,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
- * @param requestId ID
-         * @return {@code this}
+         * 设置 `--approve` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param requestId 请求标识
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder approve(String requestId) {
             this.verb = Verb.APPROVE;
@@ -255,8 +335,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
- * @param requestId ID
-         * @return {@code this}
+         * 设置 `--reject` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param requestId 请求标识
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder reject(String requestId) {
             this.verb = Verb.REJECT;
@@ -265,9 +347,11 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param nodeRef {@code --node}
-         * @param displayName {@code --name}
-         * @return {@code this}
+         * 设置 `--rename` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param nodeRef 写入 `--rename` 选项的内容
+         * @param displayName 写入 `--rename` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder rename(String nodeRef, String displayName) {
             this.verb = Verb.RENAME;
@@ -277,7 +361,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code nodes status}）
+         * 选择 `status` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder status() {
             this.verb = Verb.STATUS;
@@ -285,9 +371,11 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param nodeRef {@code --node}
-         * @param command {@code --command}
-         * @return {@code this}
+         * 设置 `--invoke` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param nodeRef 写入 `--invoke` 选项的内容
+         * @param command 写入 `--invoke` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder invoke(String nodeRef, String command) {
             this.verb = Verb.INVOKE;
@@ -297,8 +385,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --params}
-         * @return {@code this}
+         * 设置 `--params-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder paramsJson(String json) {
             this.paramsJson = json;
@@ -306,8 +396,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param ms invoke：{@code --invoke-timeout}
-         * @return {@code this}
+         * 设置 `--invoke-timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param ms 写入 `--invoke-timeout` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder invokeTimeout(String ms) {
             this.invokeTimeout = ms;
@@ -315,8 +407,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param key {@code --idempotency-key}
-         * @return {@code this}
+         * 设置 `--idempotency-key` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param key 写入 `--idempotency-key` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder idempotencyKey(String key) {
             this.idempotencyKey = key;
@@ -324,8 +418,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param url {@code --url}
-         * @return {@code this}
+         * 设置 `--url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param url 完整目标 URL
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder url(String url) {
             this.url = url;
@@ -333,8 +429,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param token {@code --token}
-         * @return {@code this}
+         * 设置 `--token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param token 写入 `--token` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder token(String token) {
             this.token = token;
@@ -342,8 +440,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param password {@code --password}
-         * @return {@code this}
+         * 设置 `--password` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param password 写入 `--password` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder password(String password) {
             this.password = password;
@@ -351,8 +451,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param timeout {@code --timeout}
-         * @return {@code this}
+         * 设置 `--timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param timeout 写入 `--timeout` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder timeout(String timeout) {
             this.timeout = timeout;
@@ -360,8 +462,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --json}
-         * @return {@code this}
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -369,10 +473,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -382,7 +486,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link NodesOptions}
+         * 校验并复制当前构建器字段，创建独立的 `NodesOptions`。
+         *
+         * @return 按当前字段创建的 NodesOptions
          */
         public NodesOptions build() {
             return new NodesOptions(this);

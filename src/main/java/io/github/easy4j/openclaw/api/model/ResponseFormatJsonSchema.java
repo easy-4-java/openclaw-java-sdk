@@ -7,30 +7,10 @@ import lombok.*;
 import java.util.Map;
 
 /**
- * JSON Schema (only {@code type = "json_schema"} ).
+ * OpenClaw JSON 协议中的 `ResponseFormatJsonSchema` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3>field</h3>
- * <ul>
- * <li>{@code name} — Schema (Required)</li>
- * <li>{@code schema} — JSON Schema (Required)</li>
- * <li>{@code strict} — Whether to enable(Optional,Defaults to false)</li>
- * <li>{@code description} — Schema (Optional)</li>
- * </ul>
- *
- * <h3>usageexample</h3>
- * <pre>{@code
- * ResponseFormatJsonSchema.builder()
- *     .name("article")
- *     .strict(true)
- *     .schema(Map.of("type", "object",
- *         "properties", Map.of("title", Map.of("type", "string"))))
- *     .build();
- * }</pre>
- *
- * @see <a href="https://platform.openai.com/docs/guides/structured-outputs">OpenAI Structured Outputs</a>
-  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
-  * @since 3.0.0
+ * @since 1.0.0
  */
 @Data
 @Builder
@@ -40,27 +20,25 @@ import java.util.Map;
 public class ResponseFormatJsonSchema {
 
     /**
- * Schema (Required).
+     * 映射 OpenClaw JSON 字段 `name` 的 协议内容。
      */
     @JsonProperty("name")
     private String name;
 
     /**
- * JSON Schema (Required).
- * <p>:{@code { "type": "object", "properties": { ... }, "required": [...] }}</p>
+     * 映射 OpenClaw JSON 字段 `schema` 的 键值对象。
      */
     @JsonProperty("schema")
     private Map<String, Object> schema;
 
     /**
- * Whether to enable(Optional).
- * <p> Schema,.Defaults to false.</p>
+     * 映射 OpenClaw JSON 字段 `strict` 的 布尔开关。
      */
     @JsonProperty("strict")
     private Boolean strict;
 
     /**
- * Schema (Optional).
+     * 映射 OpenClaw JSON 字段 `description` 的 协议内容。
      */
     @JsonProperty("description")
     private String description;

@@ -7,43 +7,39 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw doctor}: Gateway repair.
- * <p>{@code --repair} {@code --fix} ;{@code --fix} backup {@code ~/.openclaw/openclaw.json.bak} key.
- * only TTY {@code --non-interactive} .</p>
- *
- * @see <a href="https://docs.openclaw.ai/cli/doctor">doctor CLI</a>
+ * openclaw `doctor` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class DoctorOptions implements CliSubArgs {
 
     /**
- * {@code --no-workspace-suggestions}: memory/search .
+     * 是否向 openclaw 子命令追加 `--no-workspace-suggestions` 开关。
      */
     private final boolean noWorkspaceSuggestions;
     /**
- * {@code --yes}:,.
+     * 是否向 openclaw 子命令追加 `--yes` 开关。
      */
     private final boolean yes;
     /**
- * {@code --repair}:repair;CLI {@code --repair}({@code --fix} documentation).
+     * 是否向 openclaw 子命令追加 `--repair` 开关。
      */
     private final boolean repair;
     /**
- * {@code --force}:repair,.
+     * 是否向 openclaw 子命令追加 `--force` 开关。
      */
     private final boolean force;
     /**
- * {@code --non-interactive}:,onlydocumentation"securitymigrate".
+     * 是否向 openclaw 子命令追加 `--non-interactive` 开关。
      */
     private final boolean nonInteractive;
     /**
- * {@code --generate-gateway-token}:Gateway token .
+     * 是否向 openclaw 子命令追加 `--generate-gateway-token` 开关。
      */
     private final boolean generateGatewayToken;
     /**
- * {@code --deep}:system, Gateway .
+     * 是否向 openclaw 子命令追加 `--deep` 开关。
      */
     private final boolean deep;
 
@@ -61,14 +57,18 @@ public final class DoctorOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `DoctorOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -98,21 +98,47 @@ public final class DoctorOptions implements CliSubArgs {
     }
 
     /**
- * {@link DoctorOptions} builder.
+     * 链式构建器，逐项收集 DoctorOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 DoctorOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
 
+        /**
+         * 是否向 openclaw 子命令追加 `--no-workspace-suggestions` 开关。
+         */
         private boolean noWorkspaceSuggestions;
+        /**
+         * 是否向 openclaw 子命令追加 `--yes` 开关。
+         */
         private boolean yes;
+        /**
+         * 是否向 openclaw 子命令追加 `--repair` 开关。
+         */
         private boolean repair;
+        /**
+         * 是否向 openclaw 子命令追加 `--force` 开关。
+         */
         private boolean force;
+        /**
+         * 是否向 openclaw 子命令追加 `--non-interactive` 开关。
+         */
         private boolean nonInteractive;
+        /**
+         * 是否向 openclaw 子命令追加 `--generate-gateway-token` 开关。
+         */
         private boolean generateGatewayToken;
+        /**
+         * 是否向 openclaw 子命令追加 `--deep` 开关。
+         */
         private boolean deep;
 
         /**
-         * @param noWorkspaceSuggestions {@code --no-workspace-suggestions}
-         * @return {@code this}
+         * 设置 `--no-workspace-suggestions` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param noWorkspaceSuggestions 是否向命令行追加 `--no-workspace-suggestions` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder noWorkspaceSuggestions(boolean noWorkspaceSuggestions) {
             this.noWorkspaceSuggestions = noWorkspaceSuggestions;
@@ -120,23 +146,32 @@ public final class DoctorOptions implements CliSubArgs {
         }
 
         /**
-         * @param yes {@code --yes}
-         * @return {@code this}
+         * 设置 `--yes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param yes 是否向命令行追加 `--yes` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder yes(boolean yes) {
             this.yes = yes;
             return this;
         }
 
- /** {@code --repair}({@code --fix} , repair ). */
+        /**
+         * 设置 `--repair` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param repair 是否向命令行追加 `--repair` 开关
+         * @return 当前构建器，便于继续链式配置
+         */
         public Builder repair(boolean repair) {
             this.repair = repair;
             return this;
         }
 
         /**
-         * @param force {@code --force}
-         * @return {@code this}
+         * 设置 `--force` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param force 是否向命令行追加 `--force` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder force(boolean force) {
             this.force = force;
@@ -144,8 +179,10 @@ public final class DoctorOptions implements CliSubArgs {
         }
 
         /**
-         * @param nonInteractive {@code --non-interactive}
-         * @return {@code this}
+         * 设置 `--non-interactive` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param nonInteractive 是否向命令行追加 `--non-interactive` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder nonInteractive(boolean nonInteractive) {
             this.nonInteractive = nonInteractive;
@@ -153,8 +190,10 @@ public final class DoctorOptions implements CliSubArgs {
         }
 
         /**
-         * @param generateGatewayToken {@code --generate-gateway-token}
-         * @return {@code this}
+         * 设置 `--generate-gateway-token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param generateGatewayToken 是否向命令行追加 `--generate-gateway-token` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder generateGatewayToken(boolean generateGatewayToken) {
             this.generateGatewayToken = generateGatewayToken;
@@ -162,8 +201,10 @@ public final class DoctorOptions implements CliSubArgs {
         }
 
         /**
-         * @param deep {@code --deep}
-         * @return {@code this}
+         * 设置 `--deep` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param deep 是否向命令行追加 `--deep` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder deep(boolean deep) {
             this.deep = deep;
@@ -171,7 +212,9 @@ public final class DoctorOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link DoctorOptions}
+         * 校验并复制当前构建器字段，创建独立的 `DoctorOptions`。
+         *
+         * @return 按当前字段创建的 DoctorOptions
          */
         public DoctorOptions build() {
             return new DoctorOptions(this);

@@ -10,19 +10,10 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenAI Models API .
- * <p>
- * Corresponds to {@code GET /v1/models} JSON.
- * OpenClaw agent ( {@code openclaw},{@code openclaw/default},
- * {@code openclaw/<agentId>}), provider directory.
- * </p>
+ * OpenClaw JSON 协议中的 `ModelsResponse` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <p> agent ().</p>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
-  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
-  * @since 3.0.0
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -31,14 +22,21 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelsResponse {
 
- /** object, {@code "list"}. */
+    /**
+     * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+     */
     private String object;
 
- /** . */
+    /**
+     * 映射 OpenClaw JSON 字段 `data` 的 有序数组。
+     */
     private List<ModelData> data;
 
     /**
- * /agent .
+     * OpenClaw JSON 协议中的 `ModelData` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -46,13 +44,21 @@ public class ModelsResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ModelData {
- /** , {@code "openclaw"},{@code "openclaw/default"},{@code "openclaw/research"}. */
+        /**
+         * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+         */
         private String id;
- /** object, {@code "model"}. */
+        /**
+         * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+         */
         private String object;
- /** . */
+        /**
+         * 映射 OpenClaw JSON 字段 `created` 的 协议内容。
+         */
         private Long created;
- /** . */
+        /**
+         * 映射 OpenClaw JSON 字段 `ownedBy` 的 协议内容。
+         */
         @JsonProperty("owned_by")
         private String ownedBy;
     }

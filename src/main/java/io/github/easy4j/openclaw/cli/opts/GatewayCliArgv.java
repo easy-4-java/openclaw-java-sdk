@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * {@code openclaw gateway &lt;subcommand&gt; ...} argument sequence(executable name {@code --dev} , {@link io.github.easy4j.openclaw.cli.OpenClawCliRequest} ).
- *
- * @see <a href="https://docs.openclaw.ai/cli/gateway">gateway CLI</a>
+ * 本地 openclaw CLI 的 `GatewayCliArgv` 支撑类型，用于参数编码、可用性检查或执行结果表达。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class GatewayCliArgv {
 
@@ -19,11 +17,10 @@ public final class GatewayCliArgv {
     }
 
     /**
- * {@code gateway health} ,documentation:
-     * {@code openclaw gateway health --url ws://127.0.0.1:18789}
+     * 生成 gateway health 参数，并追加共享的 RPC 认证和连接选项。
      *
- * @param rpc null, RPC (URL,token )
- * @return argument list, {@code "health"}
+     * @param rpc 写入 `rpc` 协议字段的内容
+     * @return 按协议顺序返回的数据列表；没有数据时为空列表
      */
     public static List<String> health(GatewayRpcOptions rpc) {
         Objects.requireNonNull(rpc, "rpc");
@@ -34,11 +31,11 @@ public final class GatewayCliArgv {
     }
 
     /**
- * {@code gateway status} ;See {@link GatewayCliArgv.GatewayStatusOptions}.
+     * 生成 gateway status 参数，并按顺序合并 RPC 选项与状态查询选项。
      *
- * @param rpc null
- * @param extra null,Equivalent to {@link GatewayStatusOptions#none}
- * @return argument list, {@code "status"}
+     * @param rpc 写入 `rpc` 协议字段的内容
+     * @param extra 写入 `extra` 协议字段的内容
+     * @return 按协议顺序返回的数据列表；没有数据时为空列表
      */
     public static List<String> status(GatewayRpcOptions rpc, GatewayStatusOptions extra) {
         Objects.requireNonNull(rpc, "rpc");
@@ -59,11 +56,11 @@ public final class GatewayCliArgv {
     }
 
     /**
- * {@code gateway probe} ;SSH See {@link GatewayCliArgv.GatewayProbeOptions}.
+     * 生成 gateway probe 参数，并按顺序合并 RPC 选项与探测选项。
      *
- * @param rpc null
- * @param extra null,Equivalent to {@link GatewayProbeOptions#none}
- * @return argument list, {@code "probe"}
+     * @param rpc 写入 `rpc` 协议字段的内容
+     * @param extra 写入 `extra` 协议字段的内容
+     * @return 按协议顺序返回的数据列表；没有数据时为空列表
      */
     public static List<String> probe(GatewayRpcOptions rpc, GatewayProbeOptions extra) {
         Objects.requireNonNull(rpc, "rpc");
@@ -86,20 +83,23 @@ public final class GatewayCliArgv {
     }
 
     /**
- * {@code gateway status} (documentation:{@code --no-probe},{@code --deep},{@code --require-rpc}).
+     * openclaw `gateway-status` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class GatewayStatusOptions {
 
         /**
- * {@code --no-probe}: Gateway (launchd/systemd ),skips WebSocket RPC .
+         * 是否向 openclaw 子命令追加 `--no-probe` 开关。
          */
         private final boolean noProbe;
         /**
- * {@code --deep}:,system(documentation:).
+         * 是否向 openclaw 子命令追加 `--deep` 开关。
          */
         private final boolean deep;
         /**
- * {@code --require-rpc}: RPC probe failed(:only RPC ).
+         * 是否向 openclaw 子命令追加 `--require-rpc` 开关。
          */
         private final boolean requireRpc;
 
@@ -115,52 +115,76 @@ public final class GatewayCliArgv {
         }
 
         /**
- * @return when false
+         * 选择或编码 `gateway-status` 子命令的 `none` 行为，并保留未设置选项的省略语义。
+         *
+         * @return 按当前参数创建、查询或解析得到的 GatewayStatusOptions
          */
         public static GatewayStatusOptions none() {
             return new GatewayStatusOptions(false, false, false);
         }
 
         /**
- * @return {@link Builder}
+         * 创建空白构建器，供调用方链式设置 `GatewayStatusOptions` 字段。
+         *
+         * @return 新的空白构建器
          */
         public static Builder builder() {
             return new Builder();
         }
 
         /**
- * @return {@code --no-probe}
+         * 判断 `noProbe` 对应状态 是否满足协议或生命周期条件。
+         *
+         * @return 条件成立返回 {@code true}，否则返回 {@code false}
          */
         public boolean isNoProbe() {
             return noProbe;
         }
 
         /**
- * @return {@code --deep}
+         * 判断 `deep` 对应状态 是否满足协议或生命周期条件。
+         *
+         * @return 条件成立返回 {@code true}，否则返回 {@code false}
          */
         public boolean isDeep() {
             return deep;
         }
 
         /**
- * @return {@code --require-rpc}
+         * 判断 `requireRpc` 对应状态 是否满足协议或生命周期条件。
+         *
+         * @return 条件成立返回 {@code true}，否则返回 {@code false}
          */
         public boolean isRequireRpc() {
             return requireRpc;
         }
 
         /**
- * {@link GatewayStatusOptions} builder.
+         * 链式构建器，逐项收集 GatewayStatusOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 GatewayStatusOptions。
+         *
+         * @author <a href="https://github.com/loong10k">Loong Wan</a>
+         * @since 1.0.0
          */
         public static final class Builder {
 
+            /**
+             * 是否向 openclaw 子命令追加 `--no-probe` 开关。
+             */
             private boolean noProbe;
+            /**
+             * 是否向 openclaw 子命令追加 `--deep` 开关。
+             */
             private boolean deep;
+            /**
+             * 是否向 openclaw 子命令追加 `--require-rpc` 开关。
+             */
             private boolean requireRpc;
 
             /**
-             * @param noProbe {@code --no-probe}
-             * @return {@code this}
+             * 设置 `--no-probe` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+             *
+             * @param noProbe 是否向命令行追加 `--no-probe` 开关
+             * @return 当前构建器，便于继续链式配置
              */
             public Builder noProbe(boolean noProbe) {
                 this.noProbe = noProbe;
@@ -168,8 +192,10 @@ public final class GatewayCliArgv {
             }
 
             /**
-             * @param deep {@code --deep}
-             * @return {@code this}
+             * 设置 `--deep` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+             *
+             * @param deep 是否向命令行追加 `--deep` 开关
+             * @return 当前构建器，便于继续链式配置
              */
             public Builder deep(boolean deep) {
                 this.deep = deep;
@@ -177,8 +203,10 @@ public final class GatewayCliArgv {
             }
 
             /**
-             * @param requireRpc {@code --require-rpc}
-             * @return {@code this}
+             * 设置 `--require-rpc` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+             *
+             * @param requireRpc 是否向命令行追加 `--require-rpc` 开关
+             * @return 当前构建器，便于继续链式配置
              */
             public Builder requireRpc(boolean requireRpc) {
                 this.requireRpc = requireRpc;
@@ -186,7 +214,9 @@ public final class GatewayCliArgv {
             }
 
             /**
- * @return {@link GatewayStatusOptions}
+             * 校验并复制当前构建器字段，创建独立的 `GatewayStatusOptions`。
+             *
+             * @return 按当前字段创建的 GatewayStatusOptions
              */
             public GatewayStatusOptions build() {
                 return new GatewayStatusOptions(noProbe, deep, requireRpc);
@@ -195,20 +225,23 @@ public final class GatewayCliArgv {
     }
 
     /**
- * {@code gateway probe} SSH (documentation:{@code --ssh},{@code --ssh-identity},{@code --ssh-auto}).
+     * openclaw `gateway-probe` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class GatewayProbeOptions {
 
         /**
- * {@code --ssh}: SSH only loopback Gateway(documentation Remote over SSH , {@code user@host}).
+         * 传给 openclaw 子命令 `--ssh` 选项的内容；为 null 时通常省略。
          */
         private final String ssh;
         /**
- * {@code --ssh-identity}:SSH .
+         * 传给 openclaw 子命令 `--ssh-identity` 选项的内容；为 null 时通常省略。
          */
         private final String sshIdentity;
         /**
- * {@code --ssh-auto}: gateway host SSH (documentation:TXT ).
+         * 是否向 openclaw 子命令追加 `--ssh-auto` 开关。
          */
         private final boolean sshAuto;
 
@@ -224,52 +257,76 @@ public final class GatewayCliArgv {
         }
 
         /**
- * @return SSH default value
+         * 选择或编码 `gateway-probe` 子命令的 `none` 行为，并保留未设置选项的省略语义。
+         *
+         * @return 按当前参数创建、查询或解析得到的 GatewayProbeOptions
          */
         public static GatewayProbeOptions none() {
             return new GatewayProbeOptions(null, null, false);
         }
 
         /**
- * @return {@link Builder}
+         * 创建空白构建器，供调用方链式设置 `GatewayProbeOptions` 字段。
+         *
+         * @return 新的空白构建器
          */
         public static Builder builder() {
             return new Builder();
         }
 
         /**
- * @return {@code --ssh}, null
+         * 读取当前对象保存的 `ssh` 对应状态，不触发网络或子进程调用。
+         *
+         * @return 服务返回或流式累积得到的文本
          */
         public String getSsh() {
             return ssh;
         }
 
         /**
- * @return {@code --ssh-identity}, null
+         * 读取当前对象保存的 `sshIdentity` 对应状态，不触发网络或子进程调用。
+         *
+         * @return 可用于关联后续请求的标识
          */
         public String getSshIdentity() {
             return sshIdentity;
         }
 
         /**
- * @return {@code --ssh-auto}
+         * 判断 `sshAuto` 对应状态 是否满足协议或生命周期条件。
+         *
+         * @return 条件成立返回 {@code true}，否则返回 {@code false}
          */
         public boolean isSshAuto() {
             return sshAuto;
         }
 
         /**
- * {@link GatewayProbeOptions} builder.
+         * 链式构建器，逐项收集 GatewayProbeOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 GatewayProbeOptions。
+         *
+         * @author <a href="https://github.com/loong10k">Loong Wan</a>
+         * @since 1.0.0
          */
         public static final class Builder {
 
+            /**
+             * 传给 openclaw 子命令 `--ssh` 选项的内容；为 null 时通常省略。
+             */
             private String ssh;
+            /**
+             * 传给 openclaw 子命令 `--ssh-identity` 选项的内容；为 null 时通常省略。
+             */
             private String sshIdentity;
+            /**
+             * 是否向 openclaw 子命令追加 `--ssh-auto` 开关。
+             */
             private boolean sshAuto;
 
             /**
-             * @param ssh {@code --ssh}
-             * @return {@code this}
+             * 设置 `--ssh` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+             *
+             * @param ssh 写入 `--ssh` 选项的内容
+             * @return 当前构建器，便于继续链式配置
              */
             public Builder ssh(String ssh) {
                 this.ssh = ssh;
@@ -277,8 +334,10 @@ public final class GatewayCliArgv {
             }
 
             /**
-             * @param sshIdentity {@code --ssh-identity}
-             * @return {@code this}
+             * 设置 `--ssh-identity` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+             *
+             * @param sshIdentity 写入 `--ssh-identity` 选项的内容
+             * @return 当前构建器，便于继续链式配置
              */
             public Builder sshIdentity(String sshIdentity) {
                 this.sshIdentity = sshIdentity;
@@ -286,8 +345,10 @@ public final class GatewayCliArgv {
             }
 
             /**
-             * @param sshAuto {@code --ssh-auto}
-             * @return {@code this}
+             * 设置 `--ssh-auto` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+             *
+             * @param sshAuto 是否向命令行追加 `--ssh-auto` 开关
+             * @return 当前构建器，便于继续链式配置
              */
             public Builder sshAuto(boolean sshAuto) {
                 this.sshAuto = sshAuto;
@@ -295,7 +356,9 @@ public final class GatewayCliArgv {
             }
 
             /**
- * @return {@link GatewayProbeOptions}
+             * 校验并复制当前构建器字段，创建独立的 `GatewayProbeOptions`。
+             *
+             * @return 按当前字段创建的 GatewayProbeOptions
              */
             public GatewayProbeOptions build() {
                 return new GatewayProbeOptions(ssh, sshIdentity, sshAuto);

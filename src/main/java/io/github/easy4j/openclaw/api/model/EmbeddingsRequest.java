@@ -8,21 +8,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * OpenAI Embeddings API request body.
- * <p>
- * Corresponds to {@code POST /v1/embeddings} JSON.
- * </p>
+ * OpenClaw JSON 协议中的 `EmbeddingsRequest` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3>field</h3>
- * <ul>
- * <li>{@code agent} - Agent ( {@code "openclaw/default"})
- * <li>{@code model} - embedding( {@code "openai/text-embedding-3-small"})
- * </ul>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
-  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
-  * @since 3.0.0
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -33,21 +22,17 @@ import lombok.Setter;
 public class EmbeddingsRequest {
 
     /**
- * Agent .
- * <p> {@code "openclaw"},{@code "openclaw/default"} {@code "openclaw/<agentId>"}.</p>
+     * 映射 OpenClaw JSON 字段 `agent` 的 协议内容。
      */
     private String agent;
 
     /**
- * embedding.
- * <p> {@code "openai/text-embedding-3-small"}.
- * , Agent embedding.</p>
+     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
      */
     private String model;
 
     /**
- * (characterscharactersarray).
- * <p>characterscharactersarray.</p>
+     * 映射 OpenClaw JSON 字段 `input` 的 协议内容。
      */
     private Object input;
 }
