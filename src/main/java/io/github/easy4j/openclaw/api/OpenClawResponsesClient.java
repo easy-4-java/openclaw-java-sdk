@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * OpenResponses API client.
@@ -34,6 +35,11 @@ public class OpenClawResponsesClient extends OpenClawHttpClient {
  * OpenResponses .
      */
     public ResponseResult createResponse(ResponseRequest request) {
+        return awaitFuture(createResponseAsync(request));
+    }
+
+    /** 异步创建 OpenResponses 响应。 */
+    public CompletableFuture<ResponseResult> createResponseAsync(ResponseRequest request) {
         debug("=== Response Request ===");
         debug("agent: {}", request.getAgent());
         debug("model: {}", request.getModel());
@@ -62,10 +68,11 @@ public class OpenClawResponsesClient extends OpenClawHttpClient {
                 .previousResponseId(request.getPreviousResponseId())
                 .build();
 
-        String json = postJson(OpenClawConstants.ENDPOINT_RESPONSES, normalized, headers);
-        debug("Response API response received");
-
-        return parse(json, ResponseResult.class, "response");
+        return postJsonAsync(OpenClawConstants.ENDPOINT_RESPONSES, normalized, headers, null)
+                .thenApply(json -> {
+                    debug("Response API response received");
+                    return parse(json, ResponseResult.class, "response");
+                });
     }
 
     private void validateRequest(ResponseRequest request) {

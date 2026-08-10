@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Embeddings API client.
@@ -31,6 +32,11 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
     }
 
     public EmbeddingsResponse createEmbeddings(EmbeddingsRequest request) {
+        return awaitFuture(createEmbeddingsAsync(request));
+    }
+
+    /** 异步创建向量，不阻塞调用方线程等待网络响应。 */
+    public CompletableFuture<EmbeddingsResponse> createEmbeddingsAsync(EmbeddingsRequest request) {
         debug("=== Embeddings Request ===");
         debug("agent: {}", request.getAgent());
         debug("model: {}", request.getModel());
@@ -49,10 +55,11 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
                 .input(request.getInput())
                 .build();
 
-        String json = postJson(OpenClawConstants.ENDPOINT_EMBEDDINGS, normalized, headers);
-        debug("Embeddings response received");
-
-        return parse(json, EmbeddingsResponse.class, "embeddings");
+        return postJsonAsync(OpenClawConstants.ENDPOINT_EMBEDDINGS, normalized, headers, null)
+                .thenApply(json -> {
+                    debug("Embeddings response received");
+                    return parse(json, EmbeddingsResponse.class, "embeddings");
+                });
     }
 
     private void validateRequest(EmbeddingsRequest request) {

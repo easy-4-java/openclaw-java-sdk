@@ -451,6 +451,11 @@ public class OpenClawClient implements AutoCloseable {
         return chatClient.chatCompletion(request);
     }
 
+    /** 异步发送 Chat Completions 请求。 */
+    public CompletableFuture<ChatResponse> chatCompletionAsync(ChatRequest request) {
+        return chatClient.chatCompletionAsync(request);
+    }
+
     /** 发送支持调用方取消的 Chat Completions 请求。 */
     public ChatResponse chatCompletion(ChatRequest request, HttpCallCancellation cancellation) {
         return chatClient.chatCompletion(request, null, cancellation);
@@ -599,6 +604,11 @@ public class OpenClawClient implements AutoCloseable {
         return chatClient.listModels();
     }
 
+    /** 异步列出模型。 */
+    public CompletableFuture<ModelsResponse> listModelsAsync() {
+        return chatClient.listModelsAsync();
+    }
+
     // ----------------------------------------------------------------
     // Embeddings
     // ----------------------------------------------------------------
@@ -610,6 +620,11 @@ public class OpenClawClient implements AutoCloseable {
         return embeddingsClient.createEmbeddings(request);
     }
 
+    /** 异步创建向量。 */
+    public CompletableFuture<EmbeddingsResponse> createEmbeddingsAsync(EmbeddingsRequest request) {
+        return embeddingsClient.createEmbeddingsAsync(request);
+    }
+
     // ----------------------------------------------------------------
     // Responses
     // ----------------------------------------------------------------
@@ -619,6 +634,11 @@ public class OpenClawClient implements AutoCloseable {
      */
     public ResponseResult createResponse(ResponseRequest request) {
         return responsesClient.createResponse(request);
+    }
+
+    /** 异步创建 OpenResponses 响应。 */
+    public CompletableFuture<ResponseResult> createResponseAsync(ResponseRequest request) {
+        return responsesClient.createResponseAsync(request);
     }
 
     // ============================================================
@@ -637,6 +657,11 @@ public class OpenClawClient implements AutoCloseable {
      */
     public ToolInvokeResult toolInvoke(ToolInvokeRequest request) {
         return toolsInvokeClient.invoke(request);
+    }
+
+    /** 异步调用工具。 */
+    public CompletableFuture<ToolInvokeResult> toolInvokeAsync(ToolInvokeRequest request) {
+        return toolsInvokeClient.invokeAsync(request);
     }
 
     public ToolInvokeResult toolInvoke(ToolInvokeRequest request, HttpCallCancellation cancellation) {

@@ -472,7 +472,6 @@
         <junit.version>5.11.4</junit.version>
         <lombok.version>1.18.46</lombok.version>
         <okhttp3.version>4.12.0</okhttp3.version>
-        <async-http-client.version>2.12.4</async-http-client.version>
         <slf4j.version>2.0.18</slf4j.version>
         <!-- Maven Plugin versions -->
         <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
@@ -505,6 +504,11 @@
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp-sse</artifactId>
+                <version>${okhttp3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>mockwebserver</artifactId>
                 <version>${okhttp3.version}</version>
             </dependency>
             <!-- For Websocket -->
@@ -550,11 +554,6 @@
 
     <!-- 项目依赖（dependencies） -->
     <dependencies>
-        <dependency>
-            <groupId>org.asynchttpclient</groupId>
-            <artifactId>async-http-client</artifactId>
-            <version>${async-http-client.version}</version>
-        </dependency>
         <!-- For OkHttp -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -595,6 +594,11 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

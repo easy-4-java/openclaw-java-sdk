@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Tools Invoke API client.
@@ -36,6 +37,18 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
     }
 
     public ToolInvokeResult invoke(ToolInvokeRequest request, HttpCallCancellation cancellation) {
+        return awaitFuture(invokeAsync(request, cancellation));
+    }
+
+    /**
+     * 异步调用工具，不占用请求工作线程等待网络响应。
+     *
+     * @param request 工具调用请求
+     * @param cancellation 可选取消信号
+     * @return 异步工具调用结果
+     */
+    public CompletableFuture<ToolInvokeResult> invokeAsync(ToolInvokeRequest request,
+                                                           HttpCallCancellation cancellation) {
         Objects.requireNonNull(request, "request");
 
         debug("=== Tool Invoke Request ===");
@@ -54,13 +67,9 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
             Request httpRequest = builder.post(RequestBody.create(objectMapper.writeValueAsString(request), JSON)).build();
 
             debug("Sending tool invoke request...");
-
-            Call call = httpClient.newCall(httpRequest);
-            AutoCloseable registration = cancellation != null ? cancellation.onCancel(call::cancel) : null;
-            try (Response response = call.execute()) {
-                int status = response.code();
-                String respBody = response.body() != null ? response.body().string() : "";
-
+            return executeResponseAsync(httpRequest, cancellation).thenApply(response -> {
+                int status = response.getStatusCode();
+                String respBody = response.getBody();
                 debug("Tool invoke response status: {}", status);
                 debug("Tool invoke response body: {}", respBody);
 
@@ -83,24 +92,17 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
                 ToolInvokeResult result = parse(respBody, ToolInvokeResult.class);
                 debug("Tool invoke success, ok: {}", result.getOk());
                 return result;
-            } finally {
-                closeRegistration(registration);
-            }
-        } catch (OpenClawHttpException e) {
-            throw e;
+            });
         } catch (Exception e) {
-            throw new OpenClawHttpException("POST /tools/invoke failed: " + e.getMessage(), e);
+            CompletableFuture<ToolInvokeResult> failed = new CompletableFuture<>();
+            failed.completeExceptionally(e instanceof OpenClawHttpException ? e
+                    : new OpenClawHttpException("POST /tools/invoke failed: " + e.getMessage(), e));
+            return failed;
         }
     }
 
-    private void closeRegistration(AutoCloseable registration) {
-        if (registration == null) {
-            return;
-        }
-        try {
-            registration.close();
-        } catch (Exception error) {
-            debug("Failed to unregister tool cancellation callback: {}", error.getMessage());
-        }
+    /** 异步调用工具。 */
+    public CompletableFuture<ToolInvokeResult> invokeAsync(ToolInvokeRequest request) {
+        return invokeAsync(request, null);
     }
 }

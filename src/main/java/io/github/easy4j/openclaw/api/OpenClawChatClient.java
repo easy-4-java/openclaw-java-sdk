@@ -6,7 +6,6 @@ import io.github.easy4j.openclaw.HttpCallCancellation;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
 import io.github.easy4j.openclaw.api.model.*;
-import io.github.easy4j.openclaw.api.sse.SseChunkDecoder;
 import io.github.easy4j.openclaw.api.sse.StreamingChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -24,8 +23,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 /**
  * Chat Completions API client.
@@ -39,7 +36,7 @@ import java.util.Queue;
 public class OpenClawChatClient extends OpenClawHttpClient {
 
     private final ExecutorService streamExecutor;
-    private final Set<CompletableFuture<Void>> activeStreams = ConcurrentHashMap.newKeySet();
+    private final Set<Call> activeStreams = ConcurrentHashMap.newKeySet();
 
     public OpenClawChatClient(OpenClawHttpClientConfig config) {
         super(config);
@@ -221,14 +218,25 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     // ============================================================
 
     public ModelsResponse listModels() {
+        return awaitFuture(listModelsAsync());
+    }
+
+    /** 异步列出模型。 */
+    public CompletableFuture<ModelsResponse> listModelsAsync() {
         debug("=== List Models ===");
-        String json = getJson(OpenClawConstants.ENDPOINT_MODELS);
-        ModelsResponse response = parse(json, ModelsResponse.class, "models");
-        debug("Models count: {}", response.getData() != null ? response.getData().size() : 0);
-        return response;
+        return getJsonAsync(OpenClawConstants.ENDPOINT_MODELS).thenApply(json -> {
+            ModelsResponse response = parse(json, ModelsResponse.class, "models");
+            debug("Models count: {}", response.getData() != null ? response.getData().size() : 0);
+            return response;
+        });
     }
 
     public ModelsResponse.ModelData getModel(String modelId) {
+        return awaitFuture(getModelAsync(modelId));
+    }
+
+    /** 异步获取指定模型。 */
+    public CompletableFuture<ModelsResponse.ModelData> getModelAsync(String modelId) {
         Objects.requireNonNull(modelId, "modelId");
         debug("=== Get Model: {} ===", modelId);
 
@@ -239,8 +247,8 @@ public class OpenClawChatClient extends OpenClawHttpClient {
             throw new RuntimeException(e);
         }
 
-        String json = getJson(OpenClawConstants.ENDPOINT_MODELS + "/" + encodedId);
-        return parse(json, ModelsResponse.ModelData.class, "model");
+        return getJsonAsync(OpenClawConstants.ENDPOINT_MODELS + "/" + encodedId)
+                .thenApply(json -> parse(json, ModelsResponse.ModelData.class, "model"));
     }
 
     // ============================================================
@@ -295,30 +303,16 @@ public class OpenClawChatClient extends OpenClawHttpClient {
             streamResponse.onError(new OpenClawHttpException("Stream request build failed: " + e.getMessage(), e));
             return;
         }
-        if (config.isLegacyInjectedOkHttpTransportEnabled()) {
-            enqueueLegacyStream(httpRequest, streamResponse);
-            return;
-        }
-        SseChunkDecoder decoder = new SseChunkDecoder(objectMapper, streamResponse);
-        SerialExecutor serialExecutor = new SerialExecutor(streamExecutor);
-        CompletableFuture<Void> stream = asyncTransport.executeStream(httpRequest, null,
-                bytes -> serialExecutor.execute(() -> decoder.accept(bytes)));
-        activeStreams.add(stream);
-        stream.whenComplete((ignored, error) -> serialExecutor.execute(() -> {
-            activeStreams.remove(stream);
-            if (Objects.nonNull(error)) {
-                decoder.fail(error);
-            } else {
-                decoder.complete();
-            }
-        }));
+        enqueueOkHttpStream(httpRequest, streamResponse);
     }
 
-    private void enqueueLegacyStream(Request request, StreamingChatResponse streamResponse) {
+    private void enqueueOkHttpStream(Request request, StreamingChatResponse streamResponse) {
         Call call = httpClient.newCall(request);
+        activeStreams.add(call);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call ignored, java.io.IOException error) {
+                activeStreams.remove(call);
                 streamResponse.onError(error);
             }
 
@@ -341,9 +335,12 @@ public class OpenClawChatClient extends OpenClawHttpClient {
                                     .readChatCompletionStream(completed.body().byteStream(), streamResponse);
                         } catch (Exception error) {
                             streamResponse.onError(error);
+                        } finally {
+                            activeStreams.remove(call);
                         }
                     });
                 } catch (RejectedExecutionException error) {
+                    activeStreams.remove(call);
                     response.close();
                     streamResponse.onError(error);
                 }
@@ -381,49 +378,12 @@ public class OpenClawChatClient extends OpenClawHttpClient {
 
     @Override
     public void close() {
-        for (CompletableFuture<Void> stream : activeStreams) {
-            stream.cancel(true);
+        for (Call stream : activeStreams) {
+            stream.cancel();
         }
         activeStreams.clear();
         streamExecutor.shutdownNow();
         super.close();
     }
 
-    /** 在共享线程池上保持单条 SSE 的事件顺序，不长期占用线程。 */
-    private static final class SerialExecutor implements java.util.concurrent.Executor {
-        private final Queue<Runnable> tasks = new ArrayDeque<>();
-        private final ExecutorService executor;
-        private Runnable active;
-
-        private SerialExecutor(ExecutorService executor) {
-            this.executor = executor;
-        }
-
-        @Override
-        public synchronized void execute(Runnable command) {
-            tasks.offer(() -> {
-                try {
-                    command.run();
-                } finally {
-                    scheduleNext();
-                }
-            });
-            if (Objects.isNull(active)) {
-                scheduleNext();
-            }
-        }
-
-        private synchronized void scheduleNext() {
-            active = tasks.poll();
-            if (Objects.nonNull(active)) {
-                try {
-                    executor.execute(active);
-                } catch (RejectedExecutionException error) {
-                    active = null;
-                    tasks.clear();
-                    throw error;
-                }
-            }
-        }
-    }
 }

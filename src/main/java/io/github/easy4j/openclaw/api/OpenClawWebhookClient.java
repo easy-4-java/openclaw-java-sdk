@@ -3,7 +3,6 @@ package io.github.easy4j.openclaw.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
-import io.github.easy4j.openclaw.OpenClawOkHttpClientFactory;
 import io.github.easy4j.openclaw.api.model.HookRequest;
 import io.github.easy4j.openclaw.api.model.HookResponse;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
@@ -15,6 +14,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * OpenClaw Gateway HTTP Webhooks client({@code /hooks/*}).
@@ -24,65 +24,66 @@ import java.util.Objects;
   * @since 3.0.0
  */
 @Slf4j
-public class OpenClawWebhookClient implements AutoCloseable {
+public class OpenClawWebhookClient extends OpenClawHttpClient {
 
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final ObjectMapper RESPONSE_MAPPER = new ObjectMapper();
 
-    private final OpenClawHttpClientConfig config;
-    private final ObjectMapper objectMapper;
-    private final OkHttpClient httpClient;
-    private final boolean ownsHttpClient;
-
     public OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper) {
-        this(config, mapper, OpenClawOkHttpClientFactory.create(config), true);
+        super(config, mapper, null);
     }
 
     public OpenClawWebhookClient(OpenClawHttpClientConfig config) {
-        this(config, null, OpenClawOkHttpClientFactory.create(config), true);
+        super(config);
     }
 
     public OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper, OkHttpClient httpClient) {
-        this(config, mapper,
-                Objects.isNull(httpClient) ? OpenClawOkHttpClientFactory.create(config) : httpClient,
-                Objects.isNull(httpClient));
-    }
-
-    private OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper,
-                                  OkHttpClient httpClient, boolean ownsHttpClient) {
-        this.config = Objects.requireNonNull(config, "config");
-        this.objectMapper = mapper != null ? mapper : new ObjectMapper();
-        this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
-        this.ownsHttpClient = ownsHttpClient;
+        super(config, mapper, httpClient);
     }
 
     public HookResponse postHooksAgent(HookRequest request) {
+        return awaitFuture(postHooksAgentAsync(request));
+    }
+
+    /** 异步触发 Agent webhook。 */
+    public CompletableFuture<HookResponse> postHooksAgentAsync(HookRequest request) {
         Objects.requireNonNull(request, "request");
         Map<String, Object> body = buildHooksAgentBody(request);
-        HttpResult response = postWebhook(resolveHooksSubPath("agent"), body);
-        HookResponse result = new HookResponse();
-        result.setHttpStatus(response.getStatus());
-        result.setRawBody(response.getBody());
-        result.setLocalInvocation(false);
-        result.setSuccess(parseOk(response.getBody()));
-        result.setRunId(parseRunId(response.getBody()));
-        return result;
+        return postWebhookAsync(resolveHooksSubPath("agent"), body).thenApply(response -> {
+            HookResponse result = new HookResponse();
+            result.setHttpStatus(response.getStatus());
+            result.setRawBody(response.getBody());
+            result.setLocalInvocation(false);
+            result.setSuccess(parseOk(response.getBody()));
+            result.setRunId(parseRunId(response.getBody()));
+            return result;
+        });
     }
 
     public String postHooksWake(String text, String mode) {
+        return awaitFuture(postHooksWakeAsync(text, mode));
+    }
+
+    /** 异步触发 wake webhook。 */
+    public CompletableFuture<String> postHooksWakeAsync(String text, String mode) {
         if (OpenClawStrings.isBlank(text)) {
             throw new IllegalArgumentException("webhooks wake: text is required");
         }
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("text", text);
         body.put("mode", OpenClawStrings.isBlank(mode) ? "now" : mode);
-        return postWebhook(resolveHooksSubPath("wake"), body).getBody();
+        return postWebhookAsync(resolveHooksSubPath("wake"), body).thenApply(HttpResult::getBody);
     }
 
     public String postMappedHook(String hookName, Map<String, Object> payload) {
+        return awaitFuture(postMappedHookAsync(hookName, payload));
+    }
+
+    /** 异步触发映射 webhook。 */
+    public CompletableFuture<String> postMappedHookAsync(String hookName, Map<String, Object> payload) {
         String normalized = normalizeHookName(hookName);
         Map<String, Object> body = payload != null ? payload : Collections.emptyMap();
-        return postWebhook(resolveHooksSubPath(normalized), body).getBody();
+        return postWebhookAsync(resolveHooksSubPath(normalized), body).thenApply(HttpResult::getBody);
     }
 
     public static Map<String, Object> buildHooksAgentBody(HookRequest request) {
@@ -114,7 +115,7 @@ public class OpenClawWebhookClient implements AutoCloseable {
         return child.isEmpty() ? base : base + "/" + child;
     }
 
-    private HttpResult postWebhook(String hookPath, Map<String, Object> body) {
+    private CompletableFuture<HttpResult> postWebhookAsync(String hookPath, Map<String, Object> body) {
         String base = config.getBaseUrl();
         if (OpenClawStrings.isBlank(base)) throw new OpenClawHttpException("OpenClaw gatewayBaseUrl is empty", null);
         String url = base.replaceAll("/+$", "") + hookPath;
@@ -129,18 +130,19 @@ public class OpenClawWebhookClient implements AutoCloseable {
                 }
             }
             Request request = builder.post(RequestBody.create(objectMapper.writeValueAsString(body), JSON)).build();
-            try (Response response = httpClient.newCall(request).execute()) {
-                int status = response.code();
-                String respBody = response.body() != null ? response.body().string() : "";
+            return executeResponseAsync(request, null).thenApply(response -> {
+                int status = response.getStatusCode();
+                String respBody = response.getBody();
                 if (status < 200 || status >= 300) {
                     throw new OpenClawHttpException("OpenClaw webhook returned status " + status, status, respBody);
                 }
                 return new HttpResult(status, respBody);
-            }
-        } catch (OpenClawHttpException e) {
-            throw e;
+            });
         } catch (Exception e) {
-            throw new OpenClawHttpException("OpenClaw webhook invoke failed: " + e.getMessage(), e);
+            CompletableFuture<HttpResult> failed = new CompletableFuture<>();
+            failed.completeExceptionally(e instanceof OpenClawHttpException ? e
+                    : new OpenClawHttpException("OpenClaw webhook invoke failed: " + e.getMessage(), e));
+            return failed;
         }
     }
 
@@ -173,13 +175,6 @@ public class OpenClawWebhookClient implements AutoCloseable {
             }
         } catch (Exception ignored) {}
         return null;
-    }
-
-    @Override
-    public void close() {
-        if (ownsHttpClient) {
-            OpenClawOkHttpClientFactory.shutdown(httpClient);
-        }
     }
 
     private static final class HttpResult {
