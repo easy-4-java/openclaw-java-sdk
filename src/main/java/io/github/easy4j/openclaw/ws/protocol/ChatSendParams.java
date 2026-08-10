@@ -56,7 +56,7 @@ public class ChatSendParams {
     /**
      * 返回会话路由键。
      *
-     * @return 可用于关联后续请求的标识
+     * @return Gateway 聊天会话路由键
      */
     public String getSessionKey() { return sessionKey; }
     /**

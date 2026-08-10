@@ -41,7 +41,7 @@ public class SessionsSendParams {
     /**
      * 返回目标会话键。
      *
-     * @return 可用于关联后续请求的标识
+     * @return Gateway 会话路由键
      */
     public String getKey() { return key; }
     /**

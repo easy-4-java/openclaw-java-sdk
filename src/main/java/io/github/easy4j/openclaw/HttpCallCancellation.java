@@ -12,7 +12,7 @@ public interface HttpCallCancellation {
     /**
      * 注册取消时执行的回调，并返回用于注销该回调的句柄。
      *
-     * @param callback 取消或事件回调
+     * @param callback 首次取消时执行的回调；注册到已取消令牌时立即执行
      * @return 请求终止后用于注销取消回调的句柄
      */
     AutoCloseable onCancel(Runnable callback);

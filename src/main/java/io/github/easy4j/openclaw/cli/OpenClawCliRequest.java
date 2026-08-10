@@ -8,7 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 本地 openclaw CLI 的 {@code OpenClawCliRequest} 支撑类型，用于参数编码、可用性检查或执行结果表达。
+ * 一次本地 {@code openclaw} 调用的不可变请求，保存全局开关、执行超时和保持原始顺序的子命令参数。
+ * 构建器会防御性复制参数列表，避免调用方在提交请求后改变待执行命令。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -189,9 +190,9 @@ public final class OpenClawCliRequest {
         }
 
         /**
-         * 设置 {@code --arguments} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 用给定参数替换当前子命令参数；传入 {@code null} 时清空参数列表。
          *
-         * @param args 原样传给子命令的参数列表；作为 {@code --arguments} 的参数
+         * @param args 原样传给子命令的参数；这些值不是名为 {@code --arguments} 的 CLI 选项
          * @return 当前构建器，便于继续链式配置
          */
         public Builder arguments(String... args) {
@@ -203,9 +204,9 @@ public final class OpenClawCliRequest {
         }
 
         /**
-         * 设置 {@code --arguments} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 用给定列表替换当前子命令参数；传入 {@code null} 时清空参数列表。
          *
-         * @param args 原样传给子命令的参数列表；作为 {@code --arguments} 的参数
+         * @param args 原样传给子命令的参数列表；这些值不是名为 {@code --arguments} 的 CLI 选项
          * @return 当前构建器，便于继续链式配置
          */
         public Builder arguments(List<String> args) {

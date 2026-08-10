@@ -107,7 +107,7 @@ public class ConnectParams {
         /**
          * 返回客户端或协议对象标识。
          *
-         * @return 可用于关联后续请求的标识
+         * @return 设备身份标识
          */
         public String getId() { return id; }
         /**
