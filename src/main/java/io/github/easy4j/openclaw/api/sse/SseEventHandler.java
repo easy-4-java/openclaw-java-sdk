@@ -3,69 +3,29 @@ package io.github.easy4j.openclaw.api.sse;
 import io.github.easy4j.openclaw.api.model.ChatChunk;
 
 /**
- * SSE streaming event handler.
- * <p>
- * Used to process Gateway OpenAI OpenResponses SSE streaming.
- * </p>
+ * `SseEventHandler` 生命周期回调契约；实现方应避免在网络回调线程中执行长时间阻塞任务。
  *
- * <h3>Chat Completions streamingusage</h3>
- * <pre>{@code
- * client.chatCompletionStream(request, headers, new SseEventHandler() {
- *     public void onEvent(SseEvent event) {
- *         ChatCompletionChunk chunk = (ChatCompletionChunk) event.getParsed();
- *         if (chunk != null && chunk.getChoices() != null) {
- *             chunk.getChoices().forEach(c -> {
- *                 if (c.getDelta() != null && c.getDelta().getContent() != null) {
- *                     System.out.print(c.getDelta().getContent());
- *                 }
- *             });
- *         }
- *     }
- * public void onComplete { System.out.println("\n[completion]"); }
- *     public void onError(Throwable error) { error.printStackTrace(); }
- * });
- * }</pre>
- *
- * <h3>OpenResponses streamingusage</h3>
- * <pre>{@code
- * client.createResponseStream(request, headers, new SseEventHandler() {
- *     public void onEvent(SseEvent event) {
- *         System.out.println("[" + event.getEvent() + "] " + event.getData());
- *     }
- * public void onComplete { System.out.println("[completion]"); }
- *     public void onError(Throwable error) { error.printStackTrace(); }
- * });
- * }</pre>
- *
- * @see SseEvent
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
- * @see <a href="https://docs.openclaw.ai/gateway/openresponses-http-api">OpenResponses API</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public interface SseEventHandler {
 
     /**
- * SSE event.
-     * <p>
- * Chat Completions stream,{@code event.getParsed} {@link ChatChunk}.
- * OpenResponses stream,{@code event.getEvent} event( {@code response.output_text.delta}).
-     * </p>
+     * 接收并处理 Event 生命周期事件；实现不会改变事件顺序。
      *
- * @param event SSE event( null,{@code isDone} When true)
+     * @param event 写入 `event` 协议字段的内容
      */
     void onEvent(SseEvent event);
 
     /**
- * stream( {@code data: [DONE]}).
+     * 接收并处理 Complete 生命周期事件；实现不会改变事件顺序。
      */
     void onComplete();
 
     /**
- * stream.
+     * 接收并处理 Error 生命周期事件；实现不会改变事件顺序。
      *
- * @param error
+     * @param error 导致调用失败的异常
      */
     void onError(Throwable error);
 }

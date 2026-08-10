@@ -4,139 +4,148 @@ import io.github.easy4j.openclaw.util.OpenClawStrings;
 import lombok.Data;
 
 /**
- * OpenClaw HTTP/Gateway client configuration.
- * <p>
- * Covers Gateway base URL,Webhook authentication,control planecredentials,TLS,HTTP timeout.
- * </p>
+ * HTTP、SSE 与 WebSocket 通道配置，定义 Gateway 地址、认证优先级、连接池、并发、超时、重试和日志开关。
  *
- * <p><b>credentials( OpenClaw Gateway documentationaligned):</b></p>
- * <ul>
- * <li>{@link #hooksToken}:<b>only</b>Used for {@code POST /hooks/*}(Webhooks)authentication;
- * documentation {@code Authorization: Bearer &lt;hooks.token&gt;} <b></b>
- * {@code x-openclaw-token: &lt;token&gt;}(mutually exclusive, {@link #hooksUseXOpenclawTokenHeader} ),
- * Corresponds to {@code hooks.token},<b></b> {@code gateway.auth.token} .</li>
- * <li>{@link #gatewayAuthToken} / {@link #gatewayAuthPassword}:Corresponds tocontrol planecredentials(
- * {@code gateway.auth.token},{@code OPENCLAW_GATEWAY_TOKEN} ), CLI /
- * WebSocket control plane / OpenAI API / Tools Invoke .</li>
- * </ul>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/protocol">Gateway Protocol</a>
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#authentication">OpenAI HTTP API Authentication</a>
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Data
 public class OpenClawHttpClientConfig {
 
-    /** 对话响应模式，默认保持兼容的完整响应模式。 */
+    /**
+     * 同步、流式或自动选择的 HTTP 响应消费模式。
+     */
     private HttpResponseMode mode = HttpResponseMode.BLOCKING;
 
     /**
- * Whether to enable HTTP/Gateway system.
- * <p>When false,skips HTTP .</p>
+     * 是否创建并开放对应通信通道；关闭后门面不会初始化该子系统。
      */
     private boolean enabled = true;
 
     /**
- * At startupProbes the Gateway HTTP ({@code GET /v1/models}).
+     * 是否在客户端构造阶段执行可用性探测；默认关闭以避免启动阻塞。
      */
     private boolean startupCheckEnabled = false;
 
     /**
- * Gateway HTTP Whether to fail fast(interrupts construction).
- * <p>Defaults to false only logs a warning;productionwhen true.</p>
+     * 启动探测失败时是否中断客户端构造；关闭时仅记录警告。
      */
     private boolean failFastOnUnavailable = false;
 
     /**
- * Gateway HTTP root URL(Webhooks HTTP ), {@code http://localhost:18789}.
+     * OpenClaw Gateway HTTP 根地址；HTTP 形式会在 WebSocket 通道转换为 ws/wss。
      */
     private String baseUrl = "http://localhost:18789";
 
     /**
- * Gateway control planetoken( {@code gateway.auth.token} {@code OPENCLAW_GATEWAY_TOKEN}).
+     * Gateway Bearer 认证令牌；解析认证头时优先于密码且日志必须脱敏。
      */
     private String gatewayAuthToken;
 
     /**
- * Gateway control plane({@code gateway.auth.password} ); {@link #gatewayAuthToken} mutually exclusive context.
+     * Gateway 密码认证值；仅在未配置 token 时使用且日志必须脱敏。
      */
     private String gatewayAuthPassword;
 
     /**
- * Whether to verify HTTPS ;When false,(only recommended for)
+     * HTTPS/WSS 是否校验证书和主机名；生产环境应保持开启。
      */
     private boolean verifySsl = true;
 
- /** connectiontimeout(milliseconds) */
+    /**
+     * 建立 TCP/TLS 连接的最长等待时间，单位为毫秒。
+     */
     private int connectTimeoutMillis = 2_000;
 
- /** timeout(milliseconds) */
+    /**
+     * 普通 HTTP 响应两次读取之间的最长等待时间，单位为毫秒。
+     */
     private int readTimeoutMillis = 120_000;
 
- /** timeout(milliseconds) */
+    /**
+     * 写出请求体的最长等待时间，单位为毫秒。
+     */
     private int writeTimeoutMillis = 10_000;
 
- /** timeout(milliseconds);0 ,timeout */
+    /**
+     * 一次完整 HTTP 调用的总超时，单位为毫秒；0 表示由阶段超时控制。
+     */
     private int callTimeoutMillis;
 
- /** connection poolmaximum idle connections */
+    /**
+     * 连接池允许保留的最大空闲连接数。
+     */
     private int maxIdleConnections = 32;
 
- /** idleconnectionkeep-alive(milliseconds) */
+    /**
+     * 空闲连接在连接池中的保留时间，单位为毫秒。
+     */
     private long keepAliveDurationMillis = 300_000L;
 
- /** maximum concurrency */
+    /**
+     * OkHttp Dispatcher 允许同时执行的最大请求数。
+     */
     private int maxRequests = 128;
 
- /** maximum concurrency */
+    /**
+     * OkHttp Dispatcher 对单个主机允许的最大并发请求数。
+     */
     private int maxRequestsPerHost = 128;
 
-    /** 流式响应消费线程池核心线程数。 */
+    /**
+     * SSE 持续读取执行器常驻工作线程数。
+     */
     private int streamCorePoolSize = 16;
 
-    /** SSE 响应消费线程池最大线程数 */
+    /**
+     * SSE 持续读取执行器允许扩展到的最大线程数。
+     */
     private int streamMaxPoolSize = 16;
 
-    /** SSE 响应消费线程池有界队列容量 */
+    /**
+     * SSE 读取任务有界队列容量；满载时新订阅快速失败，避免内存无界增长。
+     */
     private int streamQueueCapacity = 1_024;
 
-    /** SSE 响应消费线程空闲保活时间（毫秒） */
+    /**
+     * SSE 执行器非核心线程的空闲存活时间，单位为毫秒。
+     */
     private long streamKeepAliveMillis = 60_000L;
 
-    /** 遇到失效连接等传输故障时是否允许 OkHttp 自动恢复 */
+    /**
+     * 连接建立失败时是否允许 OkHttp 执行自身安全重试，不包含业务请求重放。
+     */
     private boolean retryOnConnectionFailure = true;
 
     /**
-     * 是否输出请求头、请求体及响应体等详细诊断信息。
-     * <p>默认关闭，避免业务内容或凭证进入日志；基础请求追踪仍以 DEBUG 级别输出。</p>
+     * 是否输出脱敏后的请求头和截断响应体；默认关闭以控制日志量和泄露风险。
      */
     private boolean detailedLoggingEnabled = false;
 
-    /** 详细日志中请求体、响应体的最大字符数。 */
+    /**
+     * 详细日志中响应体允许记录的最大字符数，超出部分截断。
+     */
     private int maxLoggedBodyLength = 2_000;
 
     /**
- * Gateway HTTP Webhooks base path,Corresponds to {@code hooks.path}, {@code /hooks}.
+     * Webhook 端点的基础路径，具体 Hook 名称在其后追加。
      */
     private String hooksPath = "/hooks";
 
     /**
- * Webhook authentication token,Corresponds to Gateway {@code hooks.token};
- * {@code /hooks/*} Bearer <b>preferred</b>value.
+     * Webhook 专用认证令牌；未配置 Gateway token/password 时也可作为回退令牌。
      */
     private String hooksToken;
 
     /**
- * {@code true} {@code x-openclaw-token} hook token; {@code false}
- * {@code Authorization: Bearer …}.consistent with official Gateway Webhook documentation,.
+     * Webhook 是否通过 x-openclaw-token 请求头传递令牌，而不是 Bearer 头。
      */
     private boolean hooksUseXOpenclawTokenHeader = false;
 
     /**
- * Resolves the {@code /hooks/*} HTTP Webhook Bearer token.
+     * 根据显式参数和配置默认值解析本次请求使用的 Hooks Bearer Token。
      *
- * @return {@link #hooksToken} ,characters
+     * @return 服务返回或流式累积得到的文本
      */
     public String resolveHooksBearerToken() {
         if (OpenClawStrings.isNotBlank(hooksToken)) {
@@ -146,13 +155,9 @@ public class OpenClawHttpClientConfig {
     }
 
     /**
- * Resolves the Gateway <b>control plane</b> HTTP API({@code /v1/*},{@code /tools/*}) Bearer token.
-     * <p>
- * Priority:{@link #gatewayAuthToken} → {@link #gatewayAuthPassword} .
-     * </p>
+     * 根据显式参数和配置默认值解析本次请求使用的 Gateway Bearer Token。
      *
- * @return control plane Bearer token,characters
-     * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#authentication">OpenAI HTTP API Authentication</a>
+     * @return 服务返回或流式累积得到的文本
      */
     public String resolveGatewayBearerToken() {
         if (OpenClawStrings.isNotBlank(gatewayAuthToken)) {
@@ -165,7 +170,10 @@ public class OpenClawHttpClientConfig {
     }
 
     /**
- * Normalizes {@link #hooksPath}, {@code /} {@code /} .
+     * 根据显式参数和配置默认值解析本次请求使用的 Hooks Path。
+     *
+     * @return 规范化后的目标地址或路径
+     * @throws IllegalArgumentException 必填参数缺失、格式错误或超出范围时抛出
      */
     public String resolveHooksPath() {
         String raw = OpenClawStrings.defaultIfBlank(hooksPath, "/hooks");

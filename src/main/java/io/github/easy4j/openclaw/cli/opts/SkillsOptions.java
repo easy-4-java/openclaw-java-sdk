@@ -9,98 +9,112 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw skills}: ClawHub/, agent skills,skill.
- * <p> {@code openclaw skills} {@code skills list} ;streamplugin,version skills CLI .</p>
+ * openclaw `skills` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/skills">skills CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class SkillsOptions implements CliSubArgs {
 
     /**
- * skills subcommand:,,.
+     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum Verb {
         /**
- * {@code openclaw skills} : {@code list} token, CLI list .
+         * 选择 `default_list` 协议模式；序列化时使用该固定取值。
          */
         DEFAULT_LIST,
- /** {@code skills search}:key ClawHub directory. */
+        /**
+         * 选择 `search` 协议模式；序列化时使用该固定取值。
+         */
         SEARCH,
- /** {@code skills install}: slug skilldirectory. */
+        /**
+         * 选择 `install` 协议模式；序列化时使用该固定取值。
+         */
         INSTALL,
- /** {@code skills update}: skill {@code --all}. */
+        /**
+         * 选择 `update` 协议模式；序列化时使用该固定取值。
+         */
         UPDATE,
- /** {@code skills list}:/Seeskill. */
+        /**
+         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         */
         LIST,
- /** {@code skills info}:. */
+        /**
+         * 选择 `info` 协议模式；序列化时使用该固定取值。
+         */
         INFO,
- /** {@code skills check}: workspace skill. */
+        /**
+         * 选择 `check` 协议模式；序列化时使用该固定取值。
+         */
         CHECK
     }
 
- /** search / install / update / list / info / check list. */
+    /**
+     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     */
     private final Verb verb;
     /**
- * search:keyargument list.
+     * 传给 openclaw 子命令 `--search-words` 选项的内容；为 null 时通常省略。
      */
     private final List<String> searchWords;
     /**
- * search:{@code --limit} .
+     * 传给 openclaw 子命令 `--search-limit` 选项的内容；为 null 时通常省略。
      */
     private final Integer searchLimit;
     /**
-     * search：{@code --json}。
+     * 是否向 openclaw 子命令追加 `--search-json` 开关。
      */
     private final boolean searchJson;
     /**
- * install:skill slug .
+     * 传给 openclaw 子命令 `--install-slug` 选项的内容；为 null 时通常省略。
      */
     private final String installSlug;
     /**
- * install:{@code --version} version tag.
+     * 传给 openclaw 子命令 `--install-version` 选项的内容；为 null 时通常省略。
      */
     private final String installVersion;
     /**
- * install:{@code --force} .
+     * 是否向 openclaw 子命令追加 `--install-force` 开关。
      */
     private final boolean installForce;
     /**
- * update: slug; {@code updateAll} mutually exclusive semantics Builder .
+     * 传给 openclaw 子命令 `--update-slug` 选项的内容；为 null 时通常省略。
      */
     private final String updateSlug;
     /**
- * update:{@code --all} skills.
+     * 是否向 openclaw 子命令追加 `--update-all` 开关。
      */
     private final boolean updateAll;
     /**
- * list / :{@code --eligible} skill.
+     * 是否向 openclaw 子命令追加 `--list-eligible` 开关。
      */
     private final boolean listEligible;
     /**
- * list / :{@code --json}.
+     * 是否向 openclaw 子命令追加 `--list-json` 开关。
      */
     private final boolean listJson;
     /**
- * list / :{@code --verbose} .
+     * 是否向 openclaw 子命令追加 `--list-verbose` 开关。
      */
     private final boolean listVerbose;
     /**
- * info:skill .
+     * 传给 openclaw 子命令 `--info-name` 选项的内容；为 null 时通常省略。
      */
     private final String infoName;
     /**
-     * info：{@code --json}。
+     * 是否向 openclaw 子命令追加 `--info-json` 开关。
      */
     private final boolean infoJson;
     /**
- * check:{@code --json} .
+     * 是否向 openclaw 子命令追加 `--check-json` 开关。
      */
     private final boolean checkJson;
     /**
- * argv.
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -127,14 +141,18 @@ public final class SkillsOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `SkillsOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -194,28 +212,81 @@ public final class SkillsOptions implements CliSubArgs {
     }
 
     /**
- * {@link SkillsOptions} builder.
+     * 链式构建器，逐项收集 SkillsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 SkillsOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         */
         private Verb verb = Verb.DEFAULT_LIST;
+        /**
+         * 传给 openclaw 子命令 `--search-words` 选项的内容；为 null 时通常省略。
+         */
         private List<String> searchWords = new ArrayList<>();
+        /**
+         * 传给 openclaw 子命令 `--search-limit` 选项的内容；为 null 时通常省略。
+         */
         private Integer searchLimit;
+        /**
+         * 是否向 openclaw 子命令追加 `--search-json` 开关。
+         */
         private boolean searchJson;
+        /**
+         * 传给 openclaw 子命令 `--install-slug` 选项的内容；为 null 时通常省略。
+         */
         private String installSlug;
+        /**
+         * 传给 openclaw 子命令 `--install-version` 选项的内容；为 null 时通常省略。
+         */
         private String installVersion;
+        /**
+         * 是否向 openclaw 子命令追加 `--install-force` 开关。
+         */
         private boolean installForce;
+        /**
+         * 传给 openclaw 子命令 `--update-slug` 选项的内容；为 null 时通常省略。
+         */
         private String updateSlug;
+        /**
+         * 是否向 openclaw 子命令追加 `--update-all` 开关。
+         */
         private boolean updateAll;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-eligible` 开关。
+         */
         private boolean listEligible;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-json` 开关。
+         */
         private boolean listJson;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-verbose` 开关。
+         */
         private boolean listVerbose;
+        /**
+         * 传给 openclaw 子命令 `--info-name` 选项的内容；为 null 时通常省略。
+         */
         private String infoName;
+        /**
+         * 是否向 openclaw 子命令追加 `--info-json` 开关。
+         */
         private boolean infoJson;
+        /**
+         * 是否向 openclaw 子命令追加 `--check-json` 开关。
+         */
         private boolean checkJson;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
- * @return {@code this}(subcommand, list flag )
+         * 选择 `defaultList` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder defaultList() {
             this.verb = Verb.DEFAULT_LIST;
@@ -223,10 +294,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * {@code skills search [words...]}。
+         * 设置 `--search` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param queryWords
-         * @return {@code this}
+         * @param queryWords 写入 `--search` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder search(String... queryWords) {
             this.verb = Verb.SEARCH;
@@ -242,8 +313,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param limit search：{@code --limit}
-         * @return {@code this}
+         * 设置 `--search-limit` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param limit 写入 `--search-limit` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder searchLimit(int limit) {
             this.searchLimit = limit;
@@ -251,8 +324,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param json search：{@code --json}
-         * @return {@code this}
+         * 设置 `--search-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder searchJson(boolean json) {
             this.searchJson = json;
@@ -260,8 +335,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param slug install：slug
-         * @return {@code this}
+         * 设置 `--install` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param slug 写入 `--install` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder install(String slug) {
             this.verb = Verb.INSTALL;
@@ -270,8 +347,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param version install：{@code --version}
-         * @return {@code this}
+         * 设置 `--install-version` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param version 写入 `--install-version` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder installVersion(String version) {
             this.installVersion = version;
@@ -279,8 +358,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param force install：{@code --force}
-         * @return {@code this}
+         * 设置 `--install-force` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param force 是否向命令行追加 `--install-force` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder installForce(boolean force) {
             this.installForce = force;
@@ -288,8 +369,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param slug update：slug
-         * @return {@code this}
+         * 设置 `--update` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param slug 写入 `--update` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder update(String slug) {
             this.verb = Verb.UPDATE;
@@ -299,8 +382,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param all update：{@code --all}
-         * @return {@code this}
+         * 设置 `--update-all` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param all 是否向命令行追加 `--update-all` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder updateAll(boolean all) {
             this.verb = Verb.UPDATE;
@@ -310,7 +395,9 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code skills list}）
+         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder list() {
             this.verb = Verb.LIST;
@@ -318,8 +405,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param eligible list：{@code --eligible}
-         * @return {@code this}
+         * 设置 `--list-eligible` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param eligible 是否向命令行追加 `--list-eligible` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listEligible(boolean eligible) {
             this.listEligible = eligible;
@@ -327,8 +416,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param json list：{@code --json}
-         * @return {@code this}
+         * 设置 `--list-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listJson(boolean json) {
             this.listJson = json;
@@ -336,8 +427,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param verbose list：{@code --verbose}
-         * @return {@code this}
+         * 设置 `--list-verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param verbose 是否向命令行追加 `--list-verbose` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listVerbose(boolean verbose) {
             this.listVerbose = verbose;
@@ -345,8 +438,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
- * @param name info:skill
-         * @return {@code this}
+         * 设置 `--info` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param name 写入 `--info` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder info(String name) {
             this.verb = Verb.INFO;
@@ -355,8 +450,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param json info：{@code --json}
-         * @return {@code this}
+         * 设置 `--info-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder infoJson(boolean json) {
             this.infoJson = json;
@@ -364,7 +461,9 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code skills check}）
+         * 选择 `check` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder check() {
             this.verb = Verb.CHECK;
@@ -372,8 +471,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
-         * @param json check：{@code --json}
-         * @return {@code this}
+         * 设置 `--check-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder checkJson(boolean json) {
             this.checkJson = json;
@@ -381,10 +482,10 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
- * token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens argv
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -394,7 +495,9 @@ public final class SkillsOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link SkillsOptions}
+         * 校验并复制当前构建器字段，创建独立的 `SkillsOptions`。
+         *
+         * @return 按当前字段创建的 SkillsOptions
          */
         public SkillsOptions build() {
             return new SkillsOptions(this);

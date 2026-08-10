@@ -8,51 +8,47 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * {@code openclaw logs}: RPC Gateway .
- * <p>Seedocumentation"Options"; Gateway flag({@link GatewayRpcOptions}),
- * {@code --timeout} 30000ms,{@code --expect-final} Used for agent .</p>
+ * openclaw `logs` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/logs">logs CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class LogsOptions implements CliSubArgs {
 
     /**
- * RPC :{@code --url},{@code --token},{@code --password},{@code --timeout},{@code --expect-final},{@code --json} ( gateway documentation"Shared options").
+     * 传给 openclaw 子命令 `--rpc` 选项的内容；为 null 时通常省略。
      */
     private final GatewayRpcOptions rpc;
     /**
- * {@code --limit}:(documentation {@code 200}).
+     * 传给 openclaw 子命令 `--limit` 选项的内容；为 null 时通常省略。
      */
     private final String limit;
     /**
- * {@code --max-bytes}:bytes(documentation {@code 250000}).
+     * 传给 openclaw 子命令 `--max-bytes` 选项的内容；为 null 时通常省略。
      */
     private final String maxBytes;
     /**
- * {@code --follow}:stream( {@code --interval} ).
+     * 是否向 openclaw 子命令追加 `--follow` 开关。
      */
     private final boolean follow;
     /**
- * {@code --interval}:follow milliseconds(documentation {@code 1000}).
+     * 传给 openclaw 子命令 `--interval-ms` 选项的内容；为 null 时通常省略。
      */
     private final String intervalMs;
     /**
- * {@code --json}: JSON event.
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
     /**
- * {@code --plain}:,.
+     * 是否向 openclaw 子命令追加 `--plain` 开关。
      */
     private final boolean plain;
     /**
- * {@code --no-color}: ANSI .
+     * 是否向 openclaw 子命令追加 `--no-color` 开关。
      */
     private final boolean noColor;
     /**
- * {@code --local-time}:.
+     * 是否向 openclaw 子命令追加 `--local-time` 开关。
      */
     private final boolean localTime;
 
@@ -72,14 +68,18 @@ public final class LogsOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `LogsOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -116,29 +116,66 @@ public final class LogsOptions implements CliSubArgs {
     }
 
     /**
- * {@link LogsOptions} builder.
+     * 链式构建器，逐项收集 LogsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 LogsOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
 
+        /**
+         * 传给 openclaw 子命令 `--rpc` 选项的内容；为 null 时通常省略。
+         */
         private GatewayRpcOptions rpc;
+        /**
+         * 传给 openclaw 子命令 `--limit` 选项的内容；为 null 时通常省略。
+         */
         private String limit;
+        /**
+         * 传给 openclaw 子命令 `--max-bytes` 选项的内容；为 null 时通常省略。
+         */
         private String maxBytes;
+        /**
+         * 是否向 openclaw 子命令追加 `--follow` 开关。
+         */
         private boolean follow;
+        /**
+         * 传给 openclaw 子命令 `--interval-ms` 选项的内容；为 null 时通常省略。
+         */
         private String intervalMs;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
+        /**
+         * 是否向 openclaw 子命令追加 `--plain` 开关。
+         */
         private boolean plain;
+        /**
+         * 是否向 openclaw 子命令追加 `--no-color` 开关。
+         */
         private boolean noColor;
+        /**
+         * 是否向 openclaw 子命令追加 `--local-time` 开关。
+         */
         private boolean localTime;
 
- /** {@code --url} / {@code --token} / {@code --timeout} / {@code --expect-final} . */
+        /**
+         * 设置 `--rpc` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param rpc 写入 `--rpc` 选项的内容
+         * @return 当前构建器，便于继续链式配置
+         */
         public Builder rpc(GatewayRpcOptions rpc) {
             this.rpc = Objects.requireNonNull(rpc, "rpc");
             return this;
         }
 
         /**
-         * @param limit {@code --limit}
-         * @return {@code this}
+         * 设置 `--limit` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param limit 写入 `--limit` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder limit(String limit) {
             this.limit = limit;
@@ -146,8 +183,10 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
-         * @param maxBytes {@code --max-bytes}
-         * @return {@code this}
+         * 设置 `--max-bytes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param maxBytes 写入 `--max-bytes` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder maxBytes(String maxBytes) {
             this.maxBytes = maxBytes;
@@ -155,8 +194,10 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
-         * @param follow {@code --follow}
-         * @return {@code this}
+         * 设置 `--follow` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param follow 是否向命令行追加 `--follow` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder follow(boolean follow) {
             this.follow = follow;
@@ -164,8 +205,10 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
- * @param intervalMs {@code --interval}(millisecondscharacters)
-         * @return {@code this}
+         * 设置 `--interval-ms` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param intervalMs 写入 `--interval-ms` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder intervalMs(String intervalMs) {
             this.intervalMs = intervalMs;
@@ -173,8 +216,10 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --json}
-         * @return {@code this}
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -182,8 +227,10 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
-         * @param plain {@code --plain}
-         * @return {@code this}
+         * 设置 `--plain` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param plain 是否向命令行追加 `--plain` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder plain(boolean plain) {
             this.plain = plain;
@@ -191,8 +238,10 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
-         * @param noColor {@code --no-color}
-         * @return {@code this}
+         * 设置 `--no-color` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param noColor 是否向命令行追加 `--no-color` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder noColor(boolean noColor) {
             this.noColor = noColor;
@@ -200,8 +249,10 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
-         * @param localTime {@code --local-time}
-         * @return {@code this}
+         * 设置 `--local-time` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param localTime 是否向命令行追加 `--local-time` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder localTime(boolean localTime) {
             this.localTime = localTime;
@@ -209,7 +260,9 @@ public final class LogsOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link LogsOptions}
+         * 校验并复制当前构建器字段，创建独立的 `LogsOptions`。
+         *
+         * @return 按当前字段创建的 LogsOptions
          */
         public LogsOptions build() {
             return new LogsOptions(this);

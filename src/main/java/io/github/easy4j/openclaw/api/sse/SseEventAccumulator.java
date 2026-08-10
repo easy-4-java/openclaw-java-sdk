@@ -11,26 +11,43 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Accumulates streaming {@link ChatChunk} deltas into a single complete response.
- * <p>
- * Merges incremental content, tool call fragments, and metadata from multiple SSE events
- * into one consolidated {@link ChatChunk}. Supports reset for reuse across streams.
- * </p>
+ * Chat Completions 增量累加器，按 choice 与 tool-call 索引拼接文本、函数名和分片参数，生成最终 ChatChunk。
  *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
- * @see StreamingChatResponse
- * @see SseEvent
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public class SseEventAccumulator {
 
+    /**
+     * `SseEventAccumulator` 生命周期内保存的 `id` 对应状态。
+     */
     private String id;
+    /**
+     * 模型标识。
+     */
     private String model;
+    /**
+     * `SseEventAccumulator` 生命周期内保存的 `role` 对应状态。
+     */
     private String role;
+    /**
+     * `SseEventAccumulator` 生命周期内保存的 `contentBuilder` 对应状态。
+     */
     private final StringBuilder contentBuilder = new StringBuilder();
+    /**
+     * `SseEventAccumulator` 生命周期内保存的 `toolParts` 对应状态。
+     */
     private final Map<Integer, ToolPart> toolParts = new LinkedHashMap<>();
+    /**
+     * `SseEventAccumulator` 生命周期内保存的 `finishReason` 对应状态。
+     */
     private String finishReason;
 
+    /**
+     * 按 choice 和 tool-call 索引合并一个增量 ChatChunk，保留已接收片段的顺序。
+     *
+     * @param chunk 写入 `chunk` 协议字段的内容
+     */
     public void merge(ChatChunk chunk) {
         if (chunk.getId() != null) {
             this.id = chunk.getId();
@@ -67,6 +84,11 @@ public class SseEventAccumulator {
         }
     }
 
+    /**
+     * 读取当前对象保存的 `accumulated` 对应状态，不触发网络或子进程调用。
+     *
+     * @return 按当前参数创建、查询或解析得到的 ChatChunk
+     */
     public ChatChunk getAccumulated() {
         ChatChunk result = new ChatChunk();
         result.setId(id);
@@ -93,10 +115,28 @@ public class SseEventAccumulator {
         return result;
     }
 
+    /**
+     * 判断 `toolCall` 对应状态 是否满足协议或生命周期条件。
+     *
+     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     */
     public boolean isToolCall() { return "tool_calls".equals(finishReason); }
+    /**
+     * 判断 `complete` 对应状态 是否满足协议或生命周期条件。
+     *
+     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     */
     public boolean isComplete() { return finishReason != null; }
+    /**
+     * 读取当前对象保存的 `accumulatedContent` 对应状态，不触发网络或子进程调用。
+     *
+     * @return 服务返回或流式累积得到的文本
+     */
     public String getAccumulatedContent() { return contentBuilder.toString(); }
 
+    /**
+     * 清空已累积文本、工具调用和完成状态，使累加器可用于新的流。
+     */
     public void reset() {
         id = null; model = null; role = null;
         contentBuilder.setLength(0);
@@ -104,8 +144,20 @@ public class SseEventAccumulator {
         finishReason = null;
     }
 
+    /**
+     * OpenClaw SDK 的 `ToolPart` 类型，封装其公开契约和生命周期边界。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
+     */
     private static class ToolPart {
+        /**
+         * `ToolPart` 生命周期内保存的 `id` 对应状态。
+         */
         private String id, type, name;
+        /**
+         * `ToolPart` 生命周期内保存的 `arguments` 对应状态。
+         */
         private final StringBuilder arguments = new StringBuilder();
 
         void merge(ChatMessage.ToolCall tc) {

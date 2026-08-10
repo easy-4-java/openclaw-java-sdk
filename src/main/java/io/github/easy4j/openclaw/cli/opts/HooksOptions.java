@@ -9,74 +9,88 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw hooks}:, agent hooks(event).
- * <p>plugin hook plugin; hook {@code openclaw plugins install},{@code hooks install} .</p>
+ * openclaw `hooks` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/hooks">hooks CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class HooksOptions implements CliSubArgs {
 
     /**
- * hooks subcommand: {@code list} , info, install.
+     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum Mode {
- /** {@code hooks list}: workspace,managed,extra,bundled directory hook. */
+        /**
+         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         */
         LIST,
- /** {@code hooks info}: hook ,event. */
+        /**
+         * 选择 `info` 协议模式；序列化时使用该固定取值。
+         */
         INFO,
- /** {@code hooks check}: eligible . */
+        /**
+         * 选择 `check` 协议模式；序列化时使用该固定取值。
+         */
         CHECK,
- /** {@code hooks enable}: {@code hooks.internal.entries.*.enabled}. */
+        /**
+         * 选择 `enable` 协议模式；序列化时使用该固定取值。
+         */
         ENABLE,
- /** {@code hooks disable}: hook. */
+        /**
+         * 选择 `disable` 协议模式；序列化时使用该固定取值。
+         */
         DISABLE,
- /** {@code hooks install}:, plugins stream. */
+        /**
+         * 选择 `install` 协议模式；序列化时使用该固定取值。
+         */
         INSTALL
     }
 
- /** list / info / check / enable / disable / install . */
+    /**
+     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     */
     private final Mode mode;
     /**
- * list:{@code --eligible} hook.
+     * 是否向 openclaw 子命令追加 `--list-eligible` 开关。
      */
     private final boolean listEligible;
     /**
- * list:{@code --json} .
+     * 是否向 openclaw 子命令追加 `--list-json` 开关。
      */
     private final boolean listJson;
     /**
- * list:{@code --verbose} diagnostic.
+     * 是否向 openclaw 子命令追加 `--list-verbose` 开关。
      */
     private final boolean listVerbose;
     /**
- * info / enable / disable:hook key .
+     * 传给 openclaw 子命令 `--hook-name` 选项的内容；为 null 时通常省略。
      */
     private final String hookName;
     /**
-     * info：{@code --json}。
+     * 是否向 openclaw 子命令追加 `--info-json` 开关。
      */
     private final boolean infoJson;
     /**
-     * check：{@code --json}。
+     * 是否向 openclaw 子命令追加 `--check-json` 开关。
      */
     private final boolean checkJson;
     /**
- * install:,npm ( plugins system).
+     * 传给 openclaw 子命令 `--install-spec` 选项的内容；为 null 时通常省略。
      */
     private final String installSpec;
     /**
- * install:{@code --link} directory {@code hooks.internal.load.extraDirs} .
+     * 是否向 openclaw 子命令追加 `--install-link` 开关。
      */
     private final boolean installLink;
     /**
- * install:{@code --pin} npm version {@code hooks.internal.installs}.
+     * 是否向 openclaw 子命令追加 `--install-pin` 开关。
      */
     private final boolean installPin;
     /**
- * argv.
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -98,21 +112,27 @@ public final class HooksOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `HooksOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
- * :Corresponds to CLI hooks( {@code hooks list} ).
+     * 选择或编码 `hooks` 子命令的 `defaultList` 行为，并保留未设置选项的省略语义。
+     *
+     * @return 按当前参数创建、查询或解析得到的 HooksOptions
      */
     public static HooksOptions defaultList() {
         return builder().list().build();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -163,23 +183,61 @@ public final class HooksOptions implements CliSubArgs {
     }
 
     /**
- * {@link HooksOptions} builder.
+     * 链式构建器，逐项收集 HooksOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 HooksOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         */
         private Mode mode = Mode.LIST;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-eligible` 开关。
+         */
         private boolean listEligible;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-json` 开关。
+         */
         private boolean listJson;
+        /**
+         * 是否向 openclaw 子命令追加 `--list-verbose` 开关。
+         */
         private boolean listVerbose;
+        /**
+         * 传给 openclaw 子命令 `--hook-name` 选项的内容；为 null 时通常省略。
+         */
         private String hookName;
+        /**
+         * 是否向 openclaw 子命令追加 `--info-json` 开关。
+         */
         private boolean infoJson;
+        /**
+         * 是否向 openclaw 子命令追加 `--check-json` 开关。
+         */
         private boolean checkJson;
+        /**
+         * 传给 openclaw 子命令 `--install-spec` 选项的内容；为 null 时通常省略。
+         */
         private String installSpec;
+        /**
+         * 是否向 openclaw 子命令追加 `--install-link` 开关。
+         */
         private boolean installLink;
+        /**
+         * 是否向 openclaw 子命令追加 `--install-pin` 开关。
+         */
         private boolean installPin;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @return {@code this}（{@code hooks list}）
+         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder list() {
             this.mode = Mode.LIST;
@@ -187,8 +245,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param eligible list：{@code --eligible}
-         * @return {@code this}
+         * 设置 `--list-eligible` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param eligible 是否向命令行追加 `--list-eligible` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listEligible(boolean eligible) {
             this.listEligible = eligible;
@@ -196,8 +256,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param json list：{@code --json}
-         * @return {@code this}
+         * 设置 `--list-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listJson(boolean json) {
             this.listJson = json;
@@ -205,8 +267,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param verbose list：{@code --verbose}
-         * @return {@code this}
+         * 设置 `--list-verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param verbose 是否向命令行追加 `--list-verbose` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder listVerbose(boolean verbose) {
             this.listVerbose = verbose;
@@ -214,8 +278,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
- * @param name hook
-         * @return {@code this}
+         * 设置 `--info` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param name 写入 `--info` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder info(String name) {
             this.mode = Mode.INFO;
@@ -224,8 +290,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param json info：{@code --json}
-         * @return {@code this}
+         * 设置 `--info-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder infoJson(boolean json) {
             this.infoJson = json;
@@ -233,7 +301,9 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code hooks check}）
+         * 选择 `check` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder check() {
             this.mode = Mode.CHECK;
@@ -241,8 +311,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param json check：{@code --json}
-         * @return {@code this}
+         * 设置 `--check-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder checkJson(boolean json) {
             this.checkJson = json;
@@ -250,8 +322,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
- * @param name hook
-         * @return {@code this}
+         * 设置 `--enable` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param name 写入 `--enable` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder enable(String name) {
             this.mode = Mode.ENABLE;
@@ -260,8 +334,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
- * @param name hook
-         * @return {@code this}
+         * 设置 `--disable` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param name 写入 `--disable` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder disable(String name) {
             this.mode = Mode.DISABLE;
@@ -270,8 +346,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
- * @param spec install: spec
-         * @return {@code this}
+         * 设置 `--install` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param spec 写入 `--install` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder install(String spec) {
             this.mode = Mode.INSTALL;
@@ -280,8 +358,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param link {@code --link}
-         * @return {@code this}
+         * 设置 `--install-link` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param link 是否向命令行追加 `--install-link` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder installLink(boolean link) {
             this.installLink = link;
@@ -289,8 +369,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
-         * @param pin {@code --pin}
-         * @return {@code this}
+         * 设置 `--install-pin` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param pin 是否向命令行追加 `--install-pin` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder installPin(boolean pin) {
             this.installPin = pin;
@@ -298,10 +380,10 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -311,7 +393,9 @@ public final class HooksOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link HooksOptions}
+         * 校验并复制当前构建器字段，创建独立的 `HooksOptions`。
+         *
+         * @return 按当前字段创建的 HooksOptions
          */
         public HooksOptions build() {
             return new HooksOptions(this);

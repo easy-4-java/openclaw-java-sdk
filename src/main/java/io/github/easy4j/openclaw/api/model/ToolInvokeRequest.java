@@ -8,42 +8,10 @@ import lombok.Setter;
 import java.util.Map;
 
 /**
- * Tools Invoke API request body.
- * <p>
- * Corresponds to {@code POST /tools/invoke} JSON.
- * , Gateway authentication + .
- * secretauthentication(token/password) operator .
- * </p>
+ * OpenClaw JSON 协议中的 `ToolInvokeRequest` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3></h3>
- * <p>:</p>
- * <ul>
- *   <li>{@code tools.profile} / {@code tools.byProvider.profile}</li>
- *   <li>{@code tools.allow} / {@code tools.byProvider.allow}</li>
- *   <li>{@code agents.<id>.tools.allow} / {@code agents.<id>.tools.byProvider.allow}</li>
- * <li>( session key mapchannel)</li>
- * <li> agent </li>
- * </ul>
- * <p>, {@code 404}.</p>
- *
- * <h3></h3>
- * <p> session ,Gateway HTTP :</p>
- * <ul>
- * <li>{@code exec},{@code spawn},{@code shell} - RCE </li>
- * <li>{@code fs_write},{@code fs_delete},{@code fs_move} - system</li>
- * <li>{@code apply_patch} - </li>
- * <li>{@code sessions_spawn},{@code sessions_send} - session</li>
- * <li>{@code cron} - </li>
- * <li>{@code gateway} - Gateway </li>
- * <li>{@code nodes} - node</li>
- * <li>{@code whatsapp_login} - </li>
- * </ul>
- * <p> {@code gateway.tools.deny} {@code gateway.tools.allow} .</p>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/tools-invoke-http-api">Tools Invoke API</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -52,33 +20,27 @@ import java.util.Map;
 public class ToolInvokeRequest {
 
     /**
- * (Required).
- * <p> {@code "sessions_list"},{@code "browser"} .</p>
+     * 映射 OpenClaw JSON 字段 `tool` 的 协议内容。
      */
     private String tool;
 
     /**
- * (Optional).
- * <p> schema {@code action} args ,map args .</p>
+     * 映射 OpenClaw JSON 字段 `action` 的 协议内容。
      */
     private String action;
 
     /**
- * (Optional).
- * <p>keyvalue.</p>
+     * 映射 OpenClaw JSON 字段 `args` 的 键值对象。
      */
     private Map<String, Object> args;
 
     /**
- * session key(Optional).
- * <p> {@code "main"},Gateway session key
- * ( {@code session.mainKey} agent, global scope {@code "global"}).</p>
+     * 映射 OpenClaw JSON 字段 `sessionKey` 的 协议内容。
      */
     private String sessionKey;
 
     /**
- * (Optional).
- * <p>.</p>
+     * 映射 OpenClaw JSON 字段 `dryRun` 的 布尔开关。
      */
     private Boolean dryRun;
 }

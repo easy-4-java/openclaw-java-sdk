@@ -8,26 +8,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Tools Invoke API .
- * <p>
- * Corresponds to {@code POST /tools/invoke} JSON.
- * </p>
+ * OpenClaw JSON 协议中的 `ToolInvokeResult` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3>status code</h3>
- * <ul>
- * <li>{@code 200} - :{@code { ok: true, result }}</li>
- * <li>{@code 400} - :{@code { ok: false, error: { type, message } }}</li>
- * <li>{@code 401} - </li>
- * <li>{@code 404} - </li>
- * <li>{@code 405} - </li>
- * <li>{@code 429} - authentication({@code Retry-After} )</li>
- * <li>{@code 500} - </li>
- * </ul>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/tools-invoke-http-api">Tools Invoke API</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -36,34 +20,41 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ToolInvokeResult {
 
- /** : */
+    /**
+     * OpenClaw 协议固定值 {@code "not_found"}；调用方不应在运行时修改。
+     */
     public static final String ERROR_TYPE_NOT_FOUND = "not_found";
 
- /** : */
+    /**
+     * OpenClaw 协议固定值 {@code "invalid_request_error"}；调用方不应在运行时修改。
+     */
     public static final String ERROR_TYPE_INVALID_REQUEST = "invalid_request_error";
 
- /** : */
+    /**
+     * OpenClaw 协议固定值 {@code "tool_error"}；调用方不应在运行时修改。
+     */
     public static final String ERROR_TYPE_TOOL_ERROR = "tool_error";
 
     /**
- * .
- * <p>{@code true} tool call,{@code false} .</p>
+     * 映射 OpenClaw JSON 字段 `ok` 的 布尔开关。
      */
     private Boolean ok;
 
     /**
- * (only {@code ok} {@code true} ).
- * <p>.</p>
+     * 映射 OpenClaw JSON 字段 `result` 的 协议内容。
      */
     private Object result;
 
     /**
- * error message(only {@code ok} {@code false} ).
+     * 映射 OpenClaw JSON 字段 `error` 的 协议内容。
      */
     private ErrorDetail error;
 
     /**
- * details.
+     * OpenClaw JSON 协议中的 `ErrorDetail` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -72,16 +63,12 @@ public class ToolInvokeResult {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ErrorDetail {
         /**
- * .
-         * <ul>
- * <li>{@code "invalid_request_error"} - </li>
- * <li>{@code "tool_error"} - </li>
-         * </ul>
+         * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
          */
         private String type;
 
         /**
- * message(security).
+         * 映射 OpenClaw JSON 字段 `message` 的 协议内容。
          */
         private String message;
     }

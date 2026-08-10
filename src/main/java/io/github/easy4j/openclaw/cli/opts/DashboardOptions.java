@@ -8,23 +8,19 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw dashboard}:authentication Control UI.
- * <p>documentation: {@code gateway.auth.token} SecretRef; SecretRef token,// URL <strong> token</strong>,
- * terminal,secret.</p>
+ * openclaw `dashboard` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/dashboard">dashboard CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class DashboardOptions implements CliSubArgs {
 
     /**
- * {@code --no-open}: URL(documentation),.
+     * 是否向 openclaw 子命令追加 `--no-open` 开关。
      */
     private final boolean noOpen;
     /**
- * documentation CLI token.
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -37,14 +33,18 @@ public final class DashboardOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `DashboardOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -55,15 +55,26 @@ public final class DashboardOptions implements CliSubArgs {
     }
 
     /**
- * {@link DashboardOptions} builder.
+     * 链式构建器，逐项收集 DashboardOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 DashboardOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 是否向 openclaw 子命令追加 `--no-open` 开关。
+         */
         private boolean noOpen;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * @param noOpen {@code --no-open}
-         * @return {@code this}
+         * 设置 `--no-open` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param noOpen 是否向命令行追加 `--no-open` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder noOpen(boolean noOpen) {
             this.noOpen = noOpen;
@@ -71,10 +82,10 @@ public final class DashboardOptions implements CliSubArgs {
         }
 
         /**
- * appends extra CLI token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -84,7 +95,9 @@ public final class DashboardOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link DashboardOptions}
+         * 校验并复制当前构建器字段，创建独立的 `DashboardOptions`。
+         *
+         * @return 按当前字段创建的 DashboardOptions
          */
         public DashboardOptions build() {
             return new DashboardOptions(this);

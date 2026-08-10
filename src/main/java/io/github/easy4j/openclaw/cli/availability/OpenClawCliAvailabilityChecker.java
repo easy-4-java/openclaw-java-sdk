@@ -10,18 +10,18 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Probes the local {@code openclaw} {@code openclaw --version}.
+ * 本地 openclaw CLI 的 `OpenClawCliAvailabilityChecker` 支撑类型，用于参数编码、可用性检查或执行结果表达。
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class OpenClawCliAvailabilityChecker {
 
     /**
- * CLI.
+     * 在短超时内执行 `openclaw --version`，区分文件缺失、超时、非零退出和正常版本输出。
      *
- * @param config client configuration,Must not be null
- * @return probe report
+     * @param config SDK 配置
+     * @return 从 Gateway、SSE 或本地进程响应解析得到的 OpenClawCliAvailabilityReport
      */
     public OpenClawCliAvailabilityReport check(OpenClawCliConfig config) {
         Objects.requireNonNull(config, "config");

@@ -8,15 +8,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * OpenClaw Gateway {@code POST /hooks/agent} request body,
- * <a href="https://docs.openclaw.ai/gateway/configuration-reference">Gateway Hooks documentation</a>.
- * <p>
- * {@code sessionKey} onlyGateway {@code hooks.allowRequestSessionKey}
- * {@code hooks.allowedSessionKeyPrefixes} ;Gateway.
- * </p>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * OpenClaw JSON 协议中的 `HookRequest` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ *
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -24,56 +19,71 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class HookRequest {
 
- /** Required: agent / */
+    /**
+     * 映射 OpenClaw JSON 字段 `message` 的 协议内容。
+     */
     private String message;
 
- /** agent */
+    /**
+     * 映射 OpenClaw JSON 字段 `agentId` 的 关联标识。
+     */
     private String agentId;
 
- /** agent , "Hook" */
+    /**
+     * 映射 OpenClaw JSON 字段 `name` 的 协议内容。
+     */
     private String name = "Generation";
 
- /** wake:"now" "next-heartbeat" */
+    /**
+     * 映射 OpenClaw JSON 字段 `wakeMode` 的 协议内容。
+     */
     private String wakeMode = "now";
 
- /** timeoutseconds, 300 */
+    /**
+     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     */
     private int timeoutSeconds = 300;
 
     /**
- * sessionkey;Gateway {@code hooks.allowRequestSessionKey=true} .
-     * <p>
- * {@link OpenClawSessionKeys} {@link OpenClawClient#agentWithStableSession} /
- * {@link OpenClawClient#agentOneShotForPeer} / {@link OpenClawClient#agentOneShot} ,characters.
-     * </p>
+     * 映射 OpenClaw JSON 字段 `sessionKey` 的 协议内容。
      */
     private String sessionKey;
 
     /**
- * {@code true} channel;{@code null} JSON field(Gateway).
+     * 映射 OpenClaw JSON 字段 `deliver` 的 布尔开关。
      */
     private Boolean deliver;
 
- /** channel, {@link #deliver} ;documentation {@code last} */
+    /**
+     * 映射 OpenClaw JSON 字段 `channel` 的 协议内容。
+     */
     private String channel;
 
- /** ,documentationfield {@code to} */
+    /**
+     * 映射 OpenClaw JSON 字段 `to` 的 协议内容。
+     */
     private String to;
 
- /** , {@code openai/gpt-5.5} Gateway ref */
+    /**
+     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     */
     private String model;
 
- /** ,documentationexample {@code off} */
+    /**
+     * 映射 OpenClaw JSON 字段 `thinking` 的 协议内容。
+     */
     private String thinking;
 
     /**
- * key(Optional).
- * <p>Used for {@code tool_call_id} .</p>
+     * 映射 OpenClaw JSON 字段 `idempotencyKey` 的 关联标识。
      */
     private String idempotencyKey;
 
     /**
- * @param agentId agent
- * @param message agent /
+     * 按协议字段创建 `HookRequest`，供 Jackson 序列化、反序列化或调用方读取。
+     *
+     * @param agentId Agent 标识
+     * @param message 消息正文
      */
     public HookRequest(String agentId, String message) {
         this.agentId = agentId;

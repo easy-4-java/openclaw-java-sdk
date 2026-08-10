@@ -3,24 +3,22 @@ package io.github.easy4j.openclaw;
 import lombok.Data;
 
 /**
- * OpenClaw unified client configuration( POJO, Spring {@code @ConfigurationProperties} map).
- * <p>
- * Composes {@link OpenClawHttpClientConfig}(HTTP/Gateway ) {@link OpenClawCliConfig}( CLI ),
- * {@link io.github.easy4j.openclaw.OpenClawClient} .
- * </p>
+ * OpenClawClient 聚合配置，同时持有 HTTP 与 CLI 两个可独立启停的子配置。
  *
- * @see OpenClawHttpClientConfig
- * @see OpenClawCliConfig
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Data
 public class OpenClawClientConfig {
 
- /** HTTP/Gateway */
+    /**
+     * HTTP、SSE 和 WebSocket 通道共享的配置对象。
+     */
     private final OpenClawHttpClientConfig http = new OpenClawHttpClientConfig();
 
- /** CLI */
+    /**
+     * 本地 CLI 通道配置对象。
+     */
     private final OpenClawCliConfig cli = new OpenClawCliConfig();
 
 }

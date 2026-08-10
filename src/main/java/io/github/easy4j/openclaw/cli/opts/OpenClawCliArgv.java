@@ -4,12 +4,10 @@ import io.github.easy4j.openclaw.util.OpenClawStrings;
 import java.util.List;
 
 /**
- * CLI flag argument fragment argv (package-private).
- * <p> {@link io.github.easy4j.openclaw.cli.args.CliSubArgs}
- * {@link io.github.easy4j.openclaw.cli.args.CliSubArgs#toSubcommandArguments}.</p>
+ * 本地 openclaw CLI 的 `OpenClawCliArgv` 支撑类型，用于参数编码、可用性检查或执行结果表达。
  *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 final class OpenClawCliArgv {
 

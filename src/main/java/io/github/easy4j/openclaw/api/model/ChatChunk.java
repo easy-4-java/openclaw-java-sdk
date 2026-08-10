@@ -11,26 +11,10 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenAI Chat Completions API streaming.
- * <p>
- * {@code stream: true} ,Gateway SSE object.
- * SSE event {@code data: <json>},stream {@code data: [DONE]} .
- * </p>
+ * OpenClaw JSON 协议中的 `ChatChunk` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
  *
- * <h3>tool callstreaming</h3>
- * <p> agent ,streaming:</p>
- * <ol>
- * <li> assistant delta</li>
- * <li>Optional assistant delta</li>
- * <li> {@code delta.toolCalls} ,argument fragment</li>
- * <li>,{@code finishReason} {@code "tool_calls"}</li>
- *   <li>{@code data: [DONE]}</li>
- * </ol>
- *
- * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
-  *
- * @author [@Loong Wan](https://github.com/loong10k)
-  * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Getter
 @Setter
@@ -39,24 +23,36 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatChunk {
 
- /** . */
+    /**
+     * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+     */
     private String id;
 
- /** object, {@code "chat.completion.chunk"}. */
+    /**
+     * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+     */
     private String object = OpenClawConstants.OBJECT_CHAT_COMPLETION_CHUNK;
 
- /** (Unix epoch seconds). */
+    /**
+     * 映射 OpenClaw JSON 字段 `created` 的 协议内容。
+     */
     private Long created;
 
- /** agent . */
+    /**
+     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     */
     private String model;
 
- /** . */
+    /**
+     * 映射 OpenClaw JSON 字段 `choices` 的 有序数组。
+     */
     private List<DeltaChoice> choices;
 
     /**
- * streaming.
- * <p>:streamingmessage {@code delta} field {@code message} field.</p>
+     * OpenClaw JSON 协议中的 `DeltaChoice` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -64,33 +60,37 @@ public class ChatChunk {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DeltaChoice {
+        /**
+         * 映射 OpenClaw JSON 字段 `index` 的 协议内容。
+         */
         private Integer index;
 
         /**
- * deltamessage.
- * <p>,tool calldelta.</p>
+         * 映射 OpenClaw JSON 字段 `delta` 的 协议内容。
          */
         private DeltaMessage delta;
 
         /**
- * completion(only null).
-         * <ul>
- * <li>{@code "stop"} - completion</li>
- * <li>{@code "tool_calls"} - agent </li>
-         * </ul>
+         * 映射 OpenClaw JSON 字段 `finishReason` 的 协议内容。
          */
         @JsonProperty("finish_reason")
         private String finishReason;
 
- /** tool callcompletion */
+        /**
+         * 判断 `toolCalls` 对应状态 是否满足协议或生命周期条件。
+         *
+         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         */
         public boolean isToolCalls() {
             return OpenClawConstants.FINISH_REASON_TOOL_CALLS.equals(finishReason);
         }
     }
 
     /**
- * deltamessage.
- * <p>,tool calldeltafield.</p>
+     * OpenClaw JSON 协议中的 `DeltaMessage` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     @Getter
     @Setter
@@ -98,11 +98,17 @@ public class ChatChunk {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DeltaMessage {
- /** message(only). */
+        /**
+         * 映射 OpenClaw JSON 字段 `role` 的 协议内容。
+         */
         private String role;
- /** delta text. */
+        /**
+         * 映射 OpenClaw JSON 字段 `content` 的 协议内容。
+         */
         private String content;
- /** tool calldelta(Used forstreamingargument fragment). */
+        /**
+         * 映射 OpenClaw JSON 字段 `toolCalls` 的 有序数组。
+         */
         @JsonProperty("tool_calls")
         private List<ChatMessage.ToolCall> toolCalls;
     }

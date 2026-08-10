@@ -31,25 +31,41 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * OpenClaw SSE 客户端，负责流式连接、解析、取消和资源回收。
+ * SSE 传输客户端。OkHttp Dispatcher 仅接收响应，持续流读取转交有界执行器，并通过 SseSubscription 管理取消和关闭。
  *
- * <p>网络请求使用 OkHttp 异步回调；响应体解析使用共享有界线程池，禁止为每个订阅
- * 创建独占消费线程。</p>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 @Slf4j
 public class OpenClawSseClient extends OpenClawHttpClient {
 
+    /**
+     * `OpenClawSseClient` 生命周期内保存的 `streamExecutor` 对应状态。
+     */
     private final ExecutorService streamExecutor;
+    /**
+     * 仍在读取的 SSE 订阅集合，供 close() 批量取消且避免保留已终止订阅。
+     */
     private final Set<SseSubscription> activeSubscriptions = ConcurrentHashMap.newKeySet();
 
-    /** 使用 SDK 自建 OkHttpClient 创建 SSE 客户端。 */
+    /**
+     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     *
+     * @param config SDK 配置
+     */
     public OpenClawSseClient(OpenClawHttpClientConfig config) {
         super(config);
         this.streamExecutor = createStreamExecutor(config);
         logInitialization(config);
     }
 
-    /** 使用调用方提供的共享组件创建 SSE 客户端。 */
+    /**
+     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     *
+     * @param config SDK 配置
+     * @param objectMapper JSON 映射器
+     * @param httpClient 复用连接池和 Dispatcher 的 OkHttpClient
+     */
     public OpenClawSseClient(OpenClawHttpClientConfig config, ObjectMapper objectMapper,
                              OkHttpClient httpClient) {
         super(config, objectMapper, httpClient);
@@ -58,23 +74,24 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     }
 
     /**
-     * 订阅 Chat Completion SSE。
+     * 启动 SSE 请求并登记活动订阅；返回句柄可取消 Call 并释放响应资源。
      *
-     * @param request Chat 请求
-     * @param handler SSE 事件处理器
-     * @return 可取消订阅句柄
+     * @param request 请求对象
+     * @param handler 事件处理器
+     * @return 已登记且可主动取消的 SSE 订阅句柄
      */
     public SseSubscription subscribeChat(ChatRequest request, SseEventHandler handler) {
         return subscribeChat(request, null, handler);
     }
 
     /**
-     * 订阅带自定义请求头的 Chat Completion SSE。
+     * 启动 SSE 请求并登记活动订阅；返回句柄可取消 Call 并释放响应资源。
      *
-     * @param request Chat 请求
-     * @param headers 附加请求头
-     * @param handler SSE 事件处理器
-     * @return 可取消订阅句柄
+     * @param request 请求对象
+     * @param headers 附加 HTTP 请求头
+     * @param handler 事件处理器
+     * @return 已登记且可主动取消的 SSE 订阅句柄
+     * @throws OpenClawHttpException 远程响应、协议解析或本地执行失败时抛出
      */
     public SseSubscription subscribeChat(ChatRequest request, Map<String, String> headers,
                                          SseEventHandler handler) {
@@ -88,6 +105,7 @@ public class OpenClawSseClient extends OpenClawHttpClient {
 
         Call call = httpClient.newCall(httpRequest);
         AtomicReference<SseSubscription> subscriptionRef = new AtomicReference<>();
+        // 取消动作同时终止网络调用并从活动集合移除，确保 close() 只遍历仍存活的订阅。
         SseSubscription subscription = new SseSubscription(() -> {
             call.cancel();
             SseSubscription current = subscriptionRef.get();
@@ -102,16 +120,23 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     }
 
     /**
-     * 返回当前活动订阅数量。
+     * 调用 OpenClaw 的 `activeSubscriptionCount` API，并复用统一认证、序列化、取消和异常处理。
      *
-     * @return 活动订阅数
+     * @return 当前计数、状态码、可空配置或毫秒级时间值
      */
     public int activeSubscriptionCount() {
         return activeSubscriptions.size();
     }
 
     private void enqueue(Call call, SseSubscription subscription, SseEventHandler handler) {
+        // OkHttp 回调只接收响应；持续读取转交专用有界执行器，避免阻塞 Dispatcher。
         call.enqueue(new Callback() {
+            /**
+             * 接收并处理 Failure 生命周期事件；实现不会改变事件顺序。
+             *
+             * @param ignored 写入 `ignored` 协议字段的内容
+             * @param error 导致调用失败的异常
+             */
             @Override
             public void onFailure(Call ignored, IOException error) {
                 if (subscription.isActive()) {
@@ -120,6 +145,12 @@ public class OpenClawSseClient extends OpenClawHttpClient {
                 subscription.close();
             }
 
+            /**
+             * 接收并处理 Response 生命周期事件；实现不会改变事件顺序。
+             *
+             * @param ignored 写入 `ignored` 协议字段的内容
+             * @param response 待消费并关闭的 HTTP 响应
+             */
             @Override
             public void onResponse(Call ignored, Response response) {
                 if (!subscription.isActive()) {
@@ -129,6 +160,7 @@ public class OpenClawSseClient extends OpenClawHttpClient {
                 try {
                     streamExecutor.execute(() -> consume(response, subscription, handler));
                 } catch (RejectedExecutionException error) {
+                    // 执行器满载时快速失败，防止无界排队；当前分支仍负责关闭响应。
                     response.close();
                     if (subscription.isActive()) {
                         handler.onError(new OpenClawHttpException(
@@ -141,6 +173,7 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     }
 
     private void consume(Response response, SseSubscription subscription, SseEventHandler handler) {
+        // consume 获得 Response 所有权，所有成功、失败和取消路径最终都终止订阅。
         try (Response completed = response) {
             if (!subscription.isActive()) {
                 return;
@@ -242,7 +275,9 @@ public class OpenClawSseClient extends OpenClawHttpClient {
                 config.getStreamQueueCapacity(), config.isDetailedLoggingEnabled());
     }
 
-    /** 取消全部订阅并释放 SSE 客户端自有资源。 */
+    /**
+     * 结束当前生命周期：取消仍在运行的调用，并释放当前对象拥有的连接、执行器或订阅；重复关闭保持安全。
+     */
     @Override
     public void close() {
         for (SseSubscription subscription : activeSubscriptions) {

@@ -5,52 +5,47 @@ import io.github.easy4j.openclaw.ws.protocol.HelloOk;
 import io.github.easy4j.openclaw.ws.protocol.ResponseFrame;
 
 /**
- * Gateway WebSocket event listener.
- * <p> Gateway event.</p>
+ * `OpenClawWsListener` 生命周期回调契约；实现方应避免在网络回调线程中执行长时间阻塞任务。
  *
- * @see <a href="https://docs.openclaw.ai/gateway/protocol">Gateway Protocol</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public interface OpenClawWsListener {
 
     /**
- * WS connectioncompletion {@code connect} handshake.
+     * 接收并处理 Connected 生命周期事件；实现不会改变事件顺序。
      *
- * @param helloOk Gateway handshake
+     * @param helloOk 写入 `helloOk` 协议字段的内容
      */
     default void onConnected(HelloOk helloOk) {}
 
     /**
- * WS connection.
+     * 接收并处理 Disconnected 生命周期事件；实现不会改变事件顺序。
      *
- * @param code
- * @param reason
- * @param remote
+     * @param code 写入 `code` 协议字段的内容
+     * @param reason 写入 `reason` 协议字段的内容
+     * @param remote 写入 `remote` 协议字段的内容
      */
     default void onDisconnected(int code, String reason, boolean remote) {}
 
     /**
- * WS connection.
+     * 接收并处理 Error 生命周期事件；实现不会改变事件顺序。
      *
- * @param ex
+     * @param ex 写入 `ex` 协议字段的内容
      */
     default void onError(Exception ex) {}
 
     /**
- * Gateway event.
- * <p>Seeevent:{@code chat}(agent),{@code agent}(agent),
- * {@code tick}(heartbeat),{@code shutdown}(Gateway ).</p>
+     * 接收并处理 Event 生命周期事件；实现不会改变事件顺序。
      *
- * @param frame event
+     * @param frame 写入 `frame` 协议字段的内容
      */
     default void onEvent(EventFrame frame) {}
 
     /**
- * Gateway RPC ( RPC ).
+     * 接收并处理 Response 生命周期事件；实现不会改变事件顺序。
      *
- * @param frame
+     * @param frame 写入 `frame` 协议字段的内容
      */
     default void onResponse(ResponseFrame frame) {}
 }

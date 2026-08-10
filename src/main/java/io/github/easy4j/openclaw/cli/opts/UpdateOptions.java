@@ -8,60 +8,68 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code openclaw update}: stable/beta/dev channelsecurity(npm git streamSeedocumentation).
- * <p>{@code --dry-run} only;{@code --yes} Used forskips;{@code openclaw --update} .</p>
+ * openclaw `update` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
- * @see <a href="https://docs.openclaw.ai/cli/update">update CLI</a>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 3.0.0
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
+ * @since 1.0.0
  */
 public final class UpdateOptions implements CliSubArgs {
 
     /**
- * update subcommand:,{@code update status} channel,{@code update wizard} channel.
+     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public enum Mode {
- /** {@code openclaw update}(subcommand),stream. */
+        /**
+         * 选择 `default` 协议模式；序列化时使用该固定取值。
+         */
         DEFAULT,
- /** {@code update status}:channel,git npm version. */
+        /**
+         * 选择 `status` 协议模式；序列化时使用该固定取值。
+         */
         STATUS,
- /** {@code update wizard}:channel Gateway. */
+        /**
+         * 选择 `wizard` 协议模式；序列化时使用该固定取值。
+         */
         WIZARD
     }
 
- /** ,status wizard. */
+    /**
+     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     */
     private final Mode mode;
     /**
- * {@code --channel}:channel(stable/beta/dev ,documentation).
+     * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
      */
     private final String channel;
     /**
- * {@code --tag}:only( git npm dist-tag;{@code main} map).
+     * 传给 openclaw 子命令 `--tag` 选项的内容；为 null 时通常省略。
      */
     private final String tag;
     /**
- * {@code --dry-run}:,channel,,.
+     * 是否向 openclaw 子命令追加 `--dry-run` 开关。
      */
     private final boolean dryRun;
     /**
- * {@code --no-restart}: Gateway .
+     * 是否向 openclaw 子命令追加 `--no-restart` 开关。
      */
     private final boolean noRestart;
     /**
- * {@code --yes}:skips.
+     * 是否向 openclaw 子命令追加 `--yes` 开关。
      */
     private final boolean yes;
     /**
- * {@code --json}: {@code UpdateRunResult} status JSON.
+     * 是否向 openclaw 子命令追加 `--json` 开关。
      */
     private final boolean json;
     /**
- * {@code --timeout}:timeout(stream 1200 seconds,status ,Seedocumentation).
+     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
      */
     private final String timeout;
     /**
- * documentation argv .
+     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
      */
     private final List<String> extra;
 
@@ -81,14 +89,18 @@ public final class UpdateOptions implements CliSubArgs {
     }
 
     /**
- * @return {@link Builder}
+     * 创建空白构建器，供调用方链式设置 `UpdateOptions` 字段。
+     *
+     * @return 新的空白构建器
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * {@inheritDoc}
+     * 按 openclaw CLI 约定把已设置字段编码为有序参数列表，未设置选项不会输出。
+     *
+     * @return 可直接传给 Commons Exec 的有序 CLI 参数
      */
     @Override
     public List<String> toSubcommandArguments() {
@@ -120,23 +132,53 @@ public final class UpdateOptions implements CliSubArgs {
     }
 
     /**
- * {@link UpdateOptions} builder.
+     * 链式构建器，逐项收集 UpdateOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 UpdateOptions。
+     *
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
+     * @since 1.0.0
      */
     public static final class Builder {
+        /**
+         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         */
         private Mode mode = Mode.DEFAULT;
+        /**
+         * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+         */
         private String channel;
+        /**
+         * 传给 openclaw 子命令 `--tag` 选项的内容；为 null 时通常省略。
+         */
         private String tag;
+        /**
+         * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+         */
         private boolean dryRun;
+        /**
+         * 是否向 openclaw 子命令追加 `--no-restart` 开关。
+         */
         private boolean noRestart;
+        /**
+         * 是否向 openclaw 子命令追加 `--yes` 开关。
+         */
         private boolean yes;
+        /**
+         * 是否向 openclaw 子命令追加 `--json` 开关。
+         */
         private boolean json;
+        /**
+         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         */
         private String timeout;
+        /**
+         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         */
         private List<String> extra = new ArrayList<>();
 
         /**
- * {@code openclaw update}(subcommand).
+         * 选择 `update` 命令动作或布尔开关，并返回当前构建器。
          *
-         * @return {@code this}
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder update() {
             this.mode = Mode.DEFAULT;
@@ -144,8 +186,10 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @param channel {@code --channel}
-         * @return {@code this}
+         * 设置 `--channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param channel 写入 `--channel` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder channel(String channel) {
             this.channel = channel;
@@ -153,8 +197,10 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @param tag {@code --tag}
-         * @return {@code this}
+         * 设置 `--tag` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param tag 写入 `--tag` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder tag(String tag) {
             this.tag = tag;
@@ -162,8 +208,10 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @param dryRun {@code --dry-run}
-         * @return {@code this}
+         * 设置 `--dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param dryRun 是否向命令行追加 `--dry-run` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder dryRun(boolean dryRun) {
             this.dryRun = dryRun;
@@ -171,8 +219,10 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @param noRestart {@code --no-restart}
-         * @return {@code this}
+         * 设置 `--no-restart` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param noRestart 是否向命令行追加 `--no-restart` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder noRestart(boolean noRestart) {
             this.noRestart = noRestart;
@@ -180,8 +230,10 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @param yes {@code --yes}
-         * @return {@code this}
+         * 设置 `--yes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param yes 是否向命令行追加 `--yes` 开关
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder yes(boolean yes) {
             this.yes = yes;
@@ -189,8 +241,10 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @param json {@code --json}
-         * @return {@code this}
+         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param json JSON 文本
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) {
             this.json = json;
@@ -198,8 +252,10 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @param timeout {@code --timeout}
-         * @return {@code this}
+         * 设置 `--timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         *
+         * @param timeout 写入 `--timeout` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder timeout(String timeout) {
             this.timeout = timeout;
@@ -207,7 +263,9 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code update status}）
+         * 选择 `status` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder status() {
             this.mode = Mode.STATUS;
@@ -215,7 +273,9 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
-         * @return {@code this}（{@code update wizard}）
+         * 选择 `wizard` 命令动作或布尔开关，并返回当前构建器。
+         *
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder wizard() {
             this.mode = Mode.WIZARD;
@@ -223,10 +283,10 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
- * appends extra argv token.
+         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
- * @param tokens null
-         * @return {@code this}
+         * @param tokens 写入 `--extra` 选项的内容
+         * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
             if (tokens != null) {
@@ -236,7 +296,9 @@ public final class UpdateOptions implements CliSubArgs {
         }
 
         /**
- * @return {@link UpdateOptions}
+         * 校验并复制当前构建器字段，创建独立的 `UpdateOptions`。
+         *
+         * @return 按当前字段创建的 UpdateOptions
          */
         public UpdateOptions build() {
             return new UpdateOptions(this);
