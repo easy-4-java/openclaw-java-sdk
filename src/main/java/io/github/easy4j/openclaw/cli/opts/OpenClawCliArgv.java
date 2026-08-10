@@ -8,7 +8,7 @@ import java.util.List;
  * <p> {@link io.github.easy4j.openclaw.cli.args.CliSubArgs}
  * {@link io.github.easy4j.openclaw.cli.args.CliSubArgs#toSubcommandArguments}.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 final class OpenClawCliArgv {

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * <li>{@code json_schema} — ( {@code json_schema} field)</li>
  * </ul>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public enum ResponseFormatType {

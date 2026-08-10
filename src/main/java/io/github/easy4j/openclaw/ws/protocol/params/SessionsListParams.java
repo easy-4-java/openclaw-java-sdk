@@ -8,7 +8,7 @@ import lombok.Getter;
  * {@code sessions.list} RPC .
  * <p>aligned {@code SessionsListParamsSchema}({@code src/gateway/protocol/schema/sessions.ts}).</p>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Getter

@@ -9,7 +9,7 @@ import lombok.Getter;
  * {@code config.get} RPC response body(field).
  * <p>field; {@link #getSnapshot} .</p>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Getter

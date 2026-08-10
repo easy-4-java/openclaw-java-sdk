@@ -11,7 +11,7 @@ import java.util.Map;
  * Gateway WS {@code connect} handshake.
  * <p> {@code src/gateway/protocol/schema/frames.ts} {@code ConnectParamsSchema} aligned.</p>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Getter

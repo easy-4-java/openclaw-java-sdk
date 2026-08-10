@@ -34,7 +34,7 @@ import lombok.*;
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api">OpenAI Chat Completions</a>
  * @see <a href="https://platform.openai.com/docs/guides/structured-outputs">Structured Outputs</a>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Data

@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Spring Provides {@link OkHttpClient} inject;
  * SDK , Chat,Tools,Responses connection pool.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public final class OpenClawOkHttpClientFactory {

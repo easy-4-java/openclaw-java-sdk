@@ -9,7 +9,7 @@ import java.util.Map;
  * {@code chat.send} RPC .
  * <p> {@code src/gateway/server-methods/chat.ts} {@code chat.send} handler aligned.</p>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)

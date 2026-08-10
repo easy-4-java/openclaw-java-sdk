@@ -9,7 +9,7 @@ import java.util.Map;
  * {@code sessions.send} RPC .
  * <p> {@code src/gateway/protocol/schema/sessions.ts} {@code SessionsSendParamsSchema} aligned.</p>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)

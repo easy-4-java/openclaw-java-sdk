@@ -3,7 +3,7 @@ package io.github.easy4j.openclaw.cli.availability;
 /**
  * OpenClaw CLI .
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public enum OpenClawCliAvailabilityStatus {

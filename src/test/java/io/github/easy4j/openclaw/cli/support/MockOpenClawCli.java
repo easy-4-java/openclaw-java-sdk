@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * 安装可执行的 mock {@code openclaw} 脚本，用于 CLI 可用性探测单测。
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public final class MockOpenClawCli {

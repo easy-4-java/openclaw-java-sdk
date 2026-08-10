@@ -17,7 +17,7 @@ import java.util.Map;
  * into one consolidated {@link ChatChunk}. Supports reset for reuse across streams.
  * </p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see StreamingChatResponse
  * @see SseEvent

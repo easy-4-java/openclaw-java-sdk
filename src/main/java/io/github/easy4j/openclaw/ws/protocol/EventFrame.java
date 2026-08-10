@@ -7,7 +7,7 @@ import lombok.Getter;
 /**
  * Gateway→event:{@code { type: "event", event, payload, seq }}.
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Getter

@@ -47,7 +47,7 @@ import java.util.function.Consumer;
  * @see SseEventHandler
  * @see <a href="https://docs.openclaw.ai/gateway/openai-http-api#streaming-sse">Streaming SSE</a>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Getter

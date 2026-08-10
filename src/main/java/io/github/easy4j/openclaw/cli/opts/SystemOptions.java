@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @see <a href="https://docs.openclaw.ai/cli/system">system CLI</a>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public final class SystemOptions implements CliSubArgs {

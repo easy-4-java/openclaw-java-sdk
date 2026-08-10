@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Gateway WebSocket protocol frame base type.
  * <p>Frame types: {@code req} (client to Gateway), {@code res} (Gateway to client), {@code event} (Gateway push).</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see RequestFrame
  * @see ResponseFrame

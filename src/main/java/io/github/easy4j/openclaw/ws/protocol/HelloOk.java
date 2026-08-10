@@ -10,7 +10,7 @@ import java.util.List;
  * Gateway WS {@code connect} handshake({@code hello-ok}).
  * <p> {@code src/gateway/protocol/schema/frames.ts} {@code HelloOkSchema} aligned.</p>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Getter

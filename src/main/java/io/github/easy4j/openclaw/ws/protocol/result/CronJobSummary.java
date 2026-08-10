@@ -7,7 +7,7 @@ import lombok.Getter;
 /**
  * {@code cron.list} cron .
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Getter

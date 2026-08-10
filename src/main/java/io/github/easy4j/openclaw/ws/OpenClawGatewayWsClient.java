@@ -57,7 +57,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see <a href="https://docs.openclaw.ai/gateway/protocol">Gateway Protocol</a>
  * @see <a href="https://docs.openclaw.ai/gateway/bridge-protocol">Bridge Protocol (legacy)</a>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Slf4j

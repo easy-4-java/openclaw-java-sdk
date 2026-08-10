@@ -5,7 +5,7 @@ package io.github.easy4j.openclaw.cli.opts;
  *
  * @see <a href="https://docs.openclaw.ai/cli/agent">agent CLI</a>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public enum VerboseLevel {

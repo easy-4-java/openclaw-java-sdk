@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * list utility(Java 8 ),Used forReplacement for {@link List#of},{@link List#copyOf(Collection)} JDK 9+ API.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public final class OpenClawLists {

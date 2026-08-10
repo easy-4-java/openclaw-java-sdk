@@ -20,7 +20,7 @@ import java.util.Objects;
  * OpenClaw Gateway HTTP Webhooks client({@code /hooks/*}).
  * <p> OkHttp, {@link OkHttpClient}.</p>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Slf4j

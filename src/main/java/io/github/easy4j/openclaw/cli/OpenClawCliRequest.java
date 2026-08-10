@@ -13,7 +13,7 @@ import java.util.List;
  * global parametersconsistent with documentation:<code>[--dev] [--profile &lt;name&gt;] [--container &lt;name&gt;] [--no-color]</code>,subcommand and flags.
  * </p>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Getter

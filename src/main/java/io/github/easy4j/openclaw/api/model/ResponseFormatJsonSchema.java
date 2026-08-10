@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @see <a href="https://platform.openai.com/docs/guides/structured-outputs">OpenAI Structured Outputs</a>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Data

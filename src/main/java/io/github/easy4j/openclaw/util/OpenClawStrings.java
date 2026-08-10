@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * SDK string utility,avoids introducing Spring/Commons .
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public final class OpenClawStrings {
