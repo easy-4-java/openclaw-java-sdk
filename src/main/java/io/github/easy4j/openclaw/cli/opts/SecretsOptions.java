@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `secrets` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code secrets} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,92 +16,92 @@ import java.util.List;
 public final class SecretsOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义密钥管理动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `reload` 协议模式；序列化时使用该固定取值。
+         * 表示密钥管理动作的 {@code reload} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         RELOAD,
         /**
-         * 选择 `audit` 协议模式；序列化时使用该固定取值。
+         * 表示密钥管理动作的 {@code audit} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         AUDIT,
         /**
-         * 选择 `configure` 协议模式；序列化时使用该固定取值。
+         * 表示密钥管理动作的 {@code configure} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         CONFIGURE,
         /**
-         * 选择 `apply` 协议模式；序列化时使用该固定取值。
+         * 表示密钥管理动作的 {@code apply} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         APPLY
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 传给 openclaw 子命令 `--gateway-url` 选项的内容；为 null 时通常省略。
+     * Gateway 服务地址；未设置时命令行不包含 {@code --gateway-url}。
      */
     private final String gatewayUrl;
     /**
-     * 传给 openclaw 子命令 `--gateway-token` 选项的内容；为 null 时通常省略。
+     * Gateway Bearer Token；未设置时命令行不包含 {@code --gateway-token}。
      */
     private final String gatewayToken;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
      */
     private final String timeout;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
     /**
-     * 是否向 openclaw 子命令追加 `--audit-check` 开关。
+     * 是否向 openclaw 子命令追加 {@code --audit-check} 开关。
      */
     private final boolean auditCheck;
     /**
-     * 是否向 openclaw 子命令追加 `--allow-exec` 开关。
+     * 是否向 openclaw 子命令追加 {@code --allow-exec} 开关。
      */
     private final boolean allowExec;
     /**
-     * 传给 openclaw 子命令 `--plan-out` 选项的内容；为 null 时通常省略。
+     * 密钥变更计划的输出文件；未设置时命令行不包含 {@code --plan-out}。
      */
     private final String planOut;
     /**
-     * 是否向 openclaw 子命令追加 `--configure-apply` 开关。
+     * 是否向 openclaw 子命令追加 {@code --configure-apply} 开关。
      */
     private final boolean configureApply;
     /**
-     * 是否向 openclaw 子命令追加 `--yes` 开关。
+     * 是否向 openclaw 子命令追加 {@code --yes} 开关。
      */
     private final boolean yes;
     /**
-     * 是否向 openclaw 子命令追加 `--providers-only` 开关。
+     * 是否向 openclaw 子命令追加 {@code --providers-only} 开关。
      */
     private final boolean providersOnly;
     /**
-     * 是否向 openclaw 子命令追加 `--skip-provider-setup` 开关。
+     * 是否向 openclaw 子命令追加 {@code --skip-provider-setup} 开关。
      */
     private final boolean skipProviderSetup;
     /**
-     * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+     * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
      */
     private final String agent;
     /**
-     * 传给 openclaw 子命令 `--apply-from` 选项的内容；为 null 时通常省略。
+     * 待应用的密钥计划文件；未设置时命令行不包含 {@code --apply-from}。
      */
     private final String applyFrom;
     /**
-     * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+     * 是否向 openclaw 子命令追加 {@code --dry-run} 开关。
      */
     private final boolean dryRun;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -128,7 +128,7 @@ public final class SecretsOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `SecretsOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code SecretsOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -184,79 +184,79 @@ public final class SecretsOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 SecretsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 SecretsOptions。
+     * {@code SecretsOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.AUDIT;
         /**
-         * 传给 openclaw 子命令 `--gateway-url` 选项的内容；为 null 时通常省略。
+         * Gateway 服务地址；未设置时命令行不包含 {@code --gateway-url}。
          */
         private String gatewayUrl;
         /**
-         * 传给 openclaw 子命令 `--gateway-token` 选项的内容；为 null 时通常省略。
+         * Gateway Bearer Token；未设置时命令行不包含 {@code --gateway-token}。
          */
         private String gatewayToken;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
          */
         private String timeout;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
         /**
-         * 是否向 openclaw 子命令追加 `--audit-check` 开关。
+         * 是否向 openclaw 子命令追加 {@code --audit-check} 开关。
          */
         private boolean auditCheck;
         /**
-         * 是否向 openclaw 子命令追加 `--allow-exec` 开关。
+         * 是否向 openclaw 子命令追加 {@code --allow-exec} 开关。
          */
         private boolean allowExec;
         /**
-         * 传给 openclaw 子命令 `--plan-out` 选项的内容；为 null 时通常省略。
+         * 密钥变更计划的输出文件；未设置时命令行不包含 {@code --plan-out}。
          */
         private String planOut;
         /**
-         * 是否向 openclaw 子命令追加 `--configure-apply` 开关。
+         * 是否向 openclaw 子命令追加 {@code --configure-apply} 开关。
          */
         private boolean configureApply;
         /**
-         * 是否向 openclaw 子命令追加 `--yes` 开关。
+         * 是否向 openclaw 子命令追加 {@code --yes} 开关。
          */
         private boolean yes;
         /**
-         * 是否向 openclaw 子命令追加 `--providers-only` 开关。
+         * 是否向 openclaw 子命令追加 {@code --providers-only} 开关。
          */
         private boolean providersOnly;
         /**
-         * 是否向 openclaw 子命令追加 `--skip-provider-setup` 开关。
+         * 是否向 openclaw 子命令追加 {@code --skip-provider-setup} 开关。
          */
         private boolean skipProviderSetup;
         /**
-         * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+         * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
          */
         private String agent;
         /**
-         * 传给 openclaw 子命令 `--apply-from` 选项的内容；为 null 时通常省略。
+         * 待应用的密钥计划文件；未设置时命令行不包含 {@code --apply-from}。
          */
         private String applyFrom;
         /**
-         * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+         * 是否向 openclaw 子命令追加 {@code --dry-run} 开关。
          */
         private boolean dryRun;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `reload` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code reload} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -266,7 +266,7 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--gateway-url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --gateway-url} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param url 完整目标 URL
          * @return 当前构建器，便于继续链式配置
@@ -277,9 +277,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--gateway-token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --gateway-token} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param token 写入 `--gateway-token` 选项的内容
+         * @param token 认证令牌或待追加的原始服务参数；作为 {@code --gateway-token} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder gatewayToken(String token) {
@@ -288,9 +288,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --timeout} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param timeout 写入 `--timeout` 选项的内容
+         * @param timeout CLI 接受的超时配置；作为 {@code --timeout} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder timeout(String timeout) {
@@ -299,7 +299,7 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `audit` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code audit} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -309,9 +309,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--audit-check` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --audit-check} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param check 是否向命令行追加 `--audit-check` 开关
+         * @param check 是否向命令行追加 {@code --audit-check} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder auditCheck(boolean check) {
@@ -320,7 +320,7 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `configure` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code configure} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -330,7 +330,7 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--plan-out` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --plan-out} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param path 相对于 Gateway 根地址的端点路径
          * @return 当前构建器，便于继续链式配置
@@ -341,9 +341,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--configure-apply` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --configure-apply} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param apply 是否向命令行追加 `--configure-apply` 开关
+         * @param apply 是否向命令行追加 {@code --configure-apply} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder configureApply(boolean apply) {
@@ -352,9 +352,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--yes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --yes} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param yes 是否向命令行追加 `--yes` 开关
+         * @param yes 是否向命令行追加 {@code --yes} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder yes(boolean yes) {
@@ -363,9 +363,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--providers-only` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --providers-only} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param providersOnly 是否向命令行追加 `--providers-only` 开关
+         * @param providersOnly 是否向命令行追加 {@code --providers-only} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder providersOnly(boolean providersOnly) {
@@ -374,9 +374,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--skip-provider-setup` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --skip-provider-setup} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param skip 是否向命令行追加 `--skip-provider-setup` 开关
+         * @param skip 是否向命令行追加 {@code --skip-provider-setup} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder skipProviderSetup(boolean skip) {
@@ -385,9 +385,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder agent(String agent) {
@@ -396,9 +396,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--apply` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --apply} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param planPath 写入 `--apply` 选项的内容
+         * @param planPath 待应用的变更计划文件路径；作为 {@code --apply} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder apply(String planPath) {
@@ -408,9 +408,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --dry-run} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param dryRun 是否向命令行追加 `--dry-run` 开关
+         * @param dryRun 是否向命令行追加 {@code --dry-run} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder dryRun(boolean dryRun) {
@@ -419,9 +419,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--allow-exec` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --allow-exec} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param allowExec 是否向命令行追加 `--allow-exec` 开关
+         * @param allowExec 是否向命令行追加 {@code --allow-exec} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder allowExec(boolean allowExec) {
@@ -430,7 +430,7 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -441,9 +441,9 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -454,7 +454,7 @@ public final class SecretsOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `SecretsOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code SecretsOptions}。
          *
          * @return 按当前字段创建的 SecretsOptions
          */

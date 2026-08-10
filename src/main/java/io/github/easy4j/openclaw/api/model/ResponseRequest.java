@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpenClaw JSON 协议中的 `ResponseRequest` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Responses API 请求，支持多模态输入、工具、采样和响应格式。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -27,65 +27,65 @@ import java.util.Map;
 public class ResponseRequest {
 
     /**
-     * 映射 OpenClaw JSON 字段 `agent` 的 协议内容。
+     * JSON 属性 {@code agent}，表示智能体标识。
      */
     private String agent;
 
     /**
-     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     * JSON 属性 {@code model}，表示模型标识。
      */
     private String model;
 
     /**
-     * 映射 OpenClaw JSON 字段 `input` 的 协议内容。
+     * JSON 属性 {@code input}，表示模型输入。
      */
     private Object input;
 
     /**
-     * 映射 OpenClaw JSON 字段 `instructions` 的 协议内容。
+     * JSON 属性 {@code instructions}，表示模型执行指令。
      */
     private String instructions;
 
     /**
-     * 映射 OpenClaw JSON 字段 `tools` 的 有序数组。
+     * JSON 属性 {@code tools}，表示可供模型调用的工具定义。
      */
     private List<Map<String, Object>> tools;
 
     /**
-     * 映射 OpenClaw JSON 字段 `toolChoice` 的 协议内容。
+     * JSON 属性 {@code toolChoice}，表示工具选择策略。
      */
     @JsonProperty("tool_choice")
     private Object toolChoice;
 
     /**
-     * 映射 OpenClaw JSON 字段 `stream` 的 布尔开关。
+     * JSON 属性 {@code stream}，表示是否启用流式响应。
      */
     private Boolean stream;
 
     /**
-     * 映射 OpenClaw JSON 字段 `maxOutputTokens` 的 协议内容。
+     * JSON 属性 {@code maxOutputTokens}，表示最大输出 Token 数。
      */
     @JsonProperty("max_output_tokens")
     private Integer maxOutputTokens;
 
     /**
-     * 映射 OpenClaw JSON 字段 `temperature` 的 协议内容。
+     * JSON 属性 {@code temperature}，表示采样温度。
      */
     private Double temperature;
 
     /**
-     * 映射 OpenClaw JSON 字段 `topP` 的 协议内容。
+     * JSON 属性 {@code topP}，表示核采样概率阈值。
      */
     @JsonProperty("top_p")
     private Double topP;
 
     /**
-     * 映射 OpenClaw JSON 字段 `user` 的 协议内容。
+     * JSON 属性 {@code user}，表示终端用户标识。
      */
     private String user;
 
     /**
-     * 映射 OpenClaw JSON 字段 `previousResponseId` 的 关联标识。
+     * JSON 属性 {@code previousResponseId}，表示要延续的上一条响应标识。
      */
     @JsonProperty("previous_response_id")
     private String previousResponseId;
@@ -93,7 +93,7 @@ public class ResponseRequest {
     // ==================== Inner Classes ====================
 
     /**
-     * OpenClaw JSON 协议中的 `InputItem` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * Responses API 输入项，可表示消息、函数输出、图片或文件。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -107,60 +107,60 @@ public class ResponseRequest {
     public static class InputItem {
 
         /**
-         * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+         * JSON 属性 {@code type}，表示对象或协议帧的类型判别值。
          */
         private String type;
 
         /**
-         * 映射 OpenClaw JSON 字段 `role` 的 协议内容。
+         * JSON 属性 {@code role}，表示聊天消息角色。
          */
         private String role;
         /**
-         * 映射 OpenClaw JSON 字段 `content` 的 协议内容。
+         * JSON 属性 {@code content}，表示消息或输出正文。
          */
         private String content;
 
         /**
-         * 映射 OpenClaw JSON 字段 `callId` 的 关联标识。
+         * JSON 属性 {@code callId}，表示函数调用标识。
          */
         @JsonProperty("call_id")
         private String callId;
         /**
-         * 映射 OpenClaw JSON 字段 `output` 的 协议内容。
+         * 与 {@code callId} 对应的函数调用输出文本。
          */
         private String output;
 
         /**
-         * 映射 OpenClaw JSON 字段 `source` 的 协议内容。
+         * JSON 属性 {@code source}，表示数据来源。
          */
         private Source source;
 
         // ==================== Factory Methods ====================
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `message` 数据。
+         * 创建 message 类型的 Responses API 输入项构建器。
          *
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @return 已设置 {@code type=message} 的输入项构建器
          */
         public static InputItemBuilder message() {
             return InputItem.builder().type(OpenClawConstants.INPUT_TYPE_MESSAGE);
         }
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `functionCallOutput` 数据。
+         * 创建 function_call_output 类型的输入项构建器。
          *
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @return 已设置 {@code type=function_call_output} 的输入项构建器
          */
         public static InputItemBuilder functionCallOutput() {
             return InputItem.builder().type(OpenClawConstants.INPUT_TYPE_FUNCTION_CALL_OUTPUT);
         }
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `imageSource` 数据。
+         * 创建图片输入项，并记录来源类型和值。
          *
-         * @param sourceType 写入 `sourceType` 协议字段的内容
-         * @param value 写入 `value` 协议字段的内容
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @param sourceType 图片来源类型，例如 {@code url} 或 {@code base64}
+         * @param value 与来源类型匹配的 URL 或 Base64 数据
+         * @return 已设置图片类型和来源信息的输入项构建器
          */
         public static InputItemBuilder imageSource(String sourceType, String value) {
             return InputItem.builder()
@@ -172,32 +172,32 @@ public class ResponseRequest {
         }
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `imageUrl` 数据。
+         * 创建以 URL 为来源的图片输入项。
          *
          * @param url 完整目标 URL
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @return 已设置 URL 图片来源的输入项构建器
          */
         public static InputItemBuilder imageUrl(String url) {
             return imageSource("url", url);
         }
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `imageBase64` 数据。
+         * 创建以 Base64 数据为来源的图片输入项。
          *
-         * @param base64Data 写入 `base64Data` 协议字段的内容
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @param base64Data 不含 Data URI 前缀的 Base64 编码负载
+         * @return 已设置 Base64 图片来源的输入项构建器
          */
         public static InputItemBuilder imageBase64(String base64Data) {
             return imageSource("base64", base64Data);
         }
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileSource` 数据。
+         * 创建文件输入项，并记录来源类型、值和可选媒体类型。
          *
-         * @param sourceType 写入 `sourceType` 协议字段的内容
-         * @param value 写入 `value` 协议字段的内容
-         * @param mediaType 写入 `mediaType` 协议字段的内容
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @param sourceType 文件来源类型，例如 {@code url} 或 {@code base64}
+         * @param value 与来源类型匹配的 URL 或 Base64 数据
+         * @param mediaType 文件的 MIME 类型；未指定时可为 {@code null}
+         * @return 已设置文件类型、来源和媒体类型的输入项构建器
          */
         public static InputItemBuilder fileSource(String sourceType, String value, String mediaType) {
             return InputItem.builder()
@@ -210,42 +210,42 @@ public class ResponseRequest {
         }
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileUrl` 数据。
+         * 创建以 URL 为来源的文件输入项。
          *
          * @param url 完整目标 URL
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @return 已设置 URL 文件来源且不指定媒体类型的输入项构建器
          */
         public static InputItemBuilder fileUrl(String url) {
             return fileUrl(url, null);
         }
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileUrl` 数据。
+         * 创建以 URL 为来源的文件输入项。
          *
          * @param url 完整目标 URL
-         * @param mediaType 写入 `mediaType` 协议字段的内容
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @param mediaType 文件的 MIME 类型；未指定时可为 {@code null}
+         * @return 已设置 URL 文件来源和媒体类型的输入项构建器
          */
         public static InputItemBuilder fileUrl(String url, String mediaType) {
             return fileSource("url", url, mediaType);
         }
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileBase64` 数据。
+         * 创建以 Base64 数据为来源的文件输入项。
          *
-         * @param base64Data 写入 `base64Data` 协议字段的内容
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @param base64Data 不含 Data URI 前缀的 Base64 编码负载
+         * @return 已设置 Base64 文件来源且不指定媒体类型的输入项构建器
          */
         public static InputItemBuilder fileBase64(String base64Data) {
             return fileBase64(base64Data, null);
         }
 
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `InputItem` 中的 `fileBase64` 数据。
+         * 创建以 Base64 数据为来源的文件输入项。
          *
-         * @param base64Data 写入 `base64Data` 协议字段的内容
-         * @param mediaType 写入 `mediaType` 协议字段的内容
-         * @return 预填充当前工厂方法字段、可继续链式补充内容的 InputItemBuilder
+         * @param base64Data 不含 Data URI 前缀的 Base64 编码负载
+         * @param mediaType 文件的 MIME 类型；未指定时可为 {@code null}
+         * @return 已设置 Base64 文件来源和媒体类型的输入项构建器
          */
         public static InputItemBuilder fileBase64(String base64Data, String mediaType) {
             return fileSource("base64", base64Data, mediaType);
@@ -254,7 +254,7 @@ public class ResponseRequest {
         // ==================== Source Inner Class ====================
 
         /**
-         * OpenClaw JSON 协议中的 `Source` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+         * 图片或文件输入的来源类型、值、文件名和媒体类型。
          *
          * @author <a href="https://github.com/loong10k">Loong Wan</a>
          * @since 1.0.0
@@ -266,28 +266,28 @@ public class ResponseRequest {
         @Builder
         public static class Source {
             /**
-             * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+             * JSON 属性 {@code type}，表示对象或协议帧的类型判别值。
              */
             private String type;
 
             /**
-             * 映射 OpenClaw JSON 字段 `url` 的 协议内容。
+             * JSON 属性 {@code url}，表示目标地址。
              */
             private String url;
 
             /**
-             * 映射 OpenClaw JSON 字段 `mediaType` 的 协议内容。
+             * JSON 属性 {@code mediaType}，表示文件媒体类型。
              */
             @JsonProperty("media_type")
             private String mediaType;
 
             /**
-             * 映射 OpenClaw JSON 字段 `filename` 的 协议内容。
+             * JSON 属性 {@code filename}，表示文件名。
              */
             private String filename;
 
             /**
-             * 映射 OpenClaw JSON 字段 `detail` 的 协议内容。
+             * JSON 属性 {@code detail}，表示输出详细度。
              */
             private String detail;
         }

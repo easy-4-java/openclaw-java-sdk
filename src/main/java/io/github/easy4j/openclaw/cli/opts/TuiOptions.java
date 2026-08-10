@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `tui` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code tui} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,27 +16,27 @@ import java.util.List;
 public final class TuiOptions implements CliSubArgs {
 
     /**
-     * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+     * 目标 Gateway 或远程服务 URL；未设置时命令行不包含 {@code --url}。
      */
     private final String url;
     /**
-     * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+     * 认证令牌或待追加的原始服务参数；未设置时命令行不包含 {@code --token}。
      */
     private final String token;
     /**
-     * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+     * Gateway 或远程服务密码；未设置时命令行不包含 {@code --password}。
      */
     private final String password;
     /**
-     * 传给 openclaw 子命令 `--session` 选项的内容；为 null 时通常省略。
+     * 目标会话标识；未设置时命令行不包含 {@code --session}。
      */
     private final String session;
     /**
-     * 是否向 openclaw 子命令追加 `--deliver` 开关。
+     * 是否向 openclaw 子命令追加 {@code --deliver} 开关。
      */
     private final boolean deliver;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -53,7 +53,7 @@ public final class TuiOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `TuiOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code TuiOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -79,39 +79,39 @@ public final class TuiOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 TuiOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 TuiOptions。
+     * {@code TuiOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+         * 目标 Gateway 或远程服务 URL；未设置时命令行不包含 {@code --url}。
          */
         private String url;
         /**
-         * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+         * 认证令牌或待追加的原始服务参数；未设置时命令行不包含 {@code --token}。
          */
         private String token;
         /**
-         * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+         * Gateway 或远程服务密码；未设置时命令行不包含 {@code --password}。
          */
         private String password;
         /**
-         * 传给 openclaw 子命令 `--session` 选项的内容；为 null 时通常省略。
+         * 目标会话标识；未设置时命令行不包含 {@code --session}。
          */
         private String session;
         /**
-         * 是否向 openclaw 子命令追加 `--deliver` 开关。
+         * 是否向 openclaw 子命令追加 {@code --deliver} 开关。
          */
         private boolean deliver;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 设置 `--url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --url} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param url 完整目标 URL
          * @return 当前构建器，便于继续链式配置
@@ -122,9 +122,9 @@ public final class TuiOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --token} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param token 写入 `--token` 选项的内容
+         * @param token 认证令牌或待追加的原始服务参数；作为 {@code --token} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder token(String token) {
@@ -133,9 +133,9 @@ public final class TuiOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--password` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --password} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param password 写入 `--password` 选项的内容
+         * @param password Gateway 或远程服务密码；作为 {@code --password} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder password(String password) {
@@ -144,9 +144,9 @@ public final class TuiOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--session` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --session} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param session 写入 `--session` 选项的内容
+         * @param session 目标会话标识；作为 {@code --session} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder session(String session) {
@@ -155,9 +155,9 @@ public final class TuiOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--deliver` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --deliver} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param deliver 是否向命令行追加 `--deliver` 开关
+         * @param deliver 是否向命令行追加 {@code --deliver} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder deliver(boolean deliver) {
@@ -166,9 +166,9 @@ public final class TuiOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -179,7 +179,7 @@ public final class TuiOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `TuiOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code TuiOptions}。
          *
          * @return 按当前字段创建的 TuiOptions
          */

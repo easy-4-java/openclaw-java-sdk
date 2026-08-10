@@ -26,12 +26,12 @@ import java.util.Objects;
 public class OpenClawCliExecutor {
 
     /**
-     * SDK 配置。
+     * 客户端使用的不可变配置引用。
      */
     private final OpenClawCliConfig config;
 
     /**
-     * 按给定配置创建 `OpenClawCliExecutor`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code OpenClawCliExecutor}，构造过程不隐式执行远程业务请求。
      *
      * @param config SDK 配置
      */
@@ -43,7 +43,7 @@ public class OpenClawCliExecutor {
     /**
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code OpenClawCliRequest}
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult execute(OpenClawCliRequest request) {
@@ -131,7 +131,7 @@ public class OpenClawCliExecutor {
     /**
      * 把请求中的全局开关和子命令参数转换为 Commons Exec CommandLine，参数按原顺序保留。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code OpenClawCliRequest}
      * @return 已按原顺序转义并组装全局参数和子命令参数的命令行
      */
     public CommandLine toCommandLine(OpenClawCliRequest request) {
@@ -157,7 +157,7 @@ public class OpenClawCliExecutor {
     }
 
     /**
-     * 执行轻量级 `openclaw --version` 探测并返回可用性、版本和失败原因。
+     * 执行轻量级 {@code openclaw --version} 探测并返回可用性、版本和失败原因。
      *
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 OpenClawCliAvailabilityReport
      */

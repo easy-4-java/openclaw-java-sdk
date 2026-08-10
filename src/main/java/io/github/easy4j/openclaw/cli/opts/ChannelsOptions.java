@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `channels` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code channels} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -17,100 +17,100 @@ import java.util.List;
 public final class ChannelsOptions implements CliSubArgs {
 
     /**
-     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义消息通道管理动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Verb {
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示消息通道管理动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `status` 协议模式；序列化时使用该固定取值。
+         * 表示消息通道管理动作的 {@code status} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         STATUS,
         /**
-         * 选择 `capabilities` 协议模式；序列化时使用该固定取值。
+         * 表示消息通道管理动作的 {@code capabilities} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         CAPABILITIES,
         /**
-         * 选择 `resolve` 协议模式；序列化时使用该固定取值。
+         * 表示消息通道管理动作的 {@code resolve} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         RESOLVE,
         /**
-         * 选择 `logs` 协议模式；序列化时使用该固定取值。
+         * 表示消息通道管理动作的 {@code logs} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LOGS,
         /**
-         * 选择 `add` 协议模式；序列化时使用该固定取值。
+         * 表示消息通道管理动作的 {@code add} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         ADD,
         /**
-         * 选择 `remove` 协议模式；序列化时使用该固定取值。
+         * 表示消息通道管理动作的 {@code remove} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         REMOVE,
         /**
-         * 选择 `login` 协议模式；序列化时使用该固定取值。
+         * 表示消息通道管理动作的 {@code login} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LOGIN,
         /**
-         * 选择 `logout` 协议模式；序列化时使用该固定取值。
+         * 表示消息通道管理动作的 {@code logout} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LOGOUT
     }
 
     /**
-     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
      */
     private final Verb verb;
     /**
-     * 是否向 openclaw 子命令追加 `--status-probe` 开关。
+     * 是否向 openclaw 子命令追加 {@code --status-probe} 开关。
      */
     private final boolean statusProbe;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
      */
     private final String timeout;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
     /**
-     * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+     * 目标消息通道；未设置时命令行不包含 {@code --channel}。
      */
     private final String channel;
     /**
-     * 传给 openclaw 子命令 `--account` 选项的内容；为 null 时通常省略。
+     * 目标通道账户标识；未设置时命令行不包含 {@code --account}。
      */
     private final String account;
     /**
-     * 传给 openclaw 子命令 `--target` 选项的内容；为 null 时通常省略。
+     * 消息或操作的目标地址；未设置时命令行不包含 {@code --target}。
      */
     private final String target;
     /**
-     * 传给 openclaw 子命令 `--kind` 选项的内容；为 null 时通常省略。
+     * 目标目录实体类型；未设置时命令行不包含 {@code --kind}。
      */
     private final String kind;
     /**
-     * 传给 openclaw 子命令 `--resolve-positional` 选项的内容；为 null 时通常省略。
+     * 待解析的联系人或群组名称列表；未设置时命令行不包含 {@code --resolve-positional}。
      */
     private final List<String> resolvePositional;
     /**
-     * 传给 openclaw 子命令 `--log-lines` 选项的内容；为 null 时通常省略。
+     * 读取日志的最大行数；未设置时命令行不包含 {@code --log-lines}。
      */
     private final Integer logLines;
     /**
-     * 是否向 openclaw 子命令追加 `--remove-delete` 开关。
+     * 是否向 openclaw 子命令追加 {@code --remove-delete} 开关。
      */
     private final boolean removeDelete;
     /**
-     * 是否向 openclaw 子命令追加 `--login-verbose` 开关。
+     * 是否向 openclaw 子命令追加 {@code --login-verbose} 开关。
      */
     private final boolean loginVerbose;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -134,7 +134,7 @@ public final class ChannelsOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `ChannelsOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code ChannelsOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -208,67 +208,67 @@ public final class ChannelsOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 ChannelsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ChannelsOptions。
+     * {@code ChannelsOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
          */
         private Verb verb = Verb.LIST;
         /**
-         * 是否向 openclaw 子命令追加 `--status-probe` 开关。
+         * 是否向 openclaw 子命令追加 {@code --status-probe} 开关。
          */
         private boolean statusProbe;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
          */
         private String timeout;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
         /**
-         * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+         * 目标消息通道；未设置时命令行不包含 {@code --channel}。
          */
         private String channel;
         /**
-         * 传给 openclaw 子命令 `--account` 选项的内容；为 null 时通常省略。
+         * 目标通道账户标识；未设置时命令行不包含 {@code --account}。
          */
         private String account;
         /**
-         * 传给 openclaw 子命令 `--target` 选项的内容；为 null 时通常省略。
+         * 消息或操作的目标地址；未设置时命令行不包含 {@code --target}。
          */
         private String target;
         /**
-         * 传给 openclaw 子命令 `--kind` 选项的内容；为 null 时通常省略。
+         * 目标目录实体类型；未设置时命令行不包含 {@code --kind}。
          */
         private String kind;
         /**
-         * 传给 openclaw 子命令 `--resolve-positional` 选项的内容；为 null 时通常省略。
+         * 待解析的联系人或群组名称列表；未设置时命令行不包含 {@code --resolve-positional}。
          */
         private List<String> resolvePositional = new ArrayList<>();
         /**
-         * 传给 openclaw 子命令 `--log-lines` 选项的内容；为 null 时通常省略。
+         * 读取日志的最大行数；未设置时命令行不包含 {@code --log-lines}。
          */
         private Integer logLines;
         /**
-         * 是否向 openclaw 子命令追加 `--remove-delete` 开关。
+         * 是否向 openclaw 子命令追加 {@code --remove-delete} 开关。
          */
         private boolean removeDelete;
         /**
-         * 是否向 openclaw 子命令追加 `--login-verbose` 开关。
+         * 是否向 openclaw 子命令追加 {@code --login-verbose} 开关。
          */
         private boolean loginVerbose;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code list} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -278,7 +278,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `status` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code status} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -288,9 +288,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--status-probe` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --status-probe} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param probe 是否向命令行追加 `--status-probe` 开关
+         * @param probe 是否向命令行追加 {@code --status-probe} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder statusProbe(boolean probe) {
@@ -299,7 +299,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `capabilities` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code capabilities} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -309,9 +309,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--resolve` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --resolve} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param positionalNames 写入 `--resolve` 选项的内容
+         * @param positionalNames 待解析的联系人或群组名称；作为 {@code --resolve} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder resolve(String... positionalNames) {
@@ -328,7 +328,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `logs` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code logs} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -338,7 +338,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `add` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code add} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -348,7 +348,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `remove` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code remove} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -358,7 +358,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `login` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code login} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -368,7 +368,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `logout` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code logout} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -378,9 +378,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --channel} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param channel 写入 `--channel` 选项的内容
+         * @param channel 目标消息通道；作为 {@code --channel} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder channel(String channel) {
@@ -389,9 +389,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--account` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --account} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param account 写入 `--account` 选项的内容
+         * @param account 目标通道账户标识；作为 {@code --account} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder account(String account) {
@@ -400,9 +400,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--target` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --target} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param target 写入 `--target` 选项的内容
+         * @param target 消息或操作的目标地址；作为 {@code --target} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder target(String target) {
@@ -411,9 +411,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--kind` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --kind} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param kind 写入 `--kind` 选项的内容
+         * @param kind 目标目录实体类型；作为 {@code --kind} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder kind(String kind) {
@@ -422,9 +422,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --timeout} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param timeout 写入 `--timeout` 选项的内容
+         * @param timeout CLI 接受的超时配置；作为 {@code --timeout} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder timeout(String timeout) {
@@ -433,7 +433,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -444,9 +444,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--log-lines` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --log-lines} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param lines 写入 `--log-lines` 选项的内容
+         * @param lines 读取日志的最大行数；作为 {@code --log-lines} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder logLines(int lines) {
@@ -455,9 +455,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--remove-delete` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --remove-delete} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param delete 是否向命令行追加 `--remove-delete` 开关
+         * @param delete 是否向命令行追加 {@code --remove-delete} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder removeDelete(boolean delete) {
@@ -466,9 +466,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--login-verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --login-verbose} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param verbose 是否向命令行追加 `--login-verbose` 开关
+         * @param verbose 是否向命令行追加 {@code --login-verbose} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder loginVerbose(boolean verbose) {
@@ -477,9 +477,9 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -490,7 +490,7 @@ public final class ChannelsOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `ChannelsOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code ChannelsOptions}。
          *
          * @return 按当前字段创建的 ChannelsOptions
          */

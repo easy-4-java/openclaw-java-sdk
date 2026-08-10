@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * OpenClaw SDK 的 `SseEvent` 类型，封装其公开契约和生命周期边界。
+ * SSE event/data 字段、结束标记及可选解析对象的传输模型。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -19,47 +19,47 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SseEvent {
     /**
-     * `SseEvent` 生命周期内保存的 `event` 对应状态。
+     * SSE event 字段；为空时表示默认消息事件。
      */
     @com.fasterxml.jackson.annotation.JsonProperty("event") private String event;
     /**
-     * `SseEvent` 生命周期内保存的 `data` 对应状态。
+     * SSE data 字段拼接后的原始文本。
      */
     @com.fasterxml.jackson.annotation.JsonProperty("data") private String data;
     /**
-     * `SseEvent` 生命周期内保存的 `done` 对应状态。
+     * 是否收到流结束标记。
      */
     @com.fasterxml.jackson.annotation.JsonProperty("done") private boolean done;
     /**
-     * `SseEvent` 生命周期内保存的 `parsed` 对应状态。
+     * 按目标响应类型反序列化得到的事件对象；解析前可为空。
      */
     @com.fasterxml.jackson.annotation.JsonProperty("parsed") private Object parsed;
 
     /**
-     * 判断 `terminal` 对应状态 是否满足协议或生命周期条件。
+     * 判断该 SSE 事件是否为流结束标记。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 当前事件是流终止标记时返回 {@code true}
      */
     public boolean isTerminal() { return done; }
     /**
      * 创建表示 SSE 流正常结束的终止事件，不携带业务数据。
      *
-     * @return 按当前参数创建、查询或解析得到的 SseEvent
+     * @return 仅设置结束标记的 SSE 事件
      */
     public static SseEvent terminal() { SseEvent e = new SseEvent(); e.done = true; return e; }
     /**
      * 创建携带原始 data 文本和解析对象的普通 SSE 数据事件。
      *
-     * @param data 写入 `data` 协议字段的内容
-     * @return 按当前参数创建、查询或解析得到的 SseEvent
+     * @param data SSE 事件或协议帧携带的原始数据
+     * @return 仅携带 data 字段的 SSE 事件
      */
     public static SseEvent data(String data) { SseEvent e = new SseEvent(); e.data = data; return e; }
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `SseEvent`。
+     * 创建同时携带事件名称和原始数据文本的 SSE 事件。
      *
-     * @param event 写入 `event` 协议字段的内容
-     * @param data 写入 `data` 协议字段的内容
-     * @return 按当前参数创建、查询或解析得到的 SseEvent
+     * @param event SSE 的 {@code event} 字段；未指定时可为 {@code null}
+     * @param data SSE 的原始 {@code data} 文本；未指定时可为 {@code null}
+     * @return 携带指定事件名称和原始数据的非终止事件
      */
     public static SseEvent of(String event, String data) { SseEvent e = new SseEvent(); e.event = event; e.data = data; return e; }
 }

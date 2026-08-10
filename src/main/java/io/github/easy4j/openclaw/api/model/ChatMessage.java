@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenClaw JSON 协议中的 `ChatMessage` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * 聊天消息模型，支持 system、user、assistant 和 tool 角色。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -22,40 +22,40 @@ import java.util.List;
 public class ChatMessage {
 
     /**
-     * OpenClaw 协议固定值 {@code OpenClawConstants.ROLE_SYSTEM}；调用方不应在运行时修改。
+     * 聊天消息 role 字段使用的 {@code system} 角色值。
      */
     public static final String ROLE_SYSTEM = OpenClawConstants.ROLE_SYSTEM;
     /**
-     * OpenClaw 协议固定值 {@code OpenClawConstants.ROLE_USER}；调用方不应在运行时修改。
+     * 聊天消息 role 字段使用的 {@code user} 角色值。
      */
     public static final String ROLE_USER = OpenClawConstants.ROLE_USER;
     /**
-     * OpenClaw 协议固定值 {@code OpenClawConstants.ROLE_ASSISTANT}；调用方不应在运行时修改。
+     * 聊天消息 role 字段使用的 {@code assistant} 角色值。
      */
     public static final String ROLE_ASSISTANT = OpenClawConstants.ROLE_ASSISTANT;
     /**
-     * OpenClaw 协议固定值 {@code OpenClawConstants.ROLE_TOOL}；调用方不应在运行时修改。
+     * 聊天消息 role 字段使用的 {@code tool} 角色值。
      */
     public static final String ROLE_TOOL = OpenClawConstants.ROLE_TOOL;
 
     /**
-     * 映射 OpenClaw JSON 字段 `role` 的 协议内容。
+     * JSON 属性 {@code role}，表示聊天消息角色。
      */
     private String role;
 
     /**
-     * 映射 OpenClaw JSON 字段 `content` 的 协议内容。
+     * JSON 属性 {@code content}，表示消息或输出正文。
      */
     private String content;
 
     /**
-     * 映射 OpenClaw JSON 字段 `toolCalls` 的 有序数组。
+     * JSON 属性 {@code toolCalls}，表示工具调用。
      */
     @JsonProperty("tool_calls")
     private List<ToolCall> toolCalls;
 
     /**
-     * 映射 OpenClaw JSON 字段 `toolCallId` 的 关联标识。
+     * JSON 属性 {@code toolCallId}，表示被回复的工具调用标识。
      */
     @JsonProperty("tool_call_id")
     private String toolCallId;
@@ -63,10 +63,10 @@ public class ChatMessage {
     // ==================== Factory Methods ====================
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
+     * 创建 {@code system} 角色消息。
      *
-     * @param content 写入 `content` 协议字段的内容
-     * @return 按当前参数创建、查询或解析得到的 ChatMessage
+     * @param content 消息正文或流式增量内容
+     * @return role 为 system 的聊天消息
      */
     public static ChatMessage ofSystem(String content) {
         ChatMessage msg = new ChatMessage();
@@ -76,10 +76,10 @@ public class ChatMessage {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
+     * 创建 {@code user} 角色消息。
      *
-     * @param content 写入 `content` 协议字段的内容
-     * @return 按当前参数创建、查询或解析得到的 ChatMessage
+     * @param content 消息正文或流式增量内容
+     * @return role 为 user 的聊天消息
      */
     public static ChatMessage ofUser(String content) {
         ChatMessage msg = new ChatMessage();
@@ -89,10 +89,10 @@ public class ChatMessage {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
+     * 创建不包含工具调用的 {@code assistant} 角色消息。
      *
-     * @param content 写入 `content` 协议字段的内容
-     * @return 按当前参数创建、查询或解析得到的 ChatMessage
+     * @param content 消息正文或流式增量内容
+     * @return role 为 assistant 的聊天消息
      */
     public static ChatMessage ofAssistant(String content) {
         ChatMessage msg = new ChatMessage();
@@ -102,11 +102,11 @@ public class ChatMessage {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
+     * 创建携带工具调用列表的 {@code assistant} 角色消息。
      *
-     * @param content 写入 `content` 协议字段的内容
-     * @param toolCalls 写入 `toolCalls` 协议字段的内容
-     * @return 按当前参数创建、查询或解析得到的 ChatMessage
+     * @param content 消息正文或流式增量内容
+     * @param toolCalls 本次响应累计得到的工具调用列表
+     * @return role 为 assistant 的聊天消息
      */
     public static ChatMessage ofAssistant(String content, List<ToolCall> toolCalls) {
         ChatMessage msg = new ChatMessage();
@@ -117,11 +117,11 @@ public class ChatMessage {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `ChatMessage`。
+     * 创建与指定工具调用关联的 {@code tool} 角色结果消息。
      *
-     * @param toolCallId 用于关联协议对象的 `toolCallId` 标识
-     * @param output 写入 `output` 协议字段的内容
-     * @return 按当前参数创建、查询或解析得到的 ChatMessage
+     * @param toolCallId 用于关联协议对象的 {@code toolCallId} 标识
+     * @param output 工具执行返回的文本内容
+     * @return role 为 tool 的聊天消息
      */
     public static ChatMessage ofTool(String toolCallId, String output) {
         ChatMessage msg = new ChatMessage();
@@ -134,7 +134,7 @@ public class ChatMessage {
     // ==================== Inner Classes ====================
 
     /**
-     * OpenClaw JSON 协议中的 `ToolCall` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * assistant 消息中的工具调用标识、类型和函数调用。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -146,27 +146,27 @@ public class ChatMessage {
     public static class ToolCall {
 
         /**
-         * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+         * JSON 属性 {@code id}，表示协议对象或请求的唯一标识。
          */
         private String id;
 
         /**
-         * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+         * JSON 属性 {@code type}，表示对象或协议帧的类型判别值。
          */
         private String type = "function";
 
         /**
-         * 映射 OpenClaw JSON 字段 `function` 的 协议内容。
+         * JSON 属性 {@code function}，表示函数工具定义。
          */
         private FunctionCall function;
 
         /**
-         * 根据参数创建符合 OpenClaw 协议约束的 `ToolCall`。
+         * 创建函数类型的工具调用，并保留原始参数 JSON。
          *
-         * @param id 用于关联协议对象的 `id` 标识
-         * @param name 写入 `name` 协议字段的内容
-         * @param arguments 写入 `arguments` 协议字段的内容
-         * @return 按当前参数创建、查询或解析得到的 ToolCall
+         * @param id 用于关联协议对象的 {@code id} 标识
+         * @param name 被调用的工具函数名称
+         * @param arguments 按原始顺序传递给 CLI 的参数列表
+         * @return 关联指定调用标识、函数名称和参数 JSON 的工具调用对象
          */
         public static ToolCall of(String id, String name, String arguments) {
             FunctionCall fc = new FunctionCall();
@@ -181,7 +181,7 @@ public class ChatMessage {
     }
 
     /**
-     * OpenClaw JSON 协议中的 `FunctionCall` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 函数工具调用名称和参数 JSON。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -193,12 +193,12 @@ public class ChatMessage {
     public static class FunctionCall {
 
         /**
-         * 映射 OpenClaw JSON 字段 `name` 的 协议内容。
+         * 模型请求调用的函数名称。
          */
         private String name;
 
         /**
-         * 映射 OpenClaw JSON 字段 `arguments` 的 协议内容。
+         * JSON 属性 {@code arguments}，表示函数参数 JSON。
          */
         private String arguments;
     }

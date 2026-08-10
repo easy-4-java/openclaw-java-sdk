@@ -4,7 +4,7 @@ import io.github.easy4j.openclaw.util.OpenClawStrings;
 import java.util.List;
 
 /**
- * 本地 openclaw CLI 的 `OpenClawCliArgv` 支撑类型，用于参数编码、可用性检查或执行结果表达。
+ * 本地 openclaw CLI 的 {@code OpenClawCliArgv} 支撑类型，用于参数编码、可用性检查或执行结果表达。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,11 +15,11 @@ final class OpenClawCliArgv {
     }
 
     /**
- * {@code value} null , {@code flag} {@code value} .
+     * 在字符串值非空白时依次追加选项名和值。
      *
- * @param out argument list
- * @param flag {@code "--url"}
- * @param value value
+     * @param out 接收参数的可变列表
+     * @param flag CLI 选项名，例如 {@code --url}
+     * @param value 选项值；为空白时忽略
      */
     static void addIfPresent(List<String> out, String flag, String value) {
         if (value != null && OpenClawStrings.isNotBlank(value)) {
@@ -29,11 +29,11 @@ final class OpenClawCliArgv {
     }
 
     /**
- * {@code value} , {@code flag} valuecharacters.
+     * 在整数值大于零时依次追加选项名和十进制值。
      *
- * @param out argument list
- * @param flag
- * @param value value(milliseconds)
+     * @param out 接收参数的可变列表
+     * @param flag CLI 选项名
+     * @param value 正整数选项值
      */
     static void addIfPositive(List<String> out, String flag, int value) {
         if (value > 0) {
@@ -43,11 +43,11 @@ final class OpenClawCliArgv {
     }
 
     /**
- * {@code value} null , {@code flag} {@link Integer} characters.
+     * 在整数值非空时依次追加选项名和十进制值。
      *
- * @param out argument list
- * @param flag
- * @param value
+     * @param out 接收参数的可变列表
+     * @param flag CLI 选项名
+     * @param value 可空整数选项值
      */
     static void addIfNotNull(List<String> out, String flag, Integer value) {
         if (value != null) {
@@ -57,11 +57,11 @@ final class OpenClawCliArgv {
     }
 
     /**
- * {@code value} null , {@code flag} {@link Double} characters.
+     * 在浮点值非空时依次追加选项名和十进制值。
      *
- * @param out argument list
- * @param flag
- * @param value value
+     * @param out 接收参数的可变列表
+     * @param flag CLI 选项名
+     * @param value 可空浮点选项值
      */
     static void addIfNotNull(List<String> out, String flag, Double value) {
         if (value != null) {
@@ -71,11 +71,11 @@ final class OpenClawCliArgv {
     }
 
     /**
- * {@code enabled} When true,only {@code flag}(value token).
+     * 开关启用时仅追加选项名，不追加值 token。
      *
- * @param out argument list
- * @param flag
- * @param enabled flag
+     * @param out 接收参数的可变列表
+     * @param flag CLI 开关名
+     * @param enabled 是否输出该开关
      */
     static void addFlag(List<String> out, String flag, boolean enabled) {
         if (enabled) {
@@ -84,11 +84,11 @@ final class OpenClawCliArgv {
     }
 
     /**
- * {@code flag} value( {@code --scope}).
+     * 为每个非空白值重复追加同一选项名，适用于 {@code --scope value} 等可重复选项。
      *
- * @param out argument list
- * @param flag
- * @param values value, null
+     * @param out 接收参数的可变列表
+     * @param flag 可重复的 CLI 选项名
+     * @param values 选项值列表；为空时不追加
      */
     static void addRepeatable(List<String> out, String flag, List<String> values) {
         if (values == null) {
@@ -103,10 +103,10 @@ final class OpenClawCliArgv {
     }
 
     /**
- * "" token ({@link io.github.easy4j.openclaw.cli.opts} Builder {@code extra}).
+     * 原样追加调用方提供的额外 token，供类型化选项尚未覆盖的 CLI 参数使用。
      *
- * @param out argument list
- * @param extra token, null
+     * @param out 接收参数的可变列表
+     * @param extra 额外 token 列表；为空时不追加
      */
     static void addExtra(List<String> out, List<String> extra) {
         if (extra == null) {

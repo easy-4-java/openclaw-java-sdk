@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `commitments` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code commitments} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,44 +16,44 @@ import java.util.List;
 public final class CommitmentsOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义承诺记录动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示承诺记录动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `dismiss` 协议模式；序列化时使用该固定取值。
+         * 表示承诺记录动作的 {@code dismiss} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         DISMISS
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
     /**
-     * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+     * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
      */
     private final String agent;
     /**
-     * 传给 openclaw 子命令 `--status` 选项的内容；为 null 时通常省略。
+     * 筛选资源的状态；未设置时命令行不包含 {@code --status}。
      */
     private final String status;
     /**
-     * 是否向 openclaw 子命令追加 `--all` 开关。
+     * 是否向 openclaw 子命令追加 {@code --all} 开关。
      */
     private final boolean all;
     /**
-     * 传给 openclaw 子命令 `--dismiss-ids` 选项的内容；为 null 时通常省略。
+     * 待忽略的安全检查结果标识集合；未设置时命令行不包含 {@code --dismiss-ids}。
      */
     private final List<String> dismissIds;
 
@@ -67,7 +67,7 @@ public final class CommitmentsOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `CommitmentsOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code CommitmentsOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -107,88 +107,88 @@ public final class CommitmentsOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 CommitmentsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 CommitmentsOptions。
+     * {@code CommitmentsOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.LIST;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
         /**
-         * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+         * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
          */
         private String agent;
         /**
-         * 传给 openclaw 子命令 `--status` 选项的内容；为 null 时通常省略。
+         * 筛选资源的状态；未设置时命令行不包含 {@code --status}。
          */
         private String status;
         /**
-         * 是否向 openclaw 子命令追加 `--all` 开关。
+         * 是否向 openclaw 子命令追加 {@code --all} 开关。
          */
         private boolean all;
         /**
-         * 传给 openclaw 子命令 `--dismiss-ids` 选项的内容；为 null 时通常省略。
+         * 待忽略的安全检查结果标识集合；未设置时命令行不包含 {@code --dismiss-ids}。
          */
         private List<String> dismissIds;
 
         /**
-         * 选择 `dismiss` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code dismiss} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder dismiss() { this.mode = Mode.DISMISS; return this; }
         /**
-         * 设置 `--mode` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --mode} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param mode 写入 `--mode` 选项的内容
+         * @param mode 子命令使用的执行模式；作为 {@code --mode} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) { this.json = json; return this; }
         /**
-         * 设置 `--agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder agent(String agent) { this.agent = agent; return this; }
         /**
-         * 设置 `--status` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --status} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param status 写入 `--status` 选项的内容
+         * @param status 筛选资源的状态；作为 {@code --status} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder status(String status) { this.status = status; return this; }
         /**
-         * 设置 `--all` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --all} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param all 是否向命令行追加 `--all` 开关
+         * @param all 是否向命令行追加 {@code --all} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder all(boolean all) { this.all = all; return this; }
         /**
-         * 设置 `--dismiss-ids` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --dismiss-ids} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param ids 写入 `--dismiss-ids` 选项的内容
+         * @param ids 待忽略安全检查结果的标识集合；作为 {@code --dismiss-ids} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder dismissIds(List<String> ids) { this.dismissIds = ids; return this; }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `CommitmentsOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code CommitmentsOptions}。
          *
          * @return 按当前字段创建的 CommitmentsOptions
          */

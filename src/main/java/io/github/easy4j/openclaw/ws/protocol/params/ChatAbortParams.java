@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * OpenClaw JSON 协议中的 `ChatAbortParams` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * chat.abort RPC 参数，可中止整个会话或指定运行。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -18,16 +18,16 @@ import java.util.Objects;
 public class ChatAbortParams {
 
     /**
-     * 映射 OpenClaw JSON 字段 `sessionKey` 的 协议内容。
+     * JSON 属性 {@code sessionKey}，表示Gateway 会话路由键。
      */
     private final String sessionKey;
     /**
-     * 映射 OpenClaw JSON 字段 `runId` 的 关联标识。
+     * JSON 属性 {@code runId}，表示一次智能体运行的标识。
      */
     private final String runId;
 
     /**
-     * 根据参数构造或读取 `ChatAbortParams` 的 `abortSession` 协议字段。
+     * 创建中止指定会话全部运行的请求参数。
      *
      * @param sessionKey 会话路由键
      * @return 按方法参数填充的 ChatAbortParams
@@ -38,7 +38,7 @@ public class ChatAbortParams {
     }
 
     /**
-     * 根据参数构造或读取 `ChatAbortParams` 的 `abortRun` 协议字段。
+     * 创建仅中止指定会话中某次运行的请求参数。
      *
      * @param sessionKey 会话路由键
      * @param runId 运行标识

@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public final class OpenClawSessionKeys {
 
     /**
-     * OpenClaw 协议固定值 {@code Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")}；调用方不应在运行时修改。
+     * 会话键单段校验规则：首字符为字母或数字，总长不超过 128。
      */
     private static final Pattern SAFE_SEGMENT = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$");
 
@@ -24,11 +24,11 @@ public final class OpenClawSessionKeys {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawSessionKeys`。
+     * 使用智能体和对端标识创建可重复计算的稳定 Hook 会话键。
      *
      * @param agentId Agent 标识
-     * @param peerId 用于关联协议对象的 `peerId` 标识
-     * @return 服务返回或流式累积得到的文本
+     * @param peerId 用于关联协议对象的 {@code peerId} 标识
+     * @return 格式为 {@code hook:<agentId>:<peerId>} 的稳定会话键
      */
     public static String forStableSession(String agentId, String peerId) {
         return "hook:" + normalizeSegment(agentId, "agentId") + ":"
@@ -36,11 +36,11 @@ public final class OpenClawSessionKeys {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawSessionKeys`。
+     * 使用对端和关联标识创建一次调用范围内的 Hook 会话键。
      *
-     * @param peerId 用于关联协议对象的 `peerId` 标识
-     * @param correlationId 用于关联协议对象的 `correlationId` 标识
-     * @return 服务返回或流式累积得到的文本
+     * @param peerId 用于关联协议对象的 {@code peerId} 标识
+     * @param correlationId 用于关联协议对象的 {@code correlationId} 标识
+     * @return 格式为 {@code hook:<peerId>:<correlationId>} 的临时会话键
      */
     public static String forEphemeralPeer(String peerId, String correlationId) {
         return "hook:" + normalizeSegment(peerId, "peerId") + ":"
@@ -48,17 +48,17 @@ public final class OpenClawSessionKeys {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawSessionKeys`。
+     * 使用新生成的关联标识创建临时 Hook 会话键。
      *
-     * @param peerId 用于关联协议对象的 `peerId` 标识
-     * @return 服务返回或流式累积得到的文本
+     * @param peerId 用于关联协议对象的 {@code peerId} 标识
+     * @return 使用新关联标识创建的临时会话键
      */
     public static String forEphemeralPeer(String peerId) {
         return forEphemeralPeer(peerId, newCorrelationId());
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawSessionKeys`。
+     * 生成不含连字符的小写 UUID，供临时会话键关联请求。
      *
      * @return 可用于关联后续请求的标识
      */
@@ -67,7 +67,13 @@ public final class OpenClawSessionKeys {
     }
 
     /**
- * Normalizes hook session :trim, {@code :} characters.
+     * 去除会话键分段两端空白并转为小写，同时拒绝空值和保留分隔符 {@code :}。
+     *
+     * @param value 待规范化的会话键分段
+     * @param fieldName 参数名，用于生成校验异常信息
+     * @return 可安全拼接进会话键的规范化分段
+     * @throws NullPointerException {@code value} 为空时抛出
+     * @throws IllegalArgumentException 分段为空白或包含冒号时抛出
      */
     static String normalizeSegment(String value, String fieldName) {
         Objects.requireNonNull(value, fieldName);

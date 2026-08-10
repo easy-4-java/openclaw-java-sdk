@@ -18,21 +18,21 @@ import java.util.Objects;
 public class OpenClawCli {
 
     /**
-     * `OpenClawCli` 生命周期内保存的 `executor` 对应状态。
+     * CLI 子进程执行器，统一处理并发限制、超时和输出收集。
      */
     private final OpenClawCliExecutor executor;
 
     /**
-     * 按给定配置创建 `OpenClawCli`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code OpenClawCli}，构造过程不隐式执行远程业务请求。
      *
-     * @param executor 写入 `executor` 协议字段的内容
+     * @param executor 负责启动并监管本地 CLI 子进程的执行器
      */
     public OpenClawCli(OpenClawCliExecutor executor) {
         this.executor = Objects.requireNonNull(executor, "executor");
     }
 
     /**
-     * 通过执行器运行 `openclaw version` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw version} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
@@ -41,7 +41,7 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw help` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw help} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
@@ -52,9 +52,9 @@ public class OpenClawCli {
     // --- Gateway & daemon & health ---
 
     /**
-     * 通过执行器运行 `openclaw gateway` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw gateway} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult gateway(GatewayCommandOptions args) {
@@ -62,9 +62,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw gateway-health` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw gateway-health} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param rpcOptions 写入 `rpcOptions` 协议字段的内容
+     * @param rpcOptions Gateway RPC 的地址、认证与超时选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult gatewayHealth(GatewayRpcOptions rpcOptions) {
@@ -72,10 +72,10 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw gateway-status` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw gateway-status} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param rpcOptions 写入 `rpcOptions` 协议字段的内容
-     * @param statusOptions 写入 `statusOptions` 协议字段的内容
+     * @param rpcOptions Gateway RPC 的地址、认证与超时选项
+     * @param statusOptions gateway-status 子命令的状态查询选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult gatewayStatus(GatewayRpcOptions rpcOptions,
@@ -84,10 +84,10 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw gateway-probe` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw gateway-probe} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param rpcOptions 写入 `rpcOptions` 协议字段的内容
-     * @param probeOptions 写入 `probeOptions` 协议字段的内容
+     * @param rpcOptions Gateway RPC 的地址、认证与超时选项
+     * @param probeOptions gateway-probe 子命令的探测选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult gatewayProbe(GatewayRpcOptions rpcOptions,
@@ -96,9 +96,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw daemon` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw daemon} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult daemon(DaemonOptions args) {
@@ -106,9 +106,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw health` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw health} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult health(HealthCommandOptions args) {
@@ -116,9 +116,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw status` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw status} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult status(StatusCommandOptions args) {
@@ -126,9 +126,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw doctor` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw doctor} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult doctor(DoctorOptions args) {
@@ -136,9 +136,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw logs` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw logs} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult logs(LogsOptions args) {
@@ -148,9 +148,9 @@ public class OpenClawCli {
     // --- Config & setup ---
 
     /**
-     * 通过执行器运行 `openclaw config` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw config} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult config(ConfigOptions args) {
@@ -158,9 +158,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw configure` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw configure} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult configure(ConfigureOptions args) {
@@ -168,9 +168,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw onboard` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw onboard} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult onboard(OnboardOptions args) {
@@ -180,9 +180,9 @@ public class OpenClawCli {
     // --- Agents & sessions & skills ---
 
     /**
-     * 通过执行器运行 `openclaw agent` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw agent} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult agent(AgentOptions args) {
@@ -190,9 +190,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw agents` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw agents} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult agents(AgentsOptions args) {
@@ -200,9 +200,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw sessions` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw sessions} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult sessions(SessionsOptions args) {
@@ -210,9 +210,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw skills` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw skills} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult skills(SkillsOptions args) {
@@ -220,9 +220,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw approvals` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw approvals} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult approvals(ApprovalsOptions args) {
@@ -232,9 +232,9 @@ public class OpenClawCli {
     // --- Channels & messaging & nodes ---
 
     /**
-     * 通过执行器运行 `openclaw channels` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw channels} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult channels(ChannelsOptions args) {
@@ -242,9 +242,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw message` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw message} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult message(MessageOptions args) {
@@ -252,9 +252,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw pairing` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw pairing} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult pairing(PairingOptions args) {
@@ -262,9 +262,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw qr` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw qr} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult qr(QrOptions args) {
@@ -272,9 +272,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw node` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw node} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult node(NodeOptions args) {
@@ -282,9 +282,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw nodes` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw nodes} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult nodes(NodesOptions args) {
@@ -292,9 +292,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw devices` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw devices} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult devices(DevicesOptions args) {
@@ -304,9 +304,9 @@ public class OpenClawCli {
     // --- Browser & MCP & tools ---
 
     /**
-     * 通过执行器运行 `openclaw mcp` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw mcp} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult mcp(McpOptions args) {
@@ -314,9 +314,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw plugins` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw plugins} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult plugins(PluginsOptions args) {
@@ -326,9 +326,9 @@ public class OpenClawCli {
     // --- Automation & webhooks & cron ---
 
     /**
-     * 通过执行器运行 `openclaw cron` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw cron} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult cron(CronOptions args) {
@@ -336,9 +336,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw hooks` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw hooks} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult hooks(HooksOptions args) {
@@ -346,9 +346,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw flows` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw flows} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult flows(FlowsOptions args) {
@@ -358,9 +358,9 @@ public class OpenClawCli {
     // --- Models & security & misc ---
 
     /**
-     * 通过执行器运行 `openclaw models` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw models} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult models(ModelsOptions args) {
@@ -368,9 +368,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw security` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw security} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult security(SecurityOptions args) {
@@ -378,9 +378,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw secrets` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw secrets} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult secrets(SecretsOptions args) {
@@ -388,9 +388,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw backup` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw backup} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult backup(BackupOptions args) {
@@ -398,9 +398,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw update` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw update} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult update(UpdateOptions args) {
@@ -408,9 +408,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw uninstall` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw uninstall} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult uninstall(UninstallOptions args) {
@@ -418,9 +418,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw reset` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw reset} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult reset(ResetOptions args) {
@@ -428,9 +428,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw completion` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw completion} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult completion(CompletionOptions args) {
@@ -438,9 +438,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw tui` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw tui} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult tui(TuiOptions args) {
@@ -448,9 +448,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw dashboard` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw dashboard} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult dashboard(DashboardOptions args) {
@@ -458,9 +458,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw directory` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw directory} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult directory(DirectoryOptions args) {
@@ -468,9 +468,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw system` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw system} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult system(SystemOptions args) {
@@ -478,9 +478,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw acp` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw acp} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult acp(AcpOptions args) {
@@ -488,9 +488,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw chat` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw chat} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult chat(ChatOptions args) {
@@ -498,9 +498,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw terminal` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw terminal} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult terminal(TerminalOptions args) {
@@ -508,9 +508,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw commitments` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw commitments} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult commitments(CommitmentsOptions args) {
@@ -518,9 +518,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw crestodian` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw crestodian} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult crestodian(CrestodianOptions args) {
@@ -528,9 +528,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw exec-approvals` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw exec-approvals} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult execApprovals(ExecApprovalsOptions args) {
@@ -538,9 +538,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw exec-policy` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw exec-policy} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult execPolicy(ExecPolicyOptions args) {
@@ -548,9 +548,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw migrate` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw migrate} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult migrate(MigrateOptions args) {
@@ -558,9 +558,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw proxy` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw proxy} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult proxy(ProxyOptions args) {
@@ -568,9 +568,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw worktrees` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw worktrees} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult worktrees(WorktreesOptions args) {
@@ -578,9 +578,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw tool` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw tool} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult tool(ToolOptions args) {
@@ -588,9 +588,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw tools` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw tools} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param args 写入 `args` 协议字段的内容
+     * @param args 要转换为命令行参数的子命令选项
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult tools(ToolsOptions args) {
@@ -598,9 +598,9 @@ public class OpenClawCli {
     }
 
     /**
-     * 通过执行器运行 `openclaw execute` 子命令，不通过 HTTP 或 WebSocket 通道。
+     * 通过执行器运行 {@code openclaw execute} 子命令，不通过 HTTP 或 WebSocket 通道。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code OpenClawCliRequest}
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult execute(OpenClawCliRequest request) {
@@ -608,7 +608,11 @@ public class OpenClawCli {
     }
 
     /**
- * Assembles {@code openclaw &lt;&gt; &lt;sub-arguments...&gt;} .
+     * 按 {@code openclaw <top-level> <sub-arguments...>} 顺序组装并执行子命令。
+     *
+     * @param topLevel 一级子命令名称
+     * @param subArgs 负责生成后续参数的类型化选项
+     * @return 包含退出码、标准输出和标准错误的执行结果
      */
     private OpenClawCliResult run(String topLevel, CliSubArgs subArgs) {
         Objects.requireNonNull(topLevel, "topLevel");

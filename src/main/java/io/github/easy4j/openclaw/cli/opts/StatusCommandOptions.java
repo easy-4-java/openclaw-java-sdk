@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `status-command` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code status-command} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,19 +15,19 @@ import java.util.List;
 public final class StatusCommandOptions implements CliSubArgs {
 
     /**
-     * 是否向 openclaw 子命令追加 `--all` 开关。
+     * 是否向 openclaw 子命令追加 {@code --all} 开关。
      */
     private final boolean all;
     /**
-     * 是否向 openclaw 子命令追加 `--deep` 开关。
+     * 是否向 openclaw 子命令追加 {@code --deep} 开关。
      */
     private final boolean deep;
     /**
-     * 是否向 openclaw 子命令追加 `--usage` 开关。
+     * 是否向 openclaw 子命令追加 {@code --usage} 开关。
      */
     private final boolean usage;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
 
@@ -42,7 +42,7 @@ public final class StatusCommandOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `StatusCommandOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code StatusCommandOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -74,7 +74,7 @@ public final class StatusCommandOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 StatusCommandOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 StatusCommandOptions。
+     * {@code StatusCommandOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -82,26 +82,26 @@ public final class StatusCommandOptions implements CliSubArgs {
     public static final class Builder {
 
         /**
-         * 是否向 openclaw 子命令追加 `--all` 开关。
+         * 是否向 openclaw 子命令追加 {@code --all} 开关。
          */
         private boolean all;
         /**
-         * 是否向 openclaw 子命令追加 `--deep` 开关。
+         * 是否向 openclaw 子命令追加 {@code --deep} 开关。
          */
         private boolean deep;
         /**
-         * 是否向 openclaw 子命令追加 `--usage` 开关。
+         * 是否向 openclaw 子命令追加 {@code --usage} 开关。
          */
         private boolean usage;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
 
         /**
-         * 设置 `--all` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --all} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param all 是否向命令行追加 `--all` 开关
+         * @param all 是否向命令行追加 {@code --all} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder all(boolean all) {
@@ -110,9 +110,9 @@ public final class StatusCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--deep` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --deep} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param deep 是否向命令行追加 `--deep` 开关
+         * @param deep 是否向命令行追加 {@code --deep} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder deep(boolean deep) {
@@ -121,9 +121,9 @@ public final class StatusCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--usage` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --usage} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param usage 是否向命令行追加 `--usage` 开关
+         * @param usage 是否向命令行追加 {@code --usage} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder usage(boolean usage) {
@@ -132,7 +132,7 @@ public final class StatusCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -143,7 +143,7 @@ public final class StatusCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `StatusCommandOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code StatusCommandOptions}。
          *
          * @return 按当前字段创建的 StatusCommandOptions
          */

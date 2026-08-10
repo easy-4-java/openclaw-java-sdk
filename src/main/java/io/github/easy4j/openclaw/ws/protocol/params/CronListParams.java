@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * OpenClaw JSON 协议中的 `CronListParams` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * cron.list RPC 的过滤、排序和分页参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,40 +16,40 @@ import lombok.Getter;
 public class CronListParams {
 
     /**
-     * 映射 OpenClaw JSON 字段 `includeDisabled` 的 布尔开关。
+     * JSON 属性 {@code includeDisabled}，表示是否包含已禁用 Cron 任务。
      */
     private final Boolean includeDisabled;
     /**
-     * 映射 OpenClaw JSON 字段 `limit` 的 协议内容。
+     * JSON 属性 {@code limit}，表示最大返回条数。
      */
     private final Integer limit;
     /**
-     * 映射 OpenClaw JSON 字段 `offset` 的 协议内容。
+     * JSON 属性 {@code offset}，表示分页起始偏移量。
      */
     private final Integer offset;
     /**
-     * 映射 OpenClaw JSON 字段 `query` 的 协议内容。
+     * JSON 属性 {@code query}，表示查询条件。
      */
     private final String query;
     /**
-     * 映射 OpenClaw JSON 字段 `enabled` 的 协议内容。
+     * JSON 属性 {@code enabled}，表示是否启用。
      */
     private final String enabled;
     /**
-     * 映射 OpenClaw JSON 字段 `sortBy` 的 协议内容。
+     * JSON 属性 {@code sortBy}，表示排序字段。
      */
     private final String sortBy;
     /**
-     * 映射 OpenClaw JSON 字段 `sortDir` 的 协议内容。
+     * JSON 属性 {@code sortDir}，表示排序方向。
      */
     private final String sortDir;
     /**
-     * 映射 OpenClaw JSON 字段 `agentId` 的 关联标识。
+     * JSON 属性 {@code agentId}，表示智能体标识。
      */
     private final String agentId;
 
     /**
-     * 根据参数构造或读取 `CronListParams` 的 `defaults` 协议字段。
+     * 创建使用 Gateway 默认过滤条件的查询参数。
      *
      * @return 按方法参数填充的 CronListParams
      */

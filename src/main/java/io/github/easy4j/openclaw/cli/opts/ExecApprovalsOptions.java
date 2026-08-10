@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `exec-approvals` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code exec-approvals} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,60 +15,60 @@ import java.util.List;
 public final class ExecApprovalsOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义执行审批策略动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `get` 协议模式；序列化时使用该固定取值。
+         * 表示执行审批策略动作的 {@code get} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         GET,
         /**
-         * 选择 `set` 协议模式；序列化时使用该固定取值。
+         * 表示执行审批策略动作的 {@code set} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         SET,
         /**
-         * 选择 `allowlist_add` 协议模式；序列化时使用该固定取值。
+         * 表示执行审批策略动作的 {@code allowlist_add} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         ALLOWLIST_ADD,
         /**
-         * 选择 `allowlist_remove` 协议模式；序列化时使用该固定取值。
+         * 表示执行审批策略动作的 {@code allowlist_remove} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         ALLOWLIST_REMOVE,
         /**
-         * 选择 `default` 协议模式；序列化时使用该固定取值。
+         * 表示执行审批策略动作的 {@code default} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         DEFAULT
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 传给 openclaw 子命令 `--pattern` 选项的内容；为 null 时通常省略。
+     * 审批白名单匹配模式；未设置时命令行不包含 {@code --pattern}。
      */
     private final String pattern;
     /**
-     * 传给 openclaw 子命令 `--node` 选项的内容；为 null 时通常省略。
+     * 目标节点标识；未设置时命令行不包含 {@code --node}。
      */
     private final String node;
     /**
-     * 是否向 openclaw 子命令追加 `--gateway` 开关。
+     * 是否向 openclaw 子命令追加 {@code --gateway} 开关。
      */
     private final boolean gateway;
     /**
-     * 传给 openclaw 子命令 `--file` 选项的内容；为 null 时通常省略。
+     * 审批策略文件路径；未设置时命令行不包含 {@code --file}。
      */
     private final String file;
     /**
-     * 是否向 openclaw 子命令追加 `--stdin` 开关。
+     * 是否向 openclaw 子命令追加 {@code --stdin} 开关。
      */
     private final boolean stdin;
     /**
-     * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+     * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
      */
     private final String agent;
 
@@ -83,7 +83,7 @@ public final class ExecApprovalsOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `ExecApprovalsOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code ExecApprovalsOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -134,112 +134,112 @@ public final class ExecApprovalsOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 ExecApprovalsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ExecApprovalsOptions。
+     * {@code ExecApprovalsOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.DEFAULT;
         /**
-         * 传给 openclaw 子命令 `--pattern` 选项的内容；为 null 时通常省略。
+         * 审批白名单匹配模式；未设置时命令行不包含 {@code --pattern}。
          */
         private String pattern;
         /**
-         * 传给 openclaw 子命令 `--node` 选项的内容；为 null 时通常省略。
+         * 目标节点标识；未设置时命令行不包含 {@code --node}。
          */
         private String node;
         /**
-         * 是否向 openclaw 子命令追加 `--gateway` 开关。
+         * 是否向 openclaw 子命令追加 {@code --gateway} 开关。
          */
         private boolean gateway;
         /**
-         * 传给 openclaw 子命令 `--file` 选项的内容；为 null 时通常省略。
+         * 审批策略文件路径；未设置时命令行不包含 {@code --file}。
          */
         private String file;
         /**
-         * 是否向 openclaw 子命令追加 `--stdin` 开关。
+         * 是否向 openclaw 子命令追加 {@code --stdin} 开关。
          */
         private boolean stdin;
         /**
-         * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+         * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
          */
         private String agent;
 
         /**
-         * 选择 `get` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code get} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder get() { this.mode = Mode.GET; return this; }
         /**
-         * 选择 `set` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code set} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder set() { this.mode = Mode.SET; return this; }
         /**
-         * 设置 `--allowlist-add` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --allowlist-add} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param pattern 写入 `--allowlist-add` 选项的内容
+         * @param pattern 审批白名单匹配模式；作为 {@code --allowlist-add} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder allowlistAdd(String pattern) { this.mode = Mode.ALLOWLIST_ADD; this.pattern = pattern; return this; }
         /**
-         * 设置 `--allowlist-remove` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --allowlist-remove} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param pattern 写入 `--allowlist-remove` 选项的内容
+         * @param pattern 审批白名单匹配模式；作为 {@code --allowlist-remove} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder allowlistRemove(String pattern) { this.mode = Mode.ALLOWLIST_REMOVE; this.pattern = pattern; return this; }
         /**
-         * 设置 `--mode` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --mode} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param mode 写入 `--mode` 选项的内容
+         * @param mode 子命令使用的执行模式；作为 {@code --mode} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
         /**
-         * 设置 `--node` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --node} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param node 写入 `--node` 选项的内容
+         * @param node 目标节点标识；作为 {@code --node} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder node(String node) { this.node = node; return this; }
         /**
-         * 设置 `--gateway` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --gateway} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param gateway 是否向命令行追加 `--gateway` 开关
+         * @param gateway 是否向命令行追加 {@code --gateway} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder gateway(boolean gateway) { this.gateway = gateway; return this; }
         /**
-         * 设置 `--file` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --file} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param file 写入 `--file` 选项的内容
+         * @param file 审批策略文件路径；作为 {@code --file} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder file(String file) { this.file = file; return this; }
         /**
-         * 设置 `--stdin` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --stdin} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param stdin 是否向命令行追加 `--stdin` 开关
+         * @param stdin 是否向命令行追加 {@code --stdin} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder stdin(boolean stdin) { this.stdin = stdin; return this; }
         /**
-         * 设置 `--agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder agent(String agent) { this.agent = agent; return this; }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `ExecApprovalsOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code ExecApprovalsOptions}。
          *
          * @return 按当前字段创建的 ExecApprovalsOptions
          */

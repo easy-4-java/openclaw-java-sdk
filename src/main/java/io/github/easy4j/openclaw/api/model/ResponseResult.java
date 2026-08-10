@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpenClaw JSON 协议中的 `ResponseResult` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Responses API 完整结果，包含状态、输出项和 Token 用量。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -24,37 +24,37 @@ import java.util.Map;
 public class ResponseResult {
 
     /**
-     * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+     * JSON 属性 {@code id}，表示协议对象或请求的唯一标识。
      */
     private String id;
 
     /**
-     * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+     * JSON 属性 {@code object}，表示响应资源类型。
      */
     private String object;
 
     /**
-     * 映射 OpenClaw JSON 字段 `status` 的 协议内容。
+     * Responses API 返回的生成任务状态。
      */
     private String status;
 
     /**
-     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     * JSON 属性 {@code model}，表示模型标识。
      */
     private String model;
 
     /**
-     * 映射 OpenClaw JSON 字段 `output` 的 有序数组。
+     * JSON 属性 {@code output}，按协议顺序保存模型或工具输出列表。
      */
     private List<Map<String, Object>> output;
 
     /**
-     * 映射 OpenClaw JSON 字段 `usage` 的 协议内容。
+     * JSON 属性 {@code usage}，表示Token 用量统计。
      */
     private Usage usage;
 
     /**
-     * OpenClaw JSON 协议中的 `Usage` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 模型请求的输入、输出和总 Token 用量统计。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -66,17 +66,17 @@ public class ResponseResult {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Usage {
         /**
-         * 映射 OpenClaw JSON 字段 `inputTokens` 的 协议内容。
+         * JSON 属性 {@code inputTokens}，表示输入 Token 数。
          */
         @JsonProperty("input_tokens")
         private Integer inputTokens;
         /**
-         * 映射 OpenClaw JSON 字段 `outputTokens` 的 协议内容。
+         * JSON 属性 {@code outputTokens}，表示输出 Token 数。
          */
         @JsonProperty("output_tokens")
         private Integer outputTokens;
         /**
-         * 映射 OpenClaw JSON 字段 `totalTokens` 的 协议内容。
+         * JSON 属性 {@code totalTokens}，表示总 Token 数。
          */
         @JsonProperty("total_tokens")
         private Integer totalTokens;

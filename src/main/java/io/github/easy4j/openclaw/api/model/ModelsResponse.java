@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenClaw JSON 协议中的 `ModelsResponse` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * 模型列表端点响应，包含模型数据数组。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -23,17 +23,17 @@ import java.util.List;
 public class ModelsResponse {
 
     /**
-     * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+     * JSON 属性 {@code object}，表示响应资源类型。
      */
     private String object;
 
     /**
-     * 映射 OpenClaw JSON 字段 `data` 的 有序数组。
+     * JSON 属性 {@code data}，表示响应数据条目。
      */
     private List<ModelData> data;
 
     /**
-     * OpenClaw JSON 协议中的 `ModelData` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 单个模型的标识、所有者和创建时间。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -45,19 +45,19 @@ public class ModelsResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ModelData {
         /**
-         * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+         * JSON 属性 {@code id}，表示协议对象或请求的唯一标识。
          */
         private String id;
         /**
-         * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+         * JSON 属性 {@code object}，表示响应资源类型。
          */
         private String object;
         /**
-         * 映射 OpenClaw JSON 字段 `created` 的 协议内容。
+         * JSON 属性 {@code created}，表示创建时间戳。
          */
         private Long created;
         /**
-         * 映射 OpenClaw JSON 字段 `ownedBy` 的 协议内容。
+         * JSON 属性 {@code ownedBy}，表示会话所有者标识。
          */
         @JsonProperty("owned_by")
         private String ownedBy;

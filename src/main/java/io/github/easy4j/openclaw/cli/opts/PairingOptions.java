@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `pairing` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code pairing} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -17,52 +17,52 @@ import java.util.List;
 public final class PairingOptions implements CliSubArgs {
 
     /**
-     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义设备配对动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Verb {
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示设备配对动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `approve` 协议模式；序列化时使用该固定取值。
+         * 表示设备配对动作的 {@code approve} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         APPROVE
     }
 
     /**
-     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
      */
     private final Verb verb;
     /**
-     * 传给 openclaw 子命令 `--channel-positional` 选项的内容；为 null 时通常省略。
+     * 作为位置参数传递的通道名称；未设置时命令行不包含 {@code --channel-positional}。
      */
     private final String channelPositional;
     /**
-     * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+     * 目标消息通道；未设置时命令行不包含 {@code --channel}。
      */
     private final String channel;
     /**
-     * 传给 openclaw 子命令 `--account` 选项的内容；为 null 时通常省略。
+     * 目标通道账户标识；未设置时命令行不包含 {@code --account}。
      */
     private final String account;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
     /**
-     * 传给 openclaw 子命令 `--approve-code` 选项的内容；为 null 时通常省略。
+     * 待批准配对请求的验证码；未设置时命令行不包含 {@code --approve-code}。
      */
     private final String approveCode;
     /**
-     * 是否向 openclaw 子命令追加 `--notify` 开关。
+     * 是否向 openclaw 子命令追加 {@code --notify} 开关。
      */
     private final boolean notify;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -81,7 +81,7 @@ public final class PairingOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `PairingOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code PairingOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -122,47 +122,47 @@ public final class PairingOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 PairingOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 PairingOptions。
+     * {@code PairingOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
          */
         private Verb verb = Verb.LIST;
         /**
-         * 传给 openclaw 子命令 `--channel-positional` 选项的内容；为 null 时通常省略。
+         * 作为位置参数传递的通道名称；未设置时命令行不包含 {@code --channel-positional}。
          */
         private String channelPositional;
         /**
-         * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+         * 目标消息通道；未设置时命令行不包含 {@code --channel}。
          */
         private String channel;
         /**
-         * 传给 openclaw 子命令 `--account` 选项的内容；为 null 时通常省略。
+         * 目标通道账户标识；未设置时命令行不包含 {@code --account}。
          */
         private String account;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
         /**
-         * 传给 openclaw 子命令 `--approve-code` 选项的内容；为 null 时通常省略。
+         * 待批准配对请求的验证码；未设置时命令行不包含 {@code --approve-code}。
          */
         private String approveCode;
         /**
-         * 是否向 openclaw 子命令追加 `--notify` 开关。
+         * 是否向 openclaw 子命令追加 {@code --notify} 开关。
          */
         private boolean notify;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code list} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -173,9 +173,9 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--list` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --list} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param channelPositionalOrNull 写入 `--list` 选项的内容
+         * @param channelPositionalOrNull 用于筛选配对请求的可选通道；作为 {@code --list} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder list(String channelPositionalOrNull) {
@@ -185,9 +185,9 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --channel} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param channel 写入 `--channel` 选项的内容
+         * @param channel 目标消息通道；作为 {@code --channel} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder channel(String channel) {
@@ -196,9 +196,9 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--account` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --account} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param account 写入 `--account` 选项的内容
+         * @param account 目标通道账户标识；作为 {@code --account} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder account(String account) {
@@ -207,7 +207,7 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -218,10 +218,10 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--approve` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --approve} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param channelPositional 写入 `--approve` 选项的内容
-         * @param code 写入 `--approve` 选项的内容
+         * @param channelPositional 待批准配对请求所属的通道；作为 {@code --approve} 的参数
+         * @param code 配对请求的批准码；作为 {@code --approve} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder approve(String channelPositional, String code) {
@@ -232,9 +232,9 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--notify` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --notify} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param notify 是否向命令行追加 `--notify` 开关
+         * @param notify 是否向命令行追加 {@code --notify} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder notify(boolean notify) {
@@ -243,9 +243,9 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -256,7 +256,7 @@ public final class PairingOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `PairingOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code PairingOptions}。
          *
          * @return 按当前字段创建的 PairingOptions
          */

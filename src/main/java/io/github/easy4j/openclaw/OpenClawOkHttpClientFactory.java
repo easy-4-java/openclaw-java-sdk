@@ -22,7 +22,7 @@ public final class OpenClawOkHttpClientFactory {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawOkHttpClientFactory`。
+     * 根据连接、读取、写入和调用超时配置创建共享 OkHttp 客户端。
      *
      * @param config SDK 配置
      * @return 当前门面持有的 OkHttpClient；对应通道未启用时不可调用
@@ -63,7 +63,7 @@ public final class OpenClawOkHttpClientFactory {
     /**
      * 关闭工厂创建客户端的 Dispatcher 线程池并清空连接池；调用方必须确认客户端未被其他组件复用。
      *
-     * @param client 写入 `client` 协议字段的内容
+     * @param client 提供连接池和调度线程的底层客户端
      */
     public static void shutdown(OkHttpClient client) {
         if (Objects.isNull(client)) {

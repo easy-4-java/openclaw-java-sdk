@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * OpenClaw JSON 协议中的 `GatewaySessionsDefaults` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * sessions.list 返回的默认模型和思考等级。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,25 +15,25 @@ import lombok.Getter;
 public class GatewaySessionsDefaults {
 
     /**
-     * 映射 OpenClaw JSON 字段 `modelProvider` 的 关联标识。
+     * JSON 属性 {@code modelProvider}，表示模型提供方标识。
      */
     @JsonProperty("modelProvider")
     private String modelProvider;
 
     /**
-     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     * JSON 属性 {@code model}，表示模型标识。
      */
     @JsonProperty("model")
     private String model;
 
     /**
-     * 映射 OpenClaw JSON 字段 `contextTokens` 的 协议内容。
+     * JSON 属性 {@code contextTokens}，表示上下文 Token 容量。
      */
     @JsonProperty("contextTokens")
     private Integer contextTokens;
 
     /**
-     * 映射 OpenClaw JSON 字段 `thinkingDefault` 的 协议内容。
+     * JSON 属性 {@code thinkingDefault}，表示默认思考强度。
      */
     @JsonProperty("thinkingDefault")
     private String thinkingDefault;

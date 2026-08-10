@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `reset` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code reset} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,27 +16,27 @@ import java.util.List;
 public final class ResetOptions implements CliSubArgs {
 
     /**
-     * `Scope` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义重置范围允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Scope {
         /**
-         * 选择 `config` 协议模式；序列化时使用该固定取值。
+         * 表示重置范围的 {@code config} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         CONFIG("config"),
         /**
-         * 选择 `config_creds_sessions` 协议模式；序列化时使用该固定取值。
+         * 表示重置范围的 {@code config_creds_sessions} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         CONFIG_CREDS_SESSIONS("config+creds+sessions"),
         /**
-         * 选择 `full` 协议模式；序列化时使用该固定取值。
+         * 表示重置范围的 {@code full} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         FULL("full");
 
         /**
-         * 传给 openclaw 子命令 `--cli-value` 选项的内容；为 null 时通常省略。
+         * 枚举常量对应的 CLI 固定参数值；未设置时命令行不包含 {@code --cli-value}。
          */
         private final String cliValue;
 
@@ -50,23 +50,23 @@ public final class ResetOptions implements CliSubArgs {
     }
 
     /**
-     * 传给 openclaw 子命令 `--scope` 选项的内容；为 null 时通常省略。
+     * 重置或查询操作的作用域；未设置时命令行不包含 {@code --scope}。
      */
     private final Scope scope;
     /**
-     * 是否向 openclaw 子命令追加 `--yes` 开关。
+     * 是否向 openclaw 子命令追加 {@code --yes} 开关。
      */
     private final boolean yes;
     /**
-     * 是否向 openclaw 子命令追加 `--non-interactive` 开关。
+     * 是否向 openclaw 子命令追加 {@code --non-interactive} 开关。
      */
     private final boolean nonInteractive;
     /**
-     * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+     * 是否向 openclaw 子命令追加 {@code --dry-run} 开关。
      */
     private final boolean dryRun;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -82,7 +82,7 @@ public final class ResetOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `ResetOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code ResetOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -110,37 +110,37 @@ public final class ResetOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 ResetOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ResetOptions。
+     * {@code ResetOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--scope` 选项的内容；为 null 时通常省略。
+         * 重置或查询操作的作用域；未设置时命令行不包含 {@code --scope}。
          */
         private Scope scope;
         /**
-         * 是否向 openclaw 子命令追加 `--yes` 开关。
+         * 是否向 openclaw 子命令追加 {@code --yes} 开关。
          */
         private boolean yes;
         /**
-         * 是否向 openclaw 子命令追加 `--non-interactive` 开关。
+         * 是否向 openclaw 子命令追加 {@code --non-interactive} 开关。
          */
         private boolean nonInteractive;
         /**
-         * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+         * 是否向 openclaw 子命令追加 {@code --dry-run} 开关。
          */
         private boolean dryRun;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 设置 `--scope` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --scope} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param scope 写入 `--scope` 选项的内容
+         * @param scope 重置或查询操作的作用域；作为 {@code --scope} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder scope(Scope scope) {
@@ -149,9 +149,9 @@ public final class ResetOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--yes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --yes} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param yes 是否向命令行追加 `--yes` 开关
+         * @param yes 是否向命令行追加 {@code --yes} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder yes(boolean yes) {
@@ -160,9 +160,9 @@ public final class ResetOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--non-interactive` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --non-interactive} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param nonInteractive 是否向命令行追加 `--non-interactive` 开关
+         * @param nonInteractive 是否向命令行追加 {@code --non-interactive} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder nonInteractive(boolean nonInteractive) {
@@ -171,9 +171,9 @@ public final class ResetOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --dry-run} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param dryRun 是否向命令行追加 `--dry-run` 开关
+         * @param dryRun 是否向命令行追加 {@code --dry-run} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder dryRun(boolean dryRun) {
@@ -182,9 +182,9 @@ public final class ResetOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -195,7 +195,7 @@ public final class ResetOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `ResetOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code ResetOptions}。
          *
          * @return 按当前字段创建的 ResetOptions
          */

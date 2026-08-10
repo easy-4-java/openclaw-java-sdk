@@ -1,7 +1,7 @@
 package io.github.easy4j.openclaw.cli.opts;
 
 /**
- * `ThinkingLevel` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+ * 定义模型思考强度允许的固定取值及其 CLI/JSON 序列化拼写。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -9,37 +9,35 @@ package io.github.easy4j.openclaw.cli.opts;
 public enum ThinkingLevel {
 
     /**
-     * 选择 `off` 协议模式；序列化时使用该固定取值。
+     * 表示模型思考强度的 {@code off} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     OFF("off"),
     /**
-     * 选择 `minimal` 协议模式；序列化时使用该固定取值。
+     * 表示模型思考强度的 {@code minimal} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     MINIMAL("minimal"),
     /**
-     * 选择 `low` 协议模式；序列化时使用该固定取值。
+     * 表示模型思考强度的 {@code low} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     LOW("low"),
     /**
-     * 选择 `medium` 协议模式；序列化时使用该固定取值。
+     * 表示模型思考强度的 {@code medium} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     MEDIUM("medium"),
     /**
-     * 选择 `high` 协议模式；序列化时使用该固定取值。
+     * 表示模型思考强度的 {@code high} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     HIGH("high"),
     /**
-     * 选择 `xhigh` 协议模式；序列化时使用该固定取值。
+     * 表示模型思考强度的 {@code xhigh} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     XHIGH("xhigh");
 
-    /**
-     * 传给 openclaw 子命令 `--cli-value` 选项的内容；为 null 时通常省略。
-     */
+    /** openclaw CLI 接受的小写思考等级值。 */
     private final String cliValue;
 
     /**
- * @param cliValue null, openclaw documentation
+     * @param cliValue 传给 openclaw CLI 的小写思考等级值
      */
     ThinkingLevel(String cliValue) {
         this.cliValue = cliValue;
@@ -48,7 +46,7 @@ public enum ThinkingLevel {
     /**
      * 返回该思考等级在 openclaw CLI 中接受的小写参数值。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 当前思考等级对应的 CLI 参数值
      */
     public String cliValue() {
         return cliValue;

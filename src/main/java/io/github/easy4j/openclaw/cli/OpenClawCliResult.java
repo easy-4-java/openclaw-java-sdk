@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * 本地 openclaw CLI 的 `OpenClawCliResult` 支撑类型，用于参数编码、可用性检查或执行结果表达。
+ * 本地 openclaw CLI 的 {@code OpenClawCliResult} 支撑类型，用于参数编码、可用性检查或执行结果表达。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -14,24 +14,24 @@ import java.util.Objects;
 public final class OpenClawCliResult {
 
     /**
-     * `OpenClawCliResult` 生命周期内保存的 `exitCode` 对应状态。
+     * 子进程退出码；零表示命令正常结束。
      */
     private final int exitCode;
     /**
-     * `OpenClawCliResult` 生命周期内保存的 `stdout` 对应状态。
+     * 子进程标准输出的完整捕获文本。
      */
     private final String stdout;
     /**
-     * `OpenClawCliResult` 生命周期内保存的 `stderr` 对应状态。
+     * 子进程标准错误的完整捕获文本。
      */
     private final String stderr;
 
     /**
-     * 按给定配置创建 `OpenClawCliResult`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code OpenClawCliResult}，构造过程不隐式执行远程业务请求。
      *
-     * @param exitCode 写入 `exitCode` 协议字段的内容
-     * @param stdout 写入 `stdout` 协议字段的内容
-     * @param stderr 写入 `stderr` 协议字段的内容
+     * @param exitCode 本地子进程退出码；非零通常表示执行失败
+     * @param stdout 子进程标准输出文本
+     * @param stderr 子进程标准错误文本
      */
     public OpenClawCliResult(int exitCode, String stdout, String stderr) {
         this.exitCode = exitCode;
@@ -40,9 +40,9 @@ public final class OpenClawCliResult {
     }
 
     /**
-     * 判断 `success` 对应状态 是否满足协议或生命周期条件。
+     * 判断 CLI 子进程是否以退出码 0 结束。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 子进程退出码为零时返回 {@code true}
      */
     public boolean isSuccess() {
         return exitCode == 0;
@@ -51,7 +51,7 @@ public final class OpenClawCliResult {
     /**
      * 生成包含退出码、标准输出和标准错误的诊断文本，便于日志记录和测试断言。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 不包含完整输出内容、仅包含长度与退出状态的诊断文本
      */
     @Override
     public String toString() {
@@ -62,8 +62,8 @@ public final class OpenClawCliResult {
     /**
      * 按退出码、标准输出和标准错误比较两个 CLI 执行结果。
      *
-     * @param o 写入 `o` 协议字段的内容
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @param o 与当前结果比较的对象
+     * @return 退出码、标准输出和标准错误均相同时返回 {@code true}
      */
     @Override
     public boolean equals(Object o) {
@@ -78,9 +78,9 @@ public final class OpenClawCliResult {
     }
 
     /**
-     * 判断 `hCode` 对应状态 是否满足协议或生命周期条件。
+     * 按退出码、标准输出和标准错误计算哈希值。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 由退出码、标准输出和标准错误计算的哈希值
      */
     @Override
     public int hashCode() {

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `sessions` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code sessions} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,72 +16,72 @@ import java.util.List;
 public final class SessionsOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义会话管理动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示会话管理动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `cleanup` 协议模式；序列化时使用该固定取值。
+         * 表示会话管理动作的 {@code cleanup} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         CLEANUP
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+     * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
      */
     private final String agent;
     /**
-     * 是否向 openclaw 子命令追加 `--all-agents` 开关。
+     * 是否向 openclaw 子命令追加 {@code --all-agents} 开关。
      */
     private final boolean allAgents;
     /**
-     * 传给 openclaw 子命令 `--active-minutes` 选项的内容；为 null 时通常省略。
+     * 判断会话活跃状态的分钟窗口；未设置时命令行不包含 {@code --active-minutes}。
      */
     private final Integer activeMinutes;
     /**
-     * 是否向 openclaw 子命令追加 `--verbose` 开关。
+     * 是否向 openclaw 子命令追加 {@code --verbose} 开关。
      */
     private final boolean verbose;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
     /**
-     * 传给 openclaw 子命令 `--store` 选项的内容；为 null 时通常省略。
+     * 审批策略存储文件路径；未设置时命令行不包含 {@code --store}。
      */
     private final String store;
     /**
-     * 是否向 openclaw 子命令追加 `--cleanup-dry-run` 开关。
+     * 是否向 openclaw 子命令追加 {@code --cleanup-dry-run} 开关。
      */
     private final boolean cleanupDryRun;
     /**
-     * 是否向 openclaw 子命令追加 `--cleanup-enforce` 开关。
+     * 是否向 openclaw 子命令追加 {@code --cleanup-enforce} 开关。
      */
     private final boolean cleanupEnforce;
     /**
-     * 是否向 openclaw 子命令追加 `--cleanup-fix-missing` 开关。
+     * 是否向 openclaw 子命令追加 {@code --cleanup-fix-missing} 开关。
      */
     private final boolean cleanupFixMissing;
     /**
-     * 传给 openclaw 子命令 `--cleanup-active-key` 选项的内容；为 null 时通常省略。
+     * 清理操作使用的活跃会话键；未设置时命令行不包含 {@code --cleanup-active-key}。
      */
     private final String cleanupActiveKey;
     /**
-     * 是否向 openclaw 子命令追加 `--cleanup-json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --cleanup-json} 开关。
      */
     private final boolean cleanupJson;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -105,7 +105,7 @@ public final class SessionsOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `SessionsOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code SessionsOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -144,67 +144,67 @@ public final class SessionsOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 SessionsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 SessionsOptions。
+     * {@code SessionsOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.LIST;
         /**
-         * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+         * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
          */
         private String agent;
         /**
-         * 是否向 openclaw 子命令追加 `--all-agents` 开关。
+         * 是否向 openclaw 子命令追加 {@code --all-agents} 开关。
          */
         private boolean allAgents;
         /**
-         * 传给 openclaw 子命令 `--active-minutes` 选项的内容；为 null 时通常省略。
+         * 判断会话活跃状态的分钟窗口；未设置时命令行不包含 {@code --active-minutes}。
          */
         private Integer activeMinutes;
         /**
-         * 是否向 openclaw 子命令追加 `--verbose` 开关。
+         * 是否向 openclaw 子命令追加 {@code --verbose} 开关。
          */
         private boolean verbose;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
         /**
-         * 传给 openclaw 子命令 `--store` 选项的内容；为 null 时通常省略。
+         * 审批策略存储文件路径；未设置时命令行不包含 {@code --store}。
          */
         private String store;
         /**
-         * 是否向 openclaw 子命令追加 `--cleanup-dry-run` 开关。
+         * 是否向 openclaw 子命令追加 {@code --cleanup-dry-run} 开关。
          */
         private boolean cleanupDryRun;
         /**
-         * 是否向 openclaw 子命令追加 `--cleanup-enforce` 开关。
+         * 是否向 openclaw 子命令追加 {@code --cleanup-enforce} 开关。
          */
         private boolean cleanupEnforce;
         /**
-         * 是否向 openclaw 子命令追加 `--cleanup-fix-missing` 开关。
+         * 是否向 openclaw 子命令追加 {@code --cleanup-fix-missing} 开关。
          */
         private boolean cleanupFixMissing;
         /**
-         * 传给 openclaw 子命令 `--cleanup-active-key` 选项的内容；为 null 时通常省略。
+         * 清理操作使用的活跃会话键；未设置时命令行不包含 {@code --cleanup-active-key}。
          */
         private String cleanupActiveKey;
         /**
-         * 是否向 openclaw 子命令追加 `--cleanup-json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --cleanup-json} 开关。
          */
         private boolean cleanupJson;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code list} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -214,7 +214,7 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `cleanup` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code cleanup} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -224,9 +224,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder agent(String agent) {
@@ -235,9 +235,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--all-agents` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --all-agents} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param allAgents 是否向命令行追加 `--all-agents` 开关
+         * @param allAgents 是否向命令行追加 {@code --all-agents} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder allAgents(boolean allAgents) {
@@ -246,9 +246,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--active-minutes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --active-minutes} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param minutes 写入 `--active-minutes` 选项的内容
+         * @param minutes 活跃时间窗口，单位为分钟；作为 {@code --active-minutes} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder activeMinutes(int minutes) {
@@ -257,9 +257,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--active-minutes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --active-minutes} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param minutes 写入 `--active-minutes` 选项的内容
+         * @param minutes 活跃时间窗口，单位为分钟；作为 {@code --active-minutes} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder activeMinutes(Integer minutes) {
@@ -268,9 +268,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --verbose} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param verbose 是否向命令行追加 `--verbose` 开关
+         * @param verbose 是否向命令行追加 {@code --verbose} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder verbose(boolean verbose) {
@@ -279,7 +279,7 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -290,9 +290,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--store` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --store} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param storePath 写入 `--store` 选项的内容
+         * @param storePath 密钥存储文件路径；作为 {@code --store} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder store(String storePath) {
@@ -301,9 +301,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--cleanup-dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --cleanup-dry-run} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param dryRun 是否向命令行追加 `--cleanup-dry-run` 开关
+         * @param dryRun 是否向命令行追加 {@code --cleanup-dry-run} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder cleanupDryRun(boolean dryRun) {
@@ -312,9 +312,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--cleanup-enforce` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --cleanup-enforce} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param enforce 是否向命令行追加 `--cleanup-enforce` 开关
+         * @param enforce 是否向命令行追加 {@code --cleanup-enforce} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder cleanupEnforce(boolean enforce) {
@@ -323,9 +323,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--cleanup-fix-missing` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --cleanup-fix-missing} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param fixMissing 是否向命令行追加 `--cleanup-fix-missing` 开关
+         * @param fixMissing 是否向命令行追加 {@code --cleanup-fix-missing} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder cleanupFixMissing(boolean fixMissing) {
@@ -334,7 +334,7 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--cleanup-active-key` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --cleanup-active-key} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param sessionKey 会话路由键
          * @return 当前构建器，便于继续链式配置
@@ -345,7 +345,7 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--cleanup-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --cleanup-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -356,9 +356,9 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -369,7 +369,7 @@ public final class SessionsOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `SessionsOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code SessionsOptions}。
          *
          * @return 按当前字段创建的 SessionsOptions
          */

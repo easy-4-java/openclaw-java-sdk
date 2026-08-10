@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * 本地 openclaw CLI 的 `OpenClawCliAvailabilityReport` 支撑类型，用于参数编码、可用性检查或执行结果表达。
+ * 本地 openclaw CLI 的 {@code OpenClawCliAvailabilityReport} 支撑类型，用于参数编码、可用性检查或执行结果表达。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,19 +15,19 @@ import lombok.Getter;
 public class OpenClawCliAvailabilityReport {
 
     /**
-     * `OpenClawCliAvailabilityReport` 生命周期内保存的 `status` 对应状态。
+     * CLI 可用性检查的分类结果，用于区分可用、缺失和探测失败。
      */
     private final OpenClawCliAvailabilityStatus status;
     /**
-     * `OpenClawCliAvailabilityReport` 生命周期内保存的 `available` 对应状态。
+     * CLI 可执行文件和启动探测是否均通过。
      */
     private final boolean available;
     /**
-     * `OpenClawCliAvailabilityReport` 生命周期内保存的 `configuredExecutable` 对应状态。
+     * 配置中声明的 CLI 可执行文件名称或路径。
      */
     private final String configuredExecutable;
     /**
-     * `OpenClawCliAvailabilityReport` 生命周期内保存的 `resolvedExecutablePath` 对应状态。
+     * 经 PATH 或显式路径解析得到的可执行文件绝对路径。
      */
     private final String resolvedExecutablePath;
     /**
@@ -35,14 +35,14 @@ public class OpenClawCliAvailabilityReport {
      */
     private final String message;
     /**
-     * `OpenClawCliAvailabilityReport` 生命周期内保存的 `probeResult` 对应状态。
+     * CLI 启动探测命令的退出码及输出摘要。
      */
     private final OpenClawCliResult probeResult;
 
     /**
-     * 判断 `available` 对应状态 是否满足协议或生命周期条件。
+     * 返回 CLI 路径解析与启动探测是否均成功。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 探测状态为可用时返回 {@code true}
      */
     public boolean isAvailable() {
         return available;
@@ -51,7 +51,7 @@ public class OpenClawCliAvailabilityReport {
     /**
      * 把探测状态、版本、退出码和错误信息组合为单行诊断说明，敏感配置不会写入文本。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 可直接写入日志的单行 CLI 可用性诊断文本
      */
     public String toDiagnosticMessage() {
         StringBuilder sb = new StringBuilder();

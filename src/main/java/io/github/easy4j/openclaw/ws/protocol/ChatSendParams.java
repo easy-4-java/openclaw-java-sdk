@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * OpenClaw JSON 协议中的 `ChatSendParams` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * chat.send RPC 参数，包含会话、消息、投递来源和超时。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,31 +15,31 @@ import java.util.Map;
 public class ChatSendParams {
 
     /**
-     * 映射 OpenClaw JSON 字段 `sessionKey` 的 协议内容。
+     * JSON 属性 {@code sessionKey}，表示Gateway 会话路由键。
      */
     private final String sessionKey;
     /**
-     * 映射 OpenClaw JSON 字段 `message` 的 协议内容。
+     * 发送到目标聊天会话的消息正文。
      */
     private final String message;
     /**
-     * 映射 OpenClaw JSON 字段 `thinking` 的 协议内容。
+     * JSON 属性 {@code thinking}，表示思考强度选项。
      */
     private final String thinking;
     /**
-     * 映射 OpenClaw JSON 字段 `deliver` 的 布尔开关。
+     * JSON 属性 {@code deliver}，表示是否向外部通道投递消息。
      */
     private final Boolean deliver;
     /**
-     * 映射 OpenClaw JSON 字段 `originatingChannel` 的 协议内容。
+     * JSON 属性 {@code originatingChannel}，表示来源通道名称。
      */
     private final String originatingChannel;
     /**
-     * 映射 OpenClaw JSON 字段 `originatingTo` 的 协议内容。
+     * JSON 属性 {@code originatingTo}，表示来源通道目标。
      */
     private final String originatingTo;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
      */
     private final Integer timeoutMs;
 
@@ -54,45 +54,45 @@ public class ChatSendParams {
     }
 
     /**
-     * 读取当前对象保存的 会话路由键，不触发网络或子进程调用。
+     * 返回会话路由键。
      *
      * @return 可用于关联后续请求的标识
      */
     public String getSessionKey() { return sessionKey; }
     /**
-     * 读取当前对象保存的 消息正文，不触发网络或子进程调用。
+     * 返回消息正文。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 发送给会话的消息正文
      */
     public String getMessage() { return message; }
     /**
-     * 读取当前对象保存的 `thinking` 对应状态，不触发网络或子进程调用。
+     * 返回本次请求使用的思考强度选项。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 本次请求的思考强度；未设置时为 {@code null}
      */
     public String getThinking() { return thinking; }
     /**
-     * 读取当前对象保存的 `deliver` 对应状态，不触发网络或子进程调用。
+     * 返回是否将消息投递到外部通道。
      *
-     * @return 对应可空协议字段；调用方未设置时返回 null
+     * @return 是否投递到外部通道；未设置时返回 {@code null}
      */
     public Boolean getDeliver() { return deliver; }
     /**
-     * 读取当前对象保存的 `originatingChannel` 对应状态，不触发网络或子进程调用。
+     * 返回触发本次消息的来源通道。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 触发消息的来源通道；未设置时为 {@code null}
      */
     public String getOriginatingChannel() { return originatingChannel; }
     /**
-     * 读取当前对象保存的 `originatingTo` 对应状态，不触发网络或子进程调用。
+     * 返回来源通道中的目标地址。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 来源通道中的目标地址；未设置时为 {@code null}
      */
     public String getOriginatingTo() { return originatingTo; }
     /**
-     * 读取当前对象保存的 超时时间，单位为毫秒，不触发网络或子进程调用。
+     * 返回聊天消息发送超时，单位为毫秒。
      *
-     * @return 当前计数、状态码、可空配置或毫秒级时间值
+     * @return 请求超时毫秒数；未设置时为空
      */
     public Integer getTimeoutMs() { return timeoutMs; }
 
@@ -114,99 +114,99 @@ public class ChatSendParams {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `ChatSendParams` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code ChatSendParams} 字段。
      *
      * @return 新的空白构建器
      */
     public static Builder builder() { return new Builder(); }
 
     /**
-     * 链式构建器，逐项收集 ChatSendParams 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ChatSendParams。
+     * {@code ChatSendParams} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static class Builder {
         /**
-         * 映射 OpenClaw JSON 字段 `sessionKey` 的 协议内容。
+         * JSON 属性 {@code sessionKey}，表示Gateway 会话路由键。
          */
         private String sessionKey;
         /**
-         * 映射 OpenClaw JSON 字段 `message` 的 协议内容。
+         * 构建中的聊天消息正文。
          */
         private String message;
         /**
-         * 映射 OpenClaw JSON 字段 `thinking` 的 协议内容。
+         * JSON 属性 {@code thinking}，表示思考强度选项。
          */
         private String thinking;
         /**
-         * 映射 OpenClaw JSON 字段 `deliver` 的 布尔开关。
+         * JSON 属性 {@code deliver}，表示是否向外部通道投递消息。
          */
         private Boolean deliver;
         /**
-         * 映射 OpenClaw JSON 字段 `originatingChannel` 的 协议内容。
+         * JSON 属性 {@code originatingChannel}，表示来源通道名称。
          */
         private String originatingChannel;
         /**
-         * 映射 OpenClaw JSON 字段 `originatingTo` 的 协议内容。
+         * JSON 属性 {@code originatingTo}，表示来源通道目标。
          */
         private String originatingTo;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
          */
         private Integer timeoutMs;
 
         /**
-         * 设置 `--session-key` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --session-key} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param sessionKey 会话路由键
          * @return 当前构建器，便于继续链式配置
          */
         public Builder sessionKey(String sessionKey) { this.sessionKey = sessionKey; return this; }
         /**
-         * 设置 `--message` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --message} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param message 消息正文
          * @return 当前构建器，便于继续链式配置
          */
         public Builder message(String message) { this.message = message; return this; }
         /**
-         * 设置 `--thinking` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --thinking} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param thinking 写入 `--thinking` 选项的内容
+         * @param thinking 模型思考强度；作为 {@code --thinking} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder thinking(String thinking) { this.thinking = thinking; return this; }
         /**
-         * 设置 `--deliver` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --deliver} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param deliver 写入 `--deliver` 选项的内容
+         * @param deliver 是否把消息投递至外部通道；作为 {@code --deliver} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder deliver(Boolean deliver) { this.deliver = deliver; return this; }
         /**
-         * 设置 `--originating-channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --originating-channel} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param ch 写入 `--originating-channel` 选项的内容
+         * @param ch 触发消息的来源通道；作为 {@code --originating-channel} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder originatingChannel(String ch) { this.originatingChannel = ch; return this; }
         /**
-         * 设置 `--originating-to` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --originating-to} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param to 写入 `--originating-to` 选项的内容
+         * @param to 消息投递目标；作为 {@code --originating-to} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder originatingTo(String to) { this.originatingTo = to; return this; }
         /**
-         * 设置 `--timeout-ms` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --timeout-ms} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param ms 写入 `--timeout-ms` 选项的内容
+         * @param ms 超时时长，单位为毫秒；作为 {@code --timeout-ms} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder timeoutMs(Integer ms) { this.timeoutMs = ms; return this; }
         /**
-         * 校验并复制当前构建器字段，创建独立的 `ChatSendParams`。
+         * 校验并复制当前构建器字段，创建独立的 {@code ChatSendParams}。
          *
          * @return 按当前字段创建的 ChatSendParams
          */

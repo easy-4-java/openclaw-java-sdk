@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpenClaw JSON 协议中的 `ChatRequest` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Chat Completions 请求，包含消息、模型、采样、工具和流式选项。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -19,95 +19,95 @@ import java.util.Map;
 public class ChatRequest {
 
     /**
-     * 映射 OpenClaw JSON 字段 `agent` 的 协议内容。
+     * JSON 属性 {@code agent}，表示智能体标识。
      */
     private String agent;
 
     /**
-     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     * JSON 属性 {@code model}，表示模型标识。
      */
     private String model;
 
     /**
-     * 映射 OpenClaw JSON 字段 `messages` 的 有序数组。
+     * JSON 属性 {@code messages}，表示按对话顺序排列的消息。
      */
     private List<ChatMessage> messages;
 
     /**
-     * 映射 OpenClaw JSON 字段 `stream` 的 布尔开关。
+     * JSON 属性 {@code stream}，表示是否启用流式响应。
      */
     private Boolean stream;
 
     /**
-     * 映射 OpenClaw JSON 字段 `streamOptions` 的 键值对象。
+     * JSON 属性 {@code streamOptions}，表示流式响应附加选项。
      */
     @JsonProperty("stream_options")
     private Map<String, Object> streamOptions;
 
     /**
-     * 映射 OpenClaw JSON 字段 `tools` 的 有序数组。
+     * JSON 属性 {@code tools}，表示可供模型调用的工具定义。
      */
     private List<Map<String, Object>> tools;
 
     /**
-     * 映射 OpenClaw JSON 字段 `toolChoice` 的 协议内容。
+     * JSON 属性 {@code toolChoice}，表示工具选择策略。
      */
     @JsonProperty("tool_choice")
     private Object toolChoice;
 
     /**
-     * 映射 OpenClaw JSON 字段 `user` 的 协议内容。
+     * JSON 属性 {@code user}，表示终端用户标识。
      */
     private String user;
 
     /**
-     * 映射 OpenClaw JSON 字段 `maxCompletionTokens` 的 协议内容。
+     * JSON 属性 {@code maxCompletionTokens}，表示最大补全 Token 数。
      */
     @JsonProperty("max_completion_tokens")
     private Integer maxCompletionTokens;
 
     /**
-     * 映射 OpenClaw JSON 字段 `maxTokens` 的 协议内容。
+     * JSON 属性 {@code maxTokens}，表示最大生成 Token 数。
      */
     @JsonProperty("max_tokens")
     private Integer maxTokens;
 
     /**
-     * 映射 OpenClaw JSON 字段 `temperature` 的 协议内容。
+     * JSON 属性 {@code temperature}，表示采样温度。
      */
     private Double temperature;
 
     /**
-     * 映射 OpenClaw JSON 字段 `topP` 的 协议内容。
+     * JSON 属性 {@code topP}，表示核采样概率阈值。
      */
     @JsonProperty("top_p")
     private Double topP;
 
     /**
-     * 映射 OpenClaw JSON 字段 `frequencyPenalty` 的 协议内容。
+     * JSON 属性 {@code frequencyPenalty}，表示词频惩罚系数。
      */
     @JsonProperty("frequency_penalty")
     private Double frequencyPenalty;
 
     /**
-     * 映射 OpenClaw JSON 字段 `presencePenalty` 的 协议内容。
+     * JSON 属性 {@code presencePenalty}，表示重复主题惩罚系数。
      */
     @JsonProperty("presence_penalty")
     private Double presencePenalty;
 
     /**
-     * 映射 OpenClaw JSON 字段 `seed` 的 协议内容。
+     * JSON 属性 {@code seed}，表示采样随机种子。
      */
     private Integer seed;
 
     /**
-     * 映射 OpenClaw JSON 字段 `responseFormat` 的 协议内容。
+     * JSON 属性 {@code responseFormat}，表示模型响应格式约束。
      */
     @JsonProperty("response_format")
     private ResponseFormat responseFormat;
 
     /**
-     * 映射 OpenClaw JSON 字段 `stop` 的 协议内容。
+     * JSON 属性 {@code stop}，表示停止序列。
      */
     private Object stop;
 }

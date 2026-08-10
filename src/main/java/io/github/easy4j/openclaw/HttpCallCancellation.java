@@ -10,7 +10,7 @@ package io.github.easy4j.openclaw;
 public interface HttpCallCancellation {
 
     /**
-     * 接收并处理 Cancel 生命周期事件；实现不会改变事件顺序。
+     * 注册取消时执行的回调，并返回用于注销该回调的句柄。
      *
      * @param callback 取消或事件回调
      * @return 请求终止后用于注销取消回调的句柄

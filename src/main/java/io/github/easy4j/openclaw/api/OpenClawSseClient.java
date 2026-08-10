@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class OpenClawSseClient extends OpenClawHttpClient {
 
     /**
-     * `OpenClawSseClient` 生命周期内保存的 `streamExecutor` 对应状态。
+     * 执行 SSE 读取任务的线程池；由客户端关闭时主动终止。
      */
     private final ExecutorService streamExecutor;
     /**
@@ -49,7 +49,7 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     private final Set<SseSubscription> activeSubscriptions = ConcurrentHashMap.newKeySet();
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造 SSE 客户端并创建有界流读取执行器；外部注入的 OkHttpClient 不随当前对象关闭。
      *
      * @param config SDK 配置
      */
@@ -60,7 +60,7 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造 SSE 客户端并创建有界流读取执行器；外部注入的 OkHttpClient 不随当前对象关闭。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -76,7 +76,7 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     /**
      * 启动 SSE 请求并登记活动订阅；返回句柄可取消 Call 并释放响应资源。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param handler 事件处理器
      * @return 已登记且可主动取消的 SSE 订阅句柄
      */
@@ -87,7 +87,7 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     /**
      * 启动 SSE 请求并登记活动订阅；返回句柄可取消 Call 并释放响应资源。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param headers 附加 HTTP 请求头
      * @param handler 事件处理器
      * @return 已登记且可主动取消的 SSE 订阅句柄
@@ -120,9 +120,9 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     }
 
     /**
-     * 调用 OpenClaw 的 `activeSubscriptionCount` API，并复用统一认证、序列化、取消和异常处理。
+     * 统计尚未取消且读取任务未结束的 SSE 订阅。
      *
-     * @return 当前计数、状态码、可空配置或毫秒级时间值
+     * @return 当前仍处于活动状态的 SSE 订阅数量
      */
     public int activeSubscriptionCount() {
         return activeSubscriptions.size();
@@ -132,9 +132,9 @@ public class OpenClawSseClient extends OpenClawHttpClient {
         // OkHttp 回调只接收响应；持续读取转交专用有界执行器，避免阻塞 Dispatcher。
         call.enqueue(new Callback() {
             /**
-             * 接收并处理 Failure 生命周期事件；实现不会改变事件顺序。
+             * 处理 OkHttp 传输失败，关闭注册资源并完成异常结果。
              *
-             * @param ignored 写入 `ignored` 协议字段的内容
+             * @param ignored OkHttp 回调关联的调用对象；当前回调无需读取它
              * @param error 导致调用失败的异常
              */
             @Override
@@ -146,9 +146,9 @@ public class OpenClawSseClient extends OpenClawHttpClient {
             }
 
             /**
-             * 接收并处理 Response 生命周期事件；实现不会改变事件顺序。
+             * 处理 HTTP 或 Gateway 响应，并完成对应异步请求。
              *
-             * @param ignored 写入 `ignored` 协议字段的内容
+             * @param ignored OkHttp 回调关联的调用对象；当前回调无需读取它
              * @param response 待消费并关闭的 HTTP 响应
              */
             @Override
