@@ -328,10 +328,10 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         CompletableFuture<HttpResponseData> result = new CompletableFuture<>();
         Call call = httpClient.newCall(request);
         // 将业务取消令牌绑定到本次 Call；请求结束后注销，避免长生命周期令牌持有已完成调用。
-        AutoCloseable registration = Objects.nonNull(cancellation)
-                ? cancellation.onCancel(call::cancel) : null;
+        AutoCloseable registration = Objects.nonNull(cancellation) ? cancellation.onCancel(call::cancel) : null;
         // enqueue 使用 OkHttp Dispatcher 异步执行，不占用调用方线程等待网络 I/O。
         call.enqueue(new Callback() {
+
             /**
              * 将 OkHttp 传输失败写入异步结果，并注销业务取消监听器。
              *
