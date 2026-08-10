@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -63,6 +65,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     private Consumer<List<ChatMessage.ToolCall>> toolCallConsumer;
     private Consumer<String> completeConsumer;
     private Consumer<Throwable> errorConsumer;
+    private final AtomicReference<Runnable> cancellation = new AtomicReference<>();
 
     /**
  * Builder.
@@ -135,6 +138,30 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     public StreamingChatResponse onError(Consumer<Throwable> callback) {
         this.errorConsumer = callback;
         return this;
+    }
+
+    /**
+     * 绑定底层 SSE 取消动作。
+     *
+     * @param action 取消动作
+     * @return 当前响应
+     */
+    public StreamingChatResponse onCancel(Runnable action) {
+        cancellation.set(Objects.requireNonNull(action, "action"));
+        if (isCancelled()) {
+            action.run();
+        }
+        return this;
+    }
+
+    /** 将 Future 取消传播到底层 SSE 订阅。 */
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        Runnable action = cancellation.getAndSet(null);
+        if (Objects.nonNull(action)) {
+            action.run();
+        }
+        return super.cancel(mayInterruptIfRunning);
     }
 
     // ==================== SseEventHandler 实现 ====================

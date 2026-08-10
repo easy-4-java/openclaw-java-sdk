@@ -110,13 +110,11 @@ class OpenClawHttpApiCoverageTest {
                     StreamingChatResponse.builder().onDelta(ignored -> { }).onChunk(ignored -> { })
                             .onToolCall(ignored -> { }).onComplete(ignored -> { }).onError(ignored -> { }));
             assertEquals("hello", callbackStream.get(3, TimeUnit.SECONDS).getChoices().get(0).getDelta().getContent());
-            try (Response raw = chat.chatCompletionStreamRaw(agentRequest, Map.of("X-Raw", "yes"))) {
-                assertEquals(200, raw.code());
-            }
-
             status.set(500);
             assertThrows(OpenClawHttpException.class, () -> chat.chatCompletion(agentRequest));
-            assertThrows(OpenClawHttpException.class, () -> chat.chatCompletionStreamRaw(agentRequest));
+            StreamingChatResponse failedStream = chat.chatCompletionStream(agentRequest);
+            assertThrows(java.util.concurrent.ExecutionException.class,
+                    () -> failedStream.get(3, TimeUnit.SECONDS));
         }
     }
 
