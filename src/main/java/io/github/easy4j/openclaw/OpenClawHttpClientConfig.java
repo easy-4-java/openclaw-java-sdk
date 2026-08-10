@@ -87,10 +87,19 @@ public class OpenClawHttpClientConfig {
     private long keepAliveDurationMillis = 300_000L;
 
  /** maximum concurrency */
-    private int maxRequests = 128;
+    private int maxRequests = 1_024;
 
  /** maximum concurrency */
-    private int maxRequestsPerHost = 64;
+    private int maxRequestsPerHost = 512;
+
+    /** Netty 非阻塞传输 I/O 线程数；固定小线程池承载大量并发连接。 */
+    private int ioThreadsCount = Math.max(4, Math.min(16, Runtime.getRuntime().availableProcessors()));
+
+    /**
+     * 是否为旧式注入 OkHttp interceptor 的场景启用兼容传输。
+     * <p>默认关闭；生产并发路径应使用 Netty 非阻塞传输。</p>
+     */
+    private boolean legacyInjectedOkHttpTransportEnabled = false;
 
     /** 流式响应消费线程池核心线程数。 */
     private int streamCorePoolSize = 16;

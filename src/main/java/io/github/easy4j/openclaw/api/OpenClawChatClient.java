@@ -6,7 +6,7 @@ import io.github.easy4j.openclaw.HttpCallCancellation;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
 import io.github.easy4j.openclaw.api.model.*;
-import io.github.easy4j.openclaw.api.sse.SseStreamReader;
+import io.github.easy4j.openclaw.api.sse.SseChunkDecoder;
 import io.github.easy4j.openclaw.api.sse.StreamingChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -21,8 +21,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 /**
  * Chat Completions API client.
@@ -36,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OpenClawChatClient extends OpenClawHttpClient {
 
     private final ExecutorService streamExecutor;
-    private final Set<Call> activeStreamCalls = ConcurrentHashMap.newKeySet();
+    private final Set<CompletableFuture<Void>> activeStreams = ConcurrentHashMap.newKeySet();
 
     public OpenClawChatClient(OpenClawHttpClientConfig config) {
         super(config);
@@ -78,6 +81,21 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     /** 发送支持调用方取消的 Chat Completion。 */
     public ChatResponse chatCompletion(ChatRequest request, Map<String, String> headers,
                                        HttpCallCancellation cancellation) {
+        return awaitFuture(chatCompletionAsync(request, headers, cancellation));
+    }
+
+    /**
+     * 异步发送 Chat Completion 请求。
+     *
+     * <p>网络等待由 Netty event-loop 承担，适用于 300–500 并发调用。</p>
+     *
+     * @param request 对话请求
+     * @param headers 附加请求头
+     * @param cancellation 取消信号
+     * @return 异步对话响应
+     */
+    public CompletableFuture<ChatResponse> chatCompletionAsync(ChatRequest request, Map<String, String> headers,
+                                                               HttpCallCancellation cancellation) {
         Objects.requireNonNull(request, "request");
 
         debug("=== Chat Completion Request ===");
@@ -115,19 +133,18 @@ public class OpenClawChatClient extends OpenClawHttpClient {
                 .responseFormat(request.getResponseFormat())
                 .build();
 
-        String json;
-        try {
-            json = postJson(OpenClawConstants.ENDPOINT_CHAT_COMPLETIONS, normalized, headers, cancellation);
-        } catch (OpenClawHttpException e) {
-            error("Chat completion failed: status={}, message={}", e.getStatusCode(), e.getMessage());
-            throw e;
-        }
+        return postJsonAsync(OpenClawConstants.ENDPOINT_CHAT_COMPLETIONS, normalized, headers, cancellation)
+                .thenApply(json -> {
+                    debug("Response received, parsing...");
+                    ChatResponse response = parse(json, ChatResponse.class, "chat completion");
+                    debug("Chat completion success: id={}", response.getId());
+                    return response;
+                });
+    }
 
-        debug("Response received, parsing...");
-        ChatResponse response = parse(json, ChatResponse.class, "chat completion");
-        debug("Chat completion success: id={}", response.getId());
-
-        return response;
+    /** 异步发送 Chat Completion 请求。 */
+    public CompletableFuture<ChatResponse> chatCompletionAsync(ChatRequest request) {
+        return chatCompletionAsync(request, null, null);
     }
 
     /**
@@ -157,30 +174,46 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     public Response chatCompletionStreamRaw(ChatRequest request, Map<String, String> headers) {
-        Objects.requireNonNull(request, "request");
+        return awaitFuture(chatCompletionStreamRawAsync(request, headers));
+    }
 
-        debug("=== Chat Completion Stream Request ===");
+    /**
+     * 异步返回原始流式响应。调用方负责关闭 Response。
+     *
+     * @deprecated 优先使用 {@link #chatCompletionStream(ChatRequest)}，避免调用方阻塞读取响应体。
+     */
+    @Deprecated
+    public CompletableFuture<Response> chatCompletionStreamRawAsync(ChatRequest request, Map<String, String> headers) {
+        Objects.requireNonNull(request, "request");
+        CompletableFuture<Response> result = new CompletableFuture<>();
         try {
             Request req = buildStreamRequest(request, headers);
-            debug("Sending streaming request...");
+            httpClient.newCall(req).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, java.io.IOException error) {
+                    result.completeExceptionally(new OpenClawHttpException(
+                            "Stream request failed: " + error.getMessage(), error));
+                }
 
-            Response response = httpClient.newCall(req).execute();
-            int status = response.code();
-
-            debug("Stream response status: {}", status);
-
-            if (!response.isSuccessful()) {
-                String body = response.body() != null ? response.body().string() : "";
-                debug("Stream error response: {}", body);
-                response.close();
-                throw new OpenClawHttpException("Stream returned status " + status, status, body);
-            }
-            return response;
-        } catch (OpenClawHttpException e) {
-            throw e;
+                @Override
+                public void onResponse(Call call, Response response) {
+                    if (response.isSuccessful()) {
+                        result.complete(response);
+                        return;
+                    }
+                    try (Response failed = response) {
+                        String body = failed.body() != null ? failed.body().string() : "";
+                        result.completeExceptionally(new OpenClawHttpException(
+                                "Stream returned status " + failed.code(), failed.code(), body));
+                    } catch (Exception error) {
+                        result.completeExceptionally(error);
+                    }
+                }
+            });
         } catch (Exception e) {
-            throw new OpenClawHttpException("Stream request failed: " + e.getMessage(), e);
+            result.completeExceptionally(new OpenClawHttpException("Stream request failed: " + e.getMessage(), e));
         }
+        return result;
     }
 
     // ============================================================
@@ -262,40 +295,57 @@ public class OpenClawChatClient extends OpenClawHttpClient {
             streamResponse.onError(new OpenClawHttpException("Stream request build failed: " + e.getMessage(), e));
             return;
         }
-        Call streamCall = httpClient.newCall(httpRequest);
-        activeStreamCalls.add(streamCall);
-        streamCall.enqueue(new Callback() {
+        if (config.isLegacyInjectedOkHttpTransportEnabled()) {
+            enqueueLegacyStream(httpRequest, streamResponse);
+            return;
+        }
+        SseChunkDecoder decoder = new SseChunkDecoder(objectMapper, streamResponse);
+        SerialExecutor serialExecutor = new SerialExecutor(streamExecutor);
+        CompletableFuture<Void> stream = asyncTransport.executeStream(httpRequest, null,
+                bytes -> serialExecutor.execute(() -> decoder.accept(bytes)));
+        activeStreams.add(stream);
+        stream.whenComplete((ignored, error) -> serialExecutor.execute(() -> {
+            activeStreams.remove(stream);
+            if (Objects.nonNull(error)) {
+                decoder.fail(error);
+            } else {
+                decoder.complete();
+            }
+        }));
+    }
+
+    private void enqueueLegacyStream(Request request, StreamingChatResponse streamResponse) {
+        Call call = httpClient.newCall(request);
+        call.enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, java.io.IOException e) {
-                activeStreamCalls.remove(call);
-                streamResponse.onError(new OpenClawHttpException("Stream request failed: " + e.getMessage(), e));
+            public void onFailure(Call ignored, java.io.IOException error) {
+                streamResponse.onError(error);
             }
 
             @Override
-            public void onResponse(Call call, Response response) {
-                if (!response.isSuccessful()) {
-                    activeStreamCalls.remove(call);
-                    try (response) {
-                        String body = response.body() != null ? response.body().string() : "";
-                        streamResponse.onError(new OpenClawHttpException(
-                                "Stream returned status " + response.code(), response.code(), body));
-                    } catch (Exception e) {
-                        streamResponse.onError(e);
-                    }
-                    return;
-                }
+            public void onResponse(Call ignored, Response response) {
                 try {
-                    streamExecutor.submit(() -> {
-                        try {
-                            consumeStream(response, streamResponse);
-                        } finally {
-                            activeStreamCalls.remove(call);
+                    streamExecutor.execute(() -> {
+                        try (Response completed = response) {
+                            if (!completed.isSuccessful()) {
+                                String body = Objects.nonNull(completed.body()) ? completed.body().string() : "";
+                                streamResponse.onError(new OpenClawHttpException(
+                                        "Stream returned status " + completed.code(), completed.code(), body));
+                                return;
+                            }
+                            if (Objects.isNull(completed.body())) {
+                                streamResponse.onError(new OpenClawHttpException("SSE response body is null", null));
+                                return;
+                            }
+                            new io.github.easy4j.openclaw.api.sse.SseStreamReader(objectMapper)
+                                    .readChatCompletionStream(completed.body().byteStream(), streamResponse);
+                        } catch (Exception error) {
+                            streamResponse.onError(error);
                         }
                     });
-                } catch (RejectedExecutionException e) {
-                    activeStreamCalls.remove(call);
+                } catch (RejectedExecutionException error) {
                     response.close();
-                    streamResponse.onError(new OpenClawHttpException("Streaming client is closed", e));
+                    streamResponse.onError(error);
                 }
             }
         });
@@ -329,24 +379,51 @@ public class OpenClawChatClient extends OpenClawHttpClient {
                 .build();
     }
 
-    private void consumeStream(Response httpResponse, StreamingChatResponse response) {
-        SseStreamReader reader = new SseStreamReader(objectMapper);
-        try (httpResponse) {
-            if (httpResponse.body() == null) {
-                response.onError(new OpenClawHttpException("SSE response body is null", null));
-                return;
-            }
-            reader.readChatCompletionStream(httpResponse.body().byteStream(), response);
-        }
-    }
-
     @Override
     public void close() {
-        for (Call call : activeStreamCalls) {
-            call.cancel();
+        for (CompletableFuture<Void> stream : activeStreams) {
+            stream.cancel(true);
         }
-        activeStreamCalls.clear();
+        activeStreams.clear();
         streamExecutor.shutdownNow();
         super.close();
+    }
+
+    /** 在共享线程池上保持单条 SSE 的事件顺序，不长期占用线程。 */
+    private static final class SerialExecutor implements java.util.concurrent.Executor {
+        private final Queue<Runnable> tasks = new ArrayDeque<>();
+        private final ExecutorService executor;
+        private Runnable active;
+
+        private SerialExecutor(ExecutorService executor) {
+            this.executor = executor;
+        }
+
+        @Override
+        public synchronized void execute(Runnable command) {
+            tasks.offer(() -> {
+                try {
+                    command.run();
+                } finally {
+                    scheduleNext();
+                }
+            });
+            if (Objects.isNull(active)) {
+                scheduleNext();
+            }
+        }
+
+        private synchronized void scheduleNext() {
+            active = tasks.poll();
+            if (Objects.nonNull(active)) {
+                try {
+                    executor.execute(active);
+                } catch (RejectedExecutionException error) {
+                    active = null;
+                    tasks.clear();
+                    throw error;
+                }
+            }
+        }
     }
 }

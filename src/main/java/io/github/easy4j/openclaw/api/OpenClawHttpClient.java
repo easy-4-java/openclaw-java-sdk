@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 /**
  * HTTP client base class.
@@ -35,6 +37,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     protected final OpenClawHttpClientConfig config;
     protected final ObjectMapper objectMapper;
     protected final OkHttpClient httpClient;
+    protected final OpenClawAsyncHttpTransport asyncTransport;
     private final boolean ownsHttpClient;
 
     protected OpenClawHttpClient(OpenClawHttpClientConfig config) {
@@ -52,6 +55,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         this.config = Objects.requireNonNull(config, "config");
         this.objectMapper = objectMapper != null ? objectMapper : createObjectMapper();
         this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
+        this.asyncTransport = new OpenClawAsyncHttpTransport(config);
         this.ownsHttpClient = ownsHttpClient;
         debug("OpenClaw HTTP client initialized: baseUrl={}, connectTimeoutMs={}, readTimeoutMs={}, "
                         + "callTimeoutMs={}, retryOnConnectionFailure={}, detailedLoggingEnabled={}",
@@ -124,6 +128,20 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     /** POST JSON 请求，并将调用方取消信号绑定到底层 Call。 */
     protected String postJson(String path, Object body, Map<String, String> headers,
                               HttpCallCancellation cancellation) {
+        return await(postJsonAsync(path, body, headers, cancellation));
+    }
+
+    /**
+     * 异步发送 JSON 请求，不占用调用方线程等待网络响应。
+     *
+     * @param path API 路径
+     * @param body 请求对象
+     * @param headers 附加请求头
+     * @param cancellation 取消信号
+     * @return 异步响应体
+     */
+    protected CompletableFuture<String> postJsonAsync(String path, Object body, Map<String, String> headers,
+                                                      HttpCallCancellation cancellation) {
         String url = resolveUrl(path);
         debug("POST JSON: path={}, url={}", path, url);
 
@@ -137,11 +155,11 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
                     .post(RequestBody.create(json, JSON))
                     .build();
 
-            return execute(request, url, cancellation);
+            return executeAsync(request, url, cancellation);
         } catch (OpenClawHttpException e) {
-            throw e;
+            return failedFuture(e);
         } catch (IOException e) {
-            throw new OpenClawHttpException("POST " + url + " failed: " + e.getMessage(), e);
+            return failedFuture(new OpenClawHttpException("POST " + url + " failed: " + e.getMessage(), e));
         }
     }
 
@@ -149,16 +167,19 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
  * GET JSON .
      */
     protected String getJson(String path) {
+        return await(getJsonAsync(path));
+    }
+
+    /** 异步获取 JSON 响应。 */
+    protected CompletableFuture<String> getJsonAsync(String path) {
         String url = resolveUrl(path);
         debug("GET JSON: path={}, url={}", path, url);
 
         try {
             Request request = authedBuilder(url).get().build();
-            return execute(request, url);
+            return executeAsync(request, url, null);
         } catch (OpenClawHttpException e) {
-            throw e;
-        } catch (IOException e) {
-            throw new OpenClawHttpException("GET " + url + " failed: " + e.getMessage(), e);
+            return failedFuture(e);
         }
     }
 
@@ -172,6 +193,12 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     /** 执行支持协作式取消的请求。 */
     protected String execute(Request request, String url,
                              HttpCallCancellation cancellation) throws IOException {
+        return await(executeAsync(request, url, cancellation));
+    }
+
+    /** 使用 Netty event-loop 异步执行网络请求。 */
+    protected CompletableFuture<String> executeAsync(Request request, String url,
+                                                     HttpCallCancellation cancellation) {
         long requestId = REQUEST_SEQUENCE.incrementAndGet();
         long startedAt = System.nanoTime();
         debug("HTTP request started: requestId={}, method={}, url={}", requestId, request.method(), request.url());
@@ -179,30 +206,86 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             debug("HTTP request details: requestId={}, headers={}", requestId, redactHeaders(request.headers()));
         }
 
-        Call call = httpClient.newCall(request);
-        AutoCloseable registration = cancellation != null ? cancellation.onCancel(call::cancel) : null;
-        try (Response response = call.execute()) {
-            int status = response.code();
-            String respBody = response.body() != null ? response.body().string() : "";
-
-            long elapsedMs = elapsedMillis(startedAt);
-            debug("HTTP request completed: requestId={}, method={}, url={}, status={}, bodyLength={}, elapsedMs={}",
-                    requestId, request.method(), request.url(), status, respBody.length(), elapsedMs);
+        CompletableFuture<String> result = config.isLegacyInjectedOkHttpTransportEnabled()
+                ? executeInjectedOkHttpAsync(request, cancellation)
+                : asyncTransport.execute(request, cancellation);
+        return result.whenComplete((respBody, error) -> {
+            if (Objects.nonNull(error)) {
+                log.warn("HTTP request failed: requestId={}, method={}, url={}, elapsedMs={}, error={}",
+                        requestId, request.method(), request.url(), elapsedMillis(startedAt), unwrap(error).getMessage());
+                return;
+            }
+            debug("HTTP request completed: requestId={}, method={}, url={}, bodyLength={}, elapsedMs={}",
+                    requestId, request.method(), request.url(), respBody.length(), elapsedMillis(startedAt));
             if (config.isDetailedLoggingEnabled()) {
                 debug("HTTP response body: requestId={}, body={}", requestId, truncate(respBody));
             }
+        });
+    }
 
-            if (!response.isSuccessful()) {
-                throw new OpenClawHttpException("Request returned status " + status, status, respBody);
+    private CompletableFuture<String> executeInjectedOkHttpAsync(Request request,
+                                                                 HttpCallCancellation cancellation) {
+        CompletableFuture<String> result = new CompletableFuture<>();
+        Call call = httpClient.newCall(request);
+        AutoCloseable registration = Objects.nonNull(cancellation)
+                ? cancellation.onCancel(call::cancel) : null;
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call ignored, IOException error) {
+                closeRegistration(registration);
+                result.completeExceptionally(error);
             }
-            return respBody;
-        } catch (IOException | RuntimeException error) {
-            log.warn("HTTP request failed: requestId={}, method={}, url={}, elapsedMs={}, error={}",
-                    requestId, request.method(), request.url(), elapsedMillis(startedAt), error.getMessage());
-            throw error;
-        } finally {
-            closeRegistration(registration);
+
+            @Override
+            public void onResponse(Call ignored, Response response) {
+                try (Response completed = response) {
+                    String body = Objects.nonNull(completed.body()) ? completed.body().string() : "";
+                    if (!completed.isSuccessful()) {
+                        result.completeExceptionally(new OpenClawHttpException(
+                                "Request returned status " + completed.code(), completed.code(), body));
+                    } else {
+                        result.complete(body);
+                    }
+                } catch (Exception error) {
+                    result.completeExceptionally(error);
+                } finally {
+                    closeRegistration(registration);
+                }
+            }
+        });
+        result.whenComplete((value, error) -> {
+            if (result.isCancelled()) {
+                call.cancel();
+            }
+        });
+        return result;
+    }
+
+    private String await(CompletableFuture<String> future) {
+        return awaitFuture(future);
+    }
+
+    /** 等待兼容门面使用的异步结果，并恢复原始运行时异常。 */
+    protected <T> T awaitFuture(CompletableFuture<T> future) {
+        try {
+            return future.join();
+        } catch (CompletionException error) {
+            Throwable cause = unwrap(error);
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            throw new OpenClawHttpException("Async HTTP request failed: " + cause.getMessage(), cause);
         }
+    }
+
+    private Throwable unwrap(Throwable error) {
+        return error instanceof CompletionException && Objects.nonNull(error.getCause()) ? error.getCause() : error;
+    }
+
+    private <T> CompletableFuture<T> failedFuture(Throwable error) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        future.completeExceptionally(error);
+        return future;
     }
 
     private long elapsedMillis(long startedAt) {
@@ -322,6 +405,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
 
     @Override
     public void close() {
+        asyncTransport.close();
         if (ownsHttpClient) {
             OpenClawOkHttpClientFactory.shutdown(httpClient);
         }
