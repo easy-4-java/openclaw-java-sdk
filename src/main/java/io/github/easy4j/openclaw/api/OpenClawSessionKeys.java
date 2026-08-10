@@ -60,7 +60,7 @@ public final class OpenClawSessionKeys {
     /**
      * 生成不含连字符的小写 UUID，供临时会话键关联请求。
      *
-     * @return 可用于关联后续请求的标识
+     * @return 由作用域、智能体和主键组成的规范会话键
      */
     public static String newCorrelationId() {
         return UUID.randomUUID().toString();

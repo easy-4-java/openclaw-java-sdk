@@ -38,9 +38,9 @@ public final class GatewayRpcOptions {
     private final boolean json;
 
     /**
- * {@link Builder} ; {@link #builder}.
+     * 复制构建器中的 Gateway 连接、认证、超时和输出选项。
      *
- * @param b null builder
+     * @param b 已完成配置的构建器
      */
     private GatewayRpcOptions(Builder b) {
         this.url = b.url;

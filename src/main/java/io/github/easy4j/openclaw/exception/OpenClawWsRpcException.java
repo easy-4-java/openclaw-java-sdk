@@ -28,10 +28,10 @@ public class OpenClawWsRpcException extends OpenClawException {
     private final ErrorShape error;
 
     /**
-     * 按给定配置创建 {@code OpenClawWsRpcException}，构造过程不隐式执行远程业务请求。
+     * 根据失败的 RPC 方法和 Gateway 错误负载创建异常消息，并保留两者供调用方诊断。
      *
      * @param method Gateway RPC 方法名称
-     * @param error 导致调用失败的异常
+     * @param error Gateway 响应中的结构化错误；为空时异常消息仅包含方法名
      */
     public OpenClawWsRpcException(String method, ErrorShape error) {
         super(buildMessage(method, error));

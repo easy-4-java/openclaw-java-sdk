@@ -67,8 +67,8 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     /**
      * 注册文本增量回调；每个 SSE 文本片段到达时按顺序调用。
      *
-     * @param callback 取消或事件回调
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @param callback 接收单个文本增量的回调；后续注册会替换先前回调
+     * @return 当前流式结果句柄，便于链式注册回调
      */
     public StreamingChatResponse onDelta(Consumer<String> callback) {
         this.deltaConsumer = callback;
@@ -78,8 +78,8 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     /**
      * 注册原始聊天片段回调；每次反序列化成功后调用。
      *
-     * @param callback 取消或事件回调
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @param callback 接收每个反序列化 {@link ChatChunk} 的回调；后续注册会替换先前回调
+     * @return 当前流式结果句柄，便于链式注册回调
      */
     public StreamingChatResponse onChunk(Consumer<ChatChunk> callback) {
         this.chunkConsumer = callback;
@@ -89,8 +89,8 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     /**
      * 注册工具调用回调；工具参数跨片段组装完成后调用。
      *
-     * @param callback 取消或事件回调
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @param callback 接收累加器完成组装的工具调用列表的回调；后续注册会替换先前回调
+     * @return 当前流式结果句柄，便于链式注册回调
      */
     public StreamingChatResponse onToolCall(Consumer<List<ChatMessage.ToolCall>> callback) {
         this.toolCallConsumer = callback;
@@ -98,10 +98,10 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 注册或处理流完成事件，并向调用方交付累计文本。
+     * 注册流完成回调；正常结束时向调用方交付累计文本。
      *
-     * @param callback 取消或事件回调
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @param callback 接收完整累计文本的回调；后续注册会替换先前回调
+     * @return 当前流式结果句柄，便于链式注册回调
      */
     public StreamingChatResponse onComplete(Consumer<String> callback) {
         this.completeConsumer = callback;
@@ -109,10 +109,10 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 注册或处理流、WebSocket 或回调执行异常。
+     * 注册流读取、事件解析或用户回调执行异常的处理器。
      *
-     * @param callback 取消或事件回调
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @param callback 接收流处理异常的回调；后续注册会替换先前回调
+     * @return 当前流式结果句柄，便于链式注册回调
      */
     public StreamingChatResponse onError(Consumer<Throwable> callback) {
         this.errorConsumer = callback;
@@ -120,10 +120,10 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 注册取消时执行的回调，并返回用于注销该回调的句柄。
+     * 注册取消动作；若流已取消则立即执行该动作，确保底层调用不会遗留。
      *
-     * @param action 待执行的 Hook、工具或命令动作
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @param action 取消流时传播到底层网络调用的动作，不能为 {@code null}
+     * @return 当前流式结果句柄，便于链式注册取消动作
      */
     public StreamingChatResponse onCancel(Runnable action) {
         cancellation.set(Objects.requireNonNull(action, "action"));
@@ -254,9 +254,9 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         private Consumer<Throwable> errorConsumer;
 
         /**
-         * 设置 {@code --on-delta} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置接收每个文本增量的回调。
          *
-         * @param callback 取消或事件回调
+         * @param callback 文本增量回调；可以为 {@code null}
          * @return 当前构建器，便于继续链式配置
          */
         public Builder onDelta(Consumer<String> callback) {
@@ -265,9 +265,9 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         }
 
         /**
-         * 设置 {@code --on-chunk} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置接收每个反序列化聊天片段的回调。
          *
-         * @param callback 取消或事件回调
+         * @param callback 聊天片段回调；可以为 {@code null}
          * @return 当前构建器，便于继续链式配置
          */
         public Builder onChunk(Consumer<ChatChunk> callback) {
@@ -276,9 +276,9 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         }
 
         /**
-         * 设置 {@code --on-tool-call} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置接收完整工具调用列表的回调。
          *
-         * @param callback 取消或事件回调
+         * @param callback 工具调用回调；可以为 {@code null}
          * @return 当前构建器，便于继续链式配置
          */
         public Builder onToolCall(Consumer<List<ChatMessage.ToolCall>> callback) {
@@ -287,9 +287,9 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         }
 
         /**
-         * 设置 {@code --on-complete} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置流正常结束时接收累计文本的回调。
          *
-         * @param callback 取消或事件回调
+         * @param callback 流完成回调；可以为 {@code null}
          * @return 当前构建器，便于继续链式配置
          */
         public Builder onComplete(Consumer<String> callback) {
@@ -298,9 +298,9 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         }
 
         /**
-         * 设置 {@code --on-error} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置流处理失败时接收异常的回调。
          *
-         * @param callback 取消或事件回调
+         * @param callback 流异常回调；可以为 {@code null}
          * @return 当前构建器，便于继续链式配置
          */
         public Builder onError(Consumer<Throwable> callback) {

@@ -21,9 +21,9 @@ public final class SseSubscription implements AutoCloseable {
     private final Runnable cancellation;
 
     /**
-     * 按给定配置创建 {@code SseSubscription}，构造过程不隐式执行远程业务请求。
+     * 创建订阅句柄，并保存关闭时传播到底层网络调用的取消动作。
      *
-     * @param cancellation 可选调用取消令牌
+     * @param cancellation 关闭或取消订阅时执行的底层调用取消动作，不能为 {@code null}
      */
     public SseSubscription(Runnable cancellation) {
         this.cancellation = Objects.requireNonNull(cancellation, "cancellation");

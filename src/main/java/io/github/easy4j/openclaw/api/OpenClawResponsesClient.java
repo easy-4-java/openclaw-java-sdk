@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class OpenClawResponsesClient extends OpenClawHttpClient {
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 使用默认映射器创建 Responses 客户端，并复用调用方提供的 OkHttp 连接资源。
      *
      * @param config SDK 配置
      */
@@ -31,7 +31,7 @@ public class OpenClawResponsesClient extends OpenClawHttpClient {
     }
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 创建 Responses 客户端，并复用调用方提供的映射器和 OkHttp 连接资源。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -45,7 +45,7 @@ public class OpenClawResponsesClient extends OpenClawHttpClient {
      * 同步调用 Responses API，并把响应 JSON 解析为结构化结果。
      *
      * @param request 要校验、序列化并发送的 {@code ResponseRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ResponseResult
+     * @return Responses API 生成的输出项、状态和用量信息
      */
     public ResponseResult createResponse(ResponseRequest request) {
         return awaitFuture(createResponseAsync(request));

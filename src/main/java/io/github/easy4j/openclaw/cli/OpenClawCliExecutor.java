@@ -31,9 +31,9 @@ public class OpenClawCliExecutor {
     private final OpenClawCliConfig config;
 
     /**
-     * 按给定配置创建 {@code OpenClawCliExecutor}，构造过程不隐式执行远程业务请求。
+     * 创建 CLI 执行器，并把配置的最大并发数同步到共享子进程执行支持组件。
      *
-     * @param config SDK 配置
+     * @param config 可执行文件、工作目录、默认超时和最大并发数配置
      */
     public OpenClawCliExecutor(OpenClawCliConfig config) {
         this.config = Objects.requireNonNull(config, "config");
@@ -41,9 +41,9 @@ public class OpenClawCliExecutor {
     }
 
     /**
-     * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
+     * 启动 CLI 子进程并等待异步结果，将超时、启动异常和非零退出统一转换为执行结果。
      *
-     * @param request 要校验、序列化并发送的 {@code OpenClawCliRequest}
+     * @param request 包含全局开关、子命令参数和可选超时的 CLI 请求
      * @return 包含子进程退出码、标准输出和标准错误的执行结果
      */
     public OpenClawCliResult execute(OpenClawCliRequest request) {
@@ -93,7 +93,11 @@ public class OpenClawCliExecutor {
     }
 
     /**
- * subprocess(See,inject).
+     * 启动底层子进程会话；该隔离点允许测试替换实际进程执行。
+     *
+     * @param request 已解析命令行、工作目录、环境和超时的执行请求
+     * @return 已启动且包含输出缓冲区与退出处理器的会话
+     * @throws Exception 子进程无法创建或执行支持组件初始化失败时抛出
      */
     SubprocessExecutionSupport.RunSession executeSubprocess(SubprocessExecutionSupport.ExecutionRequest request)
             throws Exception {
@@ -131,7 +135,7 @@ public class OpenClawCliExecutor {
     /**
      * 把请求中的全局开关和子命令参数转换为 Commons Exec CommandLine，参数按原顺序保留。
      *
-     * @param request 要校验、序列化并发送的 {@code OpenClawCliRequest}
+     * @param request 包含全局开关和保持原顺序子命令参数的 CLI 请求
      * @return 已按原顺序转义并组装全局参数和子命令参数的命令行
      */
     public CommandLine toCommandLine(OpenClawCliRequest request) {
@@ -159,7 +163,7 @@ public class OpenClawCliExecutor {
     /**
      * 执行轻量级 {@code openclaw --version} 探测并返回可用性、版本和失败原因。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 OpenClawCliAvailabilityReport
+     * @return 包含可执行文件解析和 {@code --version} 探测结果的报告
      */
     public OpenClawCliAvailabilityReport probe() {
         return new OpenClawCliAvailabilityChecker().check(this.config);

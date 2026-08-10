@@ -14,18 +14,18 @@ public class OpenClawException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 按给定配置创建 {@code OpenClawException}，构造过程不隐式执行远程业务请求。
+     * 使用诊断消息创建 SDK 基础异常。
      *
-     * @param message 消息正文
+     * @param message 面向调用方的失败原因
      */
     public OpenClawException(String message) {
         super(message);
     }
 
     /**
-     * 按给定配置创建 {@code OpenClawException}，构造过程不隐式执行远程业务请求。
+     * 使用诊断消息和底层失败原因创建 SDK 基础异常。
      *
-     * @param message 消息正文
+     * @param message 面向调用方的失败原因
      * @param cause 导致当前异常的根本原因
      */
     public OpenClawException(String message, Throwable cause) {

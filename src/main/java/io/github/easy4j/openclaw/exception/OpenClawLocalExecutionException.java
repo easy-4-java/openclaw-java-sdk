@@ -22,9 +22,9 @@ public class OpenClawLocalExecutionException extends OpenClawException {
     private final int exitCode;
 
     /**
-     * 按给定配置创建 {@code OpenClawLocalExecutionException}，构造过程不隐式执行远程业务请求。
+     * 创建表示 CLI 以指定非成功退出码结束的异常。
      *
-     * @param message 消息正文
+     * @param message CLI 执行失败原因
      * @param exitCode 本地子进程退出码；非零通常表示执行失败
      */
     public OpenClawLocalExecutionException(String message, int exitCode) {
@@ -33,9 +33,9 @@ public class OpenClawLocalExecutionException extends OpenClawException {
     }
 
     /**
-     * 按给定配置创建 {@code OpenClawLocalExecutionException}，构造过程不隐式执行远程业务请求。
+     * 创建表示 CLI 启动或等待过程异常的错误；退出码使用 {@link Integer#MIN_VALUE} 表示未知。
      *
-     * @param message 消息正文
+     * @param message CLI 执行失败原因
      * @param cause 导致当前异常的根本原因
      */
     public OpenClawLocalExecutionException(String message, Throwable cause) {

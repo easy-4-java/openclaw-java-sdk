@@ -362,7 +362,7 @@ public class OpenClawClient implements AutoCloseable {
      * 调用指定名称的 Webhook，并传递结构化负载。
      *
      * @param request 要校验、序列化并发送的 {@code HookRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 HookResponse
+     * @return Gateway 返回的 Hook 接受状态、运行标识和错误信息
      */
     public HookResponse hook(HookRequest request) {
         return gatewayHttpClient.postHooksAgent(request);
@@ -384,7 +384,7 @@ public class OpenClawClient implements AutoCloseable {
     /**
      * 建立 WebSocket 连接，完成 challenge/connect 握手，并在超时或断线时失败所有等待者。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 HelloOk
+     * @return 握手成功后 Gateway 返回的版本、能力和服务信息
      * @throws OpenClawException 远程响应、协议解析或本地执行失败时抛出
      */
     public HelloOk connect() {
@@ -433,7 +433,7 @@ public class OpenClawClient implements AutoCloseable {
      *
      * @param sessionKey 会话路由键
      * @param message 消息正文
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 SessionsSendResult
+     * @return Gateway 对会话消息投递的确认结果
      */
     public SessionsSendResult sessionsSend(String sessionKey, String message) {
         return wsClient.sessionsSend(
@@ -508,7 +508,7 @@ public class OpenClawClient implements AutoCloseable {
      * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
+     * @return 包含回复消息、结束原因和 Token 用量的完整响应
      */
     public ChatResponse chatCompletion(ChatRequest request) {
         return chatClient.chatCompletion(request);
@@ -529,7 +529,7 @@ public class OpenClawClient implements AutoCloseable {
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param cancellation 可选调用取消令牌
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
+     * @return 包含回复消息、结束原因和 Token 用量的完整响应
      */
     public ChatResponse chatCompletion(ChatRequest request, HttpCallCancellation cancellation) {
         return chatClient.chatCompletion(request, null, cancellation);
@@ -540,7 +540,7 @@ public class OpenClawClient implements AutoCloseable {
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param headersBuilder 用于追加会话、通道和作用域请求头的构建器
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
+     * @return 包含回复消息、结束原因和 Token 用量的完整响应
      */
     public ChatResponse chatCompletion(ChatRequest request, OpenClawHeaders.Builder headersBuilder) {
         Map<String, String> headers = headersBuilder != null ? headersBuilder.build() : null;
@@ -556,7 +556,7 @@ public class OpenClawClient implements AutoCloseable {
      *
      * @param agent 目标智能体的名称或标识
      * @param messages 按对话顺序排列的消息
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
+     * @return 目标智能体生成的完整聊天响应
      */
     public ChatResponse chatCompletion(String agent, List<ChatMessage> messages) {
         return this.chatCompletion(ChatRequest.builder().agent(agent).messages(messages).build());
@@ -568,7 +568,7 @@ public class OpenClawClient implements AutoCloseable {
      * @param agent 目标智能体的名称或标识
      * @param model 模型标识
      * @param messages 按对话顺序排列的消息
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
+     * @return 目标智能体和模型生成的完整聊天响应
      */
     public ChatResponse chatCompletion(String agent, String model, List<ChatMessage> messages) {
         return this.chatCompletion(ChatRequest.builder().agent(agent).model(model).messages(messages).build());
@@ -581,7 +581,7 @@ public class OpenClawClient implements AutoCloseable {
      * @param model 模型标识
      * @param user 认证签名中的用户标识
      * @param messages 按对话顺序排列的消息
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
+     * @return 携带指定用户上下文的完整聊天响应
      */
     public ChatResponse chatCompletion(String agent, String model, String user, List<ChatMessage> messages) {
         return this.chatCompletion(ChatRequest.builder().agent(agent).model(model).user(user).messages(messages).build());
@@ -592,7 +592,7 @@ public class OpenClawClient implements AutoCloseable {
      *
      * @param agent 目标智能体的名称或标识
      * @param messages 按对话顺序排列的消息
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @return 可注册增量回调和取消底层调用的流式结果句柄
      */
     public StreamingChatResponse chatCompletionStream(String agent, List<ChatMessage> messages) {
         return this.chatCompletionStream(ChatRequest.builder().agent(agent).messages(messages).build());
@@ -604,7 +604,7 @@ public class OpenClawClient implements AutoCloseable {
      * @param agent 目标智能体的名称或标识
      * @param model 模型标识
      * @param messages 按对话顺序排列的消息
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @return 可注册增量回调和取消底层调用的流式结果句柄
      */
     public StreamingChatResponse chatCompletionStream(String agent, String model, List<ChatMessage> messages) {
         return this.chatCompletionStream(ChatRequest.builder().agent(agent).model(model).messages(messages).build());
@@ -617,7 +617,7 @@ public class OpenClawClient implements AutoCloseable {
      * @param model 模型标识
      * @param user 认证签名中的用户标识
      * @param messages 按对话顺序排列的消息
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @return 可注册增量回调和取消底层调用的流式结果句柄
      */
     public StreamingChatResponse chatCompletionStream(String agent, String model, String user, List<ChatMessage> messages) {
         return this.chatCompletionStream(ChatRequest.builder().agent(agent).model(model).user(user).messages(messages).build());
@@ -631,7 +631,7 @@ public class OpenClawClient implements AutoCloseable {
      * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @return 可注册增量、工具调用、完成和失败回调的流式结果句柄
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request) {
         return chatClient.chatCompletionStream(request);
@@ -642,7 +642,7 @@ public class OpenClawClient implements AutoCloseable {
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param callbackBuilder 用于注册流式增量、工具调用、完成和失败回调的构建器
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @return 已应用构建器回调配置的流式结果句柄
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request, StreamingChatResponse.Builder callbackBuilder) {
         return chatClient.chatCompletionStream(request, callbackBuilder);
@@ -653,7 +653,7 @@ public class OpenClawClient implements AutoCloseable {
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param sessionKey 会话路由键
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @return 绑定指定会话键的可取消流式结果句柄
      */
     public StreamingChatResponse chatCompletionStreamWithSession(ChatRequest request, String sessionKey) {
         Map<String, String> headers = OpenClawHeaders.builder().sessionKey(sessionKey).build();
@@ -667,7 +667,7 @@ public class OpenClawClient implements AutoCloseable {
     /**
      * 读取 Gateway 当前可用模型列表。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ModelsResponse
+     * @return Gateway 当前公开的模型资源列表
      */
     public ModelsResponse listModels() {
         return chatClient.listModels();
@@ -690,7 +690,7 @@ public class OpenClawClient implements AutoCloseable {
      * 通过已配置的 HTTP 客户端同步调用 Embeddings API。
      *
      * @param request 要校验、序列化并发送的 {@code EmbeddingsRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 EmbeddingsResponse
+     * @return 每项输入对应的向量及 Token 用量
      */
     public EmbeddingsResponse createEmbeddings(EmbeddingsRequest request) {
         return embeddingsClient.createEmbeddings(request);
@@ -714,7 +714,7 @@ public class OpenClawClient implements AutoCloseable {
      * 通过已配置的 HTTP 客户端同步调用 Responses API。
      *
      * @param request 要校验、序列化并发送的 {@code ResponseRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ResponseResult
+     * @return Responses API 生成的输出项、状态和用量信息
      */
     public ResponseResult createResponse(ResponseRequest request) {
         return responsesClient.createResponse(request);
@@ -747,7 +747,7 @@ public class OpenClawClient implements AutoCloseable {
      * 执行工具调用，并返回成功结果或结构化错误。
      *
      * @param request 要校验、序列化并发送的 {@code ToolInvokeRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ToolInvokeResult
+     * @return 工具执行成功输出或 Gateway 返回的结构化错误
      */
     public ToolInvokeResult toolInvoke(ToolInvokeRequest request) {
         return toolsInvokeClient.invoke(request);
@@ -768,7 +768,7 @@ public class OpenClawClient implements AutoCloseable {
      *
      * @param request 要校验、序列化并发送的 {@code ToolInvokeRequest}
      * @param cancellation 可选调用取消令牌
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ToolInvokeResult
+     * @return 工具执行成功输出或 Gateway 返回的结构化错误
      */
     public ToolInvokeResult toolInvoke(ToolInvokeRequest request, HttpCallCancellation cancellation) {
         return toolsInvokeClient.invoke(request, cancellation);

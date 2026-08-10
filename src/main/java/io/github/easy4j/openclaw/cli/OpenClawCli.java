@@ -23,7 +23,7 @@ public class OpenClawCli {
     private final OpenClawCliExecutor executor;
 
     /**
-     * 按给定配置创建 {@code OpenClawCli}，构造过程不隐式执行远程业务请求。
+     * 创建 CLI 门面；各子命令在对应方法被调用时才交给执行器运行。
      *
      * @param executor 负责启动并监管本地 CLI 子进程的执行器
      */

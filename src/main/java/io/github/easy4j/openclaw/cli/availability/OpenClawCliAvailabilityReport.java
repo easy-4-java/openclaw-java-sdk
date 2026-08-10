@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * 本地 openclaw CLI 的 {@code OpenClawCliAvailabilityReport} 支撑类型，用于参数编码、可用性检查或执行结果表达。
+ * 本地 {@code openclaw} CLI 的可用性探测报告，汇总路径解析、版本命令执行状态和可供日志输出的诊断原因。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -31,7 +31,7 @@ public class OpenClawCliAvailabilityReport {
      */
     private final String resolvedExecutablePath;
     /**
-     * 消息正文。
+     * 对当前分类结果的简短诊断说明，例如路径缺失、探测超时或版本命令成功。
      */
     private final String message;
     /**

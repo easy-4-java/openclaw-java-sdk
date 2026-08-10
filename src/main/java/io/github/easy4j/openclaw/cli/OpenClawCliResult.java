@@ -5,7 +5,8 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * 本地 openclaw CLI 的 {@code OpenClawCliResult} 支撑类型，用于参数编码、可用性检查或执行结果表达。
+ * 本地 {@code openclaw} 子进程的不可变执行结果，完整保留退出码、标准输出和标准错误。
+ * 空输出在构造时归一化为空字符串，便于调用方直接判断成功状态和读取诊断信息。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -27,7 +28,7 @@ public final class OpenClawCliResult {
     private final String stderr;
 
     /**
-     * 按给定配置创建 {@code OpenClawCliResult}，构造过程不隐式执行远程业务请求。
+     * 创建一次 CLI 执行结果，并把 {@code null} 输出归一化为空字符串。
      *
      * @param exitCode 本地子进程退出码；非零通常表示执行失败
      * @param stdout 子进程标准输出文本
