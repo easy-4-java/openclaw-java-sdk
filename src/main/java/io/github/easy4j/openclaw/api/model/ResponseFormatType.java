@@ -3,7 +3,7 @@ package io.github.easy4j.openclaw.api.model;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * OpenClaw JSON 协议中的 `ResponseFormatType` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Responses API 接受的文本、JSON 对象或 JSON Schema 格式枚举。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -11,20 +11,20 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum ResponseFormatType {
 
     /**
-     * 选择 `text` 协议模式；序列化时使用该固定取值。
+     * 表示模型响应格式的 {@code text} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     TEXT("text"),
     /**
-     * 选择 `json_object` 协议模式；序列化时使用该固定取值。
+     * 表示模型响应格式的 {@code json_object} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     JSON_OBJECT("json_object"),
     /**
-     * 选择 `json_schema` 协议模式；序列化时使用该固定取值。
+     * 表示模型响应格式的 {@code json_schema} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     JSON_SCHEMA("json_schema");
 
     /**
-     * 映射 OpenClaw JSON 字段 `value` 的 协议内容。
+     * JSON 属性 {@code value}，表示协议标量值。
      */
     private final String value;
 
@@ -33,9 +33,9 @@ public enum ResponseFormatType {
     }
 
     /**
-     * 根据 OpenClaw JSON 语义构造、提取或更新 `ResponseFormatType` 中的 `value` 数据。
+     * 返回序列化到 JSON 的响应格式类型字符串。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 写入响应格式 {@code type} 字段的协议值
      */
     @JsonValue
     public String value() {

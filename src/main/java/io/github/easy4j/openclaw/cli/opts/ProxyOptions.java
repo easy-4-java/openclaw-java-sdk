@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `proxy` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code proxy} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,108 +16,108 @@ import java.util.List;
 public final class ProxyOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义代理管理动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `start` 协议模式；序列化时使用该固定取值。
+         * 表示代理管理动作的 {@code start} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         START,
         /**
-         * 选择 `run` 协议模式；序列化时使用该固定取值。
+         * 表示代理管理动作的 {@code run} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         RUN,
         /**
-         * 选择 `validate` 协议模式；序列化时使用该固定取值。
+         * 表示代理管理动作的 {@code validate} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         VALIDATE,
         /**
-         * 选择 `coverage` 协议模式；序列化时使用该固定取值。
+         * 表示代理管理动作的 {@code coverage} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         COVERAGE,
         /**
-         * 选择 `sessions` 协议模式；序列化时使用该固定取值。
+         * 表示代理管理动作的 {@code sessions} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         SESSIONS,
         /**
-         * 选择 `query` 协议模式；序列化时使用该固定取值。
+         * 表示代理管理动作的 {@code query} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         QUERY,
         /**
-         * 选择 `blob` 协议模式；序列化时使用该固定取值。
+         * 表示代理管理动作的 {@code blob} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         BLOB,
         /**
-         * 选择 `purge` 协议模式；序列化时使用该固定取值。
+         * 表示代理管理动作的 {@code purge} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         PURGE
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 传给 openclaw 子命令 `--run-command` 选项的内容；为 null 时通常省略。
+     * 节点要执行的命令；未设置时命令行不包含 {@code --run-command}。
      */
     private final List<String> runCommand;
     /**
-     * 传给 openclaw 子命令 `--host` 选项的内容；为 null 时通常省略。
+     * 节点监听地址；未设置时命令行不包含 {@code --host}。
      */
     private final String host;
     /**
-     * 传给 openclaw 子命令 `--port` 选项的内容；为 null 时通常省略。
+     * 节点监听端口；未设置时命令行不包含 {@code --port}。
      */
     private final Integer port;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
     /**
-     * 传给 openclaw 子命令 `--proxy-url` 选项的内容；为 null 时通常省略。
+     * 出站代理 URL；未设置时命令行不包含 {@code --proxy-url}。
      */
     private final String proxyUrl;
     /**
-     * 传给 openclaw 子命令 `--proxy-ca-file` 选项的内容；为 null 时通常省略。
+     * 代理 TLS CA 证书文件；未设置时命令行不包含 {@code --proxy-ca-file}。
      */
     private final String proxyCaFile;
     /**
-     * 传给 openclaw 子命令 `--allowed-urls` 选项的内容；为 null 时通常省略。
+     * 允许节点访问的 URL 列表；未设置时命令行不包含 {@code --allowed-urls}。
      */
     private final List<String> allowedUrls;
     /**
-     * 传给 openclaw 子命令 `--denied-urls` 选项的内容；为 null 时通常省略。
+     * 禁止节点访问的 URL 列表；未设置时命令行不包含 {@code --denied-urls}。
      */
     private final List<String> deniedUrls;
     /**
-     * 是否向 openclaw 子命令追加 `--apns-reachable` 开关。
+     * 是否向 openclaw 子命令追加 {@code --apns-reachable} 开关。
      */
     private final boolean apnsReachable;
     /**
-     * 传给 openclaw 子命令 `--apns-authority` 选项的内容；为 null 时通常省略。
+     * APNs 服务的 authority；未设置时命令行不包含 {@code --apns-authority}。
      */
     private final String apnsAuthority;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
      */
     private final Integer timeoutMs;
     /**
-     * 传给 openclaw 子命令 `--limit` 选项的内容；为 null 时通常省略。
+     * 返回结果数量上限；未设置时命令行不包含 {@code --limit}。
      */
     private final Integer limit;
     /**
-     * 传给 openclaw 子命令 `--preset` 选项的内容；为 null 时通常省略。
+     * 预定义执行策略名称；未设置时命令行不包含 {@code --preset}。
      */
     private final String preset;
     /**
-     * 传给 openclaw 子命令 `--session` 选项的内容；为 null 时通常省略。
+     * 目标会话标识；未设置时命令行不包含 {@code --session}。
      */
     private final String session;
     /**
-     * 传给 openclaw 子命令 `--blob-id` 选项的内容；为 null 时通常省略。
+     * 目标二进制对象标识；未设置时命令行不包含 {@code --blob-id}。
      */
     private final String blobId;
 
@@ -141,7 +141,7 @@ public final class ProxyOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `ProxyOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code ProxyOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -181,234 +181,234 @@ public final class ProxyOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 ProxyOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ProxyOptions。
+     * {@code ProxyOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.START;
         /**
-         * 传给 openclaw 子命令 `--run-command` 选项的内容；为 null 时通常省略。
+         * 节点要执行的命令；未设置时命令行不包含 {@code --run-command}。
          */
         private List<String> runCommand;
         /**
-         * 传给 openclaw 子命令 `--host` 选项的内容；为 null 时通常省略。
+         * 节点监听地址；未设置时命令行不包含 {@code --host}。
          */
         private String host;
         /**
-         * 传给 openclaw 子命令 `--port` 选项的内容；为 null 时通常省略。
+         * 节点监听端口；未设置时命令行不包含 {@code --port}。
          */
         private Integer port;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
         /**
-         * 传给 openclaw 子命令 `--proxy-url` 选项的内容；为 null 时通常省略。
+         * 出站代理 URL；未设置时命令行不包含 {@code --proxy-url}。
          */
         private String proxyUrl;
         /**
-         * 传给 openclaw 子命令 `--proxy-ca-file` 选项的内容；为 null 时通常省略。
+         * 代理 TLS CA 证书文件；未设置时命令行不包含 {@code --proxy-ca-file}。
          */
         private String proxyCaFile;
         /**
-         * 传给 openclaw 子命令 `--allowed-urls` 选项的内容；为 null 时通常省略。
+         * 允许节点访问的 URL 列表；未设置时命令行不包含 {@code --allowed-urls}。
          */
         private List<String> allowedUrls;
         /**
-         * 传给 openclaw 子命令 `--denied-urls` 选项的内容；为 null 时通常省略。
+         * 禁止节点访问的 URL 列表；未设置时命令行不包含 {@code --denied-urls}。
          */
         private List<String> deniedUrls;
         /**
-         * 是否向 openclaw 子命令追加 `--apns-reachable` 开关。
+         * 是否向 openclaw 子命令追加 {@code --apns-reachable} 开关。
          */
         private boolean apnsReachable;
         /**
-         * 传给 openclaw 子命令 `--apns-authority` 选项的内容；为 null 时通常省略。
+         * APNs 服务的 authority；未设置时命令行不包含 {@code --apns-authority}。
          */
         private String apnsAuthority;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
          */
         private Integer timeoutMs;
         /**
-         * 传给 openclaw 子命令 `--limit` 选项的内容；为 null 时通常省略。
+         * 返回结果数量上限；未设置时命令行不包含 {@code --limit}。
          */
         private Integer limit;
         /**
-         * 传给 openclaw 子命令 `--preset` 选项的内容；为 null 时通常省略。
+         * 预定义执行策略名称；未设置时命令行不包含 {@code --preset}。
          */
         private String preset;
         /**
-         * 传给 openclaw 子命令 `--session` 选项的内容；为 null 时通常省略。
+         * 目标会话标识；未设置时命令行不包含 {@code --session}。
          */
         private String session;
         /**
-         * 传给 openclaw 子命令 `--blob-id` 选项的内容；为 null 时通常省略。
+         * 目标二进制对象标识；未设置时命令行不包含 {@code --blob-id}。
          */
         private String blobId;
 
         /**
-         * 设置 `--mode` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --mode} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param mode 写入 `--mode` 选项的内容
+         * @param mode 子命令使用的执行模式；作为 {@code --mode} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
         /**
-         * 选择 `start` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code start} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder start() { this.mode = Mode.START; return this; }
         /**
-         * 设置 `--run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --run} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param cmd 写入 `--run` 选项的内容
+         * @param cmd 要由节点执行的命令；作为 {@code --run} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder run(List<String> cmd) { this.mode = Mode.RUN; this.runCommand = cmd; return this; }
         /**
-         * 选择 `validate` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code validate} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder validate() { this.mode = Mode.VALIDATE; return this; }
         /**
-         * 选择 `coverage` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code coverage} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder coverage() { this.mode = Mode.COVERAGE; return this; }
         /**
-         * 选择 `sessions` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code sessions} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder sessions() { this.mode = Mode.SESSIONS; return this; }
         /**
-         * 选择 `query` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code query} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder query() { this.mode = Mode.QUERY; return this; }
         /**
-         * 选择 `blob` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code blob} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder blob() { this.mode = Mode.BLOB; return this; }
         /**
-         * 选择 `purge` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code purge} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder purge() { this.mode = Mode.PURGE; return this; }
         /**
-         * 设置 `--host` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --host} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param host 写入 `--host` 选项的内容
+         * @param host 节点监听地址；作为 {@code --host} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder host(String host) { this.host = host; return this; }
         /**
-         * 设置 `--port` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --port} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param port 写入 `--port` 选项的内容
+         * @param port 节点监听端口；作为 {@code --port} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder port(Integer port) { this.port = port; return this; }
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
          */
         public Builder json(boolean json) { this.json = json; return this; }
         /**
-         * 设置 `--proxy-url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --proxy-url} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param proxyUrl 写入 `--proxy-url` 选项的内容
+         * @param proxyUrl 出站代理 URL；作为 {@code --proxy-url} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder proxyUrl(String proxyUrl) { this.proxyUrl = proxyUrl; return this; }
         /**
-         * 设置 `--proxy-ca-file` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --proxy-ca-file} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param proxyCaFile 写入 `--proxy-ca-file` 选项的内容
+         * @param proxyCaFile 代理 TLS CA 证书文件；作为 {@code --proxy-ca-file} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder proxyCaFile(String proxyCaFile) { this.proxyCaFile = proxyCaFile; return this; }
         /**
-         * 设置 `--allowed-urls` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --allowed-urls} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param urls 写入 `--allowed-urls` 选项的内容
+         * @param urls 允许或拒绝访问的 URL 集合；作为 {@code --allowed-urls} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder allowedUrls(List<String> urls) { this.allowedUrls = urls; return this; }
         /**
-         * 设置 `--denied-urls` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --denied-urls} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param urls 写入 `--denied-urls` 选项的内容
+         * @param urls 允许或拒绝访问的 URL 集合；作为 {@code --denied-urls} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder deniedUrls(List<String> urls) { this.deniedUrls = urls; return this; }
         /**
-         * 设置 `--apns-reachable` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --apns-reachable} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param apnsReachable 是否向命令行追加 `--apns-reachable` 开关
+         * @param apnsReachable 是否向命令行追加 {@code --apns-reachable} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder apnsReachable(boolean apnsReachable) { this.apnsReachable = apnsReachable; return this; }
         /**
-         * 设置 `--apns-authority` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --apns-authority} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param apnsAuthority 写入 `--apns-authority` 选项的内容
+         * @param apnsAuthority APNs 服务的 authority；作为 {@code --apns-authority} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder apnsAuthority(String apnsAuthority) { this.apnsAuthority = apnsAuthority; return this; }
         /**
-         * 设置 `--timeout-ms` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --timeout-ms} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param timeoutMs 超时时间，单位为毫秒
          * @return 当前构建器，便于继续链式配置
          */
         public Builder timeoutMs(Integer timeoutMs) { this.timeoutMs = timeoutMs; return this; }
         /**
-         * 设置 `--limit` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --limit} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param limit 写入 `--limit` 选项的内容
+         * @param limit 返回结果数量上限；作为 {@code --limit} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder limit(Integer limit) { this.limit = limit; return this; }
         /**
-         * 设置 `--preset` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --preset} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param preset 写入 `--preset` 选项的内容
+         * @param preset 预定义执行策略名称；作为 {@code --preset} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder preset(String preset) { this.preset = preset; return this; }
         /**
-         * 设置 `--session` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --session} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param session 写入 `--session` 选项的内容
+         * @param session 目标会话标识；作为 {@code --session} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder session(String session) { this.session = session; return this; }
         /**
-         * 设置 `--blob-id` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --blob-id} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param blobId 写入 `--blob-id` 选项的内容
+         * @param blobId 目标二进制对象标识；作为 {@code --blob-id} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder blobId(String blobId) { this.blobId = blobId; return this; }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `ProxyOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code ProxyOptions}。
          *
          * @return 按当前字段创建的 ProxyOptions
          */

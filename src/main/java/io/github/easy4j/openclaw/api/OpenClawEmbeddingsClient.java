@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * OpenClaw SDK 的 `OpenClawEmbeddingsClient` 类型，封装其公开契约和生命周期边界。
+ * 通过 HTTP 创建向量嵌入的客户端。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
      */
@@ -31,7 +31,7 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -42,9 +42,9 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawEmbeddingsClient`。
+     * 同步调用 Embeddings API，并把响应 JSON 解析为向量结果。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code EmbeddingsRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 EmbeddingsResponse
      */
     public EmbeddingsResponse createEmbeddings(EmbeddingsRequest request) {
@@ -52,9 +52,9 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `createEmbeddings`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code createEmbeddings}，调用线程不等待远端响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code EmbeddingsRequest}
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
     public CompletableFuture<EmbeddingsResponse> createEmbeddingsAsync(EmbeddingsRequest request) {

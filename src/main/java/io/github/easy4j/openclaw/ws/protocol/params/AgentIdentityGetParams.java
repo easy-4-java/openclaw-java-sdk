@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * OpenClaw JSON 协议中的 `AgentIdentityGetParams` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * agent.identity.get RPC 参数，可按智能体或会话定位身份。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,16 +16,16 @@ import lombok.Getter;
 public class AgentIdentityGetParams {
 
     /**
-     * 映射 OpenClaw JSON 字段 `agentId` 的 关联标识。
+     * JSON 属性 {@code agentId}，表示智能体标识。
      */
     private final String agentId;
     /**
-     * 映射 OpenClaw JSON 字段 `sessionKey` 的 协议内容。
+     * JSON 属性 {@code sessionKey}，表示Gateway 会话路由键。
      */
     private final String sessionKey;
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `AgentIdentityGetParams`。
+     * 创建按智能体标识查询身份的参数。
      *
      * @param agentId Agent 标识
      * @return 按方法参数填充的 AgentIdentityGetParams
@@ -35,7 +35,7 @@ public class AgentIdentityGetParams {
     }
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `AgentIdentityGetParams`。
+     * 创建按会话键查询关联智能体身份的参数。
      *
      * @param sessionKey 会话路由键
      * @return 按方法参数填充的 AgentIdentityGetParams
@@ -45,7 +45,7 @@ public class AgentIdentityGetParams {
     }
 
     /**
-     * 根据参数构造或读取 `AgentIdentityGetParams` 的 `empty` 协议字段。
+     * 创建不限定智能体标识的身份查询参数。
      *
      * @return 按方法参数填充的 AgentIdentityGetParams
      */

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `migrate` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code migrate} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,88 +16,88 @@ import java.util.List;
 public final class MigrateOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义迁移动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `default` 协议模式；序列化时使用该固定取值。
+         * 表示迁移动作的 {@code default} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         DEFAULT,
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示迁移动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `plan` 协议模式；序列化时使用该固定取值。
+         * 表示迁移动作的 {@code plan} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         PLAN,
         /**
-         * 选择 `apply` 协议模式；序列化时使用该固定取值。
+         * 表示迁移动作的 {@code apply} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         APPLY
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 传给 openclaw 子命令 `--provider` 选项的内容；为 null 时通常省略。
+     * 目标模型或密钥提供方；未设置时命令行不包含 {@code --provider}。
      */
     private final String provider;
     /**
-     * 传给 openclaw 子命令 `--from` 选项的内容；为 null 时通常省略。
+     * 消息发送方标识；未设置时命令行不包含 {@code --from}。
      */
     private final String from;
     /**
-     * 是否向 openclaw 子命令追加 `--include-secrets` 开关。
+     * 是否向 openclaw 子命令追加 {@code --include-secrets} 开关。
      */
     private final boolean includeSecrets;
     /**
-     * 是否向 openclaw 子命令追加 `--no-auth-credentials` 开关。
+     * 是否向 openclaw 子命令追加 {@code --no-auth-credentials} 开关。
      */
     private final boolean noAuthCredentials;
     /**
-     * 是否向 openclaw 子命令追加 `--overwrite` 开关。
+     * 是否向 openclaw 子命令追加 {@code --overwrite} 开关。
      */
     private final boolean overwrite;
     /**
-     * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+     * 是否向 openclaw 子命令追加 {@code --dry-run} 开关。
      */
     private final boolean dryRun;
     /**
-     * 是否向 openclaw 子命令追加 `--yes` 开关。
+     * 是否向 openclaw 子命令追加 {@code --yes} 开关。
      */
     private final boolean yes;
     /**
-     * 传给 openclaw 子命令 `--skills` 选项的内容；为 null 时通常省略。
+     * 要安装或启用的技能集合；未设置时命令行不包含 {@code --skills}。
      */
     private final List<String> skills;
     /**
-     * 传给 openclaw 子命令 `--plugins` 选项的内容；为 null 时通常省略。
+     * 要启用或处理的插件集合；未设置时命令行不包含 {@code --plugins}。
      */
     private final List<String> plugins;
     /**
-     * 传给 openclaw 子命令 `--backup-output` 选项的内容；为 null 时通常省略。
+     * 备份文件输出路径；未设置时命令行不包含 {@code --backup-output}。
      */
     private final String backupOutput;
     /**
-     * 是否向 openclaw 子命令追加 `--no-backup` 开关。
+     * 是否向 openclaw 子命令追加 {@code --no-backup} 开关。
      */
     private final boolean noBackup;
     /**
-     * 是否向 openclaw 子命令追加 `--force` 开关。
+     * 是否向 openclaw 子命令追加 {@code --force} 开关。
      */
     private final boolean force;
     /**
-     * 是否向 openclaw 子命令追加 `--verify-plugin-apps` 开关。
+     * 是否向 openclaw 子命令追加 {@code --verify-plugin-apps} 开关。
      */
     private final boolean verifyPluginApps;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
 
@@ -120,7 +120,7 @@ public final class MigrateOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `MigrateOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code MigrateOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -180,200 +180,200 @@ public final class MigrateOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 MigrateOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 MigrateOptions。
+     * {@code MigrateOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.DEFAULT;
         /**
-         * 传给 openclaw 子命令 `--provider` 选项的内容；为 null 时通常省略。
+         * 目标模型或密钥提供方；未设置时命令行不包含 {@code --provider}。
          */
         private String provider;
         /**
-         * 传给 openclaw 子命令 `--from` 选项的内容；为 null 时通常省略。
+         * 消息发送方标识；未设置时命令行不包含 {@code --from}。
          */
         private String from;
         /**
-         * 是否向 openclaw 子命令追加 `--include-secrets` 开关。
+         * 是否向 openclaw 子命令追加 {@code --include-secrets} 开关。
          */
         private boolean includeSecrets;
         /**
-         * 是否向 openclaw 子命令追加 `--no-auth-credentials` 开关。
+         * 是否向 openclaw 子命令追加 {@code --no-auth-credentials} 开关。
          */
         private boolean noAuthCredentials;
         /**
-         * 是否向 openclaw 子命令追加 `--overwrite` 开关。
+         * 是否向 openclaw 子命令追加 {@code --overwrite} 开关。
          */
         private boolean overwrite;
         /**
-         * 是否向 openclaw 子命令追加 `--dry-run` 开关。
+         * 是否向 openclaw 子命令追加 {@code --dry-run} 开关。
          */
         private boolean dryRun;
         /**
-         * 是否向 openclaw 子命令追加 `--yes` 开关。
+         * 是否向 openclaw 子命令追加 {@code --yes} 开关。
          */
         private boolean yes;
         /**
-         * 传给 openclaw 子命令 `--skills` 选项的内容；为 null 时通常省略。
+         * 要安装或启用的技能集合；未设置时命令行不包含 {@code --skills}。
          */
         private List<String> skills;
         /**
-         * 传给 openclaw 子命令 `--plugins` 选项的内容；为 null 时通常省略。
+         * 要启用或处理的插件集合；未设置时命令行不包含 {@code --plugins}。
          */
         private List<String> plugins;
         /**
-         * 传给 openclaw 子命令 `--backup-output` 选项的内容；为 null 时通常省略。
+         * 备份文件输出路径；未设置时命令行不包含 {@code --backup-output}。
          */
         private String backupOutput;
         /**
-         * 是否向 openclaw 子命令追加 `--no-backup` 开关。
+         * 是否向 openclaw 子命令追加 {@code --no-backup} 开关。
          */
         private boolean noBackup;
         /**
-         * 是否向 openclaw 子命令追加 `--force` 开关。
+         * 是否向 openclaw 子命令追加 {@code --force} 开关。
          */
         private boolean force;
         /**
-         * 是否向 openclaw 子命令追加 `--verify-plugin-apps` 开关。
+         * 是否向 openclaw 子命令追加 {@code --verify-plugin-apps} 开关。
          */
         private boolean verifyPluginApps;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
 
         /**
-         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code list} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder list() { this.mode = Mode.LIST; return this; }
         /**
-         * 设置 `--plan` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --plan} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param provider 写入 `--plan` 选项的内容
+         * @param provider 目标模型或密钥提供方；作为 {@code --plan} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder plan(String provider) { this.mode = Mode.PLAN; this.provider = provider; return this; }
         /**
-         * 设置 `--apply` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --apply} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param provider 写入 `--apply` 选项的内容
+         * @param provider 目标模型或密钥提供方；作为 {@code --apply} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder apply(String provider) { this.mode = Mode.APPLY; this.provider = provider; return this; }
         /**
-         * 设置 `--default-action` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --default-action} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param provider 写入 `--default-action` 选项的内容
+         * @param provider 目标模型或密钥提供方；作为 {@code --default-action} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder defaultAction(String provider) { this.mode = Mode.DEFAULT; this.provider = provider; return this; }
         /**
-         * 设置 `--mode` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --mode} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param mode 写入 `--mode` 选项的内容
+         * @param mode 子命令使用的执行模式；作为 {@code --mode} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
         /**
-         * 设置 `--provider` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --provider} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param provider 写入 `--provider` 选项的内容
+         * @param provider 目标模型或密钥提供方；作为 {@code --provider} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder provider(String provider) { this.provider = provider; return this; }
         /**
-         * 设置 `--from` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --from} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param from 写入 `--from` 选项的内容
+         * @param from 消息发送方标识；作为 {@code --from} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder from(String from) { this.from = from; return this; }
         /**
-         * 设置 `--include-secrets` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --include-secrets} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param includeSecrets 是否向命令行追加 `--include-secrets` 开关
+         * @param includeSecrets 是否向命令行追加 {@code --include-secrets} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder includeSecrets(boolean includeSecrets) { this.includeSecrets = includeSecrets; return this; }
         /**
-         * 设置 `--no-auth-credentials` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --no-auth-credentials} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param noAuthCredentials 是否向命令行追加 `--no-auth-credentials` 开关
+         * @param noAuthCredentials 是否向命令行追加 {@code --no-auth-credentials} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder noAuthCredentials(boolean noAuthCredentials) { this.noAuthCredentials = noAuthCredentials; return this; }
         /**
-         * 设置 `--overwrite` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --overwrite} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param overwrite 是否向命令行追加 `--overwrite` 开关
+         * @param overwrite 是否向命令行追加 {@code --overwrite} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder overwrite(boolean overwrite) { this.overwrite = overwrite; return this; }
         /**
-         * 设置 `--dry-run` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --dry-run} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param dryRun 是否向命令行追加 `--dry-run` 开关
+         * @param dryRun 是否向命令行追加 {@code --dry-run} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder dryRun(boolean dryRun) { this.dryRun = dryRun; return this; }
         /**
-         * 设置 `--yes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --yes} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param yes 是否向命令行追加 `--yes` 开关
+         * @param yes 是否向命令行追加 {@code --yes} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder yes(boolean yes) { this.yes = yes; return this; }
         /**
-         * 设置 `--skills` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --skills} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param skills 写入 `--skills` 选项的内容
+         * @param skills 要安装或启用的技能集合；作为 {@code --skills} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder skills(List<String> skills) { this.skills = skills; return this; }
         /**
-         * 设置 `--plugins` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --plugins} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param plugins 写入 `--plugins` 选项的内容
+         * @param plugins 要启用或处理的插件集合；作为 {@code --plugins} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder plugins(List<String> plugins) { this.plugins = plugins; return this; }
         /**
-         * 设置 `--backup-output` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --backup-output} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param backupOutput 写入 `--backup-output` 选项的内容
+         * @param backupOutput 备份文件输出路径；作为 {@code --backup-output} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder backupOutput(String backupOutput) { this.backupOutput = backupOutput; return this; }
         /**
-         * 设置 `--no-backup` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --no-backup} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param noBackup 是否向命令行追加 `--no-backup` 开关
+         * @param noBackup 是否向命令行追加 {@code --no-backup} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder noBackup(boolean noBackup) { this.noBackup = noBackup; return this; }
         /**
-         * 设置 `--force` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --force} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param force 是否向命令行追加 `--force` 开关
+         * @param force 是否向命令行追加 {@code --force} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder force(boolean force) { this.force = force; return this; }
         /**
-         * 设置 `--verify-plugin-apps` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --verify-plugin-apps} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param verifyPluginApps 是否向命令行追加 `--verify-plugin-apps` 开关
+         * @param verifyPluginApps 是否向命令行追加 {@code --verify-plugin-apps} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder verifyPluginApps(boolean verifyPluginApps) { this.verifyPluginApps = verifyPluginApps; return this; }
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -381,7 +381,7 @@ public final class MigrateOptions implements CliSubArgs {
         public Builder json(boolean json) { this.json = json; return this; }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `MigrateOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code MigrateOptions}。
          *
          * @return 按当前字段创建的 MigrateOptions
          */

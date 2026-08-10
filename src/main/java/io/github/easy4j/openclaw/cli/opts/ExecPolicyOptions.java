@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `exec-policy` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code exec-policy} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,52 +15,52 @@ import java.util.List;
 public final class ExecPolicyOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义执行安全策略来源允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `show` 协议模式；序列化时使用该固定取值。
+         * 表示执行安全策略来源的 {@code show} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         SHOW,
         /**
-         * 选择 `preset` 协议模式；序列化时使用该固定取值。
+         * 表示执行安全策略来源的 {@code preset} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         PRESET,
         /**
-         * 选择 `set` 协议模式；序列化时使用该固定取值。
+         * 表示执行安全策略来源的 {@code set} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         SET
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 传给 openclaw 子命令 `--preset-name` 选项的内容；为 null 时通常省略。
+     * 预定义执行策略名称；未设置时命令行不包含 {@code --preset-name}。
      */
     private final String presetName;
     /**
-     * 传给 openclaw 子命令 `--host` 选项的内容；为 null 时通常省略。
+     * 节点监听地址；未设置时命令行不包含 {@code --host}。
      */
     private final String host;
     /**
-     * 传给 openclaw 子命令 `--security` 选项的内容；为 null 时通常省略。
+     * MCP 传输安全策略；未设置时命令行不包含 {@code --security}。
      */
     private final String security;
     /**
-     * 传给 openclaw 子命令 `--ask` 选项的内容；为 null 时通常省略。
+     * 执行前询问策略；未设置时命令行不包含 {@code --ask}。
      */
     private final String ask;
     /**
-     * 传给 openclaw 子命令 `--ask-fallback` 选项的内容；为 null 时通常省略。
+     * 询问不可用时的回退策略；未设置时命令行不包含 {@code --ask-fallback}。
      */
     private final String askFallback;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
 
@@ -75,7 +75,7 @@ public final class ExecPolicyOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `ExecPolicyOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code ExecPolicyOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -117,97 +117,97 @@ public final class ExecPolicyOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 ExecPolicyOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ExecPolicyOptions。
+     * {@code ExecPolicyOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.SHOW;
         /**
-         * 传给 openclaw 子命令 `--preset-name` 选项的内容；为 null 时通常省略。
+         * 预定义执行策略名称；未设置时命令行不包含 {@code --preset-name}。
          */
         private String presetName;
         /**
-         * 传给 openclaw 子命令 `--host` 选项的内容；为 null 时通常省略。
+         * 节点监听地址；未设置时命令行不包含 {@code --host}。
          */
         private String host;
         /**
-         * 传给 openclaw 子命令 `--security` 选项的内容；为 null 时通常省略。
+         * MCP 传输安全策略；未设置时命令行不包含 {@code --security}。
          */
         private String security;
         /**
-         * 传给 openclaw 子命令 `--ask` 选项的内容；为 null 时通常省略。
+         * 执行前询问策略；未设置时命令行不包含 {@code --ask}。
          */
         private String ask;
         /**
-         * 传给 openclaw 子命令 `--ask-fallback` 选项的内容；为 null 时通常省略。
+         * 询问不可用时的回退策略；未设置时命令行不包含 {@code --ask-fallback}。
          */
         private String askFallback;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
 
         /**
-         * 选择 `show` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code show} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder show() { this.mode = Mode.SHOW; return this; }
         /**
-         * 设置 `--preset` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --preset} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param name 写入 `--preset` 选项的内容
+         * @param name 目标资源名称；作为 {@code --preset} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder preset(String name) { this.mode = Mode.PRESET; this.presetName = name; return this; }
         /**
-         * 选择 `set` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code set} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder set() { this.mode = Mode.SET; return this; }
         /**
-         * 设置 `--mode` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --mode} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param mode 写入 `--mode` 选项的内容
+         * @param mode 子命令使用的执行模式；作为 {@code --mode} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
         /**
-         * 设置 `--host` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --host} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param host 写入 `--host` 选项的内容
+         * @param host 节点监听地址；作为 {@code --host} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder host(String host) { this.host = host; return this; }
         /**
-         * 设置 `--security` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --security} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param security 写入 `--security` 选项的内容
+         * @param security MCP 传输安全策略；作为 {@code --security} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder security(String security) { this.security = security; return this; }
         /**
-         * 设置 `--ask` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --ask} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param ask 写入 `--ask` 选项的内容
+         * @param ask 执行前询问策略；作为 {@code --ask} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder ask(String ask) { this.ask = ask; return this; }
         /**
-         * 设置 `--ask-fallback` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --ask-fallback} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param askFallback 写入 `--ask-fallback` 选项的内容
+         * @param askFallback 询问不可用时的回退策略；作为 {@code --ask-fallback} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder askFallback(String askFallback) { this.askFallback = askFallback; return this; }
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -215,7 +215,7 @@ public final class ExecPolicyOptions implements CliSubArgs {
         public Builder json(boolean json) { this.json = json; return this; }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `ExecPolicyOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code ExecPolicyOptions}。
          *
          * @return 按当前字段创建的 ExecPolicyOptions
          */

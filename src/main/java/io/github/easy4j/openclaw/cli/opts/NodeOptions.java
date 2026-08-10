@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `node` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code node} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,80 +16,80 @@ import java.util.List;
 public final class NodeOptions implements CliSubArgs {
 
     /**
-     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义节点守护进程动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Verb {
         /**
-         * 选择 `run` 协议模式；序列化时使用该固定取值。
+         * 表示节点守护进程动作的 {@code run} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         RUN,
         /**
-         * 选择 `install` 协议模式；序列化时使用该固定取值。
+         * 表示节点守护进程动作的 {@code install} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         INSTALL,
         /**
-         * 选择 `status` 协议模式；序列化时使用该固定取值。
+         * 表示节点守护进程动作的 {@code status} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         STATUS,
         /**
-         * 选择 `stop` 协议模式；序列化时使用该固定取值。
+         * 表示节点守护进程动作的 {@code stop} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         STOP,
         /**
-         * 选择 `restart` 协议模式；序列化时使用该固定取值。
+         * 表示节点守护进程动作的 {@code restart} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         RESTART,
         /**
-         * 选择 `uninstall` 协议模式；序列化时使用该固定取值。
+         * 表示节点守护进程动作的 {@code uninstall} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         UNINSTALL
     }
 
     /**
-     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
      */
     private final Verb verb;
     /**
-     * 传给 openclaw 子命令 `--host` 选项的内容；为 null 时通常省略。
+     * 节点监听地址；未设置时命令行不包含 {@code --host}。
      */
     private final String host;
     /**
-     * 传给 openclaw 子命令 `--port` 选项的内容；为 null 时通常省略。
+     * 节点监听端口；未设置时命令行不包含 {@code --port}。
      */
     private final String port;
     /**
-     * 是否向 openclaw 子命令追加 `--tls` 开关。
+     * 是否向 openclaw 子命令追加 {@code --tls} 开关。
      */
     private final boolean tls;
     /**
-     * 传给 openclaw 子命令 `--tls-fingerprint` 选项的内容；为 null 时通常省略。
+     * 用于校验远端证书的 TLS 指纹；未设置时命令行不包含 {@code --tls-fingerprint}。
      */
     private final String tlsFingerprint;
     /**
-     * 传给 openclaw 子命令 `--node-id` 选项的内容；为 null 时通常省略。
+     * 节点唯一标识；未设置时命令行不包含 {@code --node-id}。
      */
     private final String nodeId;
     /**
-     * 传给 openclaw 子命令 `--display-name` 选项的内容；为 null 时通常省略。
+     * 面向用户展示的名称；未设置时命令行不包含 {@code --display-name}。
      */
     private final String displayName;
     /**
-     * 传给 openclaw 子命令 `--runtime` 选项的内容；为 null 时通常省略。
+     * 节点运行时名称；未设置时命令行不包含 {@code --runtime}。
      */
     private final String runtime;
     /**
-     * 是否向 openclaw 子命令追加 `--force` 开关。
+     * 是否向 openclaw 子命令追加 {@code --force} 开关。
      */
     private final boolean force;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -111,7 +111,7 @@ public final class NodeOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `NodeOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code NodeOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -169,59 +169,59 @@ public final class NodeOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 NodeOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 NodeOptions。
+     * {@code NodeOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
          */
         private Verb verb = Verb.RUN;
         /**
-         * 传给 openclaw 子命令 `--host` 选项的内容；为 null 时通常省略。
+         * 节点监听地址；未设置时命令行不包含 {@code --host}。
          */
         private String host;
         /**
-         * 传给 openclaw 子命令 `--port` 选项的内容；为 null 时通常省略。
+         * 节点监听端口；未设置时命令行不包含 {@code --port}。
          */
         private String port;
         /**
-         * 是否向 openclaw 子命令追加 `--tls` 开关。
+         * 是否向 openclaw 子命令追加 {@code --tls} 开关。
          */
         private boolean tls;
         /**
-         * 传给 openclaw 子命令 `--tls-fingerprint` 选项的内容；为 null 时通常省略。
+         * 用于校验远端证书的 TLS 指纹；未设置时命令行不包含 {@code --tls-fingerprint}。
          */
         private String tlsFingerprint;
         /**
-         * 传给 openclaw 子命令 `--node-id` 选项的内容；为 null 时通常省略。
+         * 节点唯一标识；未设置时命令行不包含 {@code --node-id}。
          */
         private String nodeId;
         /**
-         * 传给 openclaw 子命令 `--display-name` 选项的内容；为 null 时通常省略。
+         * 面向用户展示的名称；未设置时命令行不包含 {@code --display-name}。
          */
         private String displayName;
         /**
-         * 传给 openclaw 子命令 `--runtime` 选项的内容；为 null 时通常省略。
+         * 节点运行时名称；未设置时命令行不包含 {@code --runtime}。
          */
         private String runtime;
         /**
-         * 是否向 openclaw 子命令追加 `--force` 开关。
+         * 是否向 openclaw 子命令追加 {@code --force} 开关。
          */
         private boolean force;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `run` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code run} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -231,7 +231,7 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `install` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code install} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -241,7 +241,7 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `status` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code status} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -251,7 +251,7 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `stop` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code stop} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -261,7 +261,7 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `restart` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code restart} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -271,7 +271,7 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `uninstall` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code uninstall} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -281,9 +281,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--host` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --host} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param host 写入 `--host` 选项的内容
+         * @param host 节点监听地址；作为 {@code --host} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder host(String host) {
@@ -292,9 +292,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--port` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --port} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param port 写入 `--port` 选项的内容
+         * @param port 节点监听端口；作为 {@code --port} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder port(String port) {
@@ -303,9 +303,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--tls` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --tls} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tls 是否向命令行追加 `--tls` 开关
+         * @param tls 是否向命令行追加 {@code --tls} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder tls(boolean tls) {
@@ -314,9 +314,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--tls-fingerprint` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --tls-fingerprint} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param fingerprint 写入 `--tls-fingerprint` 选项的内容
+         * @param fingerprint 用于校验节点证书的 TLS 指纹；作为 {@code --tls-fingerprint} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder tlsFingerprint(String fingerprint) {
@@ -325,9 +325,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--node-id` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --node-id} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param nodeId 写入 `--node-id` 选项的内容
+         * @param nodeId 节点唯一标识；作为 {@code --node-id} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder nodeId(String nodeId) {
@@ -336,9 +336,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--display-name` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --display-name} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param displayName 写入 `--display-name` 选项的内容
+         * @param displayName 面向用户展示的名称；作为 {@code --display-name} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder displayName(String displayName) {
@@ -347,9 +347,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--runtime` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --runtime} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param runtime 写入 `--runtime` 选项的内容
+         * @param runtime 节点运行时名称；作为 {@code --runtime} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder runtime(String runtime) {
@@ -358,9 +358,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--force` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --force} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param force 是否向命令行追加 `--force` 开关
+         * @param force 是否向命令行追加 {@code --force} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder force(boolean force) {
@@ -369,7 +369,7 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -380,9 +380,9 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -393,7 +393,7 @@ public final class NodeOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `NodeOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code NodeOptions}。
          *
          * @return 按当前字段创建的 NodeOptions
          */

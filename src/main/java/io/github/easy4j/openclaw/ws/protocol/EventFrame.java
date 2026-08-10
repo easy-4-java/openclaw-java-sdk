@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * OpenClaw JSON 协议中的 `EventFrame` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Gateway WebSocket event 帧，携带事件名、负载和可选序列号。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -14,25 +14,25 @@ import lombok.Getter;
 public class EventFrame extends GatewayFrame {
 
     /**
-     * 映射 OpenClaw JSON 字段 `event` 的 协议内容。
+     * JSON 属性 {@code event}，表示事件名称。
      */
     private final String event;
     /**
-     * 映射 OpenClaw JSON 字段 `payload` 的 协议内容。
+     * JSON 属性 {@code payload}，表示事件或响应负载。
      */
     private final Object payload;
     /**
-     * 映射 OpenClaw JSON 字段 `seq` 的 协议内容。
+     * JSON 属性 {@code seq}，表示事件序列号。
      */
     private final Integer seq;
 
     /**
-     * 按协议字段创建 `EventFrame`，供 Jackson 序列化、反序列化或调用方读取。
+     * 从 Gateway event 帧恢复事件名称、负载和可选序列号。
      *
-     * @param type 写入 `type` 协议字段的内容
-     * @param event 写入 `event` 协议字段的内容
-     * @param payload 写入 `payload` 协议字段的内容
-     * @param seq 写入 `seq` 协议字段的内容
+     * @param type 协议帧、事件或响应的类型标识
+     * @param event 待分发或累积的 SSE/WebSocket 事件
+     * @param payload 事件携带的结构化业务数据；无负载时可为 {@code null}
+     * @param seq 可空的事件序列号，用于检测顺序或缺帧
      */
     @JsonCreator
     public EventFrame(

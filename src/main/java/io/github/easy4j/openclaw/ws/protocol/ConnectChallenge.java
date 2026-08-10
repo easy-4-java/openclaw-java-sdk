@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * OpenClaw JSON 协议中的 `ConnectChallenge` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Gateway connect.challenge 事件负载，包含 nonce 与服务端时间戳。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -20,12 +20,12 @@ import lombok.Setter;
 public class ConnectChallenge {
 
     /**
-     * 映射 OpenClaw JSON 字段 `nonce` 的 协议内容。
+     * JSON 属性 {@code nonce}，表示握手挑战随机值。
      */
     private String nonce;
 
     /**
-     * 映射 OpenClaw JSON 字段 `ts` 的 协议内容。
+     * JSON 属性 {@code ts}，表示事件时间戳。
      */
     private Long ts;
 }

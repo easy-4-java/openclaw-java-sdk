@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `configure` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code configure} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,7 +16,7 @@ import java.util.List;
 public final class ConfigureOptions implements CliSubArgs {
 
     /**
-     * 传给 openclaw 子命令 `--sections` 选项的内容；为 null 时通常省略。
+     * 要执行检查或配置的分区列表；未设置时命令行不包含 {@code --sections}。
      */
     private final List<String> sections;
 
@@ -28,7 +28,7 @@ public final class ConfigureOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `ConfigureOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code ConfigureOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -54,7 +54,7 @@ public final class ConfigureOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 ConfigureOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ConfigureOptions。
+     * {@code ConfigureOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -62,14 +62,14 @@ public final class ConfigureOptions implements CliSubArgs {
     public static final class Builder {
 
         /**
-         * 传给 openclaw 子命令 `--sections` 选项的内容；为 null 时通常省略。
+         * 要执行检查或配置的分区列表；未设置时命令行不包含 {@code --sections}。
          */
         private final List<String> sections = new ArrayList<>();
 
         /**
-         * 设置 `--section` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --section} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param section 写入 `--section` 选项的内容
+         * @param section 要配置的设置分区；作为 {@code --section} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder section(String section) {
@@ -80,7 +80,7 @@ public final class ConfigureOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `ConfigureOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code ConfigureOptions}。
          *
          * @return 按当前字段创建的 ConfigureOptions
          */

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
- * OpenClaw JSON 协议中的 `HookResponse` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Hook 执行结果，保留成功标记、运行标识、HTTP 状态和原始响应。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -20,33 +20,33 @@ import lombok.*;
 public class HookResponse {
 
     /**
-     * 映射 OpenClaw JSON 字段 `success` 的 布尔开关。
+     * JSON 属性 {@code success}，表示Webhook 是否执行成功。
      */
     @JsonProperty("ok")
     private boolean success;
 
     /**
-     * 映射 OpenClaw JSON 字段 `httpStatus` 的 协议内容。
+     * JSON 属性 {@code httpStatus}，表示HTTP 状态码。
      */
     private int httpStatus = -1;
 
     /**
-     * 映射 OpenClaw JSON 字段 `runId` 的 关联标识。
+     * JSON 属性 {@code runId}，表示一次智能体运行的标识。
      */
     private String runId;
 
     /**
-     * 映射 OpenClaw JSON 字段 `rawBody` 的 协议内容。
+     * JSON 属性 {@code rawBody}，表示未解析的原始响应体。
      */
     private String rawBody;
 
     /**
-     * 映射 OpenClaw JSON 字段 `error` 的 协议内容。
+     * JSON 属性 {@code error}，表示错误详情。
      */
     private String error;
 
     /**
-     * 映射 OpenClaw JSON 字段 `localInvocation` 的 布尔开关。
+     * JSON 属性 {@code localInvocation}，表示结果是否来自本地调用。
      */
     private boolean localInvocation;
 }

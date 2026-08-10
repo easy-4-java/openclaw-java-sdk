@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class SseSubscription implements AutoCloseable {
 
     /**
-     * 跨线程生命周期协调状态，保证并发更新的可见性、互斥或容量上限。
+     * 订阅活动标记；取消线程与流读取线程通过原子变量协调结束。
      */
     private final AtomicBoolean active = new AtomicBoolean(true);
     /**
@@ -21,7 +21,7 @@ public final class SseSubscription implements AutoCloseable {
     private final Runnable cancellation;
 
     /**
-     * 按给定配置创建 `SseSubscription`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code SseSubscription}，构造过程不隐式执行远程业务请求。
      *
      * @param cancellation 可选调用取消令牌
      */
@@ -32,7 +32,7 @@ public final class SseSubscription implements AutoCloseable {
     /**
      * 把取消信号传播到底层网络调用或 Future，并以幂等方式结束当前任务。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 本次调用成功把订阅从活动状态切换为已取消时返回 {@code true}
      */
     public boolean cancel() {
         if (!active.compareAndSet(true, false)) {
@@ -43,9 +43,9 @@ public final class SseSubscription implements AutoCloseable {
     }
 
     /**
-     * 判断 `active` 对应状态 是否满足协议或生命周期条件。
+     * 判断 SSE 订阅尚未取消且读取任务尚未结束。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 订阅尚未取消且底层调用仍可继续接收事件时返回 {@code true}
      */
     public boolean isActive() {
         return active.get();

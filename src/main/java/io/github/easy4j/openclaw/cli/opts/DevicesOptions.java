@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `devices` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code devices} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -17,96 +17,96 @@ import java.util.List;
 public final class DevicesOptions implements CliSubArgs {
 
     /**
-     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义设备管理动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Verb {
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示设备管理动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `remove` 协议模式；序列化时使用该固定取值。
+         * 表示设备管理动作的 {@code remove} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         REMOVE,
         /**
-         * 选择 `clear` 协议模式；序列化时使用该固定取值。
+         * 表示设备管理动作的 {@code clear} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         CLEAR,
         /**
-         * 选择 `approve` 协议模式；序列化时使用该固定取值。
+         * 表示设备管理动作的 {@code approve} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         APPROVE,
         /**
-         * 选择 `reject` 协议模式；序列化时使用该固定取值。
+         * 表示设备管理动作的 {@code reject} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         REJECT,
         /**
-         * 选择 `rotate` 协议模式；序列化时使用该固定取值。
+         * 表示设备管理动作的 {@code rotate} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         ROTATE,
         /**
-         * 选择 `revoke` 协议模式；序列化时使用该固定取值。
+         * 表示设备管理动作的 {@code revoke} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         REVOKE
     }
 
     /**
-     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
      */
     private final Verb verb;
     /**
-     * 传给 openclaw 子命令 `--device-id` 选项的内容；为 null 时通常省略。
+     * 目标设备标识；未设置时命令行不包含 {@code --device-id}。
      */
     private final String deviceId;
     /**
-     * 是否向 openclaw 子命令追加 `--clear-yes` 开关。
+     * 是否向 openclaw 子命令追加 {@code --clear-yes} 开关。
      */
     private final boolean clearYes;
     /**
-     * 是否向 openclaw 子命令追加 `--clear-pending` 开关。
+     * 是否向 openclaw 子命令追加 {@code --clear-pending} 开关。
      */
     private final boolean clearPending;
     /**
-     * 传给 openclaw 子命令 `--request-id` 选项的内容；为 null 时通常省略。
+     * 请求关联标识；未设置时命令行不包含 {@code --request-id}。
      */
     private final String requestId;
     /**
-     * 是否向 openclaw 子命令追加 `--approve-latest` 开关。
+     * 是否向 openclaw 子命令追加 {@code --approve-latest} 开关。
      */
     private final boolean approveLatest;
     /**
-     * 传给 openclaw 子命令 `--role` 选项的内容；为 null 时通常省略。
+     * 待轮换或撤销的设备角色；未设置时命令行不包含 {@code --role}。
      */
     private final String role;
     /**
-     * 传给 openclaw 子命令 `--scopes` 选项的内容；为 null 时通常省略。
+     * 请求携带的授权作用域集合；未设置时命令行不包含 {@code --scopes}。
      */
     private final List<String> scopes;
     /**
-     * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+     * 目标 Gateway 或远程服务 URL；未设置时命令行不包含 {@code --url}。
      */
     private final String url;
     /**
-     * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+     * 认证令牌或待追加的原始服务参数；未设置时命令行不包含 {@code --token}。
      */
     private final String token;
     /**
-     * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+     * Gateway 或远程服务密码；未设置时命令行不包含 {@code --password}。
      */
     private final String password;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
      */
     private final String timeout;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -131,7 +131,7 @@ public final class DevicesOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `DevicesOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code DevicesOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -205,71 +205,71 @@ public final class DevicesOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 DevicesOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 DevicesOptions。
+     * {@code DevicesOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
          */
         private Verb verb = Verb.LIST;
         /**
-         * 传给 openclaw 子命令 `--device-id` 选项的内容；为 null 时通常省略。
+         * 目标设备标识；未设置时命令行不包含 {@code --device-id}。
          */
         private String deviceId;
         /**
-         * 是否向 openclaw 子命令追加 `--clear-yes` 开关。
+         * 是否向 openclaw 子命令追加 {@code --clear-yes} 开关。
          */
         private boolean clearYes;
         /**
-         * 是否向 openclaw 子命令追加 `--clear-pending` 开关。
+         * 是否向 openclaw 子命令追加 {@code --clear-pending} 开关。
          */
         private boolean clearPending;
         /**
-         * 传给 openclaw 子命令 `--request-id` 选项的内容；为 null 时通常省略。
+         * 请求关联标识；未设置时命令行不包含 {@code --request-id}。
          */
         private String requestId;
         /**
-         * 是否向 openclaw 子命令追加 `--approve-latest` 开关。
+         * 是否向 openclaw 子命令追加 {@code --approve-latest} 开关。
          */
         private boolean approveLatest;
         /**
-         * 传给 openclaw 子命令 `--role` 选项的内容；为 null 时通常省略。
+         * 待轮换或撤销的设备角色；未设置时命令行不包含 {@code --role}。
          */
         private String role;
         /**
-         * 传给 openclaw 子命令 `--scopes` 选项的内容；为 null 时通常省略。
+         * 请求携带的授权作用域集合；未设置时命令行不包含 {@code --scopes}。
          */
         private List<String> scopes = new ArrayList<>();
         /**
-         * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+         * 目标 Gateway 或远程服务 URL；未设置时命令行不包含 {@code --url}。
          */
         private String url;
         /**
-         * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+         * 认证令牌或待追加的原始服务参数；未设置时命令行不包含 {@code --token}。
          */
         private String token;
         /**
-         * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+         * Gateway 或远程服务密码；未设置时命令行不包含 {@code --password}。
          */
         private String password;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
          */
         private String timeout;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code list} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -279,9 +279,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--remove` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --remove} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param deviceId 写入 `--remove` 选项的内容
+         * @param deviceId 目标设备标识；作为 {@code --remove} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder remove(String deviceId) {
@@ -291,9 +291,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--clear` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --clear} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param yes 是否向命令行追加 `--clear` 开关
+         * @param yes 是否向命令行追加 {@code --clear} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder clear(boolean yes) {
@@ -303,9 +303,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--clear-pending` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --clear-pending} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param pending 是否向命令行追加 `--clear-pending` 开关
+         * @param pending 是否向命令行追加 {@code --clear-pending} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder clearPending(boolean pending) {
@@ -314,7 +314,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `approve` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code approve} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -326,7 +326,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--approve` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --approve} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param requestId 请求标识
          * @return 当前构建器，便于继续链式配置
@@ -339,9 +339,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--approve-latest` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --approve-latest} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param latest 是否向命令行追加 `--approve-latest` 开关
+         * @param latest 是否向命令行追加 {@code --approve-latest} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder approveLatest(boolean latest) {
@@ -350,7 +350,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--reject` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --reject} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param requestId 请求标识
          * @return 当前构建器，便于继续链式配置
@@ -362,10 +362,10 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--rotate` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --rotate} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param deviceId 写入 `--rotate` 选项的内容
-         * @param role 写入 `--rotate` 选项的内容
+         * @param deviceId 目标设备标识；作为 {@code --rotate} 的参数
+         * @param role 待轮换或撤销的设备角色；作为 {@code --rotate} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder rotate(String deviceId, String role) {
@@ -376,9 +376,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--scope` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --scope} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param scope 写入 `--scope` 选项的内容
+         * @param scope 重置或查询操作的作用域；作为 {@code --scope} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder scope(String scope) {
@@ -389,10 +389,10 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--revoke` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --revoke} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param deviceId 写入 `--revoke` 选项的内容
-         * @param role 写入 `--revoke` 选项的内容
+         * @param deviceId 目标设备标识；作为 {@code --revoke} 的参数
+         * @param role 待轮换或撤销的设备角色；作为 {@code --revoke} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder revoke(String deviceId, String role) {
@@ -403,7 +403,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --url} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param url 完整目标 URL
          * @return 当前构建器，便于继续链式配置
@@ -414,9 +414,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --token} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param token 写入 `--token` 选项的内容
+         * @param token 认证令牌或待追加的原始服务参数；作为 {@code --token} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder token(String token) {
@@ -425,9 +425,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--password` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --password} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param password 写入 `--password` 选项的内容
+         * @param password Gateway 或远程服务密码；作为 {@code --password} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder password(String password) {
@@ -436,9 +436,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --timeout} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param timeout 写入 `--timeout` 选项的内容
+         * @param timeout CLI 接受的超时配置；作为 {@code --timeout} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder timeout(String timeout) {
@@ -447,7 +447,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -458,9 +458,9 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -471,7 +471,7 @@ public final class DevicesOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `DevicesOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code DevicesOptions}。
          *
          * @return 按当前字段创建的 DevicesOptions
          */

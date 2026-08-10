@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * OpenClaw JSON 协议中的 `EmbeddingsRequest` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * 向量嵌入请求，包含智能体、模型和单条或批量输入。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -22,17 +22,17 @@ import lombok.Setter;
 public class EmbeddingsRequest {
 
     /**
-     * 映射 OpenClaw JSON 字段 `agent` 的 协议内容。
+     * JSON 属性 {@code agent}，表示智能体标识。
      */
     private String agent;
 
     /**
-     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     * JSON 属性 {@code model}，表示模型标识。
      */
     private String model;
 
     /**
-     * 映射 OpenClaw JSON 字段 `input` 的 协议内容。
+     * JSON 属性 {@code input}，表示模型输入。
      */
     private Object input;
 }

@@ -26,16 +26,16 @@ import java.util.concurrent.CompletableFuture;
 public class OpenClawChatClient extends OpenClawHttpClient {
 
     /**
-     * `OpenClawChatClient` 生命周期内保存的 `sseClient` 对应状态。
+     * 负责 SSE 连接、解析和取消传播的客户端。
      */
     private final OpenClawSseClient sseClient;
     /**
-     * `OpenClawChatClient` 生命周期内保存的 `ownsSseClient` 对应状态。
+     * 标记 SSE 客户端是否由当前聊天客户端创建；仅自建实例会随当前对象关闭。
      */
     private final boolean ownsSseClient;
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
      */
@@ -46,7 +46,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -59,12 +59,12 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
      * @param httpClient 复用连接池和 Dispatcher 的 OkHttpClient
-     * @param sseClient 写入 `sseClient` 协议字段的内容
+     * @param sseClient 负责建立和管理 SSE 流的客户端
      */
     public OpenClawChatClient(OpenClawHttpClientConfig config, ObjectMapper objectMapper,
                               OkHttpClient httpClient, OpenClawSseClient sseClient) {
@@ -78,9 +78,9 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     // ============================================================
 
     /**
-     * 调用 OpenClaw 的 `chatCompletion` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
      */
     public ChatResponse chatCompletion(ChatRequest request) {
@@ -88,9 +88,9 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletion` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param headers 附加 HTTP 请求头
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
      */
@@ -99,9 +99,9 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletion` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param headers 附加 HTTP 请求头
      * @param cancellation 可选调用取消令牌
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
@@ -112,9 +112,9 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `chatCompletion`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code chatCompletion}，调用线程不等待远端响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param headers 附加 HTTP 请求头
      * @param cancellation 可选调用取消令牌
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
@@ -168,9 +168,9 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `chatCompletion`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code chatCompletion}，调用线程不等待远端响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
     public CompletableFuture<ChatResponse> chatCompletionAsync(ChatRequest request) {
@@ -178,9 +178,9 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletionStream` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request) {
@@ -188,9 +188,9 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletionStream` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param headers 附加 HTTP 请求头
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
      */
@@ -201,10 +201,10 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletionStream` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
-     * @param request 请求对象
-     * @param callbackBuilder 写入 `callbackBuilder` 协议字段的内容
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
+     * @param callbackBuilder 用于注册流式增量、工具调用、完成和失败回调的构建器
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request, StreamingChatResponse.Builder callbackBuilder) {
@@ -218,7 +218,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     // ============================================================
 
     /**
-     * 调用 OpenClaw 的 `listModels` API，并复用统一认证、序列化、取消和异常处理。
+     * 读取 Gateway 当前可用模型列表。
      *
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ModelsResponse
      */
@@ -227,7 +227,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `listModels`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code listModels}，调用线程不等待远端响应。
      *
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
@@ -241,17 +241,17 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 读取当前对象保存的 模型标识，不触发网络或子进程调用。
+     * 返回模型标识。
      *
      * @param modelId 模型标识
-     * @return 按当前参数创建、查询或解析得到的 ModelsResponse.ModelData
+     * @return 模型标识匹配的数据；未找到时返回 null
      */
     public ModelsResponse.ModelData getModel(String modelId) {
         return awaitFuture(getModelAsync(modelId));
     }
 
     /**
-     * 读取当前对象保存的 `modelAsync` 对应状态，不触发网络或子进程调用。
+     * 异步读取模型列表；网络 I/O 由 OkHttp Dispatcher 执行。
      *
      * @param modelId 模型标识
      * @return 在远程响应、取消或失败时完成的 CompletableFuture

@@ -1,7 +1,7 @@
 package io.github.easy4j.openclaw.cli.availability;
 
 /**
- * `OpenClawCliAvailabilityStatus` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+ * 定义CLI 可用性探测状态允许的固定取值及其 CLI/JSON 序列化拼写。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -9,42 +9,42 @@ package io.github.easy4j.openclaw.cli.availability;
 public enum OpenClawCliAvailabilityStatus {
 
     /**
-     * 选择 `available` 协议模式；序列化时使用该固定取值。
+     * 表示CLI 可用性探测状态的 {@code available} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     AVAILABLE,
 
     /**
-     * 选择 `executable_not_configured` 协议模式；序列化时使用该固定取值。
+     * 表示CLI 可用性探测状态的 {@code executable_not_configured} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     EXECUTABLE_NOT_CONFIGURED,
 
     /**
-     * 选择 `executable_not_found` 协议模式；序列化时使用该固定取值。
+     * 表示CLI 可用性探测状态的 {@code executable_not_found} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     EXECUTABLE_NOT_FOUND,
 
     /**
-     * 选择 `executable_not_executable` 协议模式；序列化时使用该固定取值。
+     * 表示CLI 可用性探测状态的 {@code executable_not_executable} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     EXECUTABLE_NOT_EXECUTABLE,
 
     /**
-     * 选择 `spawn_failed` 协议模式；序列化时使用该固定取值。
+     * 表示CLI 可用性探测状态的 {@code spawn_failed} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     SPAWN_FAILED,
 
     /**
-     * 选择 `non_zero_exit` 协议模式；序列化时使用该固定取值。
+     * 表示CLI 可用性探测状态的 {@code non_zero_exit} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     NON_ZERO_EXIT,
 
     /**
-     * 选择 `timeout` 协议模式；序列化时使用该固定取值。
+     * 表示CLI 可用性探测状态的 {@code timeout} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     TIMEOUT,
 
     /**
-     * 选择 `failed` 协议模式；序列化时使用该固定取值。
+     * 表示CLI 可用性探测状态的 {@code failed} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     FAILED
 }

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `onboard` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code onboard} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,19 +16,19 @@ import java.util.List;
 public final class OnboardOptions implements CliSubArgs {
 
     /**
-     * 传给 openclaw 子命令 `--segments` 选项的内容；为 null 时通常省略。
+     * 引导流程分段配置；未设置时命令行不包含 {@code --segments}。
      */
     private final List<String> segments;
 
     /**
- * @param segments null;,
+     * @param segments 要传给 onboard 的步骤分段；为空时不限制步骤
      */
     private OnboardOptions(List<String> segments) {
         this.segments = segments;
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `OnboardOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code OnboardOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -47,7 +47,7 @@ public final class OnboardOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 OnboardOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 OnboardOptions。
+     * {@code OnboardOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -55,14 +55,14 @@ public final class OnboardOptions implements CliSubArgs {
     public static final class Builder {
 
         /**
-         * 传给 openclaw 子命令 `--s` 选项的内容；为 null 时通常省略。
+         * 引导流程使用的分段配置；未设置时命令行不包含 {@code --s}。
          */
         private final List<String> s = new ArrayList<>();
 
         /**
-         * 设置 `--flow` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --flow} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param flow 写入 `--flow` 选项的内容
+         * @param flow 引导流程名称；作为 {@code --flow} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder flow(String flow) {
@@ -74,9 +74,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--mode` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --mode} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param mode 写入 `--mode` 选项的内容
+         * @param mode 子命令使用的执行模式；作为 {@code --mode} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder mode(String mode) {
@@ -88,9 +88,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--remote-url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --remote-url} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param remoteUrl 写入 `--remote-url` 选项的内容
+         * @param remoteUrl 远程 Gateway URL；作为 {@code --remote-url} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder remoteUrl(String remoteUrl) {
@@ -102,9 +102,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--non-interactive` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --non-interactive} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param nonInteractive 是否向命令行追加 `--non-interactive` 开关
+         * @param nonInteractive 是否向命令行追加 {@code --non-interactive} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder nonInteractive(boolean nonInteractive) {
@@ -115,7 +115,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -128,9 +128,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--auth-choice` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --auth-choice} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param authChoice 写入 `--auth-choice` 选项的内容
+         * @param authChoice 引导流程选择的认证方式；作为 {@code --auth-choice} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder authChoice(String authChoice) {
@@ -142,9 +142,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--custom-base-url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --custom-base-url} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param customBaseUrl 写入 `--custom-base-url` 选项的内容
+         * @param customBaseUrl 自定义模型服务的基础 URL；作为 {@code --custom-base-url} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder customBaseUrl(String customBaseUrl) {
@@ -156,9 +156,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--custom-model-id` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --custom-model-id} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param customModelId 写入 `--custom-model-id` 选项的内容
+         * @param customModelId 自定义模型标识；作为 {@code --custom-model-id} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder customModelId(String customModelId) {
@@ -170,9 +170,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--secret-input-mode` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --secret-input-mode} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param secretInputMode 写入 `--secret-input-mode` 选项的内容
+         * @param secretInputMode 密钥输入方式；作为 {@code --secret-input-mode} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder secretInputMode(String secretInputMode) {
@@ -184,9 +184,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--accept-risk` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --accept-risk} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param acceptRisk 是否向命令行追加 `--accept-risk` 开关
+         * @param acceptRisk 是否向命令行追加 {@code --accept-risk} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder acceptRisk(boolean acceptRisk) {
@@ -197,9 +197,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--gateway-auth` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --gateway-auth} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param gatewayAuth 写入 `--gateway-auth` 选项的内容
+         * @param gatewayAuth Gateway 认证方式；作为 {@code --gateway-auth} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder gatewayAuth(String gatewayAuth) {
@@ -211,9 +211,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--gateway-token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --gateway-token} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param gatewayToken 写入 `--gateway-token` 选项的内容
+         * @param gatewayToken Gateway Bearer Token；作为 {@code --gateway-token} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder gatewayToken(String gatewayToken) {
@@ -225,9 +225,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--gateway-token-ref-env` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --gateway-token-ref-env} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param envVar 写入 `--gateway-token-ref-env` 选项的内容
+         * @param envVar 保存 Gateway Token 的环境变量名称；作为 {@code --gateway-token-ref-env} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder gatewayTokenRefEnv(String envVar) {
@@ -239,9 +239,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--install-daemon` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --install-daemon} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param installDaemon 是否向命令行追加 `--install-daemon` 开关
+         * @param installDaemon 是否向命令行追加 {@code --install-daemon} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder installDaemon(boolean installDaemon) {
@@ -252,9 +252,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--skip-health` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --skip-health} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param skipHealth 是否向命令行追加 `--skip-health` 开关
+         * @param skipHealth 是否向命令行追加 {@code --skip-health} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder skipHealth(boolean skipHealth) {
@@ -265,9 +265,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--allow-unconfigured` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --allow-unconfigured} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param allowUnconfigured 是否向命令行追加 `--allow-unconfigured` 开关
+         * @param allowUnconfigured 是否向命令行追加 {@code --allow-unconfigured} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder allowUnconfigured(boolean allowUnconfigured) {
@@ -278,9 +278,9 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -291,7 +291,7 @@ public final class OnboardOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `OnboardOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code OnboardOptions}。
          *
          * @return 按当前字段创建的 OnboardOptions
          */

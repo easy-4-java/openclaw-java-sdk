@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * openclaw `daemon` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code daemon} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,39 +16,39 @@ import java.util.Objects;
 public final class DaemonOptions implements CliSubArgs {
 
     /**
-     * `Subcommand` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义守护进程子命令允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Subcommand {
         /**
-         * 选择 `status` 协议模式；序列化时使用该固定取值。
+         * 表示守护进程子命令的 {@code status} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         STATUS("status"),
         /**
-         * 选择 `install` 协议模式；序列化时使用该固定取值。
+         * 表示守护进程子命令的 {@code install} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         INSTALL("install"),
         /**
-         * 选择 `uninstall` 协议模式；序列化时使用该固定取值。
+         * 表示守护进程子命令的 {@code uninstall} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         UNINSTALL("uninstall"),
         /**
-         * 选择 `start` 协议模式；序列化时使用该固定取值。
+         * 表示守护进程子命令的 {@code start} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         START("start"),
         /**
-         * 选择 `stop` 协议模式；序列化时使用该固定取值。
+         * 表示守护进程子命令的 {@code stop} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         STOP("stop"),
         /**
-         * 选择 `restart` 协议模式；序列化时使用该固定取值。
+         * 表示守护进程子命令的 {@code restart} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         RESTART("restart");
 
         /**
-         * 传给 openclaw 子命令 `--cli-name` 选项的内容；为 null 时通常省略。
+         * 枚举动作对应的 CLI 子命令名称；未设置时命令行不包含 {@code --cli-name}。
          */
         private final String cliName;
 
@@ -62,7 +62,7 @@ public final class DaemonOptions implements CliSubArgs {
         /**
          * 返回守护进程子命令在 openclaw CLI 中使用的固定名称。
          *
-         * @return 服务返回或流式累积得到的文本
+         * @return 当前守护进程动作对应的 CLI 子命令名称
          */
         public String cliName() {
             return cliName;
@@ -70,35 +70,35 @@ public final class DaemonOptions implements CliSubArgs {
     }
 
     /**
-     * 传给 openclaw 子命令 `--subcommand` 选项的内容；为 null 时通常省略。
+     * 要执行的子命令名称；未设置时命令行不包含 {@code --subcommand}。
      */
     private final Subcommand subcommand;
     /**
-     * 传给 openclaw 子命令 `--status-rpc` 选项的内容；为 null 时通常省略。
+     * 状态检查使用的 Gateway RPC 参数；未设置时命令行不包含 {@code --status-rpc}。
      */
     private final GatewayRpcOptions statusRpc;
     /**
-     * 传给 openclaw 子命令 `--status-extra` 选项的内容；为 null 时通常省略。
+     * 状态 RPC 的附加参数；未设置时命令行不包含 {@code --status-extra}。
      */
     private final GatewayCliArgv.GatewayStatusOptions statusExtra;
     /**
-     * 传给 openclaw 子命令 `--install-port` 选项的内容；为 null 时通常省略。
+     * 安装服务使用的监听端口；未设置时命令行不包含 {@code --install-port}。
      */
     private final String installPort;
     /**
-     * 传给 openclaw 子命令 `--install-runtime` 选项的内容；为 null 时通常省略。
+     * 安装时选择的运行时；未设置时命令行不包含 {@code --install-runtime}。
      */
     private final String installRuntime;
     /**
-     * 传给 openclaw 子命令 `--install-token` 选项的内容；为 null 时通常省略。
+     * 安装流程使用的认证令牌；未设置时命令行不包含 {@code --install-token}。
      */
     private final String installToken;
     /**
-     * 是否向 openclaw 子命令追加 `--install-force` 开关。
+     * 是否向 openclaw 子命令追加 {@code --install-force} 开关。
      */
     private final boolean installForce;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
 
@@ -117,7 +117,7 @@ public final class DaemonOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `DaemonOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code DaemonOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -184,7 +184,7 @@ public final class DaemonOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 DaemonOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 DaemonOptions。
+     * {@code DaemonOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -192,42 +192,42 @@ public final class DaemonOptions implements CliSubArgs {
     public static final class Builder {
 
         /**
-         * 传给 openclaw 子命令 `--subcommand` 选项的内容；为 null 时通常省略。
+         * 要执行的子命令名称；未设置时命令行不包含 {@code --subcommand}。
          */
         private Subcommand subcommand;
         /**
-         * 传给 openclaw 子命令 `--status-rpc` 选项的内容；为 null 时通常省略。
+         * 状态检查使用的 Gateway RPC 参数；未设置时命令行不包含 {@code --status-rpc}。
          */
         private GatewayRpcOptions statusRpc;
         /**
-         * 传给 openclaw 子命令 `--status-extra` 选项的内容；为 null 时通常省略。
+         * 状态 RPC 的附加参数；未设置时命令行不包含 {@code --status-extra}。
          */
         private GatewayCliArgv.GatewayStatusOptions statusExtra;
         /**
-         * 传给 openclaw 子命令 `--install-port` 选项的内容；为 null 时通常省略。
+         * 安装服务使用的监听端口；未设置时命令行不包含 {@code --install-port}。
          */
         private String installPort;
         /**
-         * 传给 openclaw 子命令 `--install-runtime` 选项的内容；为 null 时通常省略。
+         * 安装时选择的运行时；未设置时命令行不包含 {@code --install-runtime}。
          */
         private String installRuntime;
         /**
-         * 传给 openclaw 子命令 `--install-token` 选项的内容；为 null 时通常省略。
+         * 安装流程使用的认证令牌；未设置时命令行不包含 {@code --install-token}。
          */
         private String installToken;
         /**
-         * 是否向 openclaw 子命令追加 `--install-force` 开关。
+         * 是否向 openclaw 子命令追加 {@code --install-force} 开关。
          */
         private boolean installForce;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
 
         /**
-         * 设置 `--subcommand` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --subcommand} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param subcommand 写入 `--subcommand` 选项的内容
+         * @param subcommand 要执行的子命令名称；作为 {@code --subcommand} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder subcommand(Subcommand subcommand) {
@@ -236,9 +236,9 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--status-rpc` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --status-rpc} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param statusRpc 写入 `--status-rpc` 选项的内容
+         * @param statusRpc 状态检查使用的 Gateway RPC 参数；作为 {@code --status-rpc} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder statusRpc(GatewayRpcOptions statusRpc) {
@@ -247,9 +247,9 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--status-extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --status-extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param statusExtra 写入 `--status-extra` 选项的内容
+         * @param statusExtra 状态 RPC 的附加参数；作为 {@code --status-extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder statusExtra(GatewayCliArgv.GatewayStatusOptions statusExtra) {
@@ -258,9 +258,9 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--install-port` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --install-port} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param installPort 写入 `--install-port` 选项的内容
+         * @param installPort 安装服务使用的监听端口；作为 {@code --install-port} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder installPort(String installPort) {
@@ -269,9 +269,9 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--install-runtime` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --install-runtime} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param installRuntime 写入 `--install-runtime` 选项的内容
+         * @param installRuntime 安装时选择的运行时；作为 {@code --install-runtime} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder installRuntime(String installRuntime) {
@@ -280,9 +280,9 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--install-token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --install-token} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param installToken 写入 `--install-token` 选项的内容
+         * @param installToken 安装流程使用的认证令牌；作为 {@code --install-token} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder installToken(String installToken) {
@@ -291,9 +291,9 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--install-force` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --install-force} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param installForce 是否向命令行追加 `--install-force` 开关
+         * @param installForce 是否向命令行追加 {@code --install-force} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder installForce(boolean installForce) {
@@ -302,7 +302,7 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -313,7 +313,7 @@ public final class DaemonOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `DaemonOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code DaemonOptions}。
          *
          * @return 按当前字段创建的 DaemonOptions
          */

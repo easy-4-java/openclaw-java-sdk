@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `worktrees` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code worktrees} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,60 +15,60 @@ import java.util.List;
 public final class WorktreesOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义工作区管理动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示工作区管理动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `create` 协议模式；序列化时使用该固定取值。
+         * 表示工作区管理动作的 {@code create} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         CREATE,
         /**
-         * 选择 `remove` 协议模式；序列化时使用该固定取值。
+         * 表示工作区管理动作的 {@code remove} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         REMOVE,
         /**
-         * 选择 `restore` 协议模式；序列化时使用该固定取值。
+         * 表示工作区管理动作的 {@code restore} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         RESTORE,
         /**
-         * 选择 `gc` 协议模式；序列化时使用该固定取值。
+         * 表示工作区管理动作的 {@code gc} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         GC
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 传给 openclaw 子命令 `--repo-root` 选项的内容；为 null 时通常省略。
+     * Git 仓库根目录；未设置时命令行不包含 {@code --repo-root}。
      */
     private final String repoRoot;
     /**
-     * 传给 openclaw 子命令 `--id` 选项的内容；为 null 时通常省略。
+     * 目标资源标识；未设置时命令行不包含 {@code --id}。
      */
     private final String id;
     /**
-     * 传给 openclaw 子命令 `--name` 选项的内容；为 null 时通常省略。
+     * 目标资源名称；未设置时命令行不包含 {@code --name}。
      */
     private final String name;
     /**
-     * 传给 openclaw 子命令 `--base-ref` 选项的内容；为 null 时通常省略。
+     * 创建工作区时使用的 Git 基准引用；未设置时命令行不包含 {@code --base-ref}。
      */
     private final String baseRef;
     /**
-     * 是否向 openclaw 子命令追加 `--force` 开关。
+     * 是否向 openclaw 子命令追加 {@code --force} 开关。
      */
     private final boolean force;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
 
@@ -83,7 +83,7 @@ public final class WorktreesOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `WorktreesOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code WorktreesOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -135,118 +135,118 @@ public final class WorktreesOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 WorktreesOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 WorktreesOptions。
+     * {@code WorktreesOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.LIST;
         /**
-         * 传给 openclaw 子命令 `--repo-root` 选项的内容；为 null 时通常省略。
+         * Git 仓库根目录；未设置时命令行不包含 {@code --repo-root}。
          */
         private String repoRoot;
         /**
-         * 传给 openclaw 子命令 `--id` 选项的内容；为 null 时通常省略。
+         * 目标资源标识；未设置时命令行不包含 {@code --id}。
          */
         private String id;
         /**
-         * 传给 openclaw 子命令 `--name` 选项的内容；为 null 时通常省略。
+         * 目标资源名称；未设置时命令行不包含 {@code --name}。
          */
         private String name;
         /**
-         * 传给 openclaw 子命令 `--base-ref` 选项的内容；为 null 时通常省略。
+         * 创建工作区时使用的 Git 基准引用；未设置时命令行不包含 {@code --base-ref}。
          */
         private String baseRef;
         /**
-         * 是否向 openclaw 子命令追加 `--force` 开关。
+         * 是否向 openclaw 子命令追加 {@code --force} 开关。
          */
         private boolean force;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
 
         /**
-         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code list} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder list() { this.mode = Mode.LIST; return this; }
         /**
-         * 设置 `--create` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --create} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param repoRoot 写入 `--create` 选项的内容
+         * @param repoRoot Git 仓库根目录；作为 {@code --create} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder create(String repoRoot) { this.mode = Mode.CREATE; this.repoRoot = repoRoot; return this; }
         /**
-         * 设置 `--remove` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --remove} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param id 写入 `--remove` 选项的内容
+         * @param id 目标资源标识；作为 {@code --remove} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder remove(String id) { this.mode = Mode.REMOVE; this.id = id; return this; }
         /**
-         * 设置 `--restore` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --restore} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param id 写入 `--restore` 选项的内容
+         * @param id 目标资源标识；作为 {@code --restore} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder restore(String id) { this.mode = Mode.RESTORE; this.id = id; return this; }
         /**
-         * 选择 `gc` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code gc} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
         public Builder gc() { this.mode = Mode.GC; return this; }
         /**
-         * 设置 `--mode` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --mode} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param mode 写入 `--mode` 选项的内容
+         * @param mode 子命令使用的执行模式；作为 {@code --mode} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder mode(Mode mode) { this.mode = mode; return this; }
         /**
-         * 设置 `--repo-root` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --repo-root} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param repoRoot 写入 `--repo-root` 选项的内容
+         * @param repoRoot Git 仓库根目录；作为 {@code --repo-root} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder repoRoot(String repoRoot) { this.repoRoot = repoRoot; return this; }
         /**
-         * 设置 `--id` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --id} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param id 写入 `--id` 选项的内容
+         * @param id 目标资源标识；作为 {@code --id} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder id(String id) { this.id = id; return this; }
         /**
-         * 设置 `--name` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --name} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param name 写入 `--name` 选项的内容
+         * @param name 目标资源名称；作为 {@code --name} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder name(String name) { this.name = name; return this; }
         /**
-         * 设置 `--base-ref` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --base-ref} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param baseRef 写入 `--base-ref` 选项的内容
+         * @param baseRef 创建工作区时使用的 Git 基准引用；作为 {@code --base-ref} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder baseRef(String baseRef) { this.baseRef = baseRef; return this; }
         /**
-         * 设置 `--force` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --force} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param force 是否向命令行追加 `--force` 开关
+         * @param force 是否向命令行追加 {@code --force} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder force(boolean force) { this.force = force; return this; }
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -254,7 +254,7 @@ public final class WorktreesOptions implements CliSubArgs {
         public Builder json(boolean json) { this.json = json; return this; }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `WorktreesOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code WorktreesOptions}。
          *
          * @return 按当前字段创建的 WorktreesOptions
          */

@@ -9,17 +9,17 @@ package io.github.easy4j.openclaw;
 public enum HttpResponseMode {
 
     /**
-     * 选择 `blocking` 协议模式；序列化时使用该固定取值。
+     * 表示HTTP 响应交付方式的 {@code blocking} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     BLOCKING,
 
     /**
-     * 选择 `stream` 协议模式；序列化时使用该固定取值。
+     * 表示HTTP 响应交付方式的 {@code stream} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     STREAM,
 
     /**
-     * 选择 `auto` 协议模式；序列化时使用该固定取值。
+     * 表示HTTP 响应交付方式的 {@code auto} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     AUTO
 }

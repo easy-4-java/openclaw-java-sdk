@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * OpenClaw JSON 协议中的 `SessionsSendParams` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * sessions.send RPC 参数，包含会话键、消息、思考等级和超时。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,19 +15,19 @@ import java.util.Map;
 public class SessionsSendParams {
 
     /**
-     * 映射 OpenClaw JSON 字段 `key` 的 协议内容。
+     * JSON 属性 {@code key}，表示属性或会话键。
      */
     private final String key;
     /**
-     * 映射 OpenClaw JSON 字段 `message` 的 协议内容。
+     * 发送到目标会话的消息正文。
      */
     private final String message;
     /**
-     * 映射 OpenClaw JSON 字段 `thinking` 的 协议内容。
+     * JSON 属性 {@code thinking}，表示思考强度选项。
      */
     private final String thinking;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
      */
     private final Integer timeoutMs;
 
@@ -39,27 +39,27 @@ public class SessionsSendParams {
     }
 
     /**
-     * 读取当前对象保存的 `key` 对应状态，不触发网络或子进程调用。
+     * 返回目标会话键。
      *
      * @return 可用于关联后续请求的标识
      */
     public String getKey() { return key; }
     /**
-     * 读取当前对象保存的 消息正文，不触发网络或子进程调用。
+     * 返回消息正文。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 发送给会话的消息正文
      */
     public String getMessage() { return message; }
     /**
-     * 读取当前对象保存的 `thinking` 对应状态，不触发网络或子进程调用。
+     * 返回本次请求使用的思考强度选项。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 本次请求的思考强度；未设置时为 {@code null}
      */
     public String getThinking() { return thinking; }
     /**
-     * 读取当前对象保存的 超时时间，单位为毫秒，不触发网络或子进程调用。
+     * 返回会话消息发送超时，单位为毫秒。
      *
-     * @return 当前计数、状态码、可空配置或毫秒级时间值
+     * @return 请求超时毫秒数；未设置时为空
      */
     public Integer getTimeoutMs() { return timeoutMs; }
 
@@ -78,66 +78,66 @@ public class SessionsSendParams {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `SessionsSendParams` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code SessionsSendParams} 字段。
      *
      * @return 新的空白构建器
      */
     public static Builder builder() { return new Builder(); }
 
     /**
-     * 链式构建器，逐项收集 SessionsSendParams 的字段；build() 会复制当前快照，后续修改不会影响已构造的 SessionsSendParams。
+     * {@code SessionsSendParams} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static class Builder {
         /**
-         * 映射 OpenClaw JSON 字段 `key` 的 协议内容。
+         * JSON 属性 {@code key}，表示属性或会话键。
          */
         private String key;
         /**
-         * 映射 OpenClaw JSON 字段 `message` 的 协议内容。
+         * 构建中的会话消息正文。
          */
         private String message;
         /**
-         * 映射 OpenClaw JSON 字段 `thinking` 的 协议内容。
+         * JSON 属性 {@code thinking}，表示思考强度选项。
          */
         private String thinking;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
          */
         private Integer timeoutMs;
 
         /**
-         * 设置 `--key` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --key} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param key 写入 `--key` 选项的内容
+         * @param key 请求幂等键或目标键名；作为 {@code --key} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder key(String key) { this.key = key; return this; }
         /**
-         * 设置 `--message` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --message} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param message 消息正文
          * @return 当前构建器，便于继续链式配置
          */
         public Builder message(String message) { this.message = message; return this; }
         /**
-         * 设置 `--thinking` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --thinking} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param thinking 写入 `--thinking` 选项的内容
+         * @param thinking 模型思考强度；作为 {@code --thinking} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder thinking(String thinking) { this.thinking = thinking; return this; }
         /**
-         * 设置 `--timeout-ms` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --timeout-ms} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param ms 写入 `--timeout-ms` 选项的内容
+         * @param ms 超时时长，单位为毫秒；作为 {@code --timeout-ms} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder timeoutMs(Integer ms) { this.timeoutMs = ms; return this; }
         /**
-         * 校验并复制当前构建器字段，创建独立的 `SessionsSendParams`。
+         * 校验并复制当前构建器字段，创建独立的 {@code SessionsSendParams}。
          *
          * @return 按当前字段创建的 SessionsSendParams
          */

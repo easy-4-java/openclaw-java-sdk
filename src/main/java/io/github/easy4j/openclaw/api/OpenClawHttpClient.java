@@ -38,11 +38,11 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     private static final AtomicLong REQUEST_SEQUENCE = new AtomicLong();
 
     /**
-     * SDK 配置。
+     * 客户端使用的不可变配置引用。
      */
     protected final OpenClawHttpClientConfig config;
     /**
-     * JSON 映射器。
+     * 负责协议 JSON 序列化与反序列化的映射器。
      */
     protected final ObjectMapper objectMapper;
     /**
@@ -55,7 +55,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     private final boolean ownsHttpClient;
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
      */
@@ -64,7 +64,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -152,8 +152,8 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
      * @param path 相对于 Gateway 根地址的端点路径
-     * @param body JSON 请求体或响应体文本
-     * @return 服务返回或流式累积得到的文本
+     * @param body 将由 Jackson 序列化的请求对象
+     * @return 服务端成功响应的完整正文
      */
     protected String postJson(String path, Object body) {
         return postJson(path, body, null);
@@ -163,9 +163,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
      * @param path 相对于 Gateway 根地址的端点路径
-     * @param body JSON 请求体或响应体文本
+     * @param body 将由 Jackson 序列化的请求对象
      * @param headers 附加 HTTP 请求头
-     * @return 服务返回或流式累积得到的文本
+     * @return 服务端成功响应的完整正文
      */
     protected String postJson(String path, Object body, Map<String, String> headers) {
         return postJson(path, body, headers, null);
@@ -175,10 +175,10 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
      * @param path 相对于 Gateway 根地址的端点路径
-     * @param body JSON 请求体或响应体文本
+     * @param body 将由 Jackson 序列化的请求对象
      * @param headers 附加 HTTP 请求头
      * @param cancellation 可选调用取消令牌
-     * @return 服务返回或流式累积得到的文本
+     * @return 服务端成功响应的完整正文
      */
     protected String postJson(String path, Object body, Map<String, String> headers,
                               HttpCallCancellation cancellation) {
@@ -186,10 +186,10 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `postJson`，调用线程不会等待远程响应。
+     * 将请求体序列化为 JSON 后交给 OkHttp Dispatcher 异步发送，并传播取消和协议异常。
      *
      * @param path 相对于 Gateway 根地址的端点路径
-     * @param body JSON 请求体或响应体文本
+     * @param body 将由 Jackson 序列化的请求对象
      * @param headers 附加 HTTP 请求头
      * @param cancellation 可选调用取消令牌
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
@@ -218,17 +218,17 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 读取当前对象保存的 JSON 文本，不触发网络或子进程调用。
+     * 同步等待 GET 请求完成；需要避免占用业务线程时应调用 {@link #getJsonAsync(String)}。
      *
      * @param path 相对于 Gateway 根地址的端点路径
-     * @return 服务返回或流式累积得到的文本
+     * @return 服务端成功响应的完整正文
      */
     protected String getJson(String path) {
         return await(getJsonAsync(path));
     }
 
     /**
-     * 读取当前对象保存的 `jsonAsync` 对应状态，不触发网络或子进程调用。
+     * 异步发送 GET 请求并返回响应 JSON；网络 I/O 由 OkHttp Dispatcher 执行。
      *
      * @param path 相对于 Gateway 根地址的端点路径
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
@@ -248,9 +248,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     /**
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code Request}
      * @param url 完整目标 URL
-     * @return 服务返回或流式累积得到的文本
+     * @return 服务端成功响应的完整正文
      * @throws IOException 网络、流或子进程 I/O 失败时抛出
      */
     protected String execute(Request request, String url) throws IOException {
@@ -260,10 +260,10 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     /**
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code Request}
      * @param url 完整目标 URL
      * @param cancellation 可选调用取消令牌
-     * @return 服务返回或流式累积得到的文本
+     * @return 服务端成功响应的完整正文
      * @throws IOException 网络、流或子进程 I/O 失败时抛出
      */
     protected String execute(Request request, String url,
@@ -272,9 +272,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `execute`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步发送请求，并在响应体读取、关闭或失败后完成结果。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code Request}
      * @param url 完整目标 URL
      * @param cancellation 可选调用取消令牌
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
@@ -312,9 +312,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `executeResponse`，调用线程不会等待远程响应。
+     * 异步发送请求并保留 HTTP 状态码和响应体，供上层决定是否映射为异常。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code Request}
      * @param cancellation 可选调用取消令牌
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
@@ -333,9 +333,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         // enqueue 使用 OkHttp Dispatcher 异步执行，不占用调用方线程等待网络 I/O。
         call.enqueue(new Callback() {
             /**
-             * 接收并处理 Failure 生命周期事件；实现不会改变事件顺序。
+             * 将 OkHttp 传输失败写入异步结果，并注销业务取消监听器。
              *
-             * @param ignored 写入 `ignored` 协议字段的内容
+             * @param ignored OkHttp 回调关联的调用对象；当前回调无需读取它
              * @param error 导致调用失败的异常
              */
             @Override
@@ -345,9 +345,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             }
 
             /**
-             * 接收并处理 Response 生命周期事件；实现不会改变事件顺序。
+             * 在回调线程读取并关闭响应体，然后以状态码和文本完成异步结果。
              *
-             * @param ignored 写入 `ignored` 协议字段的内容
+             * @param ignored OkHttp 回调关联的调用对象；当前回调无需读取它
              * @param response 待消费并关闭的 HTTP 响应
              */
             @Override
@@ -373,18 +373,18 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * OpenClaw SDK 的 `HttpResponseData` 类型，封装其公开契约和生命周期边界。
+     * OkHttp 响应的轻量快照，在底层 {@link Response} 关闭后保留状态码和响应文本。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     protected static final class HttpResponseData {
         /**
-         * `HttpResponseData` 生命周期内保存的 `statusCode` 对应状态。
+         * HTTP 响应状态码，用于区分成功与协议错误。
          */
         private final int statusCode;
         /**
-         * JSON 请求体或响应体文本。
+         * 已完整读取的 HTTP 响应正文；响应体为空时为空字符串。
          */
         private final String body;
 
@@ -394,18 +394,18 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         }
 
         /**
-         * 读取当前对象保存的 `statusCode` 对应状态，不触发网络或子进程调用。
+         * 返回 HTTP 响应状态码。
          *
-         * @return 当前计数、状态码、可空配置或毫秒级时间值
+         * @return HTTP 状态码
          */
         protected int getStatusCode() {
             return statusCode;
         }
 
         /**
-         * 读取当前对象保存的 JSON 请求体或响应体文本，不触发网络或子进程调用。
+         * 返回已读取并缓存的 HTTP 响应正文。
          *
-         * @return 服务返回或流式累积得到的文本
+         * @return 响应正文；响应体为空时为空字符串
          */
         protected String getBody() {
             return body;
@@ -417,11 +417,11 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `awaitFuture` API，并复用统一认证、序列化、取消和异常处理。
+     * 将异步 API 桥接为同步调用，并把 CompletionException 中的 SDK 异常恢复为原始类型。
      *
      * @param <T> 方法使用的泛型类型
-     * @param future 写入 `future` 协议字段的内容
-     * @return 按声明类型解析的值；ThinkOption 标量保持布尔或字符串形式
+     * @param future 待同步等待的异步结果
+     * @return 异步调用完成的值
      * @throws OpenClawHttpException 远程响应、协议解析或本地执行失败时抛出
      */
     protected <T> T awaitFuture(CompletableFuture<T> future) {
@@ -490,8 +490,8 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      *
      * @param <T> 方法使用的泛型类型
      * @param json JSON 文本
-     * @param type 写入 `type` 协议字段的内容
-     * @return 按声明类型解析的值；ThinkOption 标量保持布尔或字符串形式
+     * @param type JSON 反序列化目标类
+     * @return 按目标类反序列化得到的对象
      * @throws OpenClawHttpException 远程响应、协议解析或本地执行失败时抛出
      */
     protected <T> T parse(String json, Class<T> type) {
@@ -507,9 +507,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      *
      * @param <T> 方法使用的泛型类型
      * @param json JSON 文本
-     * @param type 写入 `type` 协议字段的内容
-     * @param label 写入 `label` 协议字段的内容
-     * @return 按声明类型解析的值；ThinkOption 标量保持布尔或字符串形式
+     * @param type JSON 反序列化目标类
+     * @param label 日志或诊断信息中使用的字段标签
+     * @return 按目标类反序列化得到的对象
      * @throws OpenClawHttpException 远程响应、协议解析或本地执行失败时抛出
      */
     protected <T> T parse(String json, Class<T> type, String label) {
@@ -540,14 +540,14 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 调用 OpenClaw 的 `health` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Gateway 健康检查端点发送请求；非成功状态映射为 HTTP 异常。
      */
     public void health() {
         awaitFuture(healthAsync());
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `health`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code health}，调用线程不等待远端响应。
      *
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
@@ -561,10 +561,10 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 调用 OpenClaw 的 `debug` API，并复用统一认证、序列化、取消和异常处理。
+     * 在 DEBUG 级别启用时记录格式化日志。
      *
-     * @param msg 写入 `msg` 协议字段的内容
-     * @param args 写入 `args` 协议字段的内容
+     * @param msg 包含 SLF4J 占位符的日志消息模板
+     * @param args 填充消息模板占位符的参数
      */
     protected void debug(String msg, Object... args) {
         if (log.isDebugEnabled()) {
@@ -573,10 +573,10 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `info` API，并复用统一认证、序列化、取消和异常处理。
+     * 在 INFO 级别启用时记录格式化日志。
      *
-     * @param msg 写入 `msg` 协议字段的内容
-     * @param args 写入 `args` 协议字段的内容
+     * @param msg 包含 SLF4J 占位符的日志消息模板
+     * @param args 填充消息模板占位符的参数
      */
     protected void info(String msg, Object... args) {
         if (log.isInfoEnabled()) {
@@ -585,20 +585,20 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `warn` API，并复用统一认证、序列化、取消和异常处理。
+     * 记录 WARN 级别格式化日志。
      *
-     * @param msg 写入 `msg` 协议字段的内容
-     * @param args 写入 `args` 协议字段的内容
+     * @param msg 包含 SLF4J 占位符的日志消息模板
+     * @param args 填充消息模板占位符的参数
      */
     protected void warn(String msg, Object... args) {
         log.warn(msg, args);
     }
 
     /**
-     * 调用 OpenClaw 的 `error` API，并复用统一认证、序列化、取消和异常处理。
+     * 记录 ERROR 级别格式化日志。
      *
-     * @param msg 写入 `msg` 协议字段的内容
-     * @param args 写入 `args` 协议字段的内容
+     * @param msg 包含 SLF4J 占位符的日志消息模板
+     * @param args 填充消息模板占位符的参数
      */
     protected void error(String msg, Object... args) {
         log.error(msg, args);

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 
 /**
- * OpenClaw JSON 协议中的 `ConfigGetResult` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * config.get RPC 结果，返回配置快照、哈希和校验状态。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,31 +16,31 @@ import lombok.Getter;
 public class ConfigGetResult {
 
     /**
-     * 映射 OpenClaw JSON 字段 `hash` 的 协议内容。
+     * JSON 属性 {@code hash}，表示配置或内容哈希。
      */
     @JsonProperty("hash")
     private String hash;
 
     /**
-     * 映射 OpenClaw JSON 字段 `valid` 的 布尔开关。
+     * JSON 属性 {@code valid}，表示当前配置是否通过校验。
      */
     @JsonProperty("valid")
     private Boolean valid;
 
     /**
-     * 映射 OpenClaw JSON 字段 `config` 的 协议内容。
+     * JSON 属性 {@code config}，表示配置快照。
      */
     @JsonProperty("config")
     private JsonNode config;
 
     /**
-     * 映射 OpenClaw JSON 字段 `uiHints` 的 协议内容。
+     * JSON 属性 {@code uiHints}，表示界面展示提示。
      */
     @JsonProperty("uiHints")
     private JsonNode uiHints;
 
     /**
-     * 映射 OpenClaw JSON 字段 `path` 的 协议内容。
+     * JSON 属性 {@code path}，表示资源路径。
      */
     @JsonProperty("path")
     private String path;

@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `tool` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code tool} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -14,16 +14,16 @@ import java.util.List;
 public final class ToolOptions implements CliSubArgs {
 
     /**
-     * 选择或编码 `tool` 子命令的 `empty` 行为，并保留未设置选项的省略语义。
+     * 选择或编码 {@code tool} 子命令的 {@code empty} 行为，并保留未设置选项的省略语义。
      *
-     * @return 按当前参数创建、查询或解析得到的 ToolOptions
+     * @return 不包含附加选项的参数对象
      */
     public static ToolOptions empty() {
         return INSTANCE;
     }
 
     /**
-     * OpenClaw 协议固定值 {@code new ToolOptions()}；调用方不应在运行时修改。
+     * 无选项场景复用的不可变空参数对象。
      */
     private static final ToolOptions INSTANCE = new ToolOptions();
 

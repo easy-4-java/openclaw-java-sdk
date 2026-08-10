@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * OpenClaw JSON 协议中的 `ThinkOption` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * 思考配置的联合类型，可序列化为布尔值或等级字符串。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -24,82 +24,82 @@ import java.util.List;
 public interface ThinkOption {
 
     /**
-     * 根据 OpenClaw JSON 语义构造、提取或更新 `ThinkOption` 中的 `toJsonValue` 数据。
+     * 返回 Jackson 应直接写入 JSON 的布尔值或等级字符串。
      *
-     * @return 按声明类型解析的值；ThinkOption 标量保持布尔或字符串形式
+     * @return 用于 JSON 序列化的布尔值或等级字符串
      */
     Object toJsonValue();
 
     /**
-     * OpenClaw JSON 协议中的 `ThinkBoolean` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 以 JSON 布尔值表示的思考开关。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     static class ThinkBoolean implements ThinkOption {
         /**
-         * OpenClaw 协议固定值 {@code new ThinkBoolean(true)}；调用方不应在运行时修改。
+         * 以 JSON 布尔值 true 表示启用思考的共享不可变选项。
          */
         public static final ThinkBoolean ENABLED = new ThinkBoolean(true);
         /**
-         * OpenClaw 协议固定值 {@code new ThinkBoolean(false)}；调用方不应在运行时修改。
+         * 以 JSON 布尔值 false 表示禁用思考的共享不可变选项。
          */
         public static final ThinkBoolean DISABLED = new ThinkBoolean(false);
         /**
-         * 映射 OpenClaw JSON 字段 `enabled` 的 布尔开关。
+         * JSON 属性 {@code enabled}，表示是否启用。
          */
         private final boolean enabled;
         /**
-         * 按协议字段创建 `ThinkBoolean`，供 Jackson 序列化、反序列化或调用方读取。
+         * 构造以 JSON 布尔值表示的思考开关。
          *
-         * @param enabled 写入 `enabled` 协议字段的内容
+         * @param enabled 是否启用对应能力
          */
         public ThinkBoolean(boolean enabled) { this.enabled = enabled; }
         /**
-         * 判断 `enabled` 对应状态 是否满足协议或生命周期条件。
+         * 返回布尔形式的思考开关值。
          *
-         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         * @return 是否启用模型思考过程
          */
         public boolean isEnabled() { return enabled; }
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `ThinkBoolean` 中的 `toJsonValue` 数据。
+         * 返回 Jackson 应直接写入 JSON 的布尔值或等级字符串。
          *
-         * @return 按声明类型解析的值；ThinkOption 标量保持布尔或字符串形式
+         * @return 用于 JSON 序列化的布尔值或等级字符串
          */
         @Override public Object toJsonValue() { return enabled; }
     }
 
     /**
-     * OpenClaw JSON 协议中的 `ThinkLevel` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 以 low、medium 或 high 表示的思考强度。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     static class ThinkLevel implements ThinkOption {
         /**
-         * OpenClaw 协议固定值 {@code java.util.Arrays.asList("low", "medium", "high")}；调用方不应在运行时修改。
+         * ThinkLevel 接受的标准化等级集合。
          */
         private static final List<String> VALID = java.util.Arrays.asList("low", "medium", "high");
         /**
-         * OpenClaw 协议固定值 {@code new ThinkLevel("low")}；调用方不应在运行时修改。
+         * 低思考强度共享选项。
          */
         public static final ThinkLevel LOW = new ThinkLevel("low");
         /**
-         * OpenClaw 协议固定值 {@code new ThinkLevel("medium")}；调用方不应在运行时修改。
+         * 中等思考强度共享选项。
          */
         public static final ThinkLevel MEDIUM = new ThinkLevel("medium");
         /**
-         * OpenClaw 协议固定值 {@code new ThinkLevel("high")}；调用方不应在运行时修改。
+         * 高思考强度共享选项。
          */
         public static final ThinkLevel HIGH = new ThinkLevel("high");
         /**
-         * 映射 OpenClaw JSON 字段 `level` 的 协议内容。
+         * JSON 属性 {@code level}，表示等级。
          */
         private final String level;
         /**
-         * 按协议字段创建 `ThinkLevel`，供 Jackson 序列化、反序列化或调用方读取。
+         * 构造以 low、medium 或 high 字符串表示的思考等级。
          *
-         * @param level 写入 `level` 协议字段的内容
+         * @param level 思考强度等级
          * @throws IllegalArgumentException 必填参数缺失、格式错误或超出范围时抛出
          */
         public ThinkLevel(String level) {
@@ -108,21 +108,21 @@ public interface ThinkOption {
             this.level = level;
         }
         /**
-         * 读取当前对象保存的 `level` 对应状态，不触发网络或子进程调用。
+         * 返回标准化后的思考强度等级。
          *
-         * @return 服务返回或流式累积得到的文本
+         * @return 经校验的小写思考强度等级
          */
         public String getLevel() { return level; }
         /**
-         * 根据 OpenClaw JSON 语义构造、提取或更新 `ThinkLevel` 中的 `toJsonValue` 数据。
+         * 返回 Jackson 应直接写入 JSON 的布尔值或等级字符串。
          *
-         * @return 按声明类型解析的值；ThinkOption 标量保持布尔或字符串形式
+         * @return 用于 JSON 序列化的布尔值或等级字符串
          */
         @Override public Object toJsonValue() { return level; }
     }
 
     /**
-     * OpenClaw JSON 协议中的 `ThinkOptionSerializer` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 把 ThinkOption 直接写为 JSON 布尔值或字符串的 Jackson 序列化器。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -131,9 +131,9 @@ public interface ThinkOption {
         /**
          * 把 ThinkOption 的布尔值或等级写入 JSON，不引入额外包装字段。
          *
-         * @param value 写入 `value` 协议字段的内容
-         * @param gen 写入 `gen` 协议字段的内容
-         * @param serializers 写入 `serializers` 协议字段的内容
+         * @param value 待写入 JSON 的思考选项
+         * @param gen Jackson 输出当前值的 JSON 生成器
+         * @param serializers Jackson 当前序列化上下文
          * @throws IOException 网络、流或子进程 I/O 失败时抛出
          */
         @Override
@@ -145,7 +145,7 @@ public interface ThinkOption {
     }
 
     /**
-     * OpenClaw JSON 协议中的 `ThinkOptionDeserializer` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 从 JSON 布尔值或等级字符串恢复 ThinkOption 的 Jackson 反序列化器。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -154,9 +154,9 @@ public interface ThinkOption {
         /**
          * 从 JSON 布尔值或字符串恢复对应 ThinkOption 实现，非法类型由 Jackson 报错。
          *
-         * @param p 写入 `p` 协议字段的内容
-         * @param ctxt 写入 `ctxt` 协议字段的内容
-         * @return 按当前参数创建、查询或解析得到的 ThinkOption
+         * @param p 指向待反序列化 JSON 值的解析器
+         * @param ctxt Jackson 当前反序列化上下文
+         * @return 由 JSON 布尔值或等级字符串恢复的思考选项
          * @throws IOException 网络、流或子进程 I/O 失败时抛出
          */
         @Override

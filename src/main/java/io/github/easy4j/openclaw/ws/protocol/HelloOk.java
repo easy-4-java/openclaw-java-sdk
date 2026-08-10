@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.List;
 
 /**
- * OpenClaw JSON 协议中的 `HelloOk` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Gateway connect 握手成功结果，包含协议版本、服务端能力、认证和策略。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -17,43 +17,43 @@ import java.util.List;
 public class HelloOk {
 
     /**
-     * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+     * JSON 属性 {@code type}，表示对象或协议帧的类型判别值。
      */
     @JsonProperty("type")
     private String type;
 
     /**
-     * 映射 OpenClaw JSON 字段 `protocol` 的 协议内容。
+     * JSON 属性 {@code protocol}，表示协议版本。
      */
     @JsonProperty("protocol")
     private int protocol;
 
     /**
-     * 映射 OpenClaw JSON 字段 `server` 的 协议内容。
+     * JSON 属性 {@code server}，表示服务端信息。
      */
     @JsonProperty("server")
     private ServerInfo server;
 
     /**
-     * 映射 OpenClaw JSON 字段 `features` 的 协议内容。
+     * JSON 属性 {@code features}，表示服务端能力集合。
      */
     @JsonProperty("features")
     private FeaturesInfo features;
 
     /**
-     * 映射 OpenClaw JSON 字段 `auth` 的 协议内容。
+     * JSON 属性 {@code auth}，表示Gateway 认证信息。
      */
     @JsonProperty("auth")
     private AuthResult auth;
 
     /**
-     * 映射 OpenClaw JSON 字段 `policy` 的 协议内容。
+     * JSON 属性 {@code policy}，表示审批或执行策略。
      */
     @JsonProperty("policy")
     private PolicyInfo policy;
 
     /**
-     * OpenClaw JSON 协议中的 `ServerInfo` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * Gateway 服务端版本、平台及连接标识。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -62,17 +62,17 @@ public class HelloOk {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ServerInfo {
         /**
-         * 映射 OpenClaw JSON 字段 `version` 的 协议内容。
+         * JSON 属性 {@code version}，表示版本标识。
          */
         @JsonProperty("version") private String version;
         /**
-         * 映射 OpenClaw JSON 字段 `connId` 的 关联标识。
+         * JSON 属性 {@code connId}，表示WebSocket 连接标识。
          */
         @JsonProperty("connId") private String connId;
     }
 
     /**
-     * OpenClaw JSON 协议中的 `FeaturesInfo` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * Gateway 声明支持的 RPC 方法、事件和权限作用域。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -81,17 +81,17 @@ public class HelloOk {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class FeaturesInfo {
         /**
-         * 映射 OpenClaw JSON 字段 `methods` 的 有序数组。
+         * JSON 属性 {@code methods}，表示服务端支持的 RPC 方法。
          */
         @JsonProperty("methods") private List<String> methods;
         /**
-         * 映射 OpenClaw JSON 字段 `events` 的 有序数组。
+         * JSON 属性 {@code events}，表示服务端支持的事件名称。
          */
         @JsonProperty("events") private List<String> events;
     }
 
     /**
-     * OpenClaw JSON 协议中的 `AuthResult` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * Gateway 握手认证结果及授权信息。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -100,17 +100,17 @@ public class HelloOk {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class AuthResult {
         /**
-         * 映射 OpenClaw JSON 字段 `role` 的 协议内容。
+         * JSON 属性 {@code role}，表示聊天消息角色。
          */
         @JsonProperty("role") private String role;
         /**
-         * 映射 OpenClaw JSON 字段 `scopes` 的 有序数组。
+         * JSON 属性 {@code scopes}，表示服务端授予的权限作用域。
          */
         @JsonProperty("scopes") private List<String> scopes;
     }
 
     /**
-     * OpenClaw JSON 协议中的 `PolicyInfo` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * Gateway 返回的连接或工具执行策略。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -119,15 +119,15 @@ public class HelloOk {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PolicyInfo {
         /**
-         * 映射 OpenClaw JSON 字段 `maxPayload` 的 协议内容。
+         * JSON 属性 {@code maxPayload}，表示最大负载大小。
          */
         @JsonProperty("maxPayload") private int maxPayload;
         /**
-         * 映射 OpenClaw JSON 字段 `maxBufferedBytes` 的 协议内容。
+         * JSON 属性 {@code maxBufferedBytes}，表示最大缓冲字节数。
          */
         @JsonProperty("maxBufferedBytes") private int maxBufferedBytes;
         /**
-         * 映射 OpenClaw JSON 字段 `tickIntervalMs` 的 协议内容。
+         * JSON 属性 {@code tickIntervalMs}，表示轮询间隔，单位为毫秒。
          */
         @JsonProperty("tickIntervalMs") private int tickIntervalMs;
     }

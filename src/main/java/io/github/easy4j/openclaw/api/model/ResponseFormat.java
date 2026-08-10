@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
- * OpenClaw JSON 协议中的 `ResponseFormat` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * 模型响应格式约束，可选择文本、JSON 对象或 JSON Schema。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -18,13 +18,13 @@ import lombok.*;
 public class ResponseFormat {
 
     /**
-     * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+     * JSON 属性 {@code type}，表示对象或协议帧的类型判别值。
      */
     @JsonProperty("type")
     private ResponseFormatType type;
 
     /**
-     * 映射 OpenClaw JSON 字段 `jsonSchema` 的 协议内容。
+     * JSON 属性 {@code jsonSchema}，表示JSON Schema 响应约束。
      */
     @JsonProperty("json_schema")
     private ResponseFormatJsonSchema jsonSchema;
@@ -32,9 +32,9 @@ public class ResponseFormat {
     // ---- 便捷工厂方法 ----
 
     /**
-     * 根据 OpenClaw JSON 语义构造、提取或更新 `ResponseFormat` 中的 `jsonObject` 数据。
+     * 创建要求服务返回 JSON 对象的响应格式。
      *
-     * @return 按当前参数创建、查询或解析得到的 ResponseFormat
+     * @return 要求服务返回 JSON 对象的响应格式
      */
     public static ResponseFormat jsonObject() {
         return ResponseFormat.builder()
@@ -43,9 +43,9 @@ public class ResponseFormat {
     }
 
     /**
-     * 根据 OpenClaw JSON 语义构造、提取或更新 `ResponseFormat` 中的 `text` 数据。
+     * 创建要求服务返回普通文本的响应格式。
      *
-     * @return 按当前参数创建、查询或解析得到的 ResponseFormat
+     * @return 要求服务返回普通文本的响应格式
      */
     public static ResponseFormat text() {
         return ResponseFormat.builder()

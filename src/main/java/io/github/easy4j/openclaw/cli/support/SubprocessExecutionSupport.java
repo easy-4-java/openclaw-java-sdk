@@ -25,17 +25,17 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class SubprocessExecutionSupport {
 
     /**
-     * 用于限制等待时间的默认值 {@code 5_000L}，单位由字段名声明。
+     * 网络、握手或进程等待的默认超时为 {@code 5_000L}，单位为字段声明的计量单位。
      */
     public static final long WAIT_GRACE_MILLIS = 5_000L;
 
     /**
-     * OpenClaw 协议固定值 {@code Math.max(2, Runtime.getRuntime().availableProcessors())}；调用方不应在运行时修改。
+     * 默认并发子进程上限，至少为 2，并随可用处理器数量增长。
      */
     private static final int DEFAULT_MAX_CONCURRENT = Math.max(2, Runtime.getRuntime().availableProcessors());
 
     /**
-     * OpenClaw 协议固定值 {@code new AtomicReference<>(new Semaphore(DEFAULT_MAX_CONCURRENT))}；调用方不应在运行时修改。
+     * 可原子替换的子进程并发信号量；所有 CLI 执行共享该限制。
      */
     private static final AtomicReference<Semaphore> CONCURRENCY_LIMIT =
             new AtomicReference<>(new Semaphore(DEFAULT_MAX_CONCURRENT));
@@ -46,7 +46,7 @@ public final class SubprocessExecutionSupport {
     /**
      * 原子替换 CLI 子进程并发信号量；非正数恢复为按 CPU 核心数计算的默认上限。
      *
-     * @param maxConcurrent 写入 `maxConcurrent` 协议字段的内容
+     * @param maxConcurrent 允许同时运行的 CLI 子进程上限
      */
     public static void configureMaxConcurrentExecutions(int maxConcurrent) {
         if (maxConcurrent <= 0) {
@@ -59,7 +59,7 @@ public final class SubprocessExecutionSupport {
     /**
      * 返回未显式配置时使用的 CLI 子进程并发上限，该值至少为 2。
      *
-     * @return 当前计数、状态码、可空配置或毫秒级时间值
+     * @return 默认允许同时运行的 CLI 子进程数量
      */
     public static int defaultMaxConcurrentExecutions() {
         return DEFAULT_MAX_CONCURRENT;
@@ -68,7 +68,7 @@ public final class SubprocessExecutionSupport {
     /**
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ExecutionRequest}
      * @return 保存退出处理器、输出缓冲区和超时状态的子进程会话
      * @throws IOException 网络、流或子进程 I/O 失败时抛出
      * @throws InterruptedException 等待线程被中断时抛出，并恢复中断标记
@@ -143,28 +143,28 @@ public final class SubprocessExecutionSupport {
     public static final class ExecutionRequest {
 
         /**
-         * `ExecutionRequest` 生命周期内保存的 `commandLine` 对应状态。
+         * 即将执行的 Commons Exec 命令行快照。
          */
         private final CommandLine commandLine;
         /**
-         * `ExecutionRequest` 生命周期内保存的 `workingDirectory` 对应状态。
+         * 子进程工作目录；为空时继承当前进程目录。
          */
         private final File workingDirectory;
         /**
-         * `ExecutionRequest` 生命周期内保存的 `environment` 对应状态。
+         * 传递给子进程的环境变量副本。
          */
         private final Map<String, String> environment;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
          */
         private final long timeoutMillis;
 
         /**
-         * 按给定配置创建 `ExecutionRequest`，构造过程不隐式执行远程业务请求。
+         * 按给定配置创建 {@code ExecutionRequest}，构造过程不隐式执行远程业务请求。
          *
-         * @param commandLine 写入 `commandLine` 协议字段的内容
-         * @param workingDirectory 写入 `workingDirectory` 协议字段的内容
-         * @param environment 写入 `environment` 协议字段的内容
+         * @param commandLine 包含可执行文件和参数的 Commons Exec 命令行
+         * @param workingDirectory 子进程工作目录；为空时继承当前进程目录
+         * @param environment 传递给子进程的环境变量；为空时继承当前进程环境
          * @param timeoutMillis 超时时间，单位为毫秒
          */
         public ExecutionRequest(
@@ -189,27 +189,27 @@ public final class SubprocessExecutionSupport {
     public static final class RunSession {
 
         /**
-         * `RunSession` 生命周期内保存的 `stdout` 对应状态。
+         * 并发收集子进程标准输出字节的内存缓冲区。
          */
         private final ByteArrayOutputStream stdout;
         /**
-         * `RunSession` 生命周期内保存的 `stderr` 对应状态。
+         * 并发收集子进程标准错误字节的内存缓冲区。
          */
         private final ByteArrayOutputStream stderr;
         /**
-         * 事件处理器。
+         * 接收聊天流增量、完成和异常通知的处理器。
          */
         private final DefaultExecuteResultHandler handler;
         /**
-         * `RunSession` 生命周期内保存的 `watchdog` 对应状态。
+         * 负责在超时后终止子进程的 Commons Exec Watchdog。
          */
         private final ExecuteWatchdog watchdog;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
          */
         private final long timeoutMillis;
         /**
-         * `RunSession` 生命周期内保存的 `waitTimedOut` 对应状态。
+         * 等待线程是否先于进程完成而超时，用于区分主动终止。
          */
         private final boolean waitTimedOut;
 
@@ -231,7 +231,7 @@ public final class SubprocessExecutionSupport {
         /**
          * 同时检查等待宽限期和 Watchdog 状态，判断子进程是否因超时被终止。
          *
-         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         * @return 子进程是否因等待超时而结束
          */
         public boolean timedOut() {
             return waitTimedOut || watchdog.killedProcess();

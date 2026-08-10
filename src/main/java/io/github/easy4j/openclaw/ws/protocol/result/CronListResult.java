@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpenClaw JSON 协议中的 `CronListResult` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * cron.list RPC 的任务列表、总数和投递预览。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -19,33 +19,33 @@ import java.util.Map;
 public class CronListResult {
 
     /**
-     * 映射 OpenClaw JSON 字段 `jobs` 的 有序数组。
+     * JSON 属性 {@code jobs}，表示Cron 任务摘要。
      */
     @JsonProperty("jobs")
     private List<CronJobSummary> jobs;
 
     /**
-     * 映射 OpenClaw JSON 字段 `items` 的 有序数组。
+     * JSON 属性 {@code items}，表示Cron 任务条目。
      */
     @JsonProperty("items")
     private List<CronJobSummary> items;
 
     /**
-     * 映射 OpenClaw JSON 字段 `total` 的 协议内容。
+     * JSON 属性 {@code total}，表示总记录数。
      */
     @JsonProperty("total")
     private Integer total;
 
     /**
-     * 映射 OpenClaw JSON 字段 `deliveryPreviews` 的 键值对象。
+     * JSON 属性 {@code deliveryPreviews}，表示任务投递预览映射。
      */
     @JsonProperty("deliveryPreviews")
     private Map<String, Object> deliveryPreviews;
 
     /**
-     * 读取当前对象保存的 `jobs` 对应状态，不触发网络或子进程调用。
+     * 返回 Cron 任务摘要列表。
      *
-     * @return 按协议顺序返回的数据列表；没有数据时为空列表
+     * @return 服务端返回的计划任务摘要；响应未包含任务时返回空列表
      */
     public List<CronJobSummary> getJobs() {
         if (jobs != null && !jobs.isEmpty()) {

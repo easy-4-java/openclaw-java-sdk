@@ -19,7 +19,7 @@ import java.util.Map;
 public class SseEventAccumulator {
 
     /**
-     * `SseEventAccumulator` 生命周期内保存的 `id` 对应状态。
+     * 流式聊天响应标识；首次出现后供后续片段复用。
      */
     private String id;
     /**
@@ -27,26 +27,26 @@ public class SseEventAccumulator {
      */
     private String model;
     /**
-     * `SseEventAccumulator` 生命周期内保存的 `role` 对应状态。
+     * 流式消息累计得到的聊天角色。
      */
     private String role;
     /**
-     * `SseEventAccumulator` 生命周期内保存的 `contentBuilder` 对应状态。
+     * 按事件顺序追加文本增量的缓冲区。
      */
     private final StringBuilder contentBuilder = new StringBuilder();
     /**
-     * `SseEventAccumulator` 生命周期内保存的 `toolParts` 对应状态。
+     * 按工具调用索引保存的分片状态，用于跨事件拼接参数。
      */
     private final Map<Integer, ToolPart> toolParts = new LinkedHashMap<>();
     /**
-     * `SseEventAccumulator` 生命周期内保存的 `finishReason` 对应状态。
+     * 服务端报告的流式生成结束原因。
      */
     private String finishReason;
 
     /**
      * 按 choice 和 tool-call 索引合并一个增量 ChatChunk，保留已接收片段的顺序。
      *
-     * @param chunk 写入 `chunk` 协议字段的内容
+     * @param chunk 本次流式响应片段
      */
     public void merge(ChatChunk chunk) {
         if (chunk.getId() != null) {
@@ -85,9 +85,9 @@ public class SseEventAccumulator {
     }
 
     /**
-     * 读取当前对象保存的 `accumulated` 对应状态，不触发网络或子进程调用。
+     * 返回由当前所有 SSE 片段组装出的聊天消息。
      *
-     * @return 按当前参数创建、查询或解析得到的 ChatChunk
+     * @return 由当前全部 SSE 片段合并得到的聊天片段
      */
     public ChatChunk getAccumulated() {
         ChatChunk result = new ChatChunk();
@@ -116,21 +116,21 @@ public class SseEventAccumulator {
     }
 
     /**
-     * 判断 `toolCall` 对应状态 是否满足协议或生命周期条件。
+     * 判断流是否以工具调用原因结束。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 累积结果因工具调用结束时返回 {@code true}
      */
     public boolean isToolCall() { return "tool_calls".equals(finishReason); }
     /**
-     * 判断 `complete` 对应状态 是否满足协议或生命周期条件。
+     * 判断服务端是否已给出任意结束原因。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 已接收到结束原因时返回 {@code true}
      */
     public boolean isComplete() { return finishReason != null; }
     /**
-     * 读取当前对象保存的 `accumulatedContent` 对应状态，不触发网络或子进程调用。
+     * 返回按事件顺序拼接的完整文本内容。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 按接收顺序拼接所有文本增量后的内容
      */
     public String getAccumulatedContent() { return contentBuilder.toString(); }
 
@@ -145,18 +145,18 @@ public class SseEventAccumulator {
     }
 
     /**
-     * OpenClaw SDK 的 `ToolPart` 类型，封装其公开契约和生命周期边界。
+     * 跨 SSE 片段暂存单个工具调用标识、名称和参数 JSON 的累加状态。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     private static class ToolPart {
         /**
-         * `ToolPart` 生命周期内保存的 `id` 对应状态。
+         * 工具调用标识；可能跨多个 SSE 片段到达。
          */
         private String id, type, name;
         /**
-         * `ToolPart` 生命周期内保存的 `arguments` 对应状态。
+         * 按 SSE 到达顺序拼接的工具参数 JSON 缓冲区。
          */
         private final StringBuilder arguments = new StringBuilder();
 

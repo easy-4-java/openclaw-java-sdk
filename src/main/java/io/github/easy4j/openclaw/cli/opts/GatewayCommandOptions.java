@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * openclaw `gateway-command` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code gateway-command} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -17,7 +17,7 @@ import java.util.Objects;
 public final class GatewayCommandOptions implements CliSubArgs {
 
     /**
-     * 传给 openclaw 子命令 `--segments` 选项的内容；为 null 时通常省略。
+     * 引导流程分段配置；未设置时命令行不包含 {@code --segments}。
      */
     private final List<String> segments;
 
@@ -29,7 +29,7 @@ public final class GatewayCommandOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `GatewayCommandOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code GatewayCommandOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -38,9 +38,9 @@ public final class GatewayCommandOptions implements CliSubArgs {
     }
 
     /**
-     * 选择或编码 `gateway-command` 子命令的 `empty` 行为，并保留未设置选项的省略语义。
+     * 选择或编码 {@code gateway-command} 子命令的 {@code empty} 行为，并保留未设置选项的省略语义。
      *
-     * @return 按当前参数创建、查询或解析得到的 GatewayCommandOptions
+     * @return 不包含附加选项的参数对象
      */
     public static GatewayCommandOptions empty() {
         return new GatewayCommandOptions(OpenClawLists.empty());
@@ -57,7 +57,7 @@ public final class GatewayCommandOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 GatewayCommandOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 GatewayCommandOptions。
+     * {@code GatewayCommandOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -65,14 +65,14 @@ public final class GatewayCommandOptions implements CliSubArgs {
     public static final class Builder {
 
         /**
-         * 传给 openclaw 子命令 `--s` 选项的内容；为 null 时通常省略。
+         * 引导流程使用的分段配置；未设置时命令行不包含 {@code --s}。
          */
         private final List<String> s = new ArrayList<>();
 
         /**
-         * 设置 `--add` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --add} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--add` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --add} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder add(String... tokens) {
@@ -83,9 +83,9 @@ public final class GatewayCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--health` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --health} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param rpc 写入 `--health` 选项的内容
+         * @param rpc Gateway RPC 连接参数；作为 {@code --health} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder health(GatewayRpcOptions rpc) {
@@ -95,10 +95,10 @@ public final class GatewayCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--status` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --status} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param rpc 写入 `--status` 选项的内容
-         * @param extra 写入 `--status` 选项的内容
+         * @param rpc Gateway RPC 连接参数；作为 {@code --status} 的参数
+         * @param extra 附加到 RPC 请求的原始参数；作为 {@code --status} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder status(GatewayRpcOptions rpc, GatewayCliArgv.GatewayStatusOptions extra) {
@@ -108,10 +108,10 @@ public final class GatewayCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--probe` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --probe} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param rpc 写入 `--probe` 选项的内容
-         * @param extra 写入 `--probe` 选项的内容
+         * @param rpc Gateway RPC 连接参数；作为 {@code --probe} 的参数
+         * @param extra 附加到 RPC 请求的原始参数；作为 {@code --probe} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder probe(GatewayRpcOptions rpc, GatewayCliArgv.GatewayProbeOptions extra) {
@@ -121,7 +121,7 @@ public final class GatewayCommandOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `GatewayCommandOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code GatewayCommandOptions}。
          *
          * @return 按当前字段创建的 GatewayCommandOptions
          */

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * OpenClaw JSON 协议中的 `GatewayFrame` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Gateway WebSocket 帧基类，通过 type 字段区分请求、响应和事件。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -20,23 +20,23 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public abstract class GatewayFrame {
 
     /**
-     * 映射 OpenClaw JSON 字段 `type` 的 协议内容。
+     * JSON 属性 {@code type}，表示对象或协议帧的类型判别值。
      */
     private final String type;
 
     /**
-     * 按协议字段创建 `GatewayFrame`，供 Jackson 序列化、反序列化或调用方读取。
+     * 初始化所有 Gateway 帧共有的 type 判别字段。
      *
-     * @param type 写入 `type` 协议字段的内容
+     * @param type 协议帧、事件或响应的类型标识
      */
     protected GatewayFrame(String type) {
         this.type = type;
     }
 
     /**
-     * 读取当前对象保存的 `type` 对应状态，不触发网络或子进程调用。
+     * 返回 Gateway 协议帧类型。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 服务端帧的 {@code type} 协议值
      */
     public String getType() {
         return type;
