@@ -24,7 +24,7 @@ import java.util.concurrent.CompletionException;
  * Wraps OkHttp ObjectMapper ,Provides HTTP .
  * </p>
   *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
   * @since 3.0.0
  */
 @Getter
@@ -37,7 +37,6 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     protected final OpenClawHttpClientConfig config;
     protected final ObjectMapper objectMapper;
     protected final OkHttpClient httpClient;
-    protected final OpenClawAsyncHttpTransport asyncTransport;
     private final boolean ownsHttpClient;
 
     protected OpenClawHttpClient(OpenClawHttpClientConfig config) {
@@ -55,7 +54,6 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         this.config = Objects.requireNonNull(config, "config");
         this.objectMapper = objectMapper != null ? objectMapper : createObjectMapper();
         this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
-        this.asyncTransport = new OpenClawAsyncHttpTransport(config);
         this.ownsHttpClient = ownsHttpClient;
         debug("OpenClaw HTTP client initialized: baseUrl={}, connectTimeoutMs={}, readTimeoutMs={}, "
                         + "callTimeoutMs={}, retryOnConnectionFailure={}, detailedLoggingEnabled={}",
@@ -196,7 +194,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         return await(executeAsync(request, url, cancellation));
     }
 
-    /** 使用 Netty event-loop 异步执行网络请求。 */
+    /** 使用 OkHttp {@link Call#enqueue(Callback)} 异步执行网络请求。 */
     protected CompletableFuture<String> executeAsync(Request request, String url,
                                                      HttpCallCancellation cancellation) {
         long requestId = REQUEST_SEQUENCE.incrementAndGet();
@@ -206,9 +204,13 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             debug("HTTP request details: requestId={}, headers={}", requestId, redactHeaders(request.headers()));
         }
 
-        CompletableFuture<String> result = config.isLegacyInjectedOkHttpTransportEnabled()
-                ? executeInjectedOkHttpAsync(request, cancellation)
-                : asyncTransport.execute(request, cancellation);
+        CompletableFuture<String> result = executeResponseAsync(request, cancellation).thenApply(response -> {
+            if (response.getStatusCode() < 200 || response.getStatusCode() >= 300) {
+                throw new OpenClawHttpException("Request returned status " + response.getStatusCode(),
+                        response.getStatusCode(), response.getBody());
+            }
+            return response.getBody();
+        });
         return result.whenComplete((respBody, error) -> {
             if (Objects.nonNull(error)) {
                 log.warn("HTTP request failed: requestId={}, method={}, url={}, elapsedMs={}, error={}",
@@ -223,9 +225,15 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         });
     }
 
-    private CompletableFuture<String> executeInjectedOkHttpAsync(Request request,
-                                                                 HttpCallCancellation cancellation) {
-        CompletableFuture<String> result = new CompletableFuture<>();
+    /** 异步执行请求并保留 HTTP 状态码。 */
+    protected CompletableFuture<HttpResponseData> executeResponseAsync(Request request,
+                                                                       HttpCallCancellation cancellation) {
+        return executeOkHttpResponseAsync(request, cancellation);
+    }
+
+    private CompletableFuture<HttpResponseData> executeOkHttpResponseAsync(Request request,
+                                                                           HttpCallCancellation cancellation) {
+        CompletableFuture<HttpResponseData> result = new CompletableFuture<>();
         Call call = httpClient.newCall(request);
         AutoCloseable registration = Objects.nonNull(cancellation)
                 ? cancellation.onCancel(call::cancel) : null;
@@ -240,12 +248,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             public void onResponse(Call ignored, Response response) {
                 try (Response completed = response) {
                     String body = Objects.nonNull(completed.body()) ? completed.body().string() : "";
-                    if (!completed.isSuccessful()) {
-                        result.completeExceptionally(new OpenClawHttpException(
-                                "Request returned status " + completed.code(), completed.code(), body));
-                    } else {
-                        result.complete(body);
-                    }
+                    result.complete(new HttpResponseData(completed.code(), body));
                 } catch (Exception error) {
                     result.completeExceptionally(error);
                 } finally {
@@ -259,6 +262,25 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             }
         });
         return result;
+    }
+
+    /** 子客户端处理特殊 HTTP 状态时使用的不可变响应。 */
+    protected static final class HttpResponseData {
+        private final int statusCode;
+        private final String body;
+
+        private HttpResponseData(int statusCode, String body) {
+            this.statusCode = statusCode;
+            this.body = body;
+        }
+
+        protected int getStatusCode() {
+            return statusCode;
+        }
+
+        protected String getBody() {
+            return body;
+        }
     }
 
     private String await(CompletableFuture<String> future) {
@@ -374,9 +396,13 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
  * @throws OpenClawHttpException 2xx
      */
     public void health() {
+        awaitFuture(healthAsync());
+    }
+
+    /** 异步探测 Gateway 健康状态。 */
+    public CompletableFuture<Void> healthAsync() {
         debug("=== Health probe: {} ===", OpenClawConstants.ENDPOINT_MODELS);
-        getJson(OpenClawConstants.ENDPOINT_MODELS);
-        debug("Health probe OK");
+        return getJsonAsync(OpenClawConstants.ENDPOINT_MODELS).thenAccept(ignored -> debug("Health probe OK"));
     }
 
     // ============================================================
@@ -405,7 +431,6 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
 
     @Override
     public void close() {
-        asyncTransport.close();
         if (ownsHttpClient) {
             OpenClawOkHttpClientFactory.shutdown(httpClient);
         }

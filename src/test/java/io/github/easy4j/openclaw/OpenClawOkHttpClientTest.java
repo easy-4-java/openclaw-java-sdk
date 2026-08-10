@@ -42,7 +42,6 @@ class OpenClawOkHttpClientTest {
                 .build();
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
         config.setStartupCheckEnabled(false);
-        config.setLegacyInjectedOkHttpTransportEnabled(true);
 
         OpenClawClient client = new OpenClawClient(config, external);
         assertSame(external, client.getOkHttpClient());
@@ -58,7 +57,6 @@ class OpenClawOkHttpClientTest {
     void shouldBuildConfiguredHighConcurrencyClientAndCloseOwnedResources() {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
         config.setStartupCheckEnabled(false);
-        config.setLegacyInjectedOkHttpTransportEnabled(true);
         config.setConnectTimeoutMillis(1_500);
         config.setReadTimeoutMillis(90_000);
         config.setWriteTimeoutMillis(8_000);
@@ -108,7 +106,6 @@ class OpenClawOkHttpClientTest {
                 .build();
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
         config.setStartupCheckEnabled(false);
-        config.setLegacyInjectedOkHttpTransportEnabled(true);
         ChatRequest request = ChatRequest.builder()
                 .agent("openclaw/default")
                 .messages(List.of(ChatMessage.ofUser("ping")))
@@ -166,7 +163,6 @@ class OpenClawOkHttpClientTest {
                 .build();
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
         config.setStartupCheckEnabled(false);
-        config.setLegacyInjectedOkHttpTransportEnabled(true);
         ChatRequest request = ChatRequest.builder()
                 .agent("openclaw/default")
                 .messages(List.of(ChatMessage.ofUser("ping")))
