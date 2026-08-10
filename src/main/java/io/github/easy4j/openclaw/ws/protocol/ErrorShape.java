@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * OpenClaw JSON 协议中的 `ErrorShape` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Gateway 错误帧结构，包含错误码、详情、可重试标记和等待时间。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,34 +16,34 @@ import lombok.ToString;
 public class ErrorShape {
 
     /**
-     * 映射 OpenClaw JSON 字段 `code` 的 协议内容。
+     * JSON 属性 {@code code}，表示机器可读错误码。
      */
     private final String code;
     /**
-     * 映射 OpenClaw JSON 字段 `message` 的 协议内容。
+     * 服务端返回的可读错误说明。
      */
     private final String message;
     /**
-     * 映射 OpenClaw JSON 字段 `details` 的 协议内容。
+     * JSON 属性 {@code details}，表示结构化详情。
      */
     private final Object details;
     /**
-     * 映射 OpenClaw JSON 字段 `retryable` 的 布尔开关。
+     * JSON 属性 {@code retryable}，表示错误是否允许重试。
      */
     private final Boolean retryable;
     /**
-     * 映射 OpenClaw JSON 字段 `retryAfterMs` 的 协议内容。
+     * JSON 属性 {@code retryAfterMs}，表示建议重试等待毫秒数。
      */
     private final Integer retryAfterMs;
 
     /**
-     * 按协议字段创建 `ErrorShape`，供 Jackson 序列化、反序列化或调用方读取。
+     * 从 Gateway 错误帧恢复错误码、详情、可重试标记和重试等待时间。
      *
-     * @param code 写入 `code` 协议字段的内容
+     * @param code Gateway 返回的机器可读错误码
      * @param message 消息正文
-     * @param details 写入 `details` 协议字段的内容
-     * @param retryable 写入 `retryable` 协议字段的内容
-     * @param retryAfterMs 写入 `retryAfterMs` 协议字段的内容
+     * @param details 错误或探测结果的结构化详情
+     * @param retryable 该失败是否允许调用方重试
+     * @param retryAfterMs 建议重试等待时间，单位为毫秒
      */
     @JsonCreator
     public ErrorShape(

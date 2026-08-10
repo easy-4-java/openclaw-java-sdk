@@ -15,34 +15,34 @@ import java.util.Map;
 public final class OpenClawHeaders {
 
     /**
-     * HTTP 请求头 `OpenClawConstants.HEADER_X_OPENCLAW_MODEL` 的规范名称。
+     * HTTP 请求头 {@code OpenClawConstants.HEADER_X_OPENCLAW_MODEL} 的规范名称。
      */
     public static final String X_OPENCLAW_MODEL = OpenClawConstants.HEADER_X_OPENCLAW_MODEL;
 
     /**
-     * HTTP 请求头 `OpenClawConstants.HEADER_X_OPENCLAW_AGENT_ID` 的规范名称。
+     * HTTP 请求头 {@code OpenClawConstants.HEADER_X_OPENCLAW_AGENT_ID} 的规范名称。
      */
     public static final String X_OPENCLAW_AGENT_ID = OpenClawConstants.HEADER_X_OPENCLAW_AGENT_ID;
 
     /**
-     * HTTP 请求头 `OpenClawConstants.HEADER_X_OPENCLAW_SESSION_KEY` 的规范名称。
+     * HTTP 请求头 {@code OpenClawConstants.HEADER_X_OPENCLAW_SESSION_KEY} 的规范名称。
      */
     public static final String X_OPENCLAW_SESSION_KEY = OpenClawConstants.HEADER_X_OPENCLAW_SESSION_KEY;
 
     /**
-     * HTTP 请求头 `OpenClawConstants.HEADER_X_OPENCLAW_MESSAGE_CHANNEL` 的规范名称。
+     * HTTP 请求头 {@code OpenClawConstants.HEADER_X_OPENCLAW_MESSAGE_CHANNEL} 的规范名称。
      */
     public static final String X_OPENCLAW_MESSAGE_CHANNEL = OpenClawConstants.HEADER_X_OPENCLAW_MESSAGE_CHANNEL;
 
     /**
-     * HTTP 请求头 `OpenClawConstants.HEADER_X_OPENCLAW_SCOPES` 的规范名称。
+     * HTTP 请求头 {@code OpenClawConstants.HEADER_X_OPENCLAW_SCOPES} 的规范名称。
      */
     public static final String X_OPENCLAW_SCOPES = OpenClawConstants.HEADER_X_OPENCLAW_SCOPES;
 
     private OpenClawHeaders() {}
 
     /**
-     * 创建空白构建器，供调用方链式设置 `OpenClawHeaders` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code OpenClawHeaders} 字段。
      *
      * @return 新的空白构建器
      */
@@ -51,7 +51,7 @@ public final class OpenClawHeaders {
     }
 
     /**
-     * 链式构建器，逐项收集 OpenClawHeaders 的字段；build() 会复制当前快照，后续修改不会影响已构造的 OpenClawHeaders。
+     * {@code OpenClawHeaders} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -70,16 +70,16 @@ public final class OpenClawHeaders {
          */
         private String sessionKey;
         /**
-         * `Builder` 生命周期内保存的 `messageChannel` 对应状态。
+         * 写入请求头的消息通道名称；为空时省略该请求头。
          */
         private String messageChannel;
         /**
-         * `Builder` 生命周期内保存的 `scopes` 对应状态。
+         * 写入请求头的权限作用域集合，保持调用方提供的顺序。
          */
         private String scopes;
 
         /**
-         * 设置 `--model` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --model} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param model 模型标识
          * @return 当前构建器，便于继续链式配置
@@ -90,7 +90,7 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 设置 `--agent-id` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --agent-id} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param agentId Agent 标识
          * @return 当前构建器，便于继续链式配置
@@ -101,7 +101,7 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 设置 `--session-key` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --session-key} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param sessionKey 会话路由键
          * @return 当前构建器，便于继续链式配置
@@ -112,9 +112,9 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 设置 `--message-channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --message-channel} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param messageChannel 写入 `--message-channel` 选项的内容
+         * @param messageChannel 请求来源消息通道；作为 {@code --message-channel} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder messageChannel(String messageChannel) {
@@ -123,9 +123,9 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 设置 `--scopes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --scopes} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param scopes 写入 `--scopes` 选项的内容
+         * @param scopes 请求携带的授权作用域集合；作为 {@code --scopes} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder scopes(String scopes) {
@@ -134,7 +134,7 @@ public final class OpenClawHeaders {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `OpenClawHeaders`。
+         * 校验并复制当前构建器字段，创建独立的 {@code OpenClawHeaders}。
          *
          * @return 按当前字段创建的 OpenClawHeaders
          */

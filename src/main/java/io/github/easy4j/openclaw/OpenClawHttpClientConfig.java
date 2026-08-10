@@ -145,7 +145,7 @@ public class OpenClawHttpClientConfig {
     /**
      * 根据显式参数和配置默认值解析本次请求使用的 Hooks Bearer Token。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 去除首尾空白的 Hooks Token；未配置时为空字符串
      */
     public String resolveHooksBearerToken() {
         if (OpenClawStrings.isNotBlank(hooksToken)) {
@@ -157,7 +157,7 @@ public class OpenClawHttpClientConfig {
     /**
      * 根据显式参数和配置默认值解析本次请求使用的 Gateway Bearer Token。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return 去除首尾空白的 Gateway Token；未配置时为空字符串
      */
     public String resolveGatewayBearerToken() {
         if (OpenClawStrings.isNotBlank(gatewayAuthToken)) {

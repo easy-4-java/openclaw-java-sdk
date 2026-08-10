@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * OpenClaw JSON 协议中的 `SessionsSendResult` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * sessions.send RPC 结果，记录运行标识和是否中断已有运行。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,19 +15,19 @@ import lombok.Getter;
 public class SessionsSendResult {
 
     /**
-     * 映射 OpenClaw JSON 字段 `runId` 的 关联标识。
+     * JSON 属性 {@code runId}，表示一次智能体运行的标识。
      */
     @JsonProperty("runId")
     private String runId;
 
     /**
-     * 映射 OpenClaw JSON 字段 `messageSeq` 的 协议内容。
+     * JSON 属性 {@code messageSeq}，表示消息序列号。
      */
     @JsonProperty("messageSeq")
     private Integer messageSeq;
 
     /**
-     * 映射 OpenClaw JSON 字段 `interruptedActiveRun` 的 布尔开关。
+     * JSON 属性 {@code interruptedActiveRun}，表示发送消息时是否中断了已有运行。
      */
     @JsonProperty("interruptedActiveRun")
     private Boolean interruptedActiveRun;

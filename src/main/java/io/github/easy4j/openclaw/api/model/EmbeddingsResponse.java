@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenClaw JSON 协议中的 `EmbeddingsResponse` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * 向量嵌入端点响应，包含模型、向量数组和 Token 用量。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -23,27 +23,27 @@ import java.util.List;
 public class EmbeddingsResponse {
 
     /**
-     * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+     * JSON 属性 {@code object}，表示响应资源类型。
      */
     private String object;
 
     /**
-     * 映射 OpenClaw JSON 字段 `data` 的 有序数组。
+     * JSON 属性 {@code data}，表示响应数据条目。
      */
     private List<EmbeddingData> data;
 
     /**
-     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     * JSON 属性 {@code model}，表示模型标识。
      */
     private String model;
 
     /**
-     * 映射 OpenClaw JSON 字段 `usage` 的 协议内容。
+     * JSON 属性 {@code usage}，表示Token 用量统计。
      */
     private Usage usage;
 
     /**
-     * OpenClaw JSON 协议中的 `EmbeddingData` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 单条浮点向量及其在响应数组中的索引。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -55,21 +55,21 @@ public class EmbeddingsResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class EmbeddingData {
         /**
-         * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+         * JSON 属性 {@code object}，表示响应资源类型。
          */
         private String object;
         /**
-         * 映射 OpenClaw JSON 字段 `embedding` 的 有序数组。
+         * JSON 属性 {@code embedding}，表示向量元素。
          */
         private List<Double> embedding;
         /**
-         * 映射 OpenClaw JSON 字段 `index` 的 协议内容。
+         * JSON 属性 {@code index}，表示片段或工具调用序号。
          */
         private Integer index;
     }
 
     /**
-     * OpenClaw JSON 协议中的 `Usage` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 模型请求的输入、输出和总 Token 用量统计。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -81,12 +81,12 @@ public class EmbeddingsResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Usage {
         /**
-         * 映射 OpenClaw JSON 字段 `promptTokens` 的 协议内容。
+         * JSON 属性 {@code promptTokens}，表示输入 Token 数。
          */
         @JsonProperty("prompt_tokens")
         private Integer promptTokens;
         /**
-         * 映射 OpenClaw JSON 字段 `totalTokens` 的 协议内容。
+         * JSON 属性 {@code totalTokens}，表示总 Token 数。
          */
         @JsonProperty("total_tokens")
         private Integer totalTokens;

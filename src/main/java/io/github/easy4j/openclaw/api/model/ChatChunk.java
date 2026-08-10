@@ -11,7 +11,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenClaw JSON 协议中的 `ChatChunk` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Chat Completions SSE 片段，包含候选增量及结束原因。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -24,32 +24,32 @@ import java.util.List;
 public class ChatChunk {
 
     /**
-     * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+     * JSON 属性 {@code id}，表示协议对象或请求的唯一标识。
      */
     private String id;
 
     /**
-     * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+     * JSON 属性 {@code object}，表示响应资源类型。
      */
     private String object = OpenClawConstants.OBJECT_CHAT_COMPLETION_CHUNK;
 
     /**
-     * 映射 OpenClaw JSON 字段 `created` 的 协议内容。
+     * JSON 属性 {@code created}，表示创建时间戳。
      */
     private Long created;
 
     /**
-     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     * JSON 属性 {@code model}，表示模型标识。
      */
     private String model;
 
     /**
-     * 映射 OpenClaw JSON 字段 `choices` 的 有序数组。
+     * JSON 属性 {@code choices}，表示候选响应。
      */
     private List<DeltaChoice> choices;
 
     /**
-     * OpenClaw JSON 协议中的 `DeltaChoice` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 单个流式候选的序号、消息增量和结束原因。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -61,25 +61,25 @@ public class ChatChunk {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DeltaChoice {
         /**
-         * 映射 OpenClaw JSON 字段 `index` 的 协议内容。
+         * JSON 属性 {@code index}，表示片段或工具调用序号。
          */
         private Integer index;
 
         /**
-         * 映射 OpenClaw JSON 字段 `delta` 的 协议内容。
+         * JSON 属性 {@code delta}，表示流式文本增量。
          */
         private DeltaMessage delta;
 
         /**
-         * 映射 OpenClaw JSON 字段 `finishReason` 的 协议内容。
+         * JSON 属性 {@code finishReason}，表示生成结束原因。
          */
         @JsonProperty("finish_reason")
         private String finishReason;
 
         /**
-         * 判断 `toolCalls` 对应状态 是否满足协议或生命周期条件。
+         * 判断响应是否包含工具调用或以工具调用原因结束。
          *
-         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         * @return 当前增量包含工具调用时返回 {@code true}
          */
         public boolean isToolCalls() {
             return OpenClawConstants.FINISH_REASON_TOOL_CALLS.equals(finishReason);
@@ -87,7 +87,7 @@ public class ChatChunk {
     }
 
     /**
-     * OpenClaw JSON 协议中的 `DeltaMessage` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 流式候选携带的角色、文本增量和工具调用片段。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -99,15 +99,15 @@ public class ChatChunk {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DeltaMessage {
         /**
-         * 映射 OpenClaw JSON 字段 `role` 的 协议内容。
+         * JSON 属性 {@code role}，表示聊天消息角色。
          */
         private String role;
         /**
-         * 映射 OpenClaw JSON 字段 `content` 的 协议内容。
+         * JSON 属性 {@code content}，表示消息或输出正文。
          */
         private String content;
         /**
-         * 映射 OpenClaw JSON 字段 `toolCalls` 的 有序数组。
+         * JSON 属性 {@code toolCalls}，表示工具调用。
          */
         @JsonProperty("tool_calls")
         private List<ChatMessage.ToolCall> toolCalls;

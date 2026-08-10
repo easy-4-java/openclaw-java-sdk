@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.util.Map;
 
 /**
- * OpenClaw JSON 协议中的 `ToolInvokeRequest` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * 工具调用请求，包含工具名、参数、会话和 dry-run 开关。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -20,27 +20,27 @@ import java.util.Map;
 public class ToolInvokeRequest {
 
     /**
-     * 映射 OpenClaw JSON 字段 `tool` 的 协议内容。
+     * JSON 属性 {@code tool}，表示工具定义或调用信息。
      */
     private String tool;
 
     /**
-     * 映射 OpenClaw JSON 字段 `action` 的 协议内容。
+     * JSON 属性 {@code action}，表示待执行动作。
      */
     private String action;
 
     /**
-     * 映射 OpenClaw JSON 字段 `args` 的 键值对象。
+     * JSON 属性 {@code args}，表示工具调用参数映射。
      */
     private Map<String, Object> args;
 
     /**
-     * 映射 OpenClaw JSON 字段 `sessionKey` 的 协议内容。
+     * JSON 属性 {@code sessionKey}，表示Gateway 会话路由键。
      */
     private String sessionKey;
 
     /**
-     * 映射 OpenClaw JSON 字段 `dryRun` 的 布尔开关。
+     * JSON 属性 {@code dryRun}，表示是否仅校验而不执行工具。
      */
     private Boolean dryRun;
 }

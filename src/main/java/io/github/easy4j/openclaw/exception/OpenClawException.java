@@ -1,7 +1,7 @@
 package io.github.easy4j.openclaw.exception;
 
 /**
- * OpenClaw SDK 在 Open Claw 阶段失败时抛出的异常，并保留可用于诊断的原因信息。
+ * OpenClaw SDK 所有通道异常的基础类型，可保留底层传输或执行失败原因。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -9,12 +9,12 @@ package io.github.easy4j.openclaw.exception;
 public class OpenClawException extends RuntimeException {
 
     /**
-     * OpenClaw 协议固定值 {@code 1L}；调用方不应在运行时修改。
+     * 异常序列化版本标识。
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * 按给定配置创建 `OpenClawException`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code OpenClawException}，构造过程不隐式执行远程业务请求。
      *
      * @param message 消息正文
      */
@@ -23,10 +23,10 @@ public class OpenClawException extends RuntimeException {
     }
 
     /**
-     * 按给定配置创建 `OpenClawException`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code OpenClawException}，构造过程不隐式执行远程业务请求。
      *
      * @param message 消息正文
-     * @param cause 写入 `cause` 协议字段的内容
+     * @param cause 导致当前异常的根本原因
      */
     public OpenClawException(String message, Throwable cause) {
         super(message, cause);

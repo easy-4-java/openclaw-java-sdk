@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * OpenClaw JSON 协议中的 `SessionsListResult` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * sessions.list RPC 返回的会话页、默认配置和分页信息。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -18,57 +18,57 @@ import java.util.List;
 public class SessionsListResult {
 
     /**
-     * 映射 OpenClaw JSON 字段 `ts` 的 协议内容。
+     * JSON 属性 {@code ts}，表示事件时间戳。
      */
     @JsonProperty("ts")
     private long ts;
 
     /**
-     * 映射 OpenClaw JSON 字段 `path` 的 协议内容。
+     * JSON 属性 {@code path}，表示资源路径。
      */
     @JsonProperty("path")
     private String path;
 
     /**
-     * 映射 OpenClaw JSON 字段 `count` 的 协议内容。
+     * JSON 属性 {@code count}，表示记录数量。
      */
     @JsonProperty("count")
     private int count;
 
     /**
-     * 映射 OpenClaw JSON 字段 `totalCount` 的 协议内容。
+     * JSON 属性 {@code totalCount}，表示未分页前的总记录数。
      */
     @JsonProperty("totalCount")
     private Integer totalCount;
 
     /**
-     * 映射 OpenClaw JSON 字段 `limitApplied` 的 协议内容。
+     * JSON 属性 {@code limitApplied}，表示服务端实际采用的条数限制。
      */
     @JsonProperty("limitApplied")
     private Integer limitApplied;
 
     /**
-     * 映射 OpenClaw JSON 字段 `hasMore` 的 布尔开关。
+     * JSON 属性 {@code hasMore}，表示是否还有下一页会话。
      */
     @JsonProperty("hasMore")
     private Boolean hasMore;
 
     /**
-     * 映射 OpenClaw JSON 字段 `defaults` 的 协议内容。
+     * JSON 属性 {@code defaults}，表示Gateway 默认参数。
      */
     @JsonProperty("defaults")
     private GatewaySessionsDefaults defaults;
 
     /**
-     * 映射 OpenClaw JSON 字段 `sessions` 的 有序数组。
+     * JSON 属性 {@code sessions}，表示Gateway 会话。
      */
     @JsonProperty("sessions")
     private List<GatewaySessionRow> sessions;
 
     /**
-     * 读取当前对象保存的 `sessions` 对应状态，不触发网络或子进程调用。
+     * 返回 Gateway 会话列表。
      *
-     * @return 按协议顺序返回的数据列表；没有数据时为空列表
+     * @return 当前页的会话行；响应未包含会话时返回空列表
      */
     public List<GatewaySessionRow> getSessions() {
         return sessions != null ? sessions : Collections.emptyList();

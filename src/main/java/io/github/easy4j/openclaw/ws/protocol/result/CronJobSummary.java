@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
- * OpenClaw JSON 协议中的 `CronJobSummary` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * Cron 任务的标识、名称、调度和启用状态摘要。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,37 +15,37 @@ import lombok.Getter;
 public class CronJobSummary {
 
     /**
-     * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+     * JSON 属性 {@code id}，表示协议对象或请求的唯一标识。
      */
     @JsonProperty("id")
     private String id;
 
     /**
-     * 映射 OpenClaw JSON 字段 `name` 的 协议内容。
+     * 计划任务的显示名称。
      */
     @JsonProperty("name")
     private String name;
 
     /**
-     * 映射 OpenClaw JSON 字段 `enabled` 的 布尔开关。
+     * JSON 属性 {@code enabled}，表示是否启用。
      */
     @JsonProperty("enabled")
     private Boolean enabled;
 
     /**
-     * 映射 OpenClaw JSON 字段 `agentId` 的 关联标识。
+     * JSON 属性 {@code agentId}，表示智能体标识。
      */
     @JsonProperty("agentId")
     private String agentId;
 
     /**
-     * 映射 OpenClaw JSON 字段 `updatedAtMs` 的 协议内容。
+     * JSON 属性 {@code updatedAtMs}，表示最后更新时间戳，单位为毫秒。
      */
     @JsonProperty("updatedAtMs")
     private Long updatedAtMs;
 
     /**
-     * 映射 OpenClaw JSON 字段 `nextRunAtMs` 的 协议内容。
+     * JSON 属性 {@code nextRunAtMs}，表示下次运行时间戳，单位为毫秒。
      */
     @JsonProperty("nextRunAtMs")
     private Long nextRunAtMs;

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * OpenClaw JSON 协议中的 `SessionsListParams` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * sessions.list RPC 的会话范围、展示字段、过滤和分页参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,52 +16,52 @@ import lombok.Getter;
 public class SessionsListParams {
 
     /**
-     * 映射 OpenClaw JSON 字段 `limit` 的 协议内容。
+     * JSON 属性 {@code limit}，表示最大返回条数。
      */
     private final Integer limit;
     /**
-     * 映射 OpenClaw JSON 字段 `activeMinutes` 的 协议内容。
+     * JSON 属性 {@code activeMinutes}，表示最近活跃时间窗口，单位为分钟。
      */
     private final Integer activeMinutes;
     /**
-     * 映射 OpenClaw JSON 字段 `includeGlobal` 的 布尔开关。
+     * JSON 属性 {@code includeGlobal}，表示是否包含全局会话。
      */
     private final Boolean includeGlobal;
     /**
-     * 映射 OpenClaw JSON 字段 `includeUnknown` 的 布尔开关。
+     * JSON 属性 {@code includeUnknown}，表示是否包含未知来源会话。
      */
     private final Boolean includeUnknown;
     /**
-     * 映射 OpenClaw JSON 字段 `configuredAgentsOnly` 的 布尔开关。
+     * JSON 属性 {@code configuredAgentsOnly}，表示是否只返回已配置智能体的会话。
      */
     private final Boolean configuredAgentsOnly;
     /**
-     * 映射 OpenClaw JSON 字段 `includeDerivedTitles` 的 布尔开关。
+     * JSON 属性 {@code includeDerivedTitles}，表示是否包含自动生成标题。
      */
     private final Boolean includeDerivedTitles;
     /**
-     * 映射 OpenClaw JSON 字段 `includeLastMessage` 的 布尔开关。
+     * JSON 属性 {@code includeLastMessage}，表示是否包含最后一条消息预览。
      */
     private final Boolean includeLastMessage;
     /**
-     * 映射 OpenClaw JSON 字段 `label` 的 协议内容。
+     * JSON 属性 {@code label}，表示展示标签。
      */
     private final String label;
     /**
-     * 映射 OpenClaw JSON 字段 `spawnedBy` 的 协议内容。
+     * JSON 属性 {@code spawnedBy}，表示创建当前会话的父级标识。
      */
     private final String spawnedBy;
     /**
-     * 映射 OpenClaw JSON 字段 `agentId` 的 关联标识。
+     * JSON 属性 {@code agentId}，表示智能体标识。
      */
     private final String agentId;
     /**
-     * 映射 OpenClaw JSON 字段 `search` 的 协议内容。
+     * JSON 属性 {@code search}，表示搜索关键字。
      */
     private final String search;
 
     /**
-     * 根据参数构造或读取 `SessionsListParams` 的 `defaults` 协议字段。
+     * 创建使用 Gateway 默认过滤条件的查询参数。
      *
      * @return 按方法参数填充的 SessionsListParams
      */

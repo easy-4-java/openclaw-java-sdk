@@ -1,7 +1,7 @@
 package io.github.easy4j.openclaw.cli.opts;
 
 /**
- * `VerboseLevel` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+ * openclaw CLI 的详细日志开关，序列化为 {@code on} 或 {@code off}。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -9,21 +9,19 @@ package io.github.easy4j.openclaw.cli.opts;
 public enum VerboseLevel {
 
     /**
-     * 选择 `on` 协议模式；序列化时使用该固定取值。
+     * 表示详细日志开关的 {@code on} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     ON("on"),
     /**
-     * 选择 `off` 协议模式；序列化时使用该固定取值。
+     * 表示详细日志开关的 {@code off} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
     OFF("off");
 
-    /**
-     * 传给 openclaw 子命令 `--cli-value` 选项的内容；为 null 时通常省略。
-     */
+    /** openclaw CLI 接受的小写详细日志开关值。 */
     private final String cliValue;
 
     /**
- * @param cliValue null CLI characters
+     * @param cliValue 传给 openclaw CLI 的小写详细日志开关值
      */
     VerboseLevel(String cliValue) {
         this.cliValue = cliValue;
@@ -32,7 +30,7 @@ public enum VerboseLevel {
     /**
      * 返回该日志等级在 openclaw CLI 中接受的小写参数值。
      *
-     * @return 服务返回或流式累积得到的文本
+     * @return openclaw CLI 接受的 {@code on} 或 {@code off}
      */
     public String cliValue() {
         return cliValue;

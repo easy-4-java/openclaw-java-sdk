@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * OpenClaw JSON 协议中的 `ChatHistoryResult` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * chat.history RPC 返回的会话消息、思考等级和模式信息。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -18,45 +18,45 @@ import java.util.List;
 public class ChatHistoryResult {
 
     /**
-     * 映射 OpenClaw JSON 字段 `sessionKey` 的 协议内容。
+     * JSON 属性 {@code sessionKey}，表示Gateway 会话路由键。
      */
     @JsonProperty("sessionKey")
     private String sessionKey;
 
     /**
-     * 映射 OpenClaw JSON 字段 `sessionId` 的 关联标识。
+     * JSON 属性 {@code sessionId}，表示Gateway 会话标识。
      */
     @JsonProperty("sessionId")
     private String sessionId;
 
     /**
-     * 映射 OpenClaw JSON 字段 `messages` 的 有序数组。
+     * JSON 属性 {@code messages}，表示按对话顺序排列的消息。
      */
     @JsonProperty("messages")
     private List<Object> messages;
 
     /**
-     * 映射 OpenClaw JSON 字段 `thinkingLevel` 的 协议内容。
+     * JSON 属性 {@code thinkingLevel}，表示思考强度等级。
      */
     @JsonProperty("thinkingLevel")
     private String thinkingLevel;
 
     /**
-     * 映射 OpenClaw JSON 字段 `fastMode` 的 布尔开关。
+     * JSON 属性 {@code fastMode}，表示是否启用快速模式。
      */
     @JsonProperty("fastMode")
     private Boolean fastMode;
 
     /**
-     * 映射 OpenClaw JSON 字段 `verboseLevel` 的 协议内容。
+     * JSON 属性 {@code verboseLevel}，表示日志详细级别。
      */
     @JsonProperty("verboseLevel")
     private String verboseLevel;
 
     /**
-     * 读取当前对象保存的 按对话顺序排列的消息，不触发网络或子进程调用。
+     * 返回按对话顺序排列的消息。
      *
-     * @return 按协议顺序返回的数据列表；没有数据时为空列表
+     * @return 按对话顺序排列的消息；响应未包含消息时返回空列表
      */
     public List<Object> getMessages() {
         return messages != null ? messages : Collections.emptyList();

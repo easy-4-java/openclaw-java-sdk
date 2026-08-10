@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * OpenClaw JSON 协议中的 `ChatHistoryParams` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * chat.history RPC 查询参数，限定会话、条数和最大字符数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -18,23 +18,23 @@ import java.util.Objects;
 public class ChatHistoryParams {
 
     /**
-     * 映射 OpenClaw JSON 字段 `sessionKey` 的 协议内容。
+     * JSON 属性 {@code sessionKey}，表示Gateway 会话路由键。
      */
     private final String sessionKey;
     /**
-     * 映射 OpenClaw JSON 字段 `limit` 的 协议内容。
+     * JSON 属性 {@code limit}，表示最大返回条数。
      */
     private final Integer limit;
     /**
-     * 映射 OpenClaw JSON 字段 `maxChars` 的 协议内容。
+     * JSON 属性 {@code maxChars}，表示最大字符数。
      */
     private final Integer maxChars;
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `ChatHistoryParams`。
+     * 创建指定会话的历史查询参数，并可限制返回消息数量。
      *
      * @param sessionKey 会话路由键
-     * @param limit 写入 `limit` 协议字段的内容
+     * @param limit 最多返回的记录数；为空时使用 Gateway 默认限制
      * @return 按方法参数填充的 ChatHistoryParams
      */
     public static ChatHistoryParams of(String sessionKey, Integer limit) {

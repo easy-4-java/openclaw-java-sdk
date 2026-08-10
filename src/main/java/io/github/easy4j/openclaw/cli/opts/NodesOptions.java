@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `nodes` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code nodes} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -17,104 +17,104 @@ import java.util.List;
 public final class NodesOptions implements CliSubArgs {
 
     /**
-     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义节点管理动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Verb {
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示节点管理动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `pending` 协议模式；序列化时使用该固定取值。
+         * 表示节点管理动作的 {@code pending} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         PENDING,
         /**
-         * 选择 `approve` 协议模式；序列化时使用该固定取值。
+         * 表示节点管理动作的 {@code approve} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         APPROVE,
         /**
-         * 选择 `reject` 协议模式；序列化时使用该固定取值。
+         * 表示节点管理动作的 {@code reject} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         REJECT,
         /**
-         * 选择 `rename` 协议模式；序列化时使用该固定取值。
+         * 表示节点管理动作的 {@code rename} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         RENAME,
         /**
-         * 选择 `status` 协议模式；序列化时使用该固定取值。
+         * 表示节点管理动作的 {@code status} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         STATUS,
         /**
-         * 选择 `invoke` 协议模式；序列化时使用该固定取值。
+         * 表示节点管理动作的 {@code invoke} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         INVOKE
     }
 
     /**
-     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
      */
     private final Verb verb;
     /**
-     * 是否向 openclaw 子命令追加 `--list-connected` 开关。
+     * 是否向 openclaw 子命令追加 {@code --list-connected} 开关。
      */
     private final boolean listConnected;
     /**
-     * 传给 openclaw 子命令 `--last-connected` 选项的内容；为 null 时通常省略。
+     * 筛选节点最近连接时间的范围；未设置时命令行不包含 {@code --last-connected}。
      */
     private final String lastConnected;
     /**
-     * 传给 openclaw 子命令 `--request-id` 选项的内容；为 null 时通常省略。
+     * 请求关联标识；未设置时命令行不包含 {@code --request-id}。
      */
     private final String requestId;
     /**
-     * 传给 openclaw 子命令 `--node-ref` 选项的内容；为 null 时通常省略。
+     * 目标节点名称或标识；未设置时命令行不包含 {@code --node-ref}。
      */
     private final String nodeRef;
     /**
-     * 传给 openclaw 子命令 `--name` 选项的内容；为 null 时通常省略。
+     * 目标资源名称；未设置时命令行不包含 {@code --name}。
      */
     private final String name;
     /**
-     * 传给 openclaw 子命令 `--command` 选项的内容；为 null 时通常省略。
+     * 节点 RPC 方法或命令名称；未设置时命令行不包含 {@code --command}。
      */
     private final String command;
     /**
-     * 传给 openclaw 子命令 `--params-json` 选项的内容；为 null 时通常省略。
+     * 节点命令的 JSON 参数；未设置时命令行不包含 {@code --params-json}。
      */
     private final String paramsJson;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
      */
     private final String invokeTimeout;
     /**
-     * 传给 openclaw 子命令 `--idempotency-key` 选项的内容；为 null 时通常省略。
+     * 防止请求重复执行的幂等键；未设置时命令行不包含 {@code --idempotency-key}。
      */
     private final String idempotencyKey;
     /**
-     * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+     * 目标 Gateway 或远程服务 URL；未设置时命令行不包含 {@code --url}。
      */
     private final String url;
     /**
-     * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+     * 认证令牌或待追加的原始服务参数；未设置时命令行不包含 {@code --token}。
      */
     private final String token;
     /**
-     * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+     * Gateway 或远程服务密码；未设置时命令行不包含 {@code --password}。
      */
     private final String password;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
      */
     private final String timeout;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -141,7 +141,7 @@ public final class NodesOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `NodesOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code NodesOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -209,79 +209,79 @@ public final class NodesOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 NodesOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 NodesOptions。
+     * {@code NodesOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
          */
         private Verb verb = Verb.LIST;
         /**
-         * 是否向 openclaw 子命令追加 `--list-connected` 开关。
+         * 是否向 openclaw 子命令追加 {@code --list-connected} 开关。
          */
         private boolean listConnected;
         /**
-         * 传给 openclaw 子命令 `--last-connected` 选项的内容；为 null 时通常省略。
+         * 筛选节点最近连接时间的范围；未设置时命令行不包含 {@code --last-connected}。
          */
         private String lastConnected;
         /**
-         * 传给 openclaw 子命令 `--request-id` 选项的内容；为 null 时通常省略。
+         * 请求关联标识；未设置时命令行不包含 {@code --request-id}。
          */
         private String requestId;
         /**
-         * 传给 openclaw 子命令 `--node-ref` 选项的内容；为 null 时通常省略。
+         * 目标节点名称或标识；未设置时命令行不包含 {@code --node-ref}。
          */
         private String nodeRef;
         /**
-         * 传给 openclaw 子命令 `--name` 选项的内容；为 null 时通常省略。
+         * 目标资源名称；未设置时命令行不包含 {@code --name}。
          */
         private String name;
         /**
-         * 传给 openclaw 子命令 `--command` 选项的内容；为 null 时通常省略。
+         * 节点 RPC 方法或命令名称；未设置时命令行不包含 {@code --command}。
          */
         private String command;
         /**
-         * 传给 openclaw 子命令 `--params-json` 选项的内容；为 null 时通常省略。
+         * 节点命令的 JSON 参数；未设置时命令行不包含 {@code --params-json}。
          */
         private String paramsJson;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
          */
         private String invokeTimeout;
         /**
-         * 传给 openclaw 子命令 `--idempotency-key` 选项的内容；为 null 时通常省略。
+         * 防止请求重复执行的幂等键；未设置时命令行不包含 {@code --idempotency-key}。
          */
         private String idempotencyKey;
         /**
-         * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+         * 目标 Gateway 或远程服务 URL；未设置时命令行不包含 {@code --url}。
          */
         private String url;
         /**
-         * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+         * 认证令牌或待追加的原始服务参数；未设置时命令行不包含 {@code --token}。
          */
         private String token;
         /**
-         * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+         * Gateway 或远程服务密码；未设置时命令行不包含 {@code --password}。
          */
         private String password;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
          */
         private String timeout;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code list} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -291,9 +291,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--list-connected` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --list-connected} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param connected 是否向命令行追加 `--list-connected` 开关
+         * @param connected 是否向命令行追加 {@code --list-connected} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder listConnected(boolean connected) {
@@ -302,9 +302,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--last-connected` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --last-connected} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param duration 写入 `--last-connected` 选项的内容
+         * @param duration 筛选最近连接节点的时间范围；作为 {@code --last-connected} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder lastConnected(String duration) {
@@ -313,7 +313,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `pending` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code pending} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -323,7 +323,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--approve` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --approve} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param requestId 请求标识
          * @return 当前构建器，便于继续链式配置
@@ -335,7 +335,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--reject` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --reject} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param requestId 请求标识
          * @return 当前构建器，便于继续链式配置
@@ -347,10 +347,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--rename` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --rename} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param nodeRef 写入 `--rename` 选项的内容
-         * @param displayName 写入 `--rename` 选项的内容
+         * @param nodeRef 目标节点名称或标识；作为 {@code --rename} 的参数
+         * @param displayName 面向用户展示的名称；作为 {@code --rename} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder rename(String nodeRef, String displayName) {
@@ -361,7 +361,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `status` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code status} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -371,10 +371,10 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--invoke` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --invoke} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param nodeRef 写入 `--invoke` 选项的内容
-         * @param command 写入 `--invoke` 选项的内容
+         * @param nodeRef 目标节点名称或标识；作为 {@code --invoke} 的参数
+         * @param command 节点 RPC 方法或命令名称；作为 {@code --invoke} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder invoke(String nodeRef, String command) {
@@ -385,7 +385,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--params-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --params-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -396,9 +396,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--invoke-timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --invoke-timeout} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param ms 写入 `--invoke-timeout` 选项的内容
+         * @param ms 超时时长，单位为毫秒；作为 {@code --invoke-timeout} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder invokeTimeout(String ms) {
@@ -407,9 +407,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--idempotency-key` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --idempotency-key} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param key 写入 `--idempotency-key` 选项的内容
+         * @param key 请求幂等键或目标键名；作为 {@code --idempotency-key} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder idempotencyKey(String key) {
@@ -418,7 +418,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --url} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param url 完整目标 URL
          * @return 当前构建器，便于继续链式配置
@@ -429,9 +429,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --token} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param token 写入 `--token` 选项的内容
+         * @param token 认证令牌或待追加的原始服务参数；作为 {@code --token} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder token(String token) {
@@ -440,9 +440,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--password` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --password} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param password 写入 `--password` 选项的内容
+         * @param password Gateway 或远程服务密码；作为 {@code --password} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder password(String password) {
@@ -451,9 +451,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --timeout} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param timeout 写入 `--timeout` 选项的内容
+         * @param timeout CLI 接受的超时配置；作为 {@code --timeout} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder timeout(String timeout) {
@@ -462,7 +462,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -473,9 +473,9 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -486,7 +486,7 @@ public final class NodesOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `NodesOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code NodesOptions}。
          *
          * @return 按当前字段创建的 NodesOptions
          */

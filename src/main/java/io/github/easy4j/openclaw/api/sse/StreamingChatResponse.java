@@ -22,39 +22,39 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         implements SseEventHandler {
 
     /**
-     * `StreamingChatResponse` 生命周期内保存的 `accumulator` 对应状态。
+     * 将多个 SSE 片段合并为完整消息和工具调用的累加器。
      */
     private final SseEventAccumulator accumulator = new SseEventAccumulator();
 
     /**
-     * `StreamingChatResponse` 生命周期内保存的 `deltaConsumer` 对应状态。
+     * 接收每个文本增量的可选回调。
      */
     @Setter
     private Consumer<String> deltaConsumer;
 
     /**
-     * `StreamingChatResponse` 生命周期内保存的 `chunkConsumer` 对应状态。
+     * 接收每个反序列化响应片段的可选回调。
      */
     private Consumer<ChatChunk> chunkConsumer;
     /**
-     * `StreamingChatResponse` 生命周期内保存的 `toolCallConsumer` 对应状态。
+     * 接收已组装工具调用的可选回调。
      */
     private Consumer<List<ChatMessage.ToolCall>> toolCallConsumer;
     /**
-     * `StreamingChatResponse` 生命周期内保存的 `completeConsumer` 对应状态。
+     * 流正常结束后接收完整文本的可选回调。
      */
     private Consumer<String> completeConsumer;
     /**
-     * `StreamingChatResponse` 生命周期内保存的 `errorConsumer` 对应状态。
+     * 流读取或回调处理失败时接收异常的可选回调。
      */
     private Consumer<Throwable> errorConsumer;
     /**
-     * 跨线程生命周期协调状态，保证并发更新的可见性、互斥或容量上限。
+     * 保存当前流的取消动作；原子替换保证并发取消最多生效一次。
      */
     private final AtomicReference<Runnable> cancellation = new AtomicReference<>();
 
     /**
-     * 创建空白构建器，供调用方链式设置 `StreamingChatResponse` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code StreamingChatResponse} 字段。
      *
      * @return 新的空白构建器
      */
@@ -65,7 +65,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     // ==================== 回调注册 ====================
 
     /**
-     * 接收并处理 Delta 生命周期事件；实现不会改变事件顺序。
+     * 注册文本增量回调；每个 SSE 文本片段到达时按顺序调用。
      *
      * @param callback 取消或事件回调
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
@@ -76,7 +76,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 接收并处理 Chunk 生命周期事件；实现不会改变事件顺序。
+     * 注册原始聊天片段回调；每次反序列化成功后调用。
      *
      * @param callback 取消或事件回调
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
@@ -87,7 +87,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 接收并处理 Tool Call 生命周期事件；实现不会改变事件顺序。
+     * 注册工具调用回调；工具参数跨片段组装完成后调用。
      *
      * @param callback 取消或事件回调
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
@@ -98,7 +98,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 接收并处理 Complete 生命周期事件；实现不会改变事件顺序。
+     * 注册或处理流完成事件，并向调用方交付累计文本。
      *
      * @param callback 取消或事件回调
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
@@ -109,7 +109,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 接收并处理 Error 生命周期事件；实现不会改变事件顺序。
+     * 注册或处理流、WebSocket 或回调执行异常。
      *
      * @param callback 取消或事件回调
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
@@ -120,9 +120,9 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 接收并处理 Cancel 生命周期事件；实现不会改变事件顺序。
+     * 注册取消时执行的回调，并返回用于注销该回调的句柄。
      *
-     * @param action 写入 `action` 协议字段的内容
+     * @param action 待执行的 Hook、工具或命令动作
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
      */
     public StreamingChatResponse onCancel(Runnable action) {
@@ -137,7 +137,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
      * 把取消信号传播到底层网络调用或 Future，并以幂等方式结束当前任务。
      *
      * @param mayInterruptIfRunning 是否允许中断正在执行的任务
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 底层异步任务接受取消请求时返回 {@code true}
      */
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
@@ -151,9 +151,9 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     // ==================== SseEventHandler 实现 ====================
 
     /**
-     * 接收并处理 Event 生命周期事件；实现不会改变事件顺序。
+     * 处理一个 SSE 或 Gateway 事件并更新累计状态。
      *
-     * @param event 写入 `event` 协议字段的内容
+     * @param event 待分发或累积的 SSE/WebSocket 事件
      */
     @Override
     public void onEvent(SseEvent event) {
@@ -195,7 +195,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 接收并处理 Complete 生命周期事件；实现不会改变事件顺序。
+     * 注册或处理流完成事件，并向调用方交付累计文本。
      */
     @Override
     public void onComplete() {
@@ -211,7 +211,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     }
 
     /**
-     * 接收并处理 Error 生命周期事件；实现不会改变事件顺序。
+     * 注册或处理流、WebSocket 或回调执行异常。
      *
      * @param error 导致调用失败的异常
      */
@@ -226,35 +226,35 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
     // ==================== Builder ====================
 
     /**
-     * 链式构建器，逐项收集 StreamingChatResponse 的字段；build() 会复制当前快照，后续修改不会影响已构造的 StreamingChatResponse。
+     * {@code StreamingChatResponse} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static class Builder {
         /**
-         * `Builder` 生命周期内保存的 `deltaConsumer` 对应状态。
+         * 接收每个文本增量的可选回调。
          */
         private Consumer<String> deltaConsumer;
         /**
-         * `Builder` 生命周期内保存的 `chunkConsumer` 对应状态。
+         * 接收每个反序列化响应片段的可选回调。
          */
         private Consumer<ChatChunk> chunkConsumer;
         /**
-         * `Builder` 生命周期内保存的 `toolCallConsumer` 对应状态。
+         * 接收已组装工具调用的可选回调。
          */
         private Consumer<List<ChatMessage.ToolCall>> toolCallConsumer;
         /**
-         * `Builder` 生命周期内保存的 `completeConsumer` 对应状态。
+         * 流正常结束后接收完整文本的可选回调。
          */
         private Consumer<String> completeConsumer;
         /**
-         * `Builder` 生命周期内保存的 `errorConsumer` 对应状态。
+         * 流读取或回调处理失败时接收异常的可选回调。
          */
         private Consumer<Throwable> errorConsumer;
 
         /**
-         * 设置 `--on-delta` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --on-delta} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param callback 取消或事件回调
          * @return 当前构建器，便于继续链式配置
@@ -265,7 +265,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         }
 
         /**
-         * 设置 `--on-chunk` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --on-chunk} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param callback 取消或事件回调
          * @return 当前构建器，便于继续链式配置
@@ -276,7 +276,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         }
 
         /**
-         * 设置 `--on-tool-call` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --on-tool-call} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param callback 取消或事件回调
          * @return 当前构建器，便于继续链式配置
@@ -287,7 +287,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         }
 
         /**
-         * 设置 `--on-complete` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --on-complete} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param callback 取消或事件回调
          * @return 当前构建器，便于继续链式配置
@@ -298,7 +298,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         }
 
         /**
-         * 设置 `--on-error` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --on-error} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param callback 取消或事件回调
          * @return 当前构建器，便于继续链式配置
@@ -309,7 +309,7 @@ public class StreamingChatResponse extends CompletableFuture<ChatChunk>
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `StreamingChatResponse`。
+         * 校验并复制当前构建器字段，创建独立的 {@code StreamingChatResponse}。
          *
          * @return 按当前字段创建的 StreamingChatResponse
          */

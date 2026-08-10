@@ -11,7 +11,7 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * OpenClaw JSON 协议中的 `ChatResponse` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+ * 非流式 Chat Completions 响应，包含候选消息和 Token 用量。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -24,37 +24,37 @@ import java.util.List;
 public class ChatResponse {
 
     /**
-     * 映射 OpenClaw JSON 字段 `id` 的 关联标识。
+     * JSON 属性 {@code id}，表示协议对象或请求的唯一标识。
      */
     private String id;
 
     /**
-     * 映射 OpenClaw JSON 字段 `object` 的 协议内容。
+     * JSON 属性 {@code object}，表示响应资源类型。
      */
     private String object = OpenClawConstants.OBJECT_CHAT_COMPLETION;
 
     /**
-     * 映射 OpenClaw JSON 字段 `created` 的 协议内容。
+     * JSON 属性 {@code created}，表示创建时间戳。
      */
     private Long created;
 
     /**
-     * 映射 OpenClaw JSON 字段 `model` 的 协议内容。
+     * JSON 属性 {@code model}，表示模型标识。
      */
     private String model;
 
     /**
-     * 映射 OpenClaw JSON 字段 `choices` 的 有序数组。
+     * JSON 属性 {@code choices}，表示候选响应。
      */
     private List<Choice> choices;
 
     /**
-     * 映射 OpenClaw JSON 字段 `usage` 的 协议内容。
+     * JSON 属性 {@code usage}，表示Token 用量统计。
      */
     private Usage usage;
 
     /**
-     * OpenClaw JSON 协议中的 `Choice` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 单个聊天候选消息及结束原因。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -67,43 +67,43 @@ public class ChatResponse {
     public static class Choice {
 
         /**
-         * 映射 OpenClaw JSON 字段 `index` 的 协议内容。
+         * JSON 属性 {@code index}，表示片段或工具调用序号。
          */
         private Integer index;
 
         /**
-         * 映射 OpenClaw JSON 字段 `message` 的 协议内容。
+         * 当前候选项生成的助手消息。
          */
         private ChatMessage message;
 
         /**
-         * 映射 OpenClaw JSON 字段 `finishReason` 的 协议内容。
+         * JSON 属性 {@code finishReason}，表示生成结束原因。
          */
         @JsonProperty("finish_reason")
         private String finishReason;
 
         /**
-         * 判断 `stop` 对应状态 是否满足协议或生命周期条件。
+         * 判断聊天响应是否因正常 stop 原因结束。
          *
-         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         * @return 结束原因等于 {@code stop} 时返回 {@code true}
          */
         public boolean isStop() {
             return OpenClawConstants.FINISH_REASON_STOP.equals(finishReason);
         }
 
         /**
-         * 判断 `toolCalls` 对应状态 是否满足协议或生命周期条件。
+         * 判断响应是否包含工具调用或以工具调用原因结束。
          *
-         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         * @return 结束原因等于 {@code tool_calls} 时返回 {@code true}
          */
         public boolean isToolCalls() {
             return OpenClawConstants.FINISH_REASON_TOOL_CALLS.equals(finishReason);
         }
 
         /**
-         * 判断 `length` 对应状态 是否满足协议或生命周期条件。
+         * 判断聊天响应是否因达到长度限制结束。
          *
-         * @return 条件成立返回 {@code true}，否则返回 {@code false}
+         * @return 结束原因等于 {@code length} 时返回 {@code true}
          */
         public boolean isLength() {
             return OpenClawConstants.FINISH_REASON_LENGTH.equals(finishReason);
@@ -111,7 +111,7 @@ public class ChatResponse {
     }
 
     /**
-     * OpenClaw JSON 协议中的 `Usage` 数据结构；字段名和嵌套关系与 Gateway 请求或响应保持一致。
+     * 模型请求的输入、输出和总 Token 用量统计。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -123,17 +123,17 @@ public class ChatResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Usage {
         /**
-         * 映射 OpenClaw JSON 字段 `promptTokens` 的 协议内容。
+         * JSON 属性 {@code promptTokens}，表示输入 Token 数。
          */
         @JsonProperty("prompt_tokens")
         private Integer promptTokens;
         /**
-         * 映射 OpenClaw JSON 字段 `completionTokens` 的 协议内容。
+         * JSON 属性 {@code completionTokens}，表示补全 Token 数。
          */
         @JsonProperty("completion_tokens")
         private Integer completionTokens;
         /**
-         * 映射 OpenClaw JSON 字段 `totalTokens` 的 协议内容。
+         * JSON 属性 {@code totalTokens}，表示总 Token 数。
          */
         @JsonProperty("total_tokens")
         private Integer totalTokens;

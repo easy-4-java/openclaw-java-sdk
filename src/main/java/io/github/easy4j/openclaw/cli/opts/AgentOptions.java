@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * openclaw `agent` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code agent} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -17,59 +17,59 @@ import java.util.Objects;
 public final class AgentOptions implements CliSubArgs {
 
     /**
-     * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
+     * 待发送的消息正文；未设置时命令行不包含 {@code --message}。
      */
     private final String message;
     /**
-     * 传给 openclaw 子命令 `--to` 选项的内容；为 null 时通常省略。
+     * 消息投递目标；未设置时命令行不包含 {@code --to}。
      */
     private final String to;
     /**
-     * 传给 openclaw 子命令 `--session-id` 选项的内容；为 null 时通常省略。
+     * 目标会话唯一标识；未设置时命令行不包含 {@code --session-id}。
      */
     private final String sessionId;
     /**
-     * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+     * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
      */
     private final String agent;
     /**
-     * 传给 openclaw 子命令 `--thinking` 选项的内容；为 null 时通常省略。
+     * 模型思考强度；未设置时命令行不包含 {@code --thinking}。
      */
     private final String thinking;
     /**
-     * 传给 openclaw 子命令 `--verbose` 选项的内容；为 null 时通常省略。
+     * 是否启用详细日志输出；未设置时命令行不包含 {@code --verbose}。
      */
     private final String verbose;
     /**
-     * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+     * 目标消息通道；未设置时命令行不包含 {@code --channel}。
      */
     private final String channel;
     /**
-     * 传给 openclaw 子命令 `--reply-to` 选项的内容；为 null 时通常省略。
+     * 回复目标消息标识；未设置时命令行不包含 {@code --reply-to}。
      */
     private final String replyTo;
     /**
-     * 传给 openclaw 子命令 `--reply-channel` 选项的内容；为 null 时通常省略。
+     * 回复消息使用的通道；未设置时命令行不包含 {@code --reply-channel}。
      */
     private final String replyChannel;
     /**
-     * 传给 openclaw 子命令 `--reply-account` 选项的内容；为 null 时通常省略。
+     * 回复消息使用的通道账户；未设置时命令行不包含 {@code --reply-account}。
      */
     private final String replyAccount;
     /**
-     * 是否向 openclaw 子命令追加 `--local` 开关。
+     * 是否向 openclaw 子命令追加 {@code --local} 开关。
      */
     private final boolean local;
     /**
-     * 是否向 openclaw 子命令追加 `--deliver` 开关。
+     * 是否向 openclaw 子命令追加 {@code --deliver} 开关。
      */
     private final boolean deliver;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为秒；超时后主动取消对应任务。
      */
     private final Integer timeoutSeconds;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
 
@@ -91,7 +91,7 @@ public final class AgentOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `AgentOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code AgentOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -163,7 +163,7 @@ public final class AgentOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 AgentOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 AgentOptions。
+     * {@code AgentOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -171,64 +171,64 @@ public final class AgentOptions implements CliSubArgs {
     public static final class Builder {
 
         /**
-         * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
+         * 待发送的消息正文；未设置时命令行不包含 {@code --message}。
          */
         private String message;
         /**
-         * 传给 openclaw 子命令 `--to` 选项的内容；为 null 时通常省略。
+         * 消息投递目标；未设置时命令行不包含 {@code --to}。
          */
         private String to;
         /**
-         * 传给 openclaw 子命令 `--session-id` 选项的内容；为 null 时通常省略。
+         * 目标会话唯一标识；未设置时命令行不包含 {@code --session-id}。
          */
         private String sessionId;
         /**
-         * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+         * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
          */
         private String agent;
         /**
-         * 传给 openclaw 子命令 `--thinking` 选项的内容；为 null 时通常省略。
+         * 模型思考强度；未设置时命令行不包含 {@code --thinking}。
          */
         private String thinking;
         /**
-         * 传给 openclaw 子命令 `--verbose` 选项的内容；为 null 时通常省略。
+         * 是否启用详细日志输出；未设置时命令行不包含 {@code --verbose}。
          */
         private String verbose;
         /**
-         * 传给 openclaw 子命令 `--channel` 选项的内容；为 null 时通常省略。
+         * 目标消息通道；未设置时命令行不包含 {@code --channel}。
          */
         private String channel;
         /**
-         * 传给 openclaw 子命令 `--reply-to` 选项的内容；为 null 时通常省略。
+         * 回复目标消息标识；未设置时命令行不包含 {@code --reply-to}。
          */
         private String replyTo;
         /**
-         * 传给 openclaw 子命令 `--reply-channel` 选项的内容；为 null 时通常省略。
+         * 回复消息使用的通道；未设置时命令行不包含 {@code --reply-channel}。
          */
         private String replyChannel;
         /**
-         * 传给 openclaw 子命令 `--reply-account` 选项的内容；为 null 时通常省略。
+         * 回复消息使用的通道账户；未设置时命令行不包含 {@code --reply-account}。
          */
         private String replyAccount;
         /**
-         * 是否向 openclaw 子命令追加 `--local` 开关。
+         * 是否向 openclaw 子命令追加 {@code --local} 开关。
          */
         private boolean local;
         /**
-         * 是否向 openclaw 子命令追加 `--deliver` 开关。
+         * 是否向 openclaw 子命令追加 {@code --deliver} 开关。
          */
         private boolean deliver;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为秒；超时后主动取消对应任务。
          */
         private Integer timeoutSeconds;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
 
         /**
-         * 设置 `--message` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --message} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param message 消息正文
          * @return 当前构建器，便于继续链式配置
@@ -239,9 +239,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--to` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --to} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param to 写入 `--to` 选项的内容
+         * @param to 消息投递目标；作为 {@code --to} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder to(String to) {
@@ -250,9 +250,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--session-id` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --session-id} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param sessionId 写入 `--session-id` 选项的内容
+         * @param sessionId 目标会话唯一标识；作为 {@code --session-id} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder sessionId(String sessionId) {
@@ -261,9 +261,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder agent(String agent) {
@@ -272,9 +272,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--thinking` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --thinking} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param thinking 写入 `--thinking` 选项的内容
+         * @param thinking 模型思考强度；作为 {@code --thinking} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder thinking(ThinkingLevel thinking) {
@@ -284,9 +284,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--thinking` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --thinking} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param thinking 写入 `--thinking` 选项的内容
+         * @param thinking 模型思考强度；作为 {@code --thinking} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder thinking(String thinking) {
@@ -295,9 +295,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --verbose} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param verbose 写入 `--verbose` 选项的内容
+         * @param verbose 是否启用详细日志输出；作为 {@code --verbose} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder verbose(VerboseLevel verbose) {
@@ -307,9 +307,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --verbose} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param verbose 写入 `--verbose` 选项的内容
+         * @param verbose 是否启用详细日志输出；作为 {@code --verbose} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder verbose(String verbose) {
@@ -318,9 +318,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --channel} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param channel 写入 `--channel` 选项的内容
+         * @param channel 目标消息通道；作为 {@code --channel} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder channel(String channel) {
@@ -329,9 +329,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--reply-to` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --reply-to} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param replyTo 写入 `--reply-to` 选项的内容
+         * @param replyTo 回复目标消息标识；作为 {@code --reply-to} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder replyTo(String replyTo) {
@@ -340,9 +340,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--reply-channel` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --reply-channel} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param replyChannel 写入 `--reply-channel` 选项的内容
+         * @param replyChannel 回复消息使用的通道；作为 {@code --reply-channel} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder replyChannel(String replyChannel) {
@@ -351,9 +351,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--reply-account` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --reply-account} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param replyAccount 写入 `--reply-account` 选项的内容
+         * @param replyAccount 回复消息使用的通道账户；作为 {@code --reply-account} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder replyAccount(String replyAccount) {
@@ -362,9 +362,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--local` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --local} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param local 是否向命令行追加 `--local` 开关
+         * @param local 是否向命令行追加 {@code --local} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder local(boolean local) {
@@ -373,9 +373,9 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--deliver` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --deliver} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param deliver 是否向命令行追加 `--deliver` 开关
+         * @param deliver 是否向命令行追加 {@code --deliver} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder deliver(boolean deliver) {
@@ -384,7 +384,7 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--timeout-seconds` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --timeout-seconds} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param timeoutSeconds 超时时间，单位为秒
          * @return 当前构建器，便于继续链式配置
@@ -395,7 +395,7 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--timeout-seconds` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --timeout-seconds} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param timeoutSeconds 超时时间，单位为秒
          * @return 当前构建器，便于继续链式配置
@@ -406,7 +406,7 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -417,7 +417,7 @@ public final class AgentOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `AgentOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code AgentOptions}。
          *
          * @return 按当前字段创建的 AgentOptions
          * @throws IllegalStateException 当前连接或生命周期状态不允许调用时抛出

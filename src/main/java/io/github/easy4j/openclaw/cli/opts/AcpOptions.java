@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `acp` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code acp} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -17,92 +17,92 @@ import java.util.List;
 public final class AcpOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义ACP 运行方式允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `bridge` 协议模式；序列化时使用该固定取值。
+         * 表示ACP 运行方式的 {@code bridge} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         BRIDGE,
         /**
-         * 选择 `client` 协议模式；序列化时使用该固定取值。
+         * 表示ACP 运行方式的 {@code client} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         CLIENT
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+     * 目标 Gateway 或远程服务 URL；未设置时命令行不包含 {@code --url}。
      */
     private final String url;
     /**
-     * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+     * 认证令牌或待追加的原始服务参数；未设置时命令行不包含 {@code --token}。
      */
     private final String token;
     /**
-     * 传给 openclaw 子命令 `--token-file` 选项的内容；为 null 时通常省略。
+     * 读取认证令牌的文件路径；未设置时命令行不包含 {@code --token-file}。
      */
     private final String tokenFile;
     /**
-     * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+     * Gateway 或远程服务密码；未设置时命令行不包含 {@code --password}。
      */
     private final String password;
     /**
-     * 传给 openclaw 子命令 `--password-file` 选项的内容；为 null 时通常省略。
+     * 读取密码的文件路径；未设置时命令行不包含 {@code --password-file}。
      */
     private final String passwordFile;
     /**
-     * 传给 openclaw 子命令 `--session` 选项的内容；为 null 时通常省略。
+     * 目标会话标识；未设置时命令行不包含 {@code --session}。
      */
     private final String session;
     /**
-     * 传给 openclaw 子命令 `--session-label` 选项的内容；为 null 时通常省略。
+     * 会话显示标签；未设置时命令行不包含 {@code --session-label}。
      */
     private final String sessionLabel;
     /**
-     * 是否向 openclaw 子命令追加 `--require-existing` 开关。
+     * 是否向 openclaw 子命令追加 {@code --require-existing} 开关。
      */
     private final boolean requireExisting;
     /**
-     * 是否向 openclaw 子命令追加 `--reset-session` 开关。
+     * 是否向 openclaw 子命令追加 {@code --reset-session} 开关。
      */
     private final boolean resetSession;
     /**
-     * 是否向 openclaw 子命令追加 `--no-prefix-cwd` 开关。
+     * 是否向 openclaw 子命令追加 {@code --no-prefix-cwd} 开关。
      */
     private final boolean noPrefixCwd;
     /**
-     * 传给 openclaw 子命令 `--provenance` 选项的内容；为 null 时通常省略。
+     * ACP 会话来源标记；未设置时命令行不包含 {@code --provenance}。
      */
     private final String provenance;
     /**
-     * 是否向 openclaw 子命令追加 `--verbose` 开关。
+     * 是否向 openclaw 子命令追加 {@code --verbose} 开关。
      */
     private final boolean verbose;
     /**
-     * 传给 openclaw 子命令 `--cwd` 选项的内容；为 null 时通常省略。
+     * 服务进程的工作目录；未设置时命令行不包含 {@code --cwd}。
      */
     private final String cwd;
     /**
-     * 传给 openclaw 子命令 `--server` 选项的内容；为 null 时通常省略。
+     * ACP 服务监听地址；未设置时命令行不包含 {@code --server}。
      */
     private final String server;
     /**
-     * 传给 openclaw 子命令 `--server-args` 选项的内容；为 null 时通常省略。
+     * 原样传给 ACP 服务进程的参数列表；未设置时命令行不包含 {@code --server-args}。
      */
     private final List<String> serverArgs;
     /**
-     * 是否向 openclaw 子命令追加 `--server-verbose` 开关。
+     * 是否向 openclaw 子命令追加 {@code --server-verbose} 开关。
      */
     private final boolean serverVerbose;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -131,7 +131,7 @@ public final class AcpOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `AcpOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code AcpOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -177,87 +177,87 @@ public final class AcpOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 AcpOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 AcpOptions。
+     * {@code AcpOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.BRIDGE;
         /**
-         * 传给 openclaw 子命令 `--url` 选项的内容；为 null 时通常省略。
+         * 目标 Gateway 或远程服务 URL；未设置时命令行不包含 {@code --url}。
          */
         private String url;
         /**
-         * 传给 openclaw 子命令 `--token` 选项的内容；为 null 时通常省略。
+         * 认证令牌或待追加的原始服务参数；未设置时命令行不包含 {@code --token}。
          */
         private String token;
         /**
-         * 传给 openclaw 子命令 `--token-file` 选项的内容；为 null 时通常省略。
+         * 读取认证令牌的文件路径；未设置时命令行不包含 {@code --token-file}。
          */
         private String tokenFile;
         /**
-         * 传给 openclaw 子命令 `--password` 选项的内容；为 null 时通常省略。
+         * Gateway 或远程服务密码；未设置时命令行不包含 {@code --password}。
          */
         private String password;
         /**
-         * 传给 openclaw 子命令 `--password-file` 选项的内容；为 null 时通常省略。
+         * 读取密码的文件路径；未设置时命令行不包含 {@code --password-file}。
          */
         private String passwordFile;
         /**
-         * 传给 openclaw 子命令 `--session` 选项的内容；为 null 时通常省略。
+         * 目标会话标识；未设置时命令行不包含 {@code --session}。
          */
         private String session;
         /**
-         * 传给 openclaw 子命令 `--session-label` 选项的内容；为 null 时通常省略。
+         * 会话显示标签；未设置时命令行不包含 {@code --session-label}。
          */
         private String sessionLabel;
         /**
-         * 是否向 openclaw 子命令追加 `--require-existing` 开关。
+         * 是否向 openclaw 子命令追加 {@code --require-existing} 开关。
          */
         private boolean requireExisting;
         /**
-         * 是否向 openclaw 子命令追加 `--reset-session` 开关。
+         * 是否向 openclaw 子命令追加 {@code --reset-session} 开关。
          */
         private boolean resetSession;
         /**
-         * 是否向 openclaw 子命令追加 `--no-prefix-cwd` 开关。
+         * 是否向 openclaw 子命令追加 {@code --no-prefix-cwd} 开关。
          */
         private boolean noPrefixCwd;
         /**
-         * 传给 openclaw 子命令 `--provenance` 选项的内容；为 null 时通常省略。
+         * ACP 会话来源标记；未设置时命令行不包含 {@code --provenance}。
          */
         private String provenance;
         /**
-         * 是否向 openclaw 子命令追加 `--verbose` 开关。
+         * 是否向 openclaw 子命令追加 {@code --verbose} 开关。
          */
         private boolean verbose;
         /**
-         * 传给 openclaw 子命令 `--cwd` 选项的内容；为 null 时通常省略。
+         * 服务进程的工作目录；未设置时命令行不包含 {@code --cwd}。
          */
         private String cwd;
         /**
-         * 传给 openclaw 子命令 `--server` 选项的内容；为 null 时通常省略。
+         * ACP 服务监听地址；未设置时命令行不包含 {@code --server}。
          */
         private String server;
         /**
-         * 传给 openclaw 子命令 `--server-args` 选项的内容；为 null 时通常省略。
+         * 原样传给 ACP 服务进程的参数列表；未设置时命令行不包含 {@code --server-args}。
          */
         private List<String> serverArgs = new ArrayList<>();
         /**
-         * 是否向 openclaw 子命令追加 `--server-verbose` 开关。
+         * 是否向 openclaw 子命令追加 {@code --server-verbose} 开关。
          */
         private boolean serverVerbose;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `bridge` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code bridge} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -267,7 +267,7 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--url` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --url} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param url 完整目标 URL
          * @return 当前构建器，便于继续链式配置
@@ -278,9 +278,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --token} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param token 写入 `--token` 选项的内容
+         * @param token 认证令牌或待追加的原始服务参数；作为 {@code --token} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder token(String token) {
@@ -289,9 +289,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--token-file` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --token-file} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokenFile 写入 `--token-file` 选项的内容
+         * @param tokenFile 读取认证令牌的文件路径；作为 {@code --token-file} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder tokenFile(String tokenFile) {
@@ -300,9 +300,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--password` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --password} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param password 写入 `--password` 选项的内容
+         * @param password Gateway 或远程服务密码；作为 {@code --password} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder password(String password) {
@@ -311,9 +311,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--password-file` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --password-file} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param passwordFile 写入 `--password-file` 选项的内容
+         * @param passwordFile 读取密码的文件路径；作为 {@code --password-file} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder passwordFile(String passwordFile) {
@@ -322,9 +322,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--session` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --session} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param session 写入 `--session` 选项的内容
+         * @param session 目标会话标识；作为 {@code --session} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder session(String session) {
@@ -333,9 +333,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--session-label` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --session-label} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param sessionLabel 写入 `--session-label` 选项的内容
+         * @param sessionLabel 会话显示标签；作为 {@code --session-label} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder sessionLabel(String sessionLabel) {
@@ -344,9 +344,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--require-existing` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --require-existing} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param requireExisting 是否向命令行追加 `--require-existing` 开关
+         * @param requireExisting 是否向命令行追加 {@code --require-existing} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder requireExisting(boolean requireExisting) {
@@ -355,9 +355,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--reset-session` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --reset-session} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param resetSession 是否向命令行追加 `--reset-session` 开关
+         * @param resetSession 是否向命令行追加 {@code --reset-session} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder resetSession(boolean resetSession) {
@@ -366,9 +366,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--no-prefix-cwd` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --no-prefix-cwd} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param noPrefixCwd 是否向命令行追加 `--no-prefix-cwd` 开关
+         * @param noPrefixCwd 是否向命令行追加 {@code --no-prefix-cwd} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder noPrefixCwd(boolean noPrefixCwd) {
@@ -377,9 +377,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--provenance` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --provenance} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param provenance 写入 `--provenance` 选项的内容
+         * @param provenance ACP 会话来源标记；作为 {@code --provenance} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder provenance(String provenance) {
@@ -388,9 +388,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --verbose} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param verbose 是否向命令行追加 `--verbose` 开关
+         * @param verbose 是否向命令行追加 {@code --verbose} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder verbose(boolean verbose) {
@@ -399,7 +399,7 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `client` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code client} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -409,9 +409,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--cwd` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --cwd} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param cwd 写入 `--cwd` 选项的内容
+         * @param cwd 服务进程的工作目录；作为 {@code --cwd} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder cwd(String cwd) {
@@ -420,9 +420,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--server` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --server} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param server 写入 `--server` 选项的内容
+         * @param server ACP 服务监听地址；作为 {@code --server} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder server(String server) {
@@ -431,9 +431,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--add-server-arg` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --add-server-arg} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param token 写入 `--add-server-arg` 选项的内容
+         * @param token 认证令牌或待追加的原始服务参数；作为 {@code --add-server-arg} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder addServerArg(String token) {
@@ -444,9 +444,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--server-verbose` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --server-verbose} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param serverVerbose 是否向命令行追加 `--server-verbose` 开关
+         * @param serverVerbose 是否向命令行追加 {@code --server-verbose} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder serverVerbose(boolean serverVerbose) {
@@ -455,9 +455,9 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -468,7 +468,7 @@ public final class AcpOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `AcpOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code AcpOptions}。
          *
          * @return 按当前字段创建的 AcpOptions
          */

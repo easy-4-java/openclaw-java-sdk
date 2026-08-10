@@ -39,35 +39,35 @@ import java.util.concurrent.CompletableFuture;
 public class OpenClawClient implements AutoCloseable {
 
     /**
-     * `OpenClawClient` 生命周期内保存的 `gatewayHttpClient` 对应状态。
+     * 复用统一配置访问 Gateway 通用 HTTP 端点的客户端。
      */
     private final OpenClawWebhookClient gatewayHttpClient;
     /**
-     * `OpenClawClient` 生命周期内保存的 `chatClient` 对应状态。
+     * 处理同步聊天与流式聊天入口的客户端。
      */
     private final OpenClawChatClient chatClient;
     /**
-     * `OpenClawClient` 生命周期内保存的 `sseClient` 对应状态。
+     * 负责 SSE 连接、解析和取消传播的客户端。
      */
     private final OpenClawSseClient sseClient;
     /**
-     * `OpenClawClient` 生命周期内保存的 `embeddingsClient` 对应状态。
+     * 访问向量嵌入端点的客户端。
      */
     private final OpenClawEmbeddingsClient embeddingsClient;
     /**
-     * `OpenClawClient` 生命周期内保存的 `responsesClient` 对应状态。
+     * 访问 Responses API 的客户端。
      */
     private final OpenClawResponsesClient responsesClient;
     /**
-     * `OpenClawClient` 生命周期内保存的 `toolsInvokeClient` 对应状态。
+     * 访问工具调用端点的客户端。
      */
     private final OpenClawToolInvokeClient toolsInvokeClient;
     /**
-     * `OpenClawClient` 生命周期内保存的 `cli` 对应状态。
+     * 在本机执行 OpenClaw 子命令的门面；不经过 HTTP 或 WebSocket。
      */
     private final OpenClawCli cli;
     /**
-     * `OpenClawClient` 生命周期内保存的 `wsClient` 对应状态。
+     * Gateway WebSocket 控制面客户端；仅在配置 WebSocket 地址时创建。
      */
     private final OpenClawGatewayWsClient wsClient;
     /**
@@ -80,7 +80,7 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param httpConfig HTTP 与 WebSocket 配置
      */
@@ -90,7 +90,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param httpConfig HTTP 与 WebSocket 配置
      * @param httpClient 复用连接池和 Dispatcher 的 OkHttpClient
@@ -100,7 +100,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param httpConfig HTTP 与 WebSocket 配置
      * @param objectMapper JSON 映射器
@@ -111,7 +111,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param cliConfig CLI 配置
      */
@@ -120,7 +120,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param cliConfig CLI 配置
      * @param objectMapper JSON 映射器
@@ -131,7 +131,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param httpConfig HTTP 与 WebSocket 配置
      * @param cliConfig CLI 配置
@@ -141,7 +141,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param httpConfig HTTP 与 WebSocket 配置
      * @param cliConfig CLI 配置
@@ -197,7 +197,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param config SDK 配置
      */
@@ -210,7 +210,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param config SDK 配置
      * @param httpClient 复用连接池和 Dispatcher 的 OkHttpClient
@@ -220,7 +220,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -235,18 +235,18 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造统一 SDK 门面，并按传入配置装配 HTTP、SSE、WebSocket 与 CLI 子客户端；外部依赖保持调用方所有权。
      *
      * @param httpConfig HTTP 与 WebSocket 配置
      * @param cliConfig CLI 配置
-     * @param gatewayHttpClient 写入 `gatewayHttpClient` 协议字段的内容
-     * @param chatClient 写入 `chatClient` 协议字段的内容
-     * @param sseClient 写入 `sseClient` 协议字段的内容
-     * @param embeddingsClient 写入 `embeddingsClient` 协议字段的内容
-     * @param responsesClient 写入 `responsesClient` 协议字段的内容
-     * @param toolsInvokeClient 写入 `toolsInvokeClient` 协议字段的内容
-     * @param cli 写入 `cli` 协议字段的内容
-     * @param wsClient 写入 `wsClient` 协议字段的内容
+     * @param gatewayHttpClient Gateway 通用 HTTP 接口客户端
+     * @param chatClient 聊天补全接口客户端
+     * @param sseClient 负责建立和管理 SSE 流的客户端
+     * @param embeddingsClient 向量嵌入接口客户端
+     * @param responsesClient Responses API 客户端
+     * @param toolsInvokeClient 工具调用接口客户端
+     * @param cli 本地 OpenClaw CLI 门面
+     * @param wsClient Gateway WebSocket 控制面客户端
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig,
                           OpenClawCliConfig cliConfig,
@@ -270,11 +270,11 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
- * Executes during construction phase;per their respective sub-config fail-fast .
-     * <p>
- * HTTP {@code gatewayBaseUrl} {@code enabled=false} skips;
- * CLI {@code enabled=false} skips.
-     * </p>
+     * 构造阶段按子配置执行 HTTP 健康检查和 CLI 可用性检查；任一启用通道失败都会立即终止初始化。
+     * HTTP 或 CLI 通道显式禁用时跳过对应检查。
+     *
+     * @param httpConfig HTTP 启用状态、地址和启动检查配置
+     * @param cliConfig CLI 启用状态和启动检查配置
      */
     private void runStartupChecks(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig) {
         if (httpConfig.isEnabled() && httpConfig.isStartupCheckEnabled()
@@ -314,18 +314,18 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 判断 `httpEnabled` 对应状态 是否满足协议或生命周期条件。
+     * 判断是否配置了可用的 Gateway HTTP 地址。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 当前聚合客户端是否已配置 HTTP 传输
      */
     public boolean isHttpEnabled() {
         return chatClient != null;
     }
 
     /**
-     * 判断 `cliEnabled` 对应状态 是否满足协议或生命周期条件。
+     * 判断是否配置并创建了本地 CLI 通道。
      *
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @return 当前聚合客户端是否已配置 CLI 传输
      */
     public boolean isCliEnabled() {
         return cli != null;
@@ -337,31 +337,31 @@ public class OpenClawClient implements AutoCloseable {
 
 
     /**
-     * 调用 OpenClaw 的 `wake` API，并复用统一认证、序列化、取消和异常处理。
+     * 通过 Wake Webhook 唤醒默认智能体，并返回服务端响应文本。
      *
-     * @param text 写入 `text` 协议字段的内容
-     * @param mode 写入 `mode` 协议字段的内容
-     * @return 服务返回或流式累积得到的文本
+     * @param text 发送给默认智能体的唤醒文本
+     * @param mode Wake Hook 使用的唤醒模式；未指定时可为 {@code null}
+     * @return Wake Webhook 返回的响应正文
      */
     public String wake(String text, String mode) {
         return gatewayHttpClient.postHooksWake(text, mode);
     }
 
     /**
-     * 调用 OpenClaw 的 `hook` API，并复用统一认证、序列化、取消和异常处理。
+     * 调用指定名称的 Webhook，并传递结构化负载。
      *
-     * @param hookName 写入 `hookName` 协议字段的内容
-     * @param payload 写入 `payload` 协议字段的内容
-     * @return 服务返回或流式累积得到的文本
+     * @param hookName 目标 Hook 的注册名称
+     * @param payload 序列化为目标 Hook 请求体的键值负载
+     * @return 指定 Webhook 返回的响应正文
      */
     public String hook(String hookName, Map<String, Object> payload) {
         return gatewayHttpClient.postMappedHook(hookName, payload);
     }
 
     /**
-     * 调用 OpenClaw 的 `hook` API，并复用统一认证、序列化、取消和异常处理。
+     * 调用指定名称的 Webhook，并传递结构化负载。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code HookRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 HookResponse
      */
     public HookResponse hook(HookRequest request) {
@@ -373,7 +373,7 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 调用 OpenClaw 的 `ws` API，并复用统一认证、序列化、取消和异常处理。
+     * 返回已配置的 Gateway WebSocket 客户端；未启用 WebSocket 时为空。
      *
      * @return 当前门面持有的 OpenClawGatewayWsClient；对应通道未启用时不可调用
      */
@@ -397,7 +397,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `connect`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code connect}，调用线程不等待远端响应。
      *
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
@@ -406,7 +406,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatSend` API，并复用统一认证、序列化、取消和异常处理。
+     * 通过 Gateway WebSocket 发送聊天消息，并把增量事件交给处理器。
      *
      * @param message 消息正文
      * @param handler 事件处理器
@@ -416,7 +416,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatSend` API，并复用统一认证、序列化、取消和异常处理。
+     * 通过 Gateway WebSocket 发送聊天消息，并把增量事件交给处理器。
      *
      * @param sessionKey 会话路由键
      * @param message 消息正文
@@ -429,7 +429,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `sessionsSend` API，并复用统一认证、序列化、取消和异常处理。
+     * 通过 Gateway WebSocket 向会话发送消息并等待结构化结果。
      *
      * @param sessionKey 会话路由键
      * @param message 消息正文
@@ -441,7 +441,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `addWsListener` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Gateway WebSocket 客户端注册生命周期和协议事件监听器。
      *
      * @param listener 生命周期监听器
      * @return 当前门面持有的 OpenClawClient；对应通道未启用时不可调用
@@ -456,7 +456,7 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 调用 OpenClaw 的 `chat` API，并复用统一认证、序列化、取消和异常处理。
+     * 返回 Chat Completions 客户端。
      *
      * @return 当前门面持有的 OpenClawChatClient；对应通道未启用时不可调用
      */
@@ -465,7 +465,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `sse` API，并复用统一认证、序列化、取消和异常处理。
+     * 返回负责流式响应读取与取消的 SSE 客户端。
      *
      * @return 当前门面持有的 OpenClawSseClient；对应通道未启用时不可调用
      */
@@ -474,7 +474,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 读取当前对象保存的 `okHttpClient` 对应状态，不触发网络或子进程调用。
+     * 返回当前门面复用的 OkHttpClient；调用方不得通过此引用提前关闭共享资源。
      *
      * @return 当前门面持有的 OkHttpClient；对应通道未启用时不可调用
      */
@@ -483,7 +483,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `embeddings` API，并复用统一认证、序列化、取消和异常处理。
+     * 返回 Embeddings API 客户端。
      *
      * @return 当前门面持有的 OpenClawEmbeddingsClient；对应通道未启用时不可调用
      */
@@ -492,7 +492,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `responses` API，并复用统一认证、序列化、取消和异常处理。
+     * 返回 Responses API 客户端。
      *
      * @return 当前门面持有的 OpenClawResponsesClient；对应通道未启用时不可调用
      */
@@ -505,9 +505,9 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 调用 OpenClaw 的 `chatCompletion` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
      */
     public ChatResponse chatCompletion(ChatRequest request) {
@@ -515,9 +515,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `chatCompletion`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code chatCompletion}，调用线程不等待远端响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
     public CompletableFuture<ChatResponse> chatCompletionAsync(ChatRequest request) {
@@ -525,9 +525,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletion` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param cancellation 可选调用取消令牌
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
      */
@@ -536,10 +536,10 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletion` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
-     * @param request 请求对象
-     * @param headersBuilder 写入 `headersBuilder` 协议字段的内容
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
+     * @param headersBuilder 用于追加会话、通道和作用域请求头的构建器
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
      */
     public ChatResponse chatCompletion(ChatRequest request, OpenClawHeaders.Builder headersBuilder) {
@@ -552,9 +552,9 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 调用 OpenClaw 的 `chatCompletion` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
-     * @param agent 写入 `agent` 协议字段的内容
+     * @param agent 目标智能体的名称或标识
      * @param messages 按对话顺序排列的消息
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
      */
@@ -563,9 +563,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletion` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
-     * @param agent 写入 `agent` 协议字段的内容
+     * @param agent 目标智能体的名称或标识
      * @param model 模型标识
      * @param messages 按对话顺序排列的消息
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
@@ -575,11 +575,11 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletion` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
-     * @param agent 写入 `agent` 协议字段的内容
+     * @param agent 目标智能体的名称或标识
      * @param model 模型标识
-     * @param user 写入 `user` 协议字段的内容
+     * @param user 认证签名中的用户标识
      * @param messages 按对话顺序排列的消息
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
      */
@@ -588,9 +588,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletionStream` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
-     * @param agent 写入 `agent` 协议字段的内容
+     * @param agent 目标智能体的名称或标识
      * @param messages 按对话顺序排列的消息
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
      */
@@ -599,9 +599,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletionStream` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
-     * @param agent 写入 `agent` 协议字段的内容
+     * @param agent 目标智能体的名称或标识
      * @param model 模型标识
      * @param messages 按对话顺序排列的消息
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
@@ -611,11 +611,11 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletionStream` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
-     * @param agent 写入 `agent` 协议字段的内容
+     * @param agent 目标智能体的名称或标识
      * @param model 模型标识
-     * @param user 写入 `user` 协议字段的内容
+     * @param user 认证签名中的用户标识
      * @param messages 按对话顺序排列的消息
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
      */
@@ -628,9 +628,9 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 调用 OpenClaw 的 `chatCompletionStream` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request) {
@@ -638,10 +638,10 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletionStream` API，并复用统一认证、序列化、取消和异常处理。
+     * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
-     * @param request 请求对象
-     * @param callbackBuilder 写入 `callbackBuilder` 协议字段的内容
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
+     * @param callbackBuilder 用于注册流式增量、工具调用、完成和失败回调的构建器
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request, StreamingChatResponse.Builder callbackBuilder) {
@@ -649,9 +649,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `chatCompletionStreamWithSession` API，并复用统一认证、序列化、取消和异常处理。
+     * 携带会话键发起流式聊天，使后续请求可复用同一会话。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param sessionKey 会话路由键
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
      */
@@ -665,7 +665,7 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 调用 OpenClaw 的 `listModels` API，并复用统一认证、序列化、取消和异常处理。
+     * 读取 Gateway 当前可用模型列表。
      *
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ModelsResponse
      */
@@ -674,7 +674,7 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `listModels`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code listModels}，调用线程不等待远端响应。
      *
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
@@ -687,9 +687,9 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawClient`。
+     * 通过已配置的 HTTP 客户端同步调用 Embeddings API。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code EmbeddingsRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 EmbeddingsResponse
      */
     public EmbeddingsResponse createEmbeddings(EmbeddingsRequest request) {
@@ -697,9 +697,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `createEmbeddings`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code createEmbeddings}，调用线程不等待远端响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code EmbeddingsRequest}
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
     public CompletableFuture<EmbeddingsResponse> createEmbeddingsAsync(EmbeddingsRequest request) {
@@ -711,9 +711,9 @@ public class OpenClawClient implements AutoCloseable {
     // ----------------------------------------------------------------
 
     /**
-     * 根据参数创建符合 OpenClaw 协议约束的 `OpenClawClient`。
+     * 通过已配置的 HTTP 客户端同步调用 Responses API。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ResponseRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ResponseResult
      */
     public ResponseResult createResponse(ResponseRequest request) {
@@ -721,9 +721,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `createResponse`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code createResponse}，调用线程不等待远端响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ResponseRequest}
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
     public CompletableFuture<ResponseResult> createResponseAsync(ResponseRequest request) {
@@ -735,7 +735,7 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 调用 OpenClaw 的 `toolsInvoke` API，并复用统一认证、序列化、取消和异常处理。
+     * 通过工具调用客户端执行指定工具请求。
      *
      * @return 当前门面持有的 OpenClawToolInvokeClient；对应通道未启用时不可调用
      */
@@ -744,9 +744,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `toolInvoke` API，并复用统一认证、序列化、取消和异常处理。
+     * 执行工具调用，并返回成功结果或结构化错误。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ToolInvokeRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ToolInvokeResult
      */
     public ToolInvokeResult toolInvoke(ToolInvokeRequest request) {
@@ -754,9 +754,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `toolInvoke`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code toolInvoke}，调用线程不等待远端响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ToolInvokeRequest}
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
     public CompletableFuture<ToolInvokeResult> toolInvokeAsync(ToolInvokeRequest request) {
@@ -764,9 +764,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
-     * 调用 OpenClaw 的 `toolInvoke` API，并复用统一认证、序列化、取消和异常处理。
+     * 执行工具调用，并返回成功结果或结构化错误。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code ToolInvokeRequest}
      * @param cancellation 可选调用取消令牌
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 ToolInvokeResult
      */
@@ -779,7 +779,7 @@ public class OpenClawClient implements AutoCloseable {
     // ============================================================
 
     /**
-     * 调用 OpenClaw 的 `cli` API，并复用统一认证、序列化、取消和异常处理。
+     * 返回本地 CLI 门面；CLI 通道未启用时为空。
      *
      * @return 使用当前 CLI 配置和执行器创建的命令门面
      */
@@ -808,7 +808,9 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
- * Quietly closes().
+     * 关闭可空资源；关闭失败只记录警告，不中断其余子客户端的清理。
+     *
+     * @param resource 待关闭资源；可为空
      */
     private static void closeQuietly(AutoCloseable resource) {
         if (resource == null) {

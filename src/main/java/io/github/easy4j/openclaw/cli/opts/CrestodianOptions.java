@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `crestodian` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code crestodian} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -15,15 +15,15 @@ import java.util.List;
 public final class CrestodianOptions implements CliSubArgs {
 
     /**
-     * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
+     * 待发送的消息正文；未设置时命令行不包含 {@code --message}。
      */
     private final String message;
     /**
-     * 是否向 openclaw 子命令追加 `--yes` 开关。
+     * 是否向 openclaw 子命令追加 {@code --yes} 开关。
      */
     private final boolean yes;
     /**
-     * 是否向 openclaw 子命令追加 `--json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --json} 开关。
      */
     private final boolean json;
 
@@ -34,7 +34,7 @@ public final class CrestodianOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `CrestodianOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code CrestodianOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -64,41 +64,41 @@ public final class CrestodianOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 CrestodianOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 CrestodianOptions。
+     * {@code CrestodianOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--message` 选项的内容；为 null 时通常省略。
+         * 待发送的消息正文；未设置时命令行不包含 {@code --message}。
          */
         private String message;
         /**
-         * 是否向 openclaw 子命令追加 `--yes` 开关。
+         * 是否向 openclaw 子命令追加 {@code --yes} 开关。
          */
         private boolean yes;
         /**
-         * 是否向 openclaw 子命令追加 `--json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --json} 开关。
          */
         private boolean json;
 
         /**
-         * 设置 `--message` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --message} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param message 消息正文
          * @return 当前构建器，便于继续链式配置
          */
         public Builder message(String message) { this.message = message; return this; }
         /**
-         * 设置 `--yes` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --yes} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param yes 是否向命令行追加 `--yes` 开关
+         * @param yes 是否向命令行追加 {@code --yes} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder yes(boolean yes) { this.yes = yes; return this; }
         /**
-         * 设置 `--json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -106,7 +106,7 @@ public final class CrestodianOptions implements CliSubArgs {
         public Builder json(boolean json) { this.json = json; return this; }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `CrestodianOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code CrestodianOptions}。
          *
          * @return 按当前字段创建的 CrestodianOptions
          */

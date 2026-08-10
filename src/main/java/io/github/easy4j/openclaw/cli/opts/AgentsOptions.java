@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 /**
- * openclaw `agents` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code agents} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -16,164 +16,164 @@ import java.util.List;
 public final class AgentsOptions implements CliSubArgs {
 
     /**
-     * `Verb` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义智能体管理动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Verb {
         /**
-         * 选择 `default_list` 协议模式；序列化时使用该固定取值。
+         * 表示智能体管理动作的 {@code default_list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         DEFAULT_LIST,
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示智能体管理动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `add` 协议模式；序列化时使用该固定取值。
+         * 表示智能体管理动作的 {@code add} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         ADD,
         /**
-         * 选择 `bindings` 协议模式；序列化时使用该固定取值。
+         * 表示智能体管理动作的 {@code bindings} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         BINDINGS,
         /**
-         * 选择 `bind` 协议模式；序列化时使用该固定取值。
+         * 表示智能体管理动作的 {@code bind} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         BIND,
         /**
-         * 选择 `unbind` 协议模式；序列化时使用该固定取值。
+         * 表示智能体管理动作的 {@code unbind} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         UNBIND,
         /**
-         * 选择 `set_identity` 协议模式；序列化时使用该固定取值。
+         * 表示智能体管理动作的 {@code set_identity} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         SET_IDENTITY,
         /**
-         * 选择 `delete` 协议模式；序列化时使用该固定取值。
+         * 表示智能体管理动作的 {@code delete} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         DELETE
     }
 
     /**
-     * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+     * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
      */
     private final Verb verb;
     /**
-     * 是否向 openclaw 子命令追加 `--list-json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --list-json} 开关。
      */
     private final boolean listJson;
     /**
-     * 是否向 openclaw 子命令追加 `--list-bindings` 开关。
+     * 是否向 openclaw 子命令追加 {@code --list-bindings} 开关。
      */
     private final boolean listBindings;
     /**
-     * 传给 openclaw 子命令 `--add-name` 选项的内容；为 null 时通常省略。
+     * 待新增资源的名称；未设置时命令行不包含 {@code --add-name}。
      */
     private final String addName;
     /**
-     * 传给 openclaw 子命令 `--workspace` 选项的内容；为 null 时通常省略。
+     * 智能体工作目录；未设置时命令行不包含 {@code --workspace}。
      */
     private final String workspace;
     /**
-     * 传给 openclaw 子命令 `--model` 选项的内容；为 null 时通常省略。
+     * 目标模型标识；未设置时命令行不包含 {@code --model}。
      */
     private final String model;
     /**
-     * 传给 openclaw 子命令 `--agent-dir` 选项的内容；为 null 时通常省略。
+     * 智能体数据目录路径；未设置时命令行不包含 {@code --agent-dir}。
      */
     private final String agentDir;
     /**
-     * 传给 openclaw 子命令 `--bind-values` 选项的内容；为 null 时通常省略。
+     * 通道绑定定义列表；未设置时命令行不包含 {@code --bind-values}。
      */
     private final List<String> bindValues;
     /**
-     * 是否向 openclaw 子命令追加 `--non-interactive` 开关。
+     * 是否向 openclaw 子命令追加 {@code --non-interactive} 开关。
      */
     private final boolean nonInteractive;
     /**
-     * 是否向 openclaw 子命令追加 `--add-json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --add-json} 开关。
      */
     private final boolean addJson;
     /**
-     * 传给 openclaw 子命令 `--bindings-agent` 选项的内容；为 null 时通常省略。
+     * 筛选通道绑定的智能体标识；未设置时命令行不包含 {@code --bindings-agent}。
      */
     private final String bindingsAgent;
     /**
-     * 是否向 openclaw 子命令追加 `--bindings-json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --bindings-json} 开关。
      */
     private final boolean bindingsJson;
     /**
-     * 传给 openclaw 子命令 `--bind-agent` 选项的内容；为 null 时通常省略。
+     * 待绑定通道的智能体标识；未设置时命令行不包含 {@code --bind-agent}。
      */
     private final String bindAgent;
     /**
-     * 是否向 openclaw 子命令追加 `--bind-json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --bind-json} 开关。
      */
     private final boolean bindJson;
     /**
-     * 传给 openclaw 子命令 `--unbind-agent` 选项的内容；为 null 时通常省略。
+     * 待解除通道绑定的智能体标识；未设置时命令行不包含 {@code --unbind-agent}。
      */
     private final String unbindAgent;
     /**
-     * 是否向 openclaw 子命令追加 `--unbind-all` 开关。
+     * 是否向 openclaw 子命令追加 {@code --unbind-all} 开关。
      */
     private final boolean unbindAll;
     /**
-     * 是否向 openclaw 子命令追加 `--unbind-json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --unbind-json} 开关。
      */
     private final boolean unbindJson;
     /**
-     * 传给 openclaw 子命令 `--delete-agent-id` 选项的内容；为 null 时通常省略。
+     * 待删除的智能体标识；未设置时命令行不包含 {@code --delete-agent-id}。
      */
     private final String deleteAgentId;
     /**
-     * 是否向 openclaw 子命令追加 `--delete-force` 开关。
+     * 是否向 openclaw 子命令追加 {@code --delete-force} 开关。
      */
     private final boolean deleteForce;
     /**
-     * 是否向 openclaw 子命令追加 `--delete-json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --delete-json} 开关。
      */
     private final boolean deleteJson;
     /**
-     * 传给 openclaw 子命令 `--identity-agent` 选项的内容；为 null 时通常省略。
+     * 待更新身份的智能体标识；未设置时命令行不包含 {@code --identity-agent}。
      */
     private final String identityAgent;
     /**
-     * 传给 openclaw 子命令 `--identity-workspace` 选项的内容；为 null 时通常省略。
+     * 智能体身份使用的工作目录；未设置时命令行不包含 {@code --identity-workspace}。
      */
     private final String identityWorkspace;
     /**
-     * 传给 openclaw 子命令 `--identity-file` 选项的内容；为 null 时通常省略。
+     * 智能体身份定义文件；未设置时命令行不包含 {@code --identity-file}。
      */
     private final String identityFile;
     /**
-     * 是否向 openclaw 子命令追加 `--from-identity` 开关。
+     * 是否向 openclaw 子命令追加 {@code --from-identity} 开关。
      */
     private final boolean fromIdentity;
     /**
-     * 传给 openclaw 子命令 `--identity-name` 选项的内容；为 null 时通常省略。
+     * 智能体身份显示名称；未设置时命令行不包含 {@code --identity-name}。
      */
     private final String identityName;
     /**
-     * 传给 openclaw 子命令 `--identity-theme` 选项的内容；为 null 时通常省略。
+     * 智能体身份主题；未设置时命令行不包含 {@code --identity-theme}。
      */
     private final String identityTheme;
     /**
-     * 传给 openclaw 子命令 `--identity-emoji` 选项的内容；为 null 时通常省略。
+     * 智能体身份表情符号；未设置时命令行不包含 {@code --identity-emoji}。
      */
     private final String identityEmoji;
     /**
-     * 传给 openclaw 子命令 `--identity-avatar` 选项的内容；为 null 时通常省略。
+     * 智能体身份头像；未设置时命令行不包含 {@code --identity-avatar}。
      */
     private final String identityAvatar;
     /**
-     * 是否向 openclaw 子命令追加 `--identity-json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --identity-json} 开关。
      */
     private final boolean identityJson;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -211,7 +211,7 @@ public final class AgentsOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `AgentsOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code AgentsOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -307,135 +307,135 @@ public final class AgentsOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 AgentsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 AgentsOptions。
+     * {@code AgentsOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--verb` 选项的内容；为 null 时通常省略。
+         * 当前选项对象要执行的子命令动作；未设置时命令行不包含 {@code --verb}。
          */
         private Verb verb = Verb.DEFAULT_LIST;
         /**
-         * 是否向 openclaw 子命令追加 `--list-json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --list-json} 开关。
          */
         private boolean listJson;
         /**
-         * 是否向 openclaw 子命令追加 `--list-bindings` 开关。
+         * 是否向 openclaw 子命令追加 {@code --list-bindings} 开关。
          */
         private boolean listBindings;
         /**
-         * 传给 openclaw 子命令 `--add-name` 选项的内容；为 null 时通常省略。
+         * 待新增资源的名称；未设置时命令行不包含 {@code --add-name}。
          */
         private String addName;
         /**
-         * 传给 openclaw 子命令 `--workspace` 选项的内容；为 null 时通常省略。
+         * 智能体工作目录；未设置时命令行不包含 {@code --workspace}。
          */
         private String workspace;
         /**
-         * 传给 openclaw 子命令 `--model` 选项的内容；为 null 时通常省略。
+         * 目标模型标识；未设置时命令行不包含 {@code --model}。
          */
         private String model;
         /**
-         * 传给 openclaw 子命令 `--agent-dir` 选项的内容；为 null 时通常省略。
+         * 智能体数据目录路径；未设置时命令行不包含 {@code --agent-dir}。
          */
         private String agentDir;
         /**
-         * 传给 openclaw 子命令 `--bind-values` 选项的内容；为 null 时通常省略。
+         * 通道绑定定义列表；未设置时命令行不包含 {@code --bind-values}。
          */
         private List<String> bindValues = new ArrayList<>();
         /**
-         * 是否向 openclaw 子命令追加 `--non-interactive` 开关。
+         * 是否向 openclaw 子命令追加 {@code --non-interactive} 开关。
          */
         private boolean nonInteractive;
         /**
-         * 是否向 openclaw 子命令追加 `--add-json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --add-json} 开关。
          */
         private boolean addJson;
         /**
-         * 传给 openclaw 子命令 `--bindings-agent` 选项的内容；为 null 时通常省略。
+         * 筛选通道绑定的智能体标识；未设置时命令行不包含 {@code --bindings-agent}。
          */
         private String bindingsAgent;
         /**
-         * 是否向 openclaw 子命令追加 `--bindings-json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --bindings-json} 开关。
          */
         private boolean bindingsJson;
         /**
-         * 传给 openclaw 子命令 `--bind-agent` 选项的内容；为 null 时通常省略。
+         * 待绑定通道的智能体标识；未设置时命令行不包含 {@code --bind-agent}。
          */
         private String bindAgent;
         /**
-         * 是否向 openclaw 子命令追加 `--bind-json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --bind-json} 开关。
          */
         private boolean bindJson;
         /**
-         * 传给 openclaw 子命令 `--unbind-agent` 选项的内容；为 null 时通常省略。
+         * 待解除通道绑定的智能体标识；未设置时命令行不包含 {@code --unbind-agent}。
          */
         private String unbindAgent;
         /**
-         * 是否向 openclaw 子命令追加 `--unbind-all` 开关。
+         * 是否向 openclaw 子命令追加 {@code --unbind-all} 开关。
          */
         private boolean unbindAll;
         /**
-         * 是否向 openclaw 子命令追加 `--unbind-json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --unbind-json} 开关。
          */
         private boolean unbindJson;
         /**
-         * 传给 openclaw 子命令 `--delete-agent-id` 选项的内容；为 null 时通常省略。
+         * 待删除的智能体标识；未设置时命令行不包含 {@code --delete-agent-id}。
          */
         private String deleteAgentId;
         /**
-         * 是否向 openclaw 子命令追加 `--delete-force` 开关。
+         * 是否向 openclaw 子命令追加 {@code --delete-force} 开关。
          */
         private boolean deleteForce;
         /**
-         * 是否向 openclaw 子命令追加 `--delete-json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --delete-json} 开关。
          */
         private boolean deleteJson;
         /**
-         * 传给 openclaw 子命令 `--identity-agent` 选项的内容；为 null 时通常省略。
+         * 待更新身份的智能体标识；未设置时命令行不包含 {@code --identity-agent}。
          */
         private String identityAgent;
         /**
-         * 传给 openclaw 子命令 `--identity-workspace` 选项的内容；为 null 时通常省略。
+         * 智能体身份使用的工作目录；未设置时命令行不包含 {@code --identity-workspace}。
          */
         private String identityWorkspace;
         /**
-         * 传给 openclaw 子命令 `--identity-file` 选项的内容；为 null 时通常省略。
+         * 智能体身份定义文件；未设置时命令行不包含 {@code --identity-file}。
          */
         private String identityFile;
         /**
-         * 是否向 openclaw 子命令追加 `--from-identity` 开关。
+         * 是否向 openclaw 子命令追加 {@code --from-identity} 开关。
          */
         private boolean fromIdentity;
         /**
-         * 传给 openclaw 子命令 `--identity-name` 选项的内容；为 null 时通常省略。
+         * 智能体身份显示名称；未设置时命令行不包含 {@code --identity-name}。
          */
         private String identityName;
         /**
-         * 传给 openclaw 子命令 `--identity-theme` 选项的内容；为 null 时通常省略。
+         * 智能体身份主题；未设置时命令行不包含 {@code --identity-theme}。
          */
         private String identityTheme;
         /**
-         * 传给 openclaw 子命令 `--identity-emoji` 选项的内容；为 null 时通常省略。
+         * 智能体身份表情符号；未设置时命令行不包含 {@code --identity-emoji}。
          */
         private String identityEmoji;
         /**
-         * 传给 openclaw 子命令 `--identity-avatar` 选项的内容；为 null 时通常省略。
+         * 智能体身份头像；未设置时命令行不包含 {@code --identity-avatar}。
          */
         private String identityAvatar;
         /**
-         * 是否向 openclaw 子命令追加 `--identity-json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --identity-json} 开关。
          */
         private boolean identityJson;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `defaultList` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code defaultList} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -445,7 +445,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code list} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -455,7 +455,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--list-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --list-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -466,9 +466,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--list-bindings` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --list-bindings} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param bindings 是否向命令行追加 `--list-bindings` 开关
+         * @param bindings 是否向命令行追加 {@code --list-bindings} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder listBindings(boolean bindings) {
@@ -477,9 +477,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--add` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --add} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param name 写入 `--add` 选项的内容
+         * @param name 目标资源名称；作为 {@code --add} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder add(String name) {
@@ -489,9 +489,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--workspace` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --workspace} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param workspace 写入 `--workspace` 选项的内容
+         * @param workspace 智能体工作目录；作为 {@code --workspace} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder workspace(String workspace) {
@@ -500,7 +500,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--model` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --model} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param model 模型标识
          * @return 当前构建器，便于继续链式配置
@@ -511,9 +511,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--agent-dir` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --agent-dir} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agentDir 写入 `--agent-dir` 选项的内容
+         * @param agentDir 智能体数据目录路径；作为 {@code --agent-dir} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder agentDir(String agentDir) {
@@ -522,9 +522,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--bind` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --bind} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param channelBinding 写入 `--bind` 选项的内容
+         * @param channelBinding 智能体与通道的绑定定义；作为 {@code --bind} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder bind(String channelBinding) {
@@ -535,9 +535,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--non-interactive` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --non-interactive} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param nonInteractive 是否向命令行追加 `--non-interactive` 开关
+         * @param nonInteractive 是否向命令行追加 {@code --non-interactive} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder nonInteractive(boolean nonInteractive) {
@@ -546,7 +546,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--add-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --add-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -557,7 +557,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `bindings` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code bindings} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -567,9 +567,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--bindings-agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --bindings-agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--bindings-agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --bindings-agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder bindingsAgent(String agent) {
@@ -578,7 +578,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--bindings-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --bindings-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -589,7 +589,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `bindCommand` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code bindCommand} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -600,9 +600,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--bind-agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --bind-agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--bind-agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --bind-agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder bindAgent(String agent) {
@@ -611,7 +611,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--bind-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --bind-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -622,7 +622,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `unbind` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code unbind} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -633,9 +633,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--unbind-agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --unbind-agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--unbind-agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --unbind-agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder unbindAgent(String agent) {
@@ -644,9 +644,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--unbind-all` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --unbind-all} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param all 是否向命令行追加 `--unbind-all` 开关
+         * @param all 是否向命令行追加 {@code --unbind-all} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder unbindAll(boolean all) {
@@ -655,7 +655,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--unbind-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --unbind-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -666,7 +666,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--delete` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --delete} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param agentId Agent 标识
          * @return 当前构建器，便于继续链式配置
@@ -678,9 +678,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--delete-force` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --delete-force} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param force 是否向命令行追加 `--delete-force` 开关
+         * @param force 是否向命令行追加 {@code --delete-force} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder deleteForce(boolean force) {
@@ -689,7 +689,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--delete-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --delete-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -700,7 +700,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `setIdentity` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code setIdentity} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -710,9 +710,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--identity-agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --identity-agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--identity-agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --identity-agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder identityAgent(String agent) {
@@ -721,9 +721,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--identity-workspace` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --identity-workspace} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param workspace 写入 `--identity-workspace` 选项的内容
+         * @param workspace 智能体工作目录；作为 {@code --identity-workspace} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder identityWorkspace(String workspace) {
@@ -732,7 +732,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--identity-file` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --identity-file} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param path 相对于 Gateway 根地址的端点路径
          * @return 当前构建器，便于继续链式配置
@@ -743,9 +743,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--from-identity` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --from-identity} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param fromIdentity 是否向命令行追加 `--from-identity` 开关
+         * @param fromIdentity 是否向命令行追加 {@code --from-identity} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder fromIdentity(boolean fromIdentity) {
@@ -754,9 +754,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--identity-name` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --identity-name} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param name 写入 `--identity-name` 选项的内容
+         * @param name 目标资源名称；作为 {@code --identity-name} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder identityName(String name) {
@@ -765,9 +765,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--identity-theme` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --identity-theme} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param theme 写入 `--identity-theme` 选项的内容
+         * @param theme 智能体身份主题；作为 {@code --identity-theme} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder identityTheme(String theme) {
@@ -776,9 +776,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--identity-emoji` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --identity-emoji} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param emoji 写入 `--identity-emoji` 选项的内容
+         * @param emoji 智能体身份使用的表情符号；作为 {@code --identity-emoji} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder identityEmoji(String emoji) {
@@ -787,9 +787,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--identity-avatar` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --identity-avatar} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param avatar 写入 `--identity-avatar` 选项的内容
+         * @param avatar 智能体身份头像；作为 {@code --identity-avatar} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder identityAvatar(String avatar) {
@@ -798,7 +798,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--identity-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --identity-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -809,9 +809,9 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -822,7 +822,7 @@ public final class AgentsOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `AgentsOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code AgentsOptions}。
          *
          * @return 按当前字段创建的 AgentsOptions
          */

@@ -3,7 +3,7 @@ package io.github.easy4j.openclaw.exception;
 import lombok.Getter;
 
 /**
- * OpenClaw SDK 在 Open Claw Http 阶段失败时抛出的异常，并保留可用于诊断的原因信息。
+ * HTTP 传输、非成功状态或响应解析失败时抛出的异常，可携带状态码和原始响应体。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -12,26 +12,26 @@ import lombok.Getter;
 public class OpenClawHttpException extends OpenClawException {
 
     /**
-     * OpenClaw 协议固定值 {@code 1L}；调用方不应在运行时修改。
+     * 异常序列化版本标识。
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * `OpenClawHttpException` 生命周期内保存的 `statusCode` 对应状态。
+     * HTTP 响应状态码，用于区分成功与协议错误。
      */
     private final int statusCode;
 
     /**
-     * `OpenClawHttpException` 生命周期内保存的 `responseBody` 对应状态。
+     * 非成功 HTTP 响应的原始响应体，用于诊断服务端错误。
      */
     private final String responseBody;
 
     /**
-     * 按给定配置创建 `OpenClawHttpException`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code OpenClawHttpException}，构造过程不隐式执行远程业务请求。
      *
      * @param message 消息正文
-     * @param statusCode 写入 `statusCode` 协议字段的内容
-     * @param responseBody 写入 `responseBody` 协议字段的内容
+     * @param statusCode HTTP 响应状态码
+     * @param responseBody 服务端返回的响应体；可能为空
      */
     public OpenClawHttpException(String message, int statusCode, String responseBody) {
         super(message);
@@ -40,10 +40,10 @@ public class OpenClawHttpException extends OpenClawException {
     }
 
     /**
-     * 按给定配置创建 `OpenClawHttpException`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code OpenClawHttpException}，构造过程不隐式执行远程业务请求。
      *
      * @param message 消息正文
-     * @param cause 写入 `cause` 协议字段的内容
+     * @param cause 导致当前异常的根本原因
      */
     public OpenClawHttpException(String message, Throwable cause) {
         super(message, cause);

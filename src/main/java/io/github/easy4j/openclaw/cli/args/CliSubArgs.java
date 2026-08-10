@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * `CliSubArgs` 生命周期回调契约；实现方应避免在网络回调线程中执行长时间阻塞任务。
+ * {@code CliSubArgs} 生命周期回调契约；实现方应避免在网络回调线程中执行长时间阻塞任务。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -22,7 +22,7 @@ public interface CliSubArgs {
     /**
      * 返回不可变空列表，供没有 CLI 参数的场景复用。
      *
-     * @return 按当前参数创建、查询或解析得到的 CliSubArgs
+     * @return 不包含附加选项的参数对象
      */
     static CliSubArgs empty() {
         return Collections::emptyList;

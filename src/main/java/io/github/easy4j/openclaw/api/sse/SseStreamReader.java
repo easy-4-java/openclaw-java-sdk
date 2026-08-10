@@ -21,17 +21,17 @@ import java.nio.charset.StandardCharsets;
 public class SseStreamReader {
 
     /**
-     * OpenClaw 协议固定值 {@code "[DONE]"}；调用方不应在运行时修改。
+     * SSE data 行表示流正常结束时使用的标记。
      */
     private static final String DONE_MARKER = "[DONE]";
 
     /**
-     * JSON 映射器。
+     * 负责协议 JSON 序列化与反序列化的映射器。
      */
     private final ObjectMapper objectMapper;
 
     /**
-     * 按给定配置创建 `SseStreamReader`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code SseStreamReader}，构造过程不隐式执行远程业务请求。
      *
      * @param objectMapper JSON 映射器
      */
@@ -41,7 +41,7 @@ public class SseStreamReader {
     }
 
     /**
-     * 按给定配置创建 `SseStreamReader`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code SseStreamReader}，构造过程不隐式执行远程业务请求。
      */
     public SseStreamReader() {
         this(null);
@@ -53,7 +53,7 @@ public class SseStreamReader {
      * @param <T> 方法使用的泛型类型
      * @param inputStream SSE 字节输入流
      * @param handler 事件处理器
-     * @param chunkClass 写入 `chunkClass` 协议字段的内容
+     * @param chunkClass 反序列化流式片段使用的目标类型
      */
     public <T> void readStream(InputStream inputStream, SseEventHandler handler, Class<T> chunkClass) {
         if (inputStream == null) {

@@ -4,7 +4,7 @@ import io.github.easy4j.openclaw.ws.protocol.ErrorShape;
 import lombok.Getter;
 
 /**
- * OpenClaw SDK 在 Open Claw Ws Rpc 阶段失败时抛出的异常，并保留可用于诊断的原因信息。
+ * Gateway WebSocket RPC 返回错误帧时抛出的异常，保留方法名和结构化错误信息。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -13,12 +13,12 @@ import lombok.Getter;
 public class OpenClawWsRpcException extends OpenClawException {
 
     /**
-     * OpenClaw 协议固定值 {@code 1L}；调用方不应在运行时修改。
+     * 异常序列化版本标识。
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * `OpenClawWsRpcException` 生命周期内保存的 `method` 对应状态。
+     * 失败或待完成的 Gateway RPC 方法名，用于关联响应和诊断。
      */
     private final String method;
 
@@ -28,9 +28,9 @@ public class OpenClawWsRpcException extends OpenClawException {
     private final ErrorShape error;
 
     /**
-     * 按给定配置创建 `OpenClawWsRpcException`，构造过程不隐式执行远程业务请求。
+     * 按给定配置创建 {@code OpenClawWsRpcException}，构造过程不隐式执行远程业务请求。
      *
-     * @param method 写入 `method` 协议字段的内容
+     * @param method Gateway RPC 方法名称
      * @param error 导致调用失败的异常
      */
     public OpenClawWsRpcException(String method, ErrorShape error) {

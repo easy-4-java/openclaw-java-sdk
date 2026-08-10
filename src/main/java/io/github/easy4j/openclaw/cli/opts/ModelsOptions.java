@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * openclaw `models` 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
+ * openclaw {@code models} 子命令的类型化选项。Builder 记录显式设置项，toSubcommandArguments() 按 CLI 语法生成参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -17,120 +17,120 @@ import java.util.List;
 public final class ModelsOptions implements CliSubArgs {
 
     /**
-     * `Mode` 的有限协议取值集合；枚举常量会转换为 CLI 或 JSON 接受的固定值。
+     * 定义模型配置动作允许的固定取值及其 CLI/JSON 序列化拼写。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public enum Mode {
         /**
-         * 选择 `status` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code status} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         STATUS,
         /**
-         * 选择 `list` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         LIST,
         /**
-         * 选择 `set` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code set} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         SET,
         /**
-         * 选择 `scan` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code scan} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         SCAN,
         /**
-         * 选择 `aliases_list` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code aliases_list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         ALIASES_LIST,
         /**
-         * 选择 `fallbacks_list` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code fallbacks_list} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         FALLBACKS_LIST,
         /**
-         * 选择 `auth_add` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code auth_add} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         AUTH_ADD,
         /**
-         * 选择 `auth_login` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code auth_login} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         AUTH_LOGIN,
         /**
-         * 选择 `auth_setup_token` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code auth_setup_token} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         AUTH_SETUP_TOKEN,
         /**
-         * 选择 `auth_paste_token` 协议模式；序列化时使用该固定取值。
+         * 表示模型配置动作的 {@code auth_paste_token} 取值；写入 CLI 或 JSON 时保持该固定拼写。
          */
         AUTH_PASTE_TOKEN
     }
 
     /**
-     * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+     * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
      */
     private final Mode mode;
     /**
-     * 是否向 openclaw 子命令追加 `--status-json` 开关。
+     * 是否向 openclaw 子命令追加 {@code --status-json} 开关。
      */
     private final boolean statusJson;
     /**
-     * 是否向 openclaw 子命令追加 `--status-plain` 开关。
+     * 是否向 openclaw 子命令追加 {@code --status-plain} 开关。
      */
     private final boolean statusPlain;
     /**
-     * 是否向 openclaw 子命令追加 `--status-check` 开关。
+     * 是否向 openclaw 子命令追加 {@code --status-check} 开关。
      */
     private final boolean statusCheck;
     /**
-     * 是否向 openclaw 子命令追加 `--probe` 开关。
+     * 是否向 openclaw 子命令追加 {@code --probe} 开关。
      */
     private final boolean probe;
     /**
-     * 传给 openclaw 子命令 `--probe-provider` 选项的内容；为 null 时通常省略。
+     * 要探测的模型提供方；未设置时命令行不包含 {@code --probe-provider}。
      */
     private final String probeProvider;
     /**
-     * 传给 openclaw 子命令 `--probe-profile` 选项的内容；为 null 时通常省略。
+     * 模型探测使用的配置档案；未设置时命令行不包含 {@code --probe-profile}。
      */
     private final String probeProfile;
     /**
-     * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+     * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
      */
     private final String probeTimeout;
     /**
-     * 传给 openclaw 子命令 `--probe-concurrency` 选项的内容；为 null 时通常省略。
+     * 模型探测的最大并发数；未设置时命令行不包含 {@code --probe-concurrency}。
      */
     private final String probeConcurrency;
     /**
-     * 传给 openclaw 子命令 `--probe-max-tokens` 选项的内容；为 null 时通常省略。
+     * 单次模型探测允许的最大 Token 数；未设置时命令行不包含 {@code --probe-max-tokens}。
      */
     private final String probeMaxTokens;
     /**
-     * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+     * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
      */
     private final String agent;
     /**
-     * 传给 openclaw 子命令 `--model-or-alias` 选项的内容；为 null 时通常省略。
+     * 待设为默认值的模型标识或别名；未设置时命令行不包含 {@code --model-or-alias}。
      */
     private final String modelOrAlias;
     /**
-     * 传给 openclaw 子命令 `--auth-provider` 选项的内容；为 null 时通常省略。
+     * 认证凭据所属的提供方；未设置时命令行不包含 {@code --auth-provider}。
      */
     private final String authProvider;
     /**
-     * 是否向 openclaw 子命令追加 `--auth-set-default` 开关。
+     * 是否向 openclaw 子命令追加 {@code --auth-set-default} 开关。
      */
     private final boolean authSetDefault;
     /**
-     * 传给 openclaw 子命令 `--paste-profile-id` 选项的内容；为 null 时通常省略。
+     * 粘贴认证信息所属的配置档案标识；未设置时命令行不包含 {@code --paste-profile-id}。
      */
     private final String pasteProfileId;
     /**
-     * 传给 openclaw 子命令 `--paste-expires-in` 选项的内容；为 null 时通常省略。
+     * 粘贴认证信息的有效期；未设置时命令行不包含 {@code --paste-expires-in}。
      */
     private final String pasteExpiresIn;
     /**
-     * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+     * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
      */
     private final List<String> extra;
 
@@ -158,7 +158,7 @@ public final class ModelsOptions implements CliSubArgs {
     }
 
     /**
-     * 创建空白构建器，供调用方链式设置 `ModelsOptions` 字段。
+     * 创建空白构建器，供调用方链式设置 {@code ModelsOptions} 字段。
      *
      * @return 新的空白构建器
      */
@@ -238,83 +238,83 @@ public final class ModelsOptions implements CliSubArgs {
     }
 
     /**
-     * 链式构建器，逐项收集 ModelsOptions 的字段；build() 会复制当前快照，后续修改不会影响已构造的 ModelsOptions。
+     * {@code ModelsOptions} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     public static final class Builder {
         /**
-         * 传给 openclaw 子命令 `--mode` 选项的内容；为 null 时通常省略。
+         * 子命令使用的执行模式；未设置时命令行不包含 {@code --mode}。
          */
         private Mode mode = Mode.STATUS;
         /**
-         * 是否向 openclaw 子命令追加 `--status-json` 开关。
+         * 是否向 openclaw 子命令追加 {@code --status-json} 开关。
          */
         private boolean statusJson;
         /**
-         * 是否向 openclaw 子命令追加 `--status-plain` 开关。
+         * 是否向 openclaw 子命令追加 {@code --status-plain} 开关。
          */
         private boolean statusPlain;
         /**
-         * 是否向 openclaw 子命令追加 `--status-check` 开关。
+         * 是否向 openclaw 子命令追加 {@code --status-check} 开关。
          */
         private boolean statusCheck;
         /**
-         * 是否向 openclaw 子命令追加 `--probe` 开关。
+         * 是否向 openclaw 子命令追加 {@code --probe} 开关。
          */
         private boolean probe;
         /**
-         * 传给 openclaw 子命令 `--probe-provider` 选项的内容；为 null 时通常省略。
+         * 要探测的模型提供方；未设置时命令行不包含 {@code --probe-provider}。
          */
         private String probeProvider;
         /**
-         * 传给 openclaw 子命令 `--probe-profile` 选项的内容；为 null 时通常省略。
+         * 模型探测使用的配置档案；未设置时命令行不包含 {@code --probe-profile}。
          */
         private String probeProfile;
         /**
-         * 该阶段允许等待的最长时间，单位由字段名声明；超时后取消对应网络或进程任务。
+         * 该请求或进程允许等待的最长时间，单位为字段声明的计量单位；超时后主动取消对应任务。
          */
         private String probeTimeout;
         /**
-         * 传给 openclaw 子命令 `--probe-concurrency` 选项的内容；为 null 时通常省略。
+         * 模型探测的最大并发数；未设置时命令行不包含 {@code --probe-concurrency}。
          */
         private String probeConcurrency;
         /**
-         * 传给 openclaw 子命令 `--probe-max-tokens` 选项的内容；为 null 时通常省略。
+         * 单次模型探测允许的最大 Token 数；未设置时命令行不包含 {@code --probe-max-tokens}。
          */
         private String probeMaxTokens;
         /**
-         * 传给 openclaw 子命令 `--agent` 选项的内容；为 null 时通常省略。
+         * 目标智能体标识；未设置时命令行不包含 {@code --agent}。
          */
         private String agent;
         /**
-         * 传给 openclaw 子命令 `--model-or-alias` 选项的内容；为 null 时通常省略。
+         * 待设为默认值的模型标识或别名；未设置时命令行不包含 {@code --model-or-alias}。
          */
         private String modelOrAlias;
         /**
-         * 传给 openclaw 子命令 `--auth-provider` 选项的内容；为 null 时通常省略。
+         * 认证凭据所属的提供方；未设置时命令行不包含 {@code --auth-provider}。
          */
         private String authProvider;
         /**
-         * 是否向 openclaw 子命令追加 `--auth-set-default` 开关。
+         * 是否向 openclaw 子命令追加 {@code --auth-set-default} 开关。
          */
         private boolean authSetDefault;
         /**
-         * 传给 openclaw 子命令 `--paste-profile-id` 选项的内容；为 null 时通常省略。
+         * 粘贴认证信息所属的配置档案标识；未设置时命令行不包含 {@code --paste-profile-id}。
          */
         private String pasteProfileId;
         /**
-         * 传给 openclaw 子命令 `--paste-expires-in` 选项的内容；为 null 时通常省略。
+         * 粘贴认证信息的有效期；未设置时命令行不包含 {@code --paste-expires-in}。
          */
         private String pasteExpiresIn;
         /**
-         * 传给 openclaw 子命令 `--extra` 选项的内容；为 null 时通常省略。
+         * 附加到 RPC 请求的原始参数；未设置时命令行不包含 {@code --extra}。
          */
         private List<String> extra = new ArrayList<>();
 
         /**
-         * 选择 `status` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code status} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -324,7 +324,7 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--status-json` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --status-json} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
          * @param json JSON 文本
          * @return 当前构建器，便于继续链式配置
@@ -335,9 +335,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--status-plain` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --status-plain} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param plain 是否向命令行追加 `--status-plain` 开关
+         * @param plain 是否向命令行追加 {@code --status-plain} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder statusPlain(boolean plain) {
@@ -346,9 +346,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--status-check` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --status-check} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param check 是否向命令行追加 `--status-check` 开关
+         * @param check 是否向命令行追加 {@code --status-check} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder statusCheck(boolean check) {
@@ -357,9 +357,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--probe` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --probe} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param probe 是否向命令行追加 `--probe` 开关
+         * @param probe 是否向命令行追加 {@code --probe} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder probe(boolean probe) {
@@ -368,9 +368,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--probe-provider` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --probe-provider} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param probeProvider 写入 `--probe-provider` 选项的内容
+         * @param probeProvider 要探测的模型提供方；作为 {@code --probe-provider} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder probeProvider(String probeProvider) {
@@ -379,9 +379,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--probe-profile` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --probe-profile} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param probeProfile 写入 `--probe-profile` 选项的内容
+         * @param probeProfile 模型探测使用的配置档案；作为 {@code --probe-profile} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder probeProfile(String probeProfile) {
@@ -390,9 +390,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--probe-timeout` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --probe-timeout} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param probeTimeout 写入 `--probe-timeout` 选项的内容
+         * @param probeTimeout 单次模型探测超时；作为 {@code --probe-timeout} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder probeTimeout(String probeTimeout) {
@@ -401,9 +401,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--probe-concurrency` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --probe-concurrency} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param probeConcurrency 写入 `--probe-concurrency` 选项的内容
+         * @param probeConcurrency 模型探测的最大并发数；作为 {@code --probe-concurrency} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder probeConcurrency(String probeConcurrency) {
@@ -412,9 +412,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--probe-max-tokens` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --probe-max-tokens} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param probeMaxTokens 写入 `--probe-max-tokens` 选项的内容
+         * @param probeMaxTokens 单次模型探测允许的最大 Token 数；作为 {@code --probe-max-tokens} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder probeMaxTokens(String probeMaxTokens) {
@@ -423,9 +423,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--agent` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --agent} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param agent 写入 `--agent` 选项的内容
+         * @param agent 目标智能体标识；作为 {@code --agent} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder agent(String agent) {
@@ -434,7 +434,7 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `list` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code list} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -444,9 +444,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--set` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --set} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param modelOrAlias 写入 `--set` 选项的内容
+         * @param modelOrAlias 待设为默认值的模型标识或别名；作为 {@code --set} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder set(String modelOrAlias) {
@@ -456,7 +456,7 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `scan` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code scan} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -466,7 +466,7 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `aliasesList` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code aliasesList} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -476,7 +476,7 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `fallbacksList` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code fallbacksList} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -486,7 +486,7 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 选择 `authAdd` 命令动作或布尔开关，并返回当前构建器。
+         * 选择 {@code authAdd} 命令动作或布尔开关，并返回当前构建器。
          *
          * @return 当前构建器，便于继续链式配置
          */
@@ -496,9 +496,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--auth-login` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --auth-login} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param provider 写入 `--auth-login` 选项的内容
+         * @param provider 目标模型或密钥提供方；作为 {@code --auth-login} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder authLogin(String provider) {
@@ -508,9 +508,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--auth-set-default` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --auth-set-default} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param setDefault 是否向命令行追加 `--auth-set-default` 开关
+         * @param setDefault 是否向命令行追加 {@code --auth-set-default} 开关
          * @return 当前构建器，便于继续链式配置
          */
         public Builder authSetDefault(boolean setDefault) {
@@ -519,9 +519,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--auth-setup-token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --auth-setup-token} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param provider 写入 `--auth-setup-token` 选项的内容
+         * @param provider 目标模型或密钥提供方；作为 {@code --auth-setup-token} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder authSetupToken(String provider) {
@@ -531,9 +531,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--auth-paste-token` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --auth-paste-token} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param provider 写入 `--auth-paste-token` 选项的内容
+         * @param provider 目标模型或密钥提供方；作为 {@code --auth-paste-token} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder authPasteToken(String provider) {
@@ -543,9 +543,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--paste-profile-id` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --paste-profile-id} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param profileId 写入 `--paste-profile-id` 选项的内容
+         * @param profileId 认证配置档案标识；作为 {@code --paste-profile-id} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder pasteProfileId(String profileId) {
@@ -554,9 +554,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--paste-expires-in` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --paste-expires-in} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param expiresIn 写入 `--paste-expires-in` 选项的内容
+         * @param expiresIn 粘贴认证信息的有效期；作为 {@code --paste-expires-in} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder pasteExpiresIn(String expiresIn) {
@@ -565,9 +565,9 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 设置 `--extra` 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 设置 {@code --extra} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
          *
-         * @param tokens 写入 `--extra` 选项的内容
+         * @param tokens 原样追加到生成参数末尾的 CLI 参数列表；作为 {@code --extra} 的参数
          * @return 当前构建器，便于继续链式配置
          */
         public Builder extra(String... tokens) {
@@ -578,7 +578,7 @@ public final class ModelsOptions implements CliSubArgs {
         }
 
         /**
-         * 校验并复制当前构建器字段，创建独立的 `ModelsOptions`。
+         * 校验并复制当前构建器字段，创建独立的 {@code ModelsOptions}。
          *
          * @return 按当前字段创建的 ModelsOptions
          */

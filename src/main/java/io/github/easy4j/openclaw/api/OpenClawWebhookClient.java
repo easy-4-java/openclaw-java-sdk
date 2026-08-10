@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * OpenClaw SDK 的 `OpenClawWebhookClient` 类型，封装其公开契约和生命周期边界。
+ * 访问 Agent、Wake 和自定义 Hook Webhook 端点的客户端。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -30,22 +30,22 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
      */
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     /**
-     * OpenClaw 协议固定值 {@code new ObjectMapper()}；调用方不应在运行时修改。
+     * 仅用于解析 Webhook 响应 JSON 的共享 ObjectMapper。
      */
     private static final ObjectMapper RESPONSE_MAPPER = new ObjectMapper();
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
-     * @param mapper 写入 `mapper` 协议字段的内容
+     * @param mapper 用于 JSON 序列化与反序列化的映射器
      */
     public OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper) {
         super(config, mapper, null);
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
      */
@@ -54,10 +54,10 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     }
 
     /**
-     * 创建客户端并保存传入依赖；外部注入的 OkHttpClient 与 ObjectMapper 仍由调用方管理。
+     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
      *
      * @param config SDK 配置
-     * @param mapper 写入 `mapper` 协议字段的内容
+     * @param mapper 用于 JSON 序列化与反序列化的映射器
      * @param httpClient 复用连接池和 Dispatcher 的 OkHttpClient
      */
     public OpenClawWebhookClient(OpenClawHttpClientConfig config, ObjectMapper mapper, OkHttpClient httpClient) {
@@ -67,7 +67,7 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     /**
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code HookRequest}
      * @return 从 Gateway、SSE 或本地进程响应解析得到的 HookResponse
      */
     public HookResponse postHooksAgent(HookRequest request) {
@@ -75,9 +75,9 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `postHooksAgent`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code postHooksAgent}，调用线程不等待远端响应。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code HookRequest}
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
     public CompletableFuture<HookResponse> postHooksAgentAsync(HookRequest request) {
@@ -97,19 +97,19 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     /**
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
-     * @param text 写入 `text` 协议字段的内容
-     * @param mode 写入 `mode` 协议字段的内容
-     * @return 服务返回或流式累积得到的文本
+     * @param text 发送给默认智能体的唤醒文本
+     * @param mode Wake Hook 使用的唤醒模式；未指定时可为 {@code null}
+     * @return Wake Webhook 返回的响应正文
      */
     public String postHooksWake(String text, String mode) {
         return awaitFuture(postHooksWakeAsync(text, mode));
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `postHooksWake`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code postHooksWake}，调用线程不等待远端响应。
      *
-     * @param text 写入 `text` 协议字段的内容
-     * @param mode 写入 `mode` 协议字段的内容
+     * @param text 发送给默认智能体的唤醒文本
+     * @param mode Wake Hook 使用的唤醒模式；未指定时可为 {@code null}
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      * @throws IllegalArgumentException 必填参数缺失、格式错误或超出范围时抛出
      */
@@ -126,19 +126,19 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     /**
      * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
      *
-     * @param hookName 写入 `hookName` 协议字段的内容
-     * @param payload 写入 `payload` 协议字段的内容
-     * @return 服务返回或流式累积得到的文本
+     * @param hookName 目标 Hook 的注册名称
+     * @param payload 序列化为目标 Hook 请求体的键值负载
+     * @return 指定 Webhook 返回的响应正文
      */
     public String postMappedHook(String hookName, Map<String, Object> payload) {
         return awaitFuture(postMappedHookAsync(hookName, payload));
     }
 
     /**
-     * 使用 OkHttp/WebSocket 的异步机制发起 `postMappedHook`，调用线程不会等待远程响应。
+     * 通过 OkHttp Dispatcher 异步执行 {@code postMappedHook}，调用线程不等待远端响应。
      *
-     * @param hookName 写入 `hookName` 协议字段的内容
-     * @param payload 写入 `payload` 协议字段的内容
+     * @param hookName 目标 Hook 的注册名称
+     * @param payload 序列化为目标 Hook 请求体的键值负载
      * @return 在远程响应、取消或失败时完成的 CompletableFuture
      */
     public CompletableFuture<String> postMappedHookAsync(String hookName, Map<String, Object> payload) {
@@ -148,9 +148,9 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     }
 
     /**
-     * 调用 OpenClaw 的 `buildHooksAgentBody` API，并复用统一认证、序列化、取消和异常处理。
+     * 根据智能体标识、消息和扩展负载构造 Agent Hook 请求体。
      *
-     * @param request 请求对象
+     * @param request 要校验、序列化并发送的 {@code HookRequest}
      * @return 键名与 OpenClaw JSON/CLI 协议一致的映射
      * @throws IllegalArgumentException 必填参数缺失、格式错误或超出范围时抛出
      */
@@ -215,10 +215,10 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     }
 
     /**
-     * 调用 OpenClaw 的 `normalizeHookName` API，并复用统一认证、序列化、取消和异常处理。
+     * 去除 Hook 名称两端斜杠并拒绝空名称，确保可安全拼接端点路径。
      *
-     * @param hookName 写入 `hookName` 协议字段的内容
-     * @return 服务返回或流式累积得到的文本
+     * @param hookName 目标 Hook 的注册名称
+     * @return 去除首尾斜杠的 Hook 路径段
      * @throws IllegalArgumentException 必填参数缺失、格式错误或超出范围时抛出
      */
     public static String normalizeHookName(String hookName) {
@@ -234,8 +234,8 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     /**
      * 使用受控 ObjectMapper 把输入解析为目标类型，解析失败时保留原始异常原因。
      *
-     * @param body JSON 请求体或响应体文本
-     * @return 条件成立返回 {@code true}，否则返回 {@code false}
+     * @param body Hook 返回的原始 JSON 响应正文
+     * @return 响应 JSON 中 {@code ok} 为布尔真时返回 {@code true}
      */
     public static boolean parseOk(String body) {
         if (body == null || body.isEmpty()) return false;
@@ -249,7 +249,7 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     /**
      * 使用受控 ObjectMapper 把输入解析为目标类型，解析失败时保留原始异常原因。
      *
-     * @param body JSON 请求体或响应体文本
+     * @param body Hook 返回的原始 JSON 响应正文
      * @return 可用于关联后续请求的标识
      */
     public static String parseRunId(String body) {
@@ -265,18 +265,18 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     }
 
     /**
-     * OpenClaw SDK 的 `HttpResult` 类型，封装其公开契约和生命周期边界。
+     * Webhook 响应在底层 Response 关闭后保留的状态码与响应体快照。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     private static final class HttpResult {
         /**
-         * `HttpResult` 生命周期内保存的 `status` 对应状态。
+         * Webhook HTTP 请求返回的状态码。
          */
         private final int status;
         /**
-         * JSON 请求体或响应体文本。
+         * 已完整读取的 Hook HTTP 响应正文；响应体为空时为空字符串。
          */
         private final String body;
         private HttpResult(int status, String body) { this.status = status; this.body = body; }
