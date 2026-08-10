@@ -14,6 +14,7 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * HTTP client base class.
@@ -29,6 +30,7 @@ import java.util.Objects;
 public abstract class OpenClawHttpClient implements AutoCloseable {
 
     protected static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private static final AtomicLong REQUEST_SEQUENCE = new AtomicLong();
 
     protected final OpenClawHttpClientConfig config;
     protected final ObjectMapper objectMapper;
@@ -51,6 +53,11 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         this.objectMapper = objectMapper != null ? objectMapper : createObjectMapper();
         this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
         this.ownsHttpClient = ownsHttpClient;
+        debug("OpenClaw HTTP client initialized: baseUrl={}, connectTimeoutMs={}, readTimeoutMs={}, "
+                        + "callTimeoutMs={}, retryOnConnectionFailure={}, detailedLoggingEnabled={}",
+                config.getBaseUrl(), config.getConnectTimeoutMillis(), config.getReadTimeoutMillis(),
+                config.getCallTimeoutMillis(), config.isRetryOnConnectionFailure(),
+                config.isDetailedLoggingEnabled());
     }
 
     protected ObjectMapper createObjectMapper() {
@@ -90,7 +97,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             headers.forEach((k, v) -> {
                 if (k != null && v != null) {
                     builder.header(k, v);
-                    debug("Added header: {}={}", k, v);
+                    if (config.isDetailedLoggingEnabled()) {
+                        debug("Added header: {}={}", k, redactHeader(k, v));
+                    }
                 }
             });
         }
@@ -120,7 +129,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
 
         try {
             String json = objectMapper.writeValueAsString(body);
-            debug("Request body: {}", json);
+            if (config.isDetailedLoggingEnabled()) {
+                debug("Request body: {}", truncate(json));
+            }
 
             Request request = authedBuilder(url, headers)
                     .post(RequestBody.create(json, JSON))
@@ -161,8 +172,12 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     /** 执行支持协作式取消的请求。 */
     protected String execute(Request request, String url,
                              HttpCallCancellation cancellation) throws IOException {
-        debug("Executing request: {} {}", request.method(), request.url());
-        debug("Request headers: {}", request.headers());
+        long requestId = REQUEST_SEQUENCE.incrementAndGet();
+        long startedAt = System.nanoTime();
+        debug("HTTP request started: requestId={}, method={}, url={}", requestId, request.method(), request.url());
+        if (config.isDetailedLoggingEnabled()) {
+            debug("HTTP request details: requestId={}, headers={}", requestId, redactHeaders(request.headers()));
+        }
 
         Call call = httpClient.newCall(request);
         AutoCloseable registration = cancellation != null ? cancellation.onCancel(call::cancel) : null;
@@ -170,22 +185,52 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             int status = response.code();
             String respBody = response.body() != null ? response.body().string() : "";
 
-            debug("Response status: {}, body length: {}", status, respBody.length());
-            if (status >= 300) {
-                debug("Response body (error): {}", respBody);
-            } else if (respBody.length() < 500) {
-                debug("Response body: {}", respBody);
-            } else {
-                debug("Response body (truncated): {}...", respBody.substring(0, 500));
+            long elapsedMs = elapsedMillis(startedAt);
+            debug("HTTP request completed: requestId={}, method={}, url={}, status={}, bodyLength={}, elapsedMs={}",
+                    requestId, request.method(), request.url(), status, respBody.length(), elapsedMs);
+            if (config.isDetailedLoggingEnabled()) {
+                debug("HTTP response body: requestId={}, body={}", requestId, truncate(respBody));
             }
 
             if (!response.isSuccessful()) {
                 throw new OpenClawHttpException("Request returned status " + status, status, respBody);
             }
             return respBody;
+        } catch (IOException | RuntimeException error) {
+            log.warn("HTTP request failed: requestId={}, method={}, url={}, elapsedMs={}, error={}",
+                    requestId, request.method(), request.url(), elapsedMillis(startedAt), error.getMessage());
+            throw error;
         } finally {
             closeRegistration(registration);
         }
+    }
+
+    private long elapsedMillis(long startedAt) {
+        return (System.nanoTime() - startedAt) / 1_000_000L;
+    }
+
+    private String truncate(String value) {
+        if (Objects.isNull(value)) {
+            return "";
+        }
+        int limit = Math.max(0, config.getMaxLoggedBodyLength());
+        return value.length() <= limit ? value : value.substring(0, limit) + "...<truncated>";
+    }
+
+    private Headers redactHeaders(Headers headers) {
+        Headers.Builder safe = headers.newBuilder();
+        for (String name : headers.names()) {
+            safe.set(name, redactHeader(name, headers.get(name)));
+        }
+        return safe.build();
+    }
+
+    private String redactHeader(String name, String value) {
+        if ("authorization".equalsIgnoreCase(name) || name.toLowerCase().contains("token")
+                || name.toLowerCase().contains("key")) {
+            return "██";
+        }
+        return value;
     }
 
     private void closeRegistration(AutoCloseable registration) {
