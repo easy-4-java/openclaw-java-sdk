@@ -66,9 +66,9 @@ public final class SubprocessExecutionSupport {
     }
 
     /**
-     * 构造并发送 HTTP 请求，读取并关闭响应体，将传输失败或非成功状态映射为 SDK 异常。
+     * 启动异步子进程，捕获标准输出和标准错误，并返回负责等待与超时判定的执行会话。
      *
-     * @param request 要校验、序列化并发送的 {@code ExecutionRequest}
+     * @param request 命令行、工作目录、环境变量和毫秒级超时配置
      * @return 保存退出处理器、输出缓冲区和超时状态的子进程会话
      * @throws IOException 网络、流或子进程 I/O 失败时抛出
      * @throws InterruptedException 等待线程被中断时抛出，并恢复中断标记
@@ -160,7 +160,7 @@ public final class SubprocessExecutionSupport {
         private final long timeoutMillis;
 
         /**
-         * 按给定配置创建 {@code ExecutionRequest}，构造过程不隐式执行远程业务请求。
+         * 创建不可变执行请求；环境变量映射由执行支持组件在启动子进程时读取。
          *
          * @param commandLine 包含可执行文件和参数的 Commons Exec 命令行
          * @param workingDirectory 子进程工作目录；为空时继承当前进程目录

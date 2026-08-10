@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 使用默认映射器创建 Embeddings 客户端，并复用调用方提供的 OkHttp 连接资源。
      *
      * @param config SDK 配置
      */
@@ -31,7 +31,7 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
     }
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 创建 Embeddings 客户端，并复用调用方提供的映射器和 OkHttp 连接资源。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -45,7 +45,7 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
      * 同步调用 Embeddings API，并把响应 JSON 解析为向量结果。
      *
      * @param request 要校验、序列化并发送的 {@code EmbeddingsRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 EmbeddingsResponse
+     * @return 每项输入对应的向量及 Token 用量
      */
     public EmbeddingsResponse createEmbeddings(EmbeddingsRequest request) {
         return awaitFuture(createEmbeddingsAsync(request));

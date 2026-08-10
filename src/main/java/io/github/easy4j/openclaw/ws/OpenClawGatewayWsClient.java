@@ -368,7 +368,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     /**
      * 建立 WebSocket 连接，完成 challenge/connect 握手，并在超时或断线时失败所有等待者。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 HelloOk
+     * @return 握手成功后 Gateway 返回的版本、能力和服务信息
      * @throws InterruptedException 等待线程被中断时抛出，并恢复中断标记
      * @throws RuntimeException 远程响应、协议解析或本地执行失败时抛出
      */
@@ -424,7 +424,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     /**
      * 返回最近一次成功握手的 Gateway 信息；握手完成前为空。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 HelloOk
+     * @return 最近一次成功握手的 Gateway 信息；尚未完成握手时为 {@code null}
      */
     public HelloOk getHelloOk() {
         return helloOkRef.get();
@@ -438,7 +438,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      * 通过已完成握手的 WebSocket 控制面调用 {@code sessionsList}，并按请求标识关联响应。
      *
      * @param params 随 Gateway RPC 请求发送的参数对象
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 SessionsListResult
+     * @return 符合过滤条件的会话列表及默认会话配置
      */
     public SessionsListResult sessionsList(SessionsListParams params) {
         return invokeRpc("sessions.list", params, SessionsListResult.class, DEFAULT_RPC_TIMEOUT_MS);
@@ -447,7 +447,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     /**
      * 通过已完成握手的 WebSocket 控制面调用 {@code sessionsList}，并按请求标识关联响应。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 SessionsListResult
+     * @return 使用 Gateway 默认过滤条件查询到的会话列表
      */
     public SessionsListResult sessionsList() {
         return sessionsList(SessionsListParams.defaults());
@@ -457,7 +457,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      * 通过已完成握手的 WebSocket 控制面调用 {@code chatHistory}，并按请求标识关联响应。
      *
      * @param params 随 Gateway RPC 请求发送的参数对象
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatHistoryResult
+     * @return 指定会话的历史消息和分页信息
      */
     public ChatHistoryResult chatHistory(ChatHistoryParams params) {
         Objects.requireNonNull(params, "params");
@@ -469,7 +469,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      *
      * @param sessionKey 会话路由键
      * @param limit 最多返回的记录数；为空时使用 Gateway 默认限制
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatHistoryResult
+     * @return 指定会话的历史消息和分页信息
      */
     public ChatHistoryResult chatHistory(String sessionKey, Integer limit) {
         return chatHistory(ChatHistoryParams.of(sessionKey, limit));
@@ -479,7 +479,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      * 通过已完成握手的 WebSocket 控制面调用 {@code chatAbort}，并按请求标识关联响应。
      *
      * @param params 随 Gateway RPC 请求发送的参数对象
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatAbortResult
+     * @return Gateway 对取消请求的确认结果
      */
     public ChatAbortResult chatAbort(ChatAbortParams params) {
         Objects.requireNonNull(params, "params");
@@ -490,7 +490,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      * 通过已完成握手的 WebSocket 控制面调用 {@code chatAbort}，并按请求标识关联响应。
      *
      * @param sessionKey 会话路由键
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatAbortResult
+     * @return Gateway 对指定会话取消请求的确认结果
      */
     public ChatAbortResult chatAbort(String sessionKey) {
         return chatAbort(ChatAbortParams.abortSession(sessionKey));
@@ -500,7 +500,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      * 通过已完成握手的 WebSocket 控制面调用 {@code agentIdentityGet}，并按请求标识关联响应。
      *
      * @param params 随 Gateway RPC 请求发送的参数对象
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 AgentIdentityGetResult
+     * @return 智能体身份标识及其显示信息
      */
     public AgentIdentityGetResult agentIdentityGet(AgentIdentityGetParams params) {
         Objects.requireNonNull(params, "params");
@@ -510,7 +510,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     /**
      * 通过已完成握手的 WebSocket 控制面调用 {@code agentIdentityGet}，并按请求标识关联响应。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 AgentIdentityGetResult
+     * @return 默认智能体的身份标识及其显示信息
      */
     public AgentIdentityGetResult agentIdentityGet() {
         return agentIdentityGet(AgentIdentityGetParams.empty());
@@ -520,7 +520,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      * 通过已完成握手的 WebSocket 控制面调用 {@code cronList}，并按请求标识关联响应。
      *
      * @param params 随 Gateway RPC 请求发送的参数对象
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 CronListResult
+     * @return 符合过滤条件的定时任务摘要列表
      */
     public CronListResult cronList(CronListParams params) {
         Objects.requireNonNull(params, "params");
@@ -530,7 +530,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     /**
      * 通过已完成握手的 WebSocket 控制面调用 {@code cronList}，并按请求标识关联响应。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 CronListResult
+     * @return 使用默认过滤条件查询到的定时任务摘要列表
      */
     public CronListResult cronList() {
         return cronList(CronListParams.defaults());
@@ -539,7 +539,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     /**
      * 通过已完成握手的 WebSocket 控制面调用 {@code configGet}，并按请求标识关联响应。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ConfigGetResult
+     * @return Gateway 当前配置及其版本哈希
      */
     public ConfigGetResult configGet() {
         return invokeRpc("config.get", Collections.emptyMap(), ConfigGetResult.class, DEFAULT_RPC_TIMEOUT_MS);
@@ -670,7 +670,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      * 通过已完成握手的 WebSocket 控制面调用 {@code sessionsSend}，并按请求标识关联响应。
      *
      * @param params 随 Gateway RPC 请求发送的参数对象
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 SessionsSendResult
+     * @return Gateway 对会话消息投递的确认结果
      */
     public SessionsSendResult sessionsSend(SessionsSendParams params) {
         Objects.requireNonNull(params, "params");

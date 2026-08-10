@@ -35,7 +35,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     private final boolean ownsSseClient;
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 使用默认映射器创建 Chat Completions 客户端，并复用调用方提供的 OkHttp 连接资源。
      *
      * @param config SDK 配置
      */
@@ -46,7 +46,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 创建 Chat Completions 客户端，并复用调用方提供的映射器和 OkHttp 连接资源。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -59,7 +59,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     }
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 创建 Chat Completions 客户端，并使用指定 SSE 执行器读取流式响应。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -81,7 +81,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
      * 向 Chat Completions 端点发送非流式请求，并解析完整响应。
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
+     * @return 包含回复消息、结束原因和 Token 用量的完整响应
      */
     public ChatResponse chatCompletion(ChatRequest request) {
         return chatCompletion(request, (Map<String, String>) null);
@@ -92,7 +92,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param headers 附加 HTTP 请求头
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
+     * @return 包含回复消息、结束原因和 Token 用量的完整响应
      */
     public ChatResponse chatCompletion(ChatRequest request, Map<String, String> headers) {
         return chatCompletion(request, headers, null);
@@ -104,7 +104,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param headers 附加 HTTP 请求头
      * @param cancellation 可选调用取消令牌
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ChatResponse
+     * @return 包含回复消息、结束原因和 Token 用量的完整响应
      */
     public ChatResponse chatCompletion(ChatRequest request, Map<String, String> headers,
                                        HttpCallCancellation cancellation) {
@@ -181,7 +181,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
      * 向 Chat Completions 端点发送流式请求，并返回可取消的聚合句柄。
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @return 可注册增量回调和取消底层调用的流式结果句柄
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request) {
         return chatCompletionStream(request, (Map<String, String>) null);
@@ -192,7 +192,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param headers 附加 HTTP 请求头
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @return 已应用回调构建器配置的可取消流式结果句柄
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request, Map<String, String> headers) {
         StreamingChatResponse response = new StreamingChatResponse();
@@ -205,7 +205,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
      * @param callbackBuilder 用于注册流式增量、工具调用、完成和失败回调的构建器
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 StreamingChatResponse
+     * @return 携带自定义请求头的可取消流式结果句柄
      */
     public StreamingChatResponse chatCompletionStream(ChatRequest request, StreamingChatResponse.Builder callbackBuilder) {
         StreamingChatResponse response = callbackBuilder.build();
@@ -220,7 +220,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
     /**
      * 读取 Gateway 当前可用模型列表。
      *
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ModelsResponse
+     * @return Gateway 当前公开的模型资源列表
      */
     public ModelsResponse listModels() {
         return awaitFuture(listModelsAsync());

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 本地 openclaw CLI 的 {@code GatewayCliArgv} 支撑类型，用于参数编码、可用性检查或执行结果表达。
+ * Gateway CLI 参数工厂，把共享 RPC 连接配置与 health、status、probe 各自的选项合并为不可变参数列表。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -19,7 +19,7 @@ public final class GatewayCliArgv {
     /**
      * 生成 gateway health 参数，并追加共享的 RPC 认证和连接选项。
      *
-     * @param rpc 待解析或执行的 RPC 调用描述
+     * @param rpc Gateway URL、认证与超时等共享 RPC 选项
      * @return 以 {@code health} 开头、随后为共享 RPC 选项的不可变参数列表
      */
     public static List<String> health(GatewayRpcOptions rpc) {
@@ -33,8 +33,8 @@ public final class GatewayCliArgv {
     /**
      * 生成 gateway status 参数，并按顺序合并 RPC 选项与状态查询选项。
      *
-     * @param rpc 待解析或执行的 RPC 调用描述
-     * @param extra 追加到协议对象的扩展属性
+     * @param rpc Gateway URL、认证与超时等共享 RPC 选项
+     * @param extra 是否跳过探测、执行深度检查或强制 RPC 成功的状态选项；为空时不追加这些开关
      * @return 以 {@code status} 开头并包含已启用状态开关的不可变参数列表
      */
     public static List<String> status(GatewayRpcOptions rpc, GatewayStatusOptions extra) {
@@ -58,8 +58,8 @@ public final class GatewayCliArgv {
     /**
      * 生成 gateway probe 参数，并按顺序合并 RPC 选项与探测选项。
      *
-     * @param rpc 待解析或执行的 RPC 调用描述
-     * @param extra 追加到协议对象的扩展属性
+     * @param rpc Gateway URL、认证与超时等共享 RPC 选项
+     * @param extra SSH 目标、私钥和自动发现选项；为空时不追加 SSH 参数
      * @return 以 {@code probe} 开头并包含连接、认证和 SSH 选项的不可变参数列表
      */
     public static List<String> probe(GatewayRpcOptions rpc, GatewayProbeOptions extra) {
@@ -115,7 +115,7 @@ public final class GatewayCliArgv {
         }
 
         /**
-         * 选择或编码 {@code gateway-status} 子命令的 {@code none} 行为，并保留未设置选项的省略语义。
+         * 创建不附加 {@code --no-probe}、{@code --deep} 或 {@code --require-rpc} 的状态选项。
          *
          * @return 不附加状态或探测标志的选项对象
          */
@@ -257,7 +257,7 @@ public final class GatewayCliArgv {
         }
 
         /**
-         * 选择或编码 {@code gateway-probe} 子命令的 {@code none} 行为，并保留未设置选项的省略语义。
+         * 创建不附加 SSH 目标、私钥或自动发现开关的探测选项。
          *
          * @return 不附加状态或探测标志的选项对象
          */
@@ -286,7 +286,7 @@ public final class GatewayCliArgv {
         /**
          * 返回 SSH 私钥路径；未配置时为空。
          *
-         * @return 可用于关联后续请求的标识
+         * @return SSH 私钥文件路径；未配置时为 {@code null}
          */
         public String getSshIdentity() {
             return sshIdentity;

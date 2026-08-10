@@ -10,7 +10,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * 本地 openclaw CLI 的 {@code OpenClawCliAvailabilityChecker} 支撑类型，用于参数编码、可用性检查或执行结果表达。
+ * 本地 {@code openclaw} CLI 可用性检查器。它先解析显式路径或 {@code PATH} 中的可执行文件，
+ * 再以独立的短超时配置执行 {@code openclaw --version}，将失败原因分类为缺失、不可执行、超时、启动失败或非零退出。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -20,8 +21,8 @@ public class OpenClawCliAvailabilityChecker {
     /**
      * 在短超时内执行 {@code openclaw --version}，区分文件缺失、超时、非零退出和正常版本输出。
      *
-     * @param config SDK 配置
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 OpenClawCliAvailabilityReport
+     * @param config 可执行文件、工作目录、并发限制和探测超时配置
+     * @return 包含路径解析结果、分类状态和版本探测输出的报告
      */
     public OpenClawCliAvailabilityReport check(OpenClawCliConfig config) {
         Objects.requireNonNull(config, "config");
@@ -100,7 +101,10 @@ public class OpenClawCliAvailabilityChecker {
     }
 
     /**
- * executable:/; {@code PATH} .
+     * 解析 CLI 可执行文件：带路径分隔符的值按文件路径检查，其余名称依次在 {@code PATH} 目录中查找。
+     *
+     * @param executable 配置的可执行文件名称或路径
+     * @return 可执行文件的绝对路径；文件不存在或不可执行时为空
      */
     static Optional<String> resolveExecutablePath(String executable) {
         if (OpenClawStrings.isBlank(executable)) {

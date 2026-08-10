@@ -4,7 +4,8 @@ import io.github.easy4j.openclaw.util.OpenClawStrings;
 import java.util.List;
 
 /**
- * 本地 openclaw CLI 的 {@code OpenClawCliArgv} 支撑类型，用于参数编码、可用性检查或执行结果表达。
+ * CLI 参数编码辅助类，统一处理可选值、布尔开关、可重复选项和未类型化的额外 token。
+ * 所有方法都按调用顺序写入调用方提供的列表，不重排参数。
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0

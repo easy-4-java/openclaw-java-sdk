@@ -18,7 +18,7 @@ public class OpenClawCliStartupException extends RuntimeException {
     private final OpenClawCliAvailabilityReport availabilityReport;
 
     /**
-     * 按给定配置创建 {@code OpenClawCliStartupException}，构造过程不隐式执行远程业务请求。
+     * 根据启动阶段的 CLI 可用性报告创建异常，并保留报告中的路径和探测诊断。
      *
      * @param message 消息正文
      * @param report CLI 启动前生成的可用性探测报告

@@ -27,9 +27,9 @@ public class OpenClawHttpException extends OpenClawException {
     private final String responseBody;
 
     /**
-     * 按给定配置创建 {@code OpenClawHttpException}，构造过程不隐式执行远程业务请求。
+     * 创建表示非成功 HTTP 响应的异常，并保留状态码和原始响应体。
      *
-     * @param message 消息正文
+     * @param message HTTP 调用失败原因
      * @param statusCode HTTP 响应状态码
      * @param responseBody 服务端返回的响应体；可能为空
      */
@@ -40,9 +40,9 @@ public class OpenClawHttpException extends OpenClawException {
     }
 
     /**
-     * 按给定配置创建 {@code OpenClawHttpException}，构造过程不隐式执行远程业务请求。
+     * 创建表示网络传输或响应解析失败的异常；此时没有可用的 HTTP 状态码和响应体。
      *
-     * @param message 消息正文
+     * @param message HTTP 调用失败原因
      * @param cause 导致当前异常的根本原因
      */
     public OpenClawHttpException(String message, Throwable cause) {

@@ -55,7 +55,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     private final boolean ownsHttpClient;
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 使用默认 Jackson 映射器创建 HTTP 基类，认证与超时从配置读取，OkHttp 连接资源由调用方管理。
      *
      * @param config SDK 配置
      */
@@ -64,7 +64,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     }
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 使用调用方提供的 Jackson 映射器创建 HTTP 基类，认证与超时从配置读取，OkHttp 连接资源由调用方管理。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器

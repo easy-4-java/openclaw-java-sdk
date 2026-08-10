@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 public class OpenClawToolInvokeClient extends OpenClawHttpClient {
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 使用默认映射器创建工具调用客户端，并复用调用方提供的 OkHttp 连接资源。
      *
      * @param config SDK 配置
      */
@@ -32,7 +32,7 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
     }
 
     /**
-     * 构造端点客户端并复用认证、JSON 映射和 OkHttp 连接资源；外部注入的客户端不随当前对象关闭。
+     * 创建工具调用客户端，并复用调用方提供的映射器和 OkHttp 连接资源。
      *
      * @param config SDK 配置
      * @param objectMapper JSON 映射器
@@ -46,7 +46,7 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
      * 向工具调用端点发送请求，并按同步或异步入口解析结果。
      *
      * @param request 要校验、序列化并发送的 {@code ToolInvokeRequest}
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ToolInvokeResult
+     * @return 工具执行成功输出或 Gateway 返回的结构化错误
      */
     public ToolInvokeResult invoke(ToolInvokeRequest request) {
         return invoke(request, null);
@@ -57,7 +57,7 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
      *
      * @param request 要校验、序列化并发送的 {@code ToolInvokeRequest}
      * @param cancellation 可选调用取消令牌
-     * @return 从 Gateway、SSE 或本地进程响应解析得到的 ToolInvokeResult
+     * @return 工具执行成功输出或 Gateway 返回的结构化错误
      */
     public ToolInvokeResult invoke(ToolInvokeRequest request, HttpCallCancellation cancellation) {
         return awaitFuture(invokeAsync(request, cancellation));

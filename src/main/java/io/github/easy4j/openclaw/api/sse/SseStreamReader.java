@@ -31,7 +31,7 @@ public class SseStreamReader {
     private final ObjectMapper objectMapper;
 
     /**
-     * 按给定配置创建 {@code SseStreamReader}，构造过程不隐式执行远程业务请求。
+     * 创建 SSE 读取器；传入映射器为空时创建一个忽略未知字段的默认映射器。
      *
      * @param objectMapper JSON 映射器
      */
@@ -41,7 +41,7 @@ public class SseStreamReader {
     }
 
     /**
-     * 按给定配置创建 {@code SseStreamReader}，构造过程不隐式执行远程业务请求。
+     * 使用忽略未知字段的默认 Jackson 映射器创建 SSE 读取器。
      */
     public SseStreamReader() {
         this(null);
