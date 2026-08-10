@@ -5,6 +5,7 @@ import io.github.easy4j.openclaw.cli.support.MockOpenClawCli;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -49,7 +50,7 @@ class OpenClawCliAvailabilityCheckerTest {
         assertEquals(OpenClawCliAvailabilityStatus.EXECUTABLE_NOT_CONFIGURED, checker.check(config).getStatus());
 
         Path nonExecutable = tempDir.resolve("not-executable");
-        Files.writeString(nonExecutable, "#!/bin/sh\nexit 0\n");
+        Files.write(nonExecutable, "#!/bin/sh\nexit 0\n".getBytes(StandardCharsets.UTF_8));
         nonExecutable.toFile().setExecutable(false);
         config.setExecutable(nonExecutable.toString());
         OpenClawCliAvailabilityReport nonExecutableReport = checker.check(config);
@@ -57,7 +58,7 @@ class OpenClawCliAvailabilityCheckerTest {
         assertTrue(nonExecutableReport.toDiagnosticMessage().contains("unavailable"));
 
         Path failed = tempDir.resolve("failed");
-        Files.writeString(failed, "#!/bin/sh\necho failure >&2\nexit 3\n");
+        Files.write(failed, "#!/bin/sh\necho failure >&2\nexit 3\n".getBytes(StandardCharsets.UTF_8));
         failed.toFile().setExecutable(true);
         config.setExecutable(failed.toString());
         config.setProbeTimeoutSeconds(0);

@@ -205,8 +205,8 @@ class PublicApiBeanContractTest {
         if (type == Consumer.class) return (Consumer<Object>) ignored -> { };
         if (type == Supplier.class) return (Supplier<Object>) () -> "value";
         if (type.isArray()) {
-            Object array = java.lang.reflect.Array.newInstance(type.componentType(), 1);
-            Object component = sampleValue(type.componentType());
+            Object array = java.lang.reflect.Array.newInstance(type.getComponentType(), 1);
+            Object component = sampleValue(type.getComponentType());
             if (component == Unsupported.INSTANCE) return Unsupported.INSTANCE;
             java.lang.reflect.Array.set(array, 0, component);
             return array;
