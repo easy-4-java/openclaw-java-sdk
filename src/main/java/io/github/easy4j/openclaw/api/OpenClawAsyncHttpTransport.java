@@ -138,7 +138,7 @@ public final class OpenClawAsyncHttpTransport implements AutoCloseable {
                 if (statusCode[0] < 200 || statusCode[0] >= 300) {
                     result.completeExceptionally(new OpenClawHttpException(
                             "Stream returned status " + statusCode[0], statusCode[0],
-                            errorBody.toString(java.nio.charset.StandardCharsets.UTF_8)));
+                            new String(errorBody.toByteArray(), java.nio.charset.StandardCharsets.UTF_8)));
                 } else {
                     result.complete(null);
                 }
