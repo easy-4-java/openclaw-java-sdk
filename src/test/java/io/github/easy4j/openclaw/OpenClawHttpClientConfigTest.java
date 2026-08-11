@@ -7,10 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class OpenClawHttpClientConfigTest {
 
     @org.junit.jupiter.api.Test
-    void detailedLoggingIsOptIn() {
+    void debugLoggingIsOptIn() {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
-        org.junit.jupiter.api.Assertions.assertFalse(config.isDetailedLoggingEnabled());
-        org.junit.jupiter.api.Assertions.assertEquals(2_000, config.getMaxLoggedBodyLength());
+        org.junit.jupiter.api.Assertions.assertFalse(config.getDebug().isEnabled());
+        org.junit.jupiter.api.Assertions.assertEquals(2_000, config.getDebug().getMaxContentLength());
+        org.junit.jupiter.api.Assertions.assertEquals(okhttp3.extension.logging.HttpLogLevel.BASIC,
+                config.getDebug().getLevel());
     }
 
     @Test
