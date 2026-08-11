@@ -17,6 +17,8 @@ class OpenClawClientConfigTest {
         OpenClawClientConfig config = new OpenClawClientConfig();
         assertNotNull(config.getHttp());
         assertNotNull(config.getCli());
+        assertSame(config.getDebug(), config.getHttp().getDebug());
+        assertSame(config.getDebug(), config.getCli().getDebug());
     }
 
     /**

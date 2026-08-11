@@ -2,9 +2,11 @@ package io.github.easy4j.openclaw.api.sse;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.easy4j.openclaw.OpenClawDebugConfig;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.api.model.ChatChunk;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.extension.logging.HttpLogLevel;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -29,6 +31,8 @@ public class SseStreamReader {
      * 负责协议 JSON 序列化与反序列化的映射器。
      */
     private final ObjectMapper objectMapper;
+    /** 控制协议解析诊断信息是否输出。 */
+    private final OpenClawDebugConfig debug;
 
     /**
      * 创建 SSE 读取器；传入映射器为空时创建一个忽略未知字段的默认映射器。
@@ -36,8 +40,19 @@ public class SseStreamReader {
      * @param objectMapper JSON 映射器
      */
     public SseStreamReader(ObjectMapper objectMapper) {
+        this(objectMapper, new OpenClawDebugConfig());
+    }
+
+    /**
+     * 使用共享调试配置创建 SSE 读取器。
+     *
+     * @param objectMapper JSON 映射器
+     * @param debug 客户端级调试配置
+     */
+    public SseStreamReader(ObjectMapper objectMapper, OpenClawDebugConfig debug) {
         this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.debug = debug != null ? debug : new OpenClawDebugConfig();
     }
 
     /**
@@ -93,7 +108,10 @@ public class SseStreamReader {
                             T chunk = objectMapper.readValue(data, chunkClass);
                             sseEvent.setParsed(chunk);
                         } catch (Exception parseEx) {
-                            log.debug("Failed to parse SSE data as {}: {}", chunkClass.getSimpleName(), parseEx.getMessage());
+                            if (debug.allows(HttpLogLevel.BASIC)) {
+                                log.debug("Failed to parse SSE data as {}: {}",
+                                        chunkClass.getSimpleName(), parseEx.getMessage());
+                            }
                         }
                     }
 

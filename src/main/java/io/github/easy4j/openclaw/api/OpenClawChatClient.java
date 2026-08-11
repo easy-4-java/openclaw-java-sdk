@@ -9,6 +9,7 @@ import io.github.easy4j.openclaw.api.sse.SseSubscription;
 import io.github.easy4j.openclaw.api.sse.StreamingChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import okhttp3.extension.logging.HttpLogLevel;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -137,7 +138,7 @@ public class OpenClawChatClient extends OpenClawHttpClient {
         String bodyModel = resolveModel(request);
 
         debug("Resolved body model (agent routing): {}", bodyModel);
-        debug("Headers to send: {}", headers);
+        debug(HttpLogLevel.HEADERS, "Headers to send: {}", headers);
 
         ChatRequest normalized = ChatRequest.builder()
                 .model(bodyModel)

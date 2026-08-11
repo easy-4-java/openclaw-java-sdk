@@ -135,7 +135,7 @@ public class OpenClawCliAvailabilityChecker {
     }
 
     private static OpenClawCliConfig copyForProbe(OpenClawCliConfig source) {
-        OpenClawCliConfig copy = new OpenClawCliConfig();
+        OpenClawCliConfig copy = new OpenClawCliConfig(source.getDebug());
         copy.setExecutable(source.getExecutable());
         copy.setWorkingDirectory(source.getWorkingDirectory());
         copy.setMaxConcurrentExecutions(source.getMaxConcurrentExecutions());
