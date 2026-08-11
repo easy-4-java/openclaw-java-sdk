@@ -15,6 +15,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.extension.logging.HttpLogLevel;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -188,7 +189,7 @@ public class OpenClawSseClient extends OpenClawHttpClient {
                 handler.onError(new OpenClawHttpException("SSE response body is null", null));
                 return;
             }
-            new SseStreamReader(objectMapper)
+            new SseStreamReader(objectMapper, config.getDebug())
                     .readChatCompletionStream(completed.body().byteStream(), handler);
         } catch (Exception error) {
             if (subscription.isActive()) {
@@ -268,11 +269,12 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     }
 
     private void logInitialization(OpenClawHttpClientConfig config) {
-        log.debug("OpenClaw SSE client initialized: baseUrl={}, maxRequests={}, "
-                        + "maxRequestsPerHost={}, eventQueueCapacity={}, reconnectPolicy=none, "
-                        + "detailedLoggingEnabled={}",
-                config.getBaseUrl(), config.getMaxRequests(), config.getMaxRequestsPerHost(),
-                config.getStreamQueueCapacity(), config.isDetailedLoggingEnabled());
+        if (config.getDebug().allows(HttpLogLevel.BASIC)) {
+            log.debug("OpenClaw SSE client initialized: baseUrl={}, maxRequests={}, "
+                            + "maxRequestsPerHost={}, eventQueueCapacity={}, reconnectPolicy=none, debugLevel={}",
+                    config.getBaseUrl(), config.getMaxRequests(), config.getMaxRequestsPerHost(),
+                    config.getStreamQueueCapacity(), config.getDebug().getLevel());
+        }
     }
 
     /**

@@ -11,14 +11,17 @@ import lombok.Data;
 @Data
 public class OpenClawClientConfig {
 
+    /** 客户端所有通信通道共享的调试配置。 */
+    private final OpenClawDebugConfig debug = new OpenClawDebugConfig();
+
     /**
      * HTTP、SSE 和 WebSocket 通道共享的配置对象。
      */
-    private final OpenClawHttpClientConfig http = new OpenClawHttpClientConfig();
+    private final OpenClawHttpClientConfig http = new OpenClawHttpClientConfig(debug);
 
     /**
      * 本地 CLI 通道配置对象。
      */
-    private final OpenClawCliConfig cli = new OpenClawCliConfig();
+    private final OpenClawCliConfig cli = new OpenClawCliConfig(debug);
 
 }

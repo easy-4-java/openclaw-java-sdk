@@ -3,6 +3,8 @@ package io.github.easy4j.openclaw;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
 import lombok.Data;
 
+import java.util.Objects;
+
 /**
  * HTTP、SSE 与 WebSocket 通道配置，定义 Gateway 地址、认证优先级、连接池、并发、超时、重试和日志开关。
  *
@@ -11,6 +13,25 @@ import lombok.Data;
  */
 @Data
 public class OpenClawHttpClientConfig {
+
+    /** HTTP、SSE 与 WebSocket 通道共享的调试配置。 */
+    private final OpenClawDebugConfig debug;
+
+    /**
+     * 使用默认关闭的调试配置创建 HTTP 配置。
+     */
+    public OpenClawHttpClientConfig() {
+        this(new OpenClawDebugConfig());
+    }
+
+    /**
+     * 使用客户端级共享调试配置创建 HTTP 配置。
+     *
+     * @param debug 客户端级调试配置
+     */
+    public OpenClawHttpClientConfig(OpenClawDebugConfig debug) {
+        this.debug = Objects.requireNonNull(debug, "debug");
+    }
 
     /**
      * 同步、流式或自动选择的 HTTP 响应消费模式。
@@ -116,16 +137,6 @@ public class OpenClawHttpClientConfig {
      * 连接建立失败时是否允许 OkHttp 执行自身安全重试，不包含业务请求重放。
      */
     private boolean retryOnConnectionFailure = true;
-
-    /**
-     * 是否输出脱敏后的请求头和截断响应体；默认关闭以控制日志量和泄露风险。
-     */
-    private boolean detailedLoggingEnabled = false;
-
-    /**
-     * 详细日志中响应体允许记录的最大字符数，超出部分截断。
-     */
-    private int maxLoggedBodyLength = 2_000;
 
     /**
      * Webhook 端点的基础路径，具体 Hook 名称在其后追加。

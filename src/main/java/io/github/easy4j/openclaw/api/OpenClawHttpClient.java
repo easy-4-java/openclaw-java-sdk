@@ -10,6 +10,7 @@ import io.github.easy4j.openclaw.util.OpenClawStrings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import okhttp3.extension.logging.HttpLogLevel;
 
 import java.io.IOException;
 import java.util.Map;
@@ -82,11 +83,11 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         this.objectMapper = objectMapper != null ? objectMapper : createObjectMapper();
         this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
         this.ownsHttpClient = ownsHttpClient;
-        debug("OpenClaw HTTP client initialized: baseUrl={}, connectTimeoutMs={}, readTimeoutMs={}, "
-                        + "callTimeoutMs={}, retryOnConnectionFailure={}, detailedLoggingEnabled={}",
+        debug(HttpLogLevel.BASIC, "OpenClaw HTTP client initialized: baseUrl={}, connectTimeoutMs={}, readTimeoutMs={}, "
+                        + "callTimeoutMs={}, retryOnConnectionFailure={}, debugLevel={}",
                 config.getBaseUrl(), config.getConnectTimeoutMillis(), config.getReadTimeoutMillis(),
                 config.getCallTimeoutMillis(), config.isRetryOnConnectionFailure(),
-                config.isDetailedLoggingEnabled());
+                config.getDebug().getLevel());
     }
 
     /**
@@ -138,9 +139,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             headers.forEach((k, v) -> {
                 if (k != null && v != null) {
                     builder.header(k, v);
-                    if (config.isDetailedLoggingEnabled()) {
-                        debug("Added header: {}={}", k, redactHeader(k, v));
-                    }
+                    debug(HttpLogLevel.HEADERS, "Added header: {}={}", k, redactHeader(k, v));
                 }
             });
         }
@@ -201,9 +200,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
 
         try {
             String json = objectMapper.writeValueAsString(body);
-            if (config.isDetailedLoggingEnabled()) {
-                debug("Request body: {}", truncate(json));
-            }
+            debug(HttpLogLevel.BODY, "Request body: {}", truncate(json));
 
             Request request = authedBuilder(url, headers)
                     .post(RequestBody.create(json, JSON))
@@ -284,10 +281,10 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
                                                      HttpCallCancellation cancellation) {
         long requestId = REQUEST_SEQUENCE.incrementAndGet();
         long startedAt = System.nanoTime();
-        debug("HTTP request started: requestId={}, method={}, url={}", requestId, request.method(), request.url());
-        if (config.isDetailedLoggingEnabled()) {
-            debug("HTTP request details: requestId={}, headers={}", requestId, redactHeaders(request.headers()));
-        }
+        debug(HttpLogLevel.BASIC, "HTTP request started: requestId={}, method={}, url={}",
+                requestId, request.method(), request.url());
+        debug(HttpLogLevel.HEADERS, "HTTP request headers: requestId={}, headers={}",
+                requestId, redactHeaders(request.headers()));
 
         // 传输层只读取状态码和响应体；此处统一把非 2xx 响应转换为携带诊断信息的 SDK 异常。
         CompletableFuture<String> result = executeResponseAsync(request, cancellation).thenApply(response -> {
@@ -303,11 +300,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
                         requestId, request.method(), request.url(), elapsedMillis(startedAt), unwrap(error).getMessage());
                 return;
             }
-            debug("HTTP request completed: requestId={}, method={}, url={}, bodyLength={}, elapsedMs={}",
+            debug(HttpLogLevel.BASIC, "HTTP request completed: requestId={}, method={}, url={}, bodyLength={}, elapsedMs={}",
                     requestId, request.method(), request.url(), respBody.length(), elapsedMillis(startedAt));
-            if (config.isDetailedLoggingEnabled()) {
-                debug("HTTP response body: requestId={}, body={}", requestId, truncate(respBody));
-            }
+            debug(HttpLogLevel.BODY, "HTTP response body: requestId={}, body={}", requestId, truncate(respBody));
         });
     }
 
@@ -450,11 +445,11 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         return (System.nanoTime() - startedAt) / 1_000_000L;
     }
 
-    private String truncate(String value) {
+    protected String truncate(String value) {
         if (Objects.isNull(value)) {
             return "";
         }
-        int limit = Math.max(0, config.getMaxLoggedBodyLength());
+        int limit = config.getDebug().resolveMaxContentLength();
         return value.length() <= limit ? value : value.substring(0, limit) + "...<truncated>";
     }
 
@@ -469,7 +464,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     private String redactHeader(String name, String value) {
         if ("authorization".equalsIgnoreCase(name) || name.toLowerCase().contains("token")
                 || name.toLowerCase().contains("key")) {
-            return "██";
+            return "<redacted>";
         }
         return value;
     }
@@ -567,7 +562,18 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      * @param args 填充消息模板占位符的参数
      */
     protected void debug(String msg, Object... args) {
-        if (log.isDebugEnabled()) {
+        debug(HttpLogLevel.BASIC, msg, args);
+    }
+
+    /**
+     * 在统一调试配置允许指定级别且 SLF4J 开启 DEBUG 时记录日志。
+     *
+     * @param level 信息要求的最低 HTTP 日志级别
+     * @param msg 包含 SLF4J 占位符的日志消息模板
+     * @param args 填充消息模板占位符的参数
+     */
+    protected void debug(HttpLogLevel level, String msg, Object... args) {
+        if (config.getDebug().allows(level) && log.isDebugEnabled()) {
             log.debug(msg, args);
         }
     }

@@ -2,6 +2,8 @@ package io.github.easy4j.openclaw;
 
 import lombok.Data;
 
+import java.util.Objects;
+
 /**
  * 本地 CLI 通道配置，定义可执行文件、工作目录、启动探测、命令超时和最大并发子进程数。
  *
@@ -10,6 +12,23 @@ import lombok.Data;
  */
 @Data
 public class OpenClawCliConfig {
+
+    /** CLI 与 HTTP/SSE 通道共享的调试策略。 */
+    private final OpenClawDebugConfig debug;
+
+    /** 使用独立的默认调试策略创建配置。 */
+    public OpenClawCliConfig() {
+        this(new OpenClawDebugConfig());
+    }
+
+    /**
+     * 使用指定调试策略创建配置。
+     *
+     * @param debug 客户端共享调试策略
+     */
+    public OpenClawCliConfig(OpenClawDebugConfig debug) {
+        this.debug = Objects.requireNonNull(debug, "debug");
+    }
 
     /**
      * 是否创建并开放对应通信通道；关闭后门面不会初始化该子系统。
