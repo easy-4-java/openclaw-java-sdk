@@ -240,13 +240,15 @@ ChatRequest req = ChatRequest.builder()
         .toolChoice("auto")
         .build();
 
-client.chatCompletionStream(req)
-        .onDelta(delta -> System.out.print(delta))
-        .onToolCall(toolCalls -> toolCalls.forEach(
-                tc -> System.out.println(tc.getFunction().getName())))
-        .onComplete(text -> System.out.println("\n[done]"))
-        .onError(Throwable::printStackTrace);
+StreamingChatResponse stream = client.chatCompletionStream(
+        req,
+        OpenClawHeaders.builder().sessionKey("conversation-42"),
+        StreamingChatResponse.builder()
+                .onDelta(System.out::print)
+                .onToolCall(System.out::println));
 ```
+
+此调用形式会在 HTTP/SSE 订阅启动前绑定请求头与回调，避免首个流事件早于回调注册。
 
 ### 8.2 WebSocket 流式对话
 

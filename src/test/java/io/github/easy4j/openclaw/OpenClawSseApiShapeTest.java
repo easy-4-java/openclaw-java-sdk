@@ -28,6 +28,11 @@ class OpenClawSseApiShapeTest {
         assertFalse(hasMethod(OpenClawSseClient.class, "stop"));
         assertFalse(hasMethod(OpenClawChatClient.class, "events"));
         assertFalse(hasMethod(OpenClawChatClient.class, "chatCompletionStreamRaw"));
+        assertNotNull(OpenClawChatClient.class.getMethod(
+                "chatCompletionStream",
+                io.github.easy4j.openclaw.api.model.ChatRequest.class,
+                java.util.Map.class,
+                io.github.easy4j.openclaw.api.sse.StreamingChatResponse.Builder.class));
 
         for (Field field : OpenClawChatClient.class.getDeclaredFields()) {
             assertFalse("streamExecutor".equals(field.getName()));

@@ -241,13 +241,16 @@ ChatRequest req = ChatRequest.builder()
         .toolChoice("auto")
         .build();
 
-client.chatCompletionStream(req)
-        .onDelta(delta -> System.out.print(delta))
-        .onToolCall(toolCalls -> toolCalls.forEach(
-                tc -> System.out.println(tc.getFunction().getName())))
-        .onComplete(text -> System.out.println("\n[done]"))
-        .onError(Throwable::printStackTrace);
+StreamingChatResponse stream = client.chatCompletionStream(
+        req,
+        OpenClawHeaders.builder().sessionKey("conversation-42"),
+        StreamingChatResponse.builder()
+                .onDelta(System.out::print)
+                .onToolCall(System.out::println));
 ```
+
+This form attaches headers and callbacks before the HTTP/SSE subscription starts, so the first
+stream event cannot race callback registration.
 
 ### 8.2 WebSocket streaming conversation
 

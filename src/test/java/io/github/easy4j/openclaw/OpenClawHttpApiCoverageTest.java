@@ -35,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -112,6 +113,16 @@ class OpenClawHttpApiCoverageTest {
                     StreamingChatResponse.builder().onDelta(ignored -> { }).onChunk(ignored -> { })
                             .onToolCall(ignored -> { }).onComplete(ignored -> { }).onError(ignored -> { }));
             assertEquals("hello", callbackStream.get(3, TimeUnit.SECONDS).getChoices().get(0).getDelta().getContent());
+            AtomicReference<String> firstDelta = new AtomicReference<>();
+            StreamingChatResponse headerCallbackStream = chat.chatCompletionStream(
+                    agentRequest,
+                    Collections.singletonMap("X-OpenClaw-Session-Key", "liteflow-session"),
+                    StreamingChatResponse.builder().onDelta(firstDelta::set));
+            assertEquals("hello", headerCallbackStream.get(3, TimeUnit.SECONDS)
+                    .getChoices().get(0).getDelta().getContent());
+            assertEquals("hello", firstDelta.get());
+            assertTrue(requests.stream().anyMatch(request ->
+                    "liteflow-session".equals(request.header("X-OpenClaw-Session-Key"))));
             status.set(500);
             assertThrows(OpenClawHttpException.class, () -> chat.chatCompletion(agentRequest));
             StreamingChatResponse failedStream = chat.chatCompletionStream(agentRequest);
