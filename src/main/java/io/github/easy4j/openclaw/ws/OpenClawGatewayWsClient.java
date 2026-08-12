@@ -11,7 +11,6 @@ import io.github.easy4j.openclaw.ws.protocol.*;
 import io.github.easy4j.openclaw.ws.protocol.params.*;
 import io.github.easy4j.openclaw.ws.protocol.result.*;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.extension.logging.HttpLogLevel;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -160,7 +159,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
                     if (!connectFuture.isDone()) {
                         String nonce = challengeNonce.get();
                         if (nonce == null) {
-                            debug(HttpLogLevel.BASIC, "connect.challenge not received within {}ms, sending connect without nonce", CHALLENGE_TIMEOUT_MS);
+                            debug("BASIC", "connect.challenge not received within {}ms, sending connect without nonce", CHALLENGE_TIMEOUT_MS);
                         }
                         sendConnectHandshake();
                     }
@@ -190,7 +189,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
                     handleEvent(root);
                     break;
                 case "req":
-                    debug(HttpLogLevel.BODY, "Received unexpected req frame from Gateway: {}", root);
+                    debug("BODY", "Received unexpected req frame from Gateway: {}", root);
                     break;
                 default:
                     log.warn("Unknown frame type: {}", type);
@@ -250,7 +249,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         connectLock.lock();
         try {
             if (connectFuture.isDone()) {
-                debug(HttpLogLevel.BASIC, "Skipping duplicate connect handshake");
+                debug("BASIC", "Skipping duplicate connect handshake");
                 return;
             }
 
@@ -283,7 +282,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
 
             try {
                 String json = objectMapper.writeValueAsString(req);
-                debug(HttpLogLevel.BODY, "Sending connect handshake: {}", json);
+                debug("BODY", "Sending connect handshake: {}", json);
                 sendFrame(json);
             } catch (JsonProcessingException e) {
                 failConnectFuture(e);
@@ -307,7 +306,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
                 return current;
             }
             if (isOpen()) {
-                debug(HttpLogLevel.BASIC, "Closing existing WebSocket before reconnect");
+                debug("BASIC", "Closing existing WebSocket before reconnect");
                 super.close();
             }
             resetConnectStateUnderLock();
@@ -893,7 +892,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         return UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     }
 
-    private void debug(HttpLogLevel level, String message, Object... arguments) {
+    void debug(String level, String message, Object... arguments) {
         if (config.getDebug().allows(level)) {
             log.debug(message, arguments);
         }
@@ -915,9 +914,9 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
             String nonce = payload.path("nonce").asText(null);
             if (nonce != null) {
                 challengeNonce.set(nonce);
-                debug(HttpLogLevel.BASIC, "Received connect.challenge with nonce, sending connect handshake");
+                debug("BASIC", "Received connect.challenge with nonce, sending connect handshake");
             } else {
-                debug(HttpLogLevel.BASIC, "Received connect.challenge without nonce");
+                debug("BASIC", "Received connect.challenge without nonce");
             }
             // 收到挑战后立即发送 connect 握手
             sendConnectHandshake();

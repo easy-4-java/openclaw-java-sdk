@@ -10,7 +10,6 @@ import io.github.easy4j.openclaw.util.OpenClawStrings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import okhttp3.extension.logging.HttpLogLevel;
 
 import java.io.IOException;
 import java.util.Map;
@@ -83,7 +82,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
         this.objectMapper = objectMapper != null ? objectMapper : createObjectMapper();
         this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
         this.ownsHttpClient = ownsHttpClient;
-        debug(HttpLogLevel.BASIC, "OpenClaw HTTP client initialized: baseUrl={}, connectTimeoutMs={}, readTimeoutMs={}, "
+        debug("BASIC", "OpenClaw HTTP client initialized: baseUrl={}, connectTimeoutMs={}, readTimeoutMs={}, "
                         + "callTimeoutMs={}, retryOnConnectionFailure={}, debugLevel={}",
                 config.getBaseUrl(), config.getConnectTimeoutMillis(), config.getReadTimeoutMillis(),
                 config.getCallTimeoutMillis(), config.isRetryOnConnectionFailure(),
@@ -139,7 +138,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             headers.forEach((k, v) -> {
                 if (k != null && v != null) {
                     builder.header(k, v);
-                    debug(HttpLogLevel.HEADERS, "Added header: {}={}", k, redactHeader(k, v));
+                    debug("HEADERS", "Added header: {}={}", k, redactHeader(k, v));
                 }
             });
         }
@@ -200,7 +199,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
 
         try {
             String json = objectMapper.writeValueAsString(body);
-            debug(HttpLogLevel.BODY, "Request body: {}", truncate(json));
+            debug("BODY", "Request body: {}", truncate(json));
 
             Request request = authedBuilder(url, headers)
                     .post(RequestBody.create(json, JSON))
@@ -281,9 +280,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
                                                      HttpCallCancellation cancellation) {
         long requestId = REQUEST_SEQUENCE.incrementAndGet();
         long startedAt = System.nanoTime();
-        debug(HttpLogLevel.BASIC, "HTTP request started: requestId={}, method={}, url={}",
+        debug("BASIC", "HTTP request started: requestId={}, method={}, url={}",
                 requestId, request.method(), request.url());
-        debug(HttpLogLevel.HEADERS, "HTTP request headers: requestId={}, headers={}",
+        debug("HEADERS", "HTTP request headers: requestId={}, headers={}",
                 requestId, redactHeaders(request.headers()));
 
         // 传输层只读取状态码和响应体；此处统一把非 2xx 响应转换为携带诊断信息的 SDK 异常。
@@ -300,9 +299,9 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
                         requestId, request.method(), request.url(), elapsedMillis(startedAt), unwrap(error).getMessage());
                 return;
             }
-            debug(HttpLogLevel.BASIC, "HTTP request completed: requestId={}, method={}, url={}, bodyLength={}, elapsedMs={}",
+            debug("BASIC", "HTTP request completed: requestId={}, method={}, url={}, bodyLength={}, elapsedMs={}",
                     requestId, request.method(), request.url(), respBody.length(), elapsedMillis(startedAt));
-            debug(HttpLogLevel.BODY, "HTTP response body: requestId={}, body={}", requestId, truncate(respBody));
+            debug("BODY", "HTTP response body: requestId={}, body={}", requestId, truncate(respBody));
         });
     }
 
@@ -562,7 +561,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      * @param args 填充消息模板占位符的参数
      */
     protected void debug(String msg, Object... args) {
-        debug(HttpLogLevel.BASIC, msg, args);
+        debug("BASIC", msg, args);
     }
 
     /**
@@ -572,7 +571,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      * @param msg 包含 SLF4J 占位符的日志消息模板
      * @param args 填充消息模板占位符的参数
      */
-    protected void debug(HttpLogLevel level, String msg, Object... args) {
+    void debug(String level, String msg, Object... args) {
         if (config.getDebug().allows(level) && log.isDebugEnabled()) {
             log.debug(msg, args);
         }
