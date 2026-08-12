@@ -448,10 +448,10 @@
                         <artifactId>maven-release-plugin</artifactId>
                     </plugin>
 
-                    <!-- https://mvnrepository.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
+                    <!-- https://mvnrepository.com/artifact/org.sonatype.central/central-publishing-maven-plugin -->
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
