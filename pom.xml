@@ -112,6 +112,20 @@
                                 </rules>
                             </configuration>
                         </execution>
+                        <execution>
+                            <id>require-release-dependencies</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireReleaseDeps>
+                                        <message>OpenClaw SDK releases must not depend on SNAPSHOT artifacts</message>
+                                    </requireReleaseDeps>
+                                </rules>
+                            </configuration>
+                        </execution>
                     </executions>
                 </plugin>
 
