@@ -7,7 +7,6 @@ import io.github.easy4j.openclaw.api.model.EmbeddingsRequest;
 import io.github.easy4j.openclaw.api.model.EmbeddingsResponse;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
-import okhttp3.extension.logging.HttpLogLevel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +61,7 @@ public class OpenClawEmbeddingsClient extends OpenClawHttpClient {
         debug("=== Embeddings Request ===");
         debug("agent: {}", request.getAgent());
         debug("model: {}", request.getModel());
-        debug(HttpLogLevel.BODY, "input: {}", request.getInput());
+        debug("BODY", "input: {}", request.getInput());
 
         // 验证请求
         validateRequest(request);

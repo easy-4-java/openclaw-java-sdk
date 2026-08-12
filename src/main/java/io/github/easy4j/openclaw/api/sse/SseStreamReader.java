@@ -6,7 +6,6 @@ import io.github.easy4j.openclaw.OpenClawDebugConfig;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.api.model.ChatChunk;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.extension.logging.HttpLogLevel;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -108,7 +107,7 @@ public class SseStreamReader {
                             T chunk = objectMapper.readValue(data, chunkClass);
                             sseEvent.setParsed(chunk);
                         } catch (Exception parseEx) {
-                            if (debug.allows(HttpLogLevel.BASIC)) {
+                            if (debug.allows("BASIC")) {
                                 log.debug("Failed to parse SSE data as {}: {}",
                                         chunkClass.getSimpleName(), parseEx.getMessage());
                             }
