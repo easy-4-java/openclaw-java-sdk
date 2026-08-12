@@ -7,7 +7,7 @@
 纯 Java SDK —— 通过 HTTP、SSE、WebSocket 与本地 CLI 等独立通道对接 OpenClaw Gateway
 
 > **当前分支**：`feature/1.0.x`
-> **版本**：`1.0.x.20260630-SNAPSHOT`
+> **版本**：`1.0.x.20260813`
 > **JDK 基线**：8
 > **项目状态**：稳定（1.0.x 线）。尚未发布 Maven Central；制品通过 Aliyun Maven 仓库与 GitHub Releases 分发。
 
@@ -131,17 +131,17 @@ Maven：
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>openclaw-java-sdk</artifactId>
-    <version>1.0.x.20260630-SNAPSHOT</version>
+    <version>1.0.x.20260813</version>
 </dependency>
 ```
 
 Gradle：
 
 ```groovy
-implementation 'io.github.easy4j:openclaw-java-sdk:1.0.x.20260630-SNAPSHOT'
+implementation 'io.github.easy4j:openclaw-java-sdk:1.0.x.20260813'
 ```
 
-快照版本需要启用对应快照仓库（`pom.xml` 中 `distributionManagement` 指向 Aliyun Maven 仓库）。
+这是稳定发布制品。请配置组织使用的阿里云 Maven release 仓库；无需启用 snapshot 仓库。
 
 <a id="6-quick-start"></a>
 ## 6. 快速开始
