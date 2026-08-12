@@ -9,7 +9,6 @@ import io.github.easy4j.openclaw.api.model.ToolInvokeRequest;
 import io.github.easy4j.openclaw.api.model.ToolInvokeResult;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import okhttp3.extension.logging.HttpLogLevel;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -80,7 +79,7 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
         debug("=== Tool Invoke Request ===");
         debug("tool: {}", request.getTool());
         debug("action: {}", request.getAction());
-        debug(HttpLogLevel.BODY, "args: {}", request.getArgs());
+        debug("BODY", "args: {}", request.getArgs());
 
         if (OpenClawStrings.isBlank(request.getTool())) {
             String msg = "Tool name is required";
@@ -97,7 +96,7 @@ public class OpenClawToolInvokeClient extends OpenClawHttpClient {
                 int status = response.getStatusCode();
                 String respBody = response.getBody();
                 debug("Tool invoke response status: {}", status);
-                debug(HttpLogLevel.BODY, "Tool invoke response body: {}", truncate(respBody));
+                debug("BODY", "Tool invoke response body: {}", truncate(respBody));
 
                 if (status == 404) {
                     String msg = "Tool not available: " + request.getTool();

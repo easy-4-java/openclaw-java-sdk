@@ -11,7 +11,7 @@ class OpenClawHttpClientConfigTest {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
         org.junit.jupiter.api.Assertions.assertFalse(config.getDebug().isEnabled());
         org.junit.jupiter.api.Assertions.assertEquals(2_000, config.getDebug().getMaxContentLength());
-        org.junit.jupiter.api.Assertions.assertEquals(okhttp3.extension.logging.HttpLogLevel.BASIC,
+        org.junit.jupiter.api.Assertions.assertEquals("BASIC",
                 config.getDebug().getLevel());
     }
 

@@ -15,7 +15,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.extension.logging.HttpLogLevel;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -269,7 +268,7 @@ public class OpenClawSseClient extends OpenClawHttpClient {
     }
 
     private void logInitialization(OpenClawHttpClientConfig config) {
-        if (config.getDebug().allows(HttpLogLevel.BASIC)) {
+        if (config.getDebug().allows("BASIC")) {
             log.debug("OpenClaw SSE client initialized: baseUrl={}, maxRequests={}, "
                             + "maxRequestsPerHost={}, eventQueueCapacity={}, reconnectPolicy=none, debugLevel={}",
                     config.getBaseUrl(), config.getMaxRequests(), config.getMaxRequestsPerHost(),

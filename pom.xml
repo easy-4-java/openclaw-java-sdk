@@ -6,7 +6,7 @@
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/easy-4-java/${project.artifactId}</url>
     <description>OpenClaw external integration SDK (HTTP Gateway + local CLI)</description>
-    <version>1.0.x.20260730-SNAPSHOT</version>
+    <version>2.0.x.20260730-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <!-- 开源协议采用 Apache 2.0 协议 -->
@@ -66,6 +66,7 @@
                         <source>${java.version}</source>
                         <!-- 目标平台编译版本 -->
                         <target>${java.version}</target>
+                        <release>${java.version}</release>
                         <!-- 字符集编码 -->
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <!-- 编译最大内存 -->
@@ -360,6 +361,7 @@
 		<junit.version>4.13.2</junit.version>
 		<slf4j.version>2.0.18</slf4j.version>
 		<lombok.version>1.18.46</lombok.version>
+		<jackson.version>2.18.9</jackson.version>
 		<commons-lang.version>2.6</commons-lang.version></properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
@@ -446,10 +448,10 @@
                         <artifactId>maven-release-plugin</artifactId>
                     </plugin>
 
-                    <!-- https://mvnrepository.com/artifact/org.sonatype.central/central-publishing-maven-plugin -->
+                    <!-- https://mvnrepository.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
                     <plugin>
-                        <groupId>org.sonatype.central</groupId>
-                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
@@ -458,19 +460,18 @@
 
     <!-- 版本属性定义：Java 版本、依赖版本与 Maven 插件版本统一管理 -->
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version>3.0</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
-        <commons-exec.version>1.4.0</commons-exec.version>
+        <commons-exec.version>1.6.0</commons-exec.version>
         <jackson.version>2.18.9</jackson.version>
         <java-websocket.version>1.6.0</java-websocket.version>
         <junit.version>5.11.4</junit.version>
-        <junit-jupiter.version>5.11.4</junit-jupiter.version>
+        <junit-jupiter.version>6.1.0</junit-jupiter.version>
         <lombok.version>1.18.46</lombok.version>
         <okhttp3.version>4.12.0</okhttp3.version>
-        <okhttp3-extension.version>1.0.x.20260630-SNAPSHOT</okhttp3-extension.version>
         <slf4j.version>2.0.18</slf4j.version>
         <!-- Maven Plugin versions -->
         <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
@@ -494,11 +495,6 @@
     <!-- 依赖版本统一管理（dependencyManagement） -->
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>io.github.easy4j</groupId>
-                <artifactId>okhttp3-extension</artifactId>
-                <version>${okhttp3-extension.version}</version>
-            </dependency>
             <!-- For OkHttp -->
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
@@ -523,6 +519,16 @@
                 <version>${java-websocket.version}</version>
             </dependency>
             <!-- For Jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
@@ -559,10 +565,6 @@
 
     <!-- 项目依赖（dependencies） -->
     <dependencies>
-        <dependency>
-            <groupId>io.github.easy4j</groupId>
-            <artifactId>okhttp3-extension</artifactId>
-        </dependency>
         <!-- For OkHttp -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
