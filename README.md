@@ -195,6 +195,21 @@ Configuration is object-based (no Spring properties in this library). Three conf
 | `gatewayBaseUrl` | String | `http://localhost:18789` | Gateway base URL |
 | `gatewayAuthToken` | String | — | Control-plane token |
 | `gatewayAuthPassword` | String | — | Control-plane password mode |
+| `gatewayAuthBootstrapToken` | String | — | One-time device bootstrap token; requires `gatewayDeviceIdentity` |
+| `gatewayAuthDeviceToken` | String | — | Paired-device token; requires `gatewayDeviceIdentity` |
+| `gatewayApprovalRuntimeToken` | String | — | Local trusted approval-runtime token |
+| `gatewayAgentRuntimeIdentityToken` | String | — | Local backend Agent Runtime identity token |
+| `gatewayRole` | String | `operator` | WS role: `operator` or `node` |
+| `gatewayScopes` | List<String> | `operator.read/write` | WS handshake scopes; system-provenance fields require explicit `operator.admin`, and Gateway applies the final policy |
+| `gatewayClientId/displayName/version/platform/mode` | String | SDK defaults | Gateway client identity fields |
+| `gatewayClientDeviceFamily/modelIdentifier/instanceId` | String | — | Optional presence, audit, and device-signature metadata |
+| `gatewayCapabilities` | List<String> | empty | Declared Gateway capabilities |
+| `gatewayCommands` | List<String> | — | Commands exposed by a node client |
+| `gatewayPermissions` | Map<String, Boolean> | — | Host permission snapshot reported by a node client |
+| `gatewayPathEnv` | String | — | PATH snapshot reported by a node client |
+| `gatewayLocale` | String | JVM locale | Locale sent in the connect payload |
+| `gatewayUserAgent` | String | SDK version | User-Agent sent in the connect payload |
+| `gatewayDeviceIdentity` | `OpenClawGatewayDeviceIdentity` | — | Signs each server challenge dynamically with the device Ed25519 private key |
 | `hooksToken` | String | — | Webhook auth token |
 | `hooksPath` | String | `/hooks` | Webhook base path |
 | `hooksUseXOpenclawTokenHeader` | boolean | `false` | Send the hook token via `x-openclaw-token` header |
@@ -226,6 +241,8 @@ Custom request headers via `OpenClawHeaders.Builder`:
 | `x-openclaw-scopes` | `X_OPENCLAW_SCOPES` | Scope claims |
 
 Auth priority: webhook (`/hooks/*`) uses `hooksToken`; control plane (`/v1/*`, `/tools/*`, WebSocket) uses `gatewayAuthToken` → `gatewayAuthPassword` → `hooksToken` → none.
+
+Device authentication is not a static DTO-only field. When `gatewayDeviceIdentity` is configured, the SDK builds the OpenClaw v3 payload from the current challenge nonce, role, scopes, token and client metadata, then invokes `sign(payload)`. `gatewayAuthBootstrapToken` and `gatewayAuthDeviceToken` are rejected before the handshake when no device identity is configured. Runtime tokens are accepted by OpenClaw only for their trusted local backend scenarios; configuring an arbitrary value does not grant those privileges.
 
 <a id="8-core-usage"></a>
 ## 8. Core Usage
@@ -262,6 +279,23 @@ client.chatSend("Hello", new ChatStreamHandler() {
     @Override public void onError(String error) { System.err.println(error); }
 });
 ```
+
+Use native `ChatSendParams` when a turn must override OpenClaw execution parameters:
+
+```java
+client.ws().chatSend(ChatSendParams.builder()
+        .sessionKey("agent:ops:conversation-42")
+        .agentId("ops")
+        .message("Analyze this turn")
+        .thinkingLevel(ThinkingLevel.MINIMAL)
+        .fastMode("auto")
+        .fastAutoOnSeconds(10)
+        .suppressCommandInterpretation(true)
+        .idempotencyKey("turn-42")
+        .build(), handler);
+```
+
+`ChatSendParams` matches the complete OpenClaw `2026.7.1-2` `chat.send` schema: session/agent selection, per-turn thinking, `fastMode`, auto-fast cutoff, delivery origin, attachments, timeout, system provenance, command-interpretation suppression, routing contract and idempotency. HTTP Chat Completions continues to emit only the OpenAI fields OpenClaw explicitly supports. `ResponseRequest` separately models the accepted-but-currently-ignored compatibility fields `max_tool_calls`, `reasoning`, `metadata`, `store`, and `truncation`.
 
 ### 8.3 Local CLI
 

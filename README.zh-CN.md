@@ -194,6 +194,21 @@ client.close();
 | `gatewayBaseUrl` | String | `http://localhost:18789` | Gateway 根地址 |
 | `gatewayAuthToken` | String | — | 控制面令牌 |
 | `gatewayAuthPassword` | String | — | 控制面密码模式 |
+| `gatewayAuthBootstrapToken` | String | — | 一次性设备引导令牌；必须配置 `gatewayDeviceIdentity` |
+| `gatewayAuthDeviceToken` | String | — | 已配对设备令牌；必须配置 `gatewayDeviceIdentity` |
+| `gatewayApprovalRuntimeToken` | String | — | 本地受信任审批运行时令牌 |
+| `gatewayAgentRuntimeIdentityToken` | String | — | 本地 backend Agent Runtime 身份令牌 |
+| `gatewayRole` | String | `operator` | WS 连接角色：`operator` 或 `node` |
+| `gatewayScopes` | List<String> | `operator.read/write` | WS 握手请求权限；系统来源字段需显式加入 `operator.admin`，最终权限由 Gateway 策略裁剪 |
+| `gatewayClientId/displayName/version/platform/mode` | String | SDK 默认值 | Gateway 客户端身份字段 |
+| `gatewayClientDeviceFamily/modelIdentifier/instanceId` | String | — | 可选 presence、审计和设备签名元数据 |
+| `gatewayCapabilities` | List<String> | 空列表 | 客户端声明的 Gateway 能力 |
+| `gatewayCommands` | List<String> | — | node 客户端向 Gateway 暴露的命令 |
+| `gatewayPermissions` | Map<String, Boolean> | — | node 客户端上报的宿主权限快照 |
+| `gatewayPathEnv` | String | — | node 客户端上报的 PATH 快照 |
+| `gatewayLocale` | String | JVM 默认区域 | connect 握手上报的区域设置 |
+| `gatewayUserAgent` | String | SDK 版本 | connect 握手上报的 User-Agent |
+| `gatewayDeviceIdentity` | `OpenClawGatewayDeviceIdentity` | — | 使用设备 Ed25519 私钥为每次服务端 challenge 动态签名 |
 | `hooksToken` | String | — | Webhook 鉴权令牌 |
 | `hooksPath` | String | `/hooks` | Webhook 基础路径 |
 | `hooksUseXOpenclawTokenHeader` | boolean | `false` | 用 `x-openclaw-token` 头传 Hook 令牌 |
@@ -225,6 +240,8 @@ client.close();
 | `x-openclaw-scopes` | `X_OPENCLAW_SCOPES` | 权限范围声明 |
 
 认证优先级：Webhook（`/hooks/*`）使用 `hooksToken`；控制面（`/v1/*`、`/tools/*`、WebSocket）为 `gatewayAuthToken` → `gatewayAuthPassword` → `hooksToken` → 空。
+
+设备认证不是只做 DTO 字段映射。配置 `gatewayDeviceIdentity` 后，SDK 会使用本次 challenge 的 nonce、角色、权限范围、认证令牌和客户端元数据构造 OpenClaw v3 载荷，再调用 `sign(payload)`。配置 `gatewayAuthBootstrapToken` 或 `gatewayAuthDeviceToken` 却没有设备身份时，SDK 会在握手前拒绝请求。运行时令牌只在 OpenClaw 定义的本地受信任 backend 场景中生效，任意填写字符串不会获得对应权限。
 
 <a id="8-core-usage"></a>
 ## 8. 核心用法
@@ -260,6 +277,23 @@ client.chatSend("你好", new ChatStreamHandler() {
     @Override public void onError(String error) { System.err.println(error); }
 });
 ```
+
+需要逐轮覆盖 OpenClaw 执行参数时，使用原生 `ChatSendParams`：
+
+```java
+client.ws().chatSend(ChatSendParams.builder()
+        .sessionKey("agent:ops:conversation-42")
+        .agentId("ops")
+        .message("分析这一轮问题")
+        .thinkingLevel(ThinkingLevel.MINIMAL)
+        .fastMode("auto")
+        .fastAutoOnSeconds(10)
+        .suppressCommandInterpretation(true)
+        .idempotencyKey("turn-42")
+        .build(), handler);
+```
+
+`ChatSendParams` 对齐 OpenClaw `2026.7.1-2` 的完整 `chat.send` Schema，包括会话/Agent、逐轮 thinking、`fastMode`、自动快速窗口、投递来源、附件、超时、系统来源证明、指令解释抑制、路由契约与幂等键。HTTP Chat Completions 继续只发送 OpenClaw 明确支持的 OpenAI 参数；`ResponseRequest` 另行建模了 OpenClaw 接受但当前忽略的 `max_tool_calls`、`reasoning`、`metadata`、`store`、`truncation`，便于兼容上层客户端。
 
 ### 8.3 本地 CLI
 

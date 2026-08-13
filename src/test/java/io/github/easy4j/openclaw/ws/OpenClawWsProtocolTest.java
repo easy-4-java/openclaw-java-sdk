@@ -26,7 +26,7 @@ class OpenClawWsProtocolTest {
     void testConnectParamsToMap() {
         ConnectParams params = new ConnectParams(
                 1, 1,
-                new ConnectParams.ClientInfo("test-client", "Test", "1.0.0", "java", "operator"),
+                new ConnectParams.ClientInfo("test", "Test", "1.0.0", "java", "test"),
                 ConnectParams.AuthInfo.token("my-token")
         );
 
@@ -46,7 +46,7 @@ class OpenClawWsProtocolTest {
     void testConnectParamsWithPassword() {
         ConnectParams params = new ConnectParams(
                 1, 1,
-                new ConnectParams.ClientInfo("test-client", null, "1.0.0", "java", "operator"),
+                new ConnectParams.ClientInfo("test", null, "1.0.0", "java", "test"),
                 ConnectParams.AuthInfo.password("my-password")
         );
 

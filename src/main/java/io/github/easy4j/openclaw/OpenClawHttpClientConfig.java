@@ -1,8 +1,14 @@
 package io.github.easy4j.openclaw;
 
 import io.github.easy4j.openclaw.util.OpenClawStrings;
+import io.github.easy4j.openclaw.ws.OpenClawGatewayDeviceIdentity;
 import lombok.Data;
+import lombok.ToString;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -61,12 +67,94 @@ public class OpenClawHttpClientConfig {
     /**
      * Gateway Bearer 认证令牌；解析认证头时优先于密码且日志必须脱敏。
      */
+    @ToString.Exclude
     private String gatewayAuthToken;
 
     /**
      * Gateway 密码认证值；仅在未配置 token 时使用且日志必须脱敏。
      */
+    @ToString.Exclude
     private String gatewayAuthPassword;
+
+    /**
+     * 设备首次受控接入使用的一次性引导令牌；必须配合 {@link #gatewayDeviceIdentity} 使用。
+     */
+    @ToString.Exclude
+    private String gatewayAuthBootstrapToken;
+
+    /**
+     * 已配对设备的认证令牌；必须配合 {@link #gatewayDeviceIdentity} 使用。
+     */
+    @ToString.Exclude
+    private String gatewayAuthDeviceToken;
+
+    /**
+     * 本地审批运行时令牌，仅用于受信任的 backend gateway-client 和审批权限范围。
+     */
+    @ToString.Exclude
+    private String gatewayApprovalRuntimeToken;
+
+    /**
+     * 本地 Agent Runtime 身份令牌，仅允许受信任的 backend gateway-client 使用。
+     */
+    @ToString.Exclude
+    private String gatewayAgentRuntimeIdentityToken;
+
+    /** Gateway connect 握手角色；OpenClaw 当前支持 {@code operator} 和 {@code node}。 */
+    private String gatewayRole = "operator";
+
+    /**
+     * WebSocket connect 握手请求的操作权限范围；Gateway 最终仍会按认证身份和服务端策略裁剪。
+     */
+    private List<String> gatewayScopes = Arrays.asList("operator.read", "operator.write");
+
+    /** Gateway 协议识别的客户端 ID。 */
+    private String gatewayClientId = "gateway-client";
+
+    /** Gateway presence 和审计记录中展示的客户端名称。 */
+    private String gatewayClientDisplayName = "OpenClaw Java SDK";
+
+    /** Gateway presence 和兼容性判断使用的客户端版本。 */
+    private String gatewayClientVersion = "1.0.0";
+
+    /** Gateway 记录和设备签名使用的客户端平台。 */
+    private String gatewayClientPlatform = "java";
+
+    /** Gateway 客户端运行模式。 */
+    private String gatewayClientMode = "backend";
+
+    /** 可选设备家族，会参与 v3 设备认证签名。 */
+    private String gatewayClientDeviceFamily;
+
+    /** 可选设备型号标识，用于客户端 presence 元数据。 */
+    private String gatewayClientModelIdentifier;
+
+    /** 可选客户端实例标识，用于区分同一程序的不同运行实例。 */
+    private String gatewayClientInstanceId;
+
+    /** 客户端声明的 Gateway 能力列表。 */
+    private List<String> gatewayCapabilities = Collections.emptyList();
+
+    /** node 类客户端可由 Gateway 调用的命令列表。 */
+    private List<String> gatewayCommands;
+
+    /** 客户端上报的宿主权限快照。 */
+    private Map<String, Boolean> gatewayPermissions;
+
+    /** node 类客户端执行命令时使用的 PATH 环境快照。 */
+    private String gatewayPathEnv;
+
+    /** connect 握手上报的区域设置；为空时使用 JVM 默认区域。 */
+    private String gatewayLocale;
+
+    /** connect 握手上报的 User-Agent；为空时使用 SDK 默认值。 */
+    private String gatewayUserAgent;
+
+    /**
+     * 可选 Gateway 设备身份签名器；配置后 SDK 会针对每次 challenge 动态生成签名。
+     */
+    @ToString.Exclude
+    private OpenClawGatewayDeviceIdentity gatewayDeviceIdentity;
 
     /**
      * HTTPS/WSS 是否校验证书和主机名；生产环境应保持开启。

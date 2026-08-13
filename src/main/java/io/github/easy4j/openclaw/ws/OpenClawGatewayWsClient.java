@@ -32,7 +32,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     /**
      * 当前客户端声明支持的 Gateway WebSocket 协议版本。
      */
-    private static final int PROTOCOL_VERSION = 1;
+    private static final int PROTOCOL_VERSION = 4;
 
     /**
      * 网络、握手或进程等待的默认超时为 {@code 120_000L}，单位为字段声明的计量单位。
@@ -219,8 +219,8 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         }
         pendingRpcs.clear();
         // 活动流也以错误结束，保证每个 handler 都观察到明确终态。
-        for (Map.Entry<String, ChatStreamCollector> entry : activeChatStreams.entrySet()) {
-            entry.getValue().handler.onError("WebSocket closed: " + reason);
+        for (ChatStreamCollector collector : new java.util.HashSet<ChatStreamCollector>(activeChatStreams.values())) {
+            collector.handler.onError("WebSocket closed: " + reason);
         }
         activeChatStreams.clear();
         // 通知监听器
@@ -253,26 +253,32 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
                 return;
             }
 
-            ConnectParams.AuthInfo auth = null;
-            String token = config.getGatewayAuthToken();
-            String password = config.getGatewayAuthPassword();
-            if (OpenClawStrings.isNotBlank(token)) {
-                auth = ConnectParams.AuthInfo.token(token);
-            } else if (OpenClawStrings.isNotBlank(password)) {
-                auth = ConnectParams.AuthInfo.password(password);
-            }
+            String role = requireGatewayRole(config.getGatewayRole());
+            List<String> scopes = Objects.isNull(config.getGatewayScopes())
+                    ? Collections.<String>emptyList() : config.getGatewayScopes();
+            ConnectParams.AuthInfo auth = buildConnectAuth();
+            ConnectParams.ClientInfo client = buildConnectClientInfo();
+            ConnectParams.DeviceInfo device = buildDeviceInfo(client, auth, role, scopes);
+            String locale = OpenClawStrings.isNotBlank(config.getGatewayLocale())
+                    ? config.getGatewayLocale().trim() : Locale.getDefault().toLanguageTag();
+            String userAgent = OpenClawStrings.isNotBlank(config.getGatewayUserAgent())
+                    ? config.getGatewayUserAgent().trim() : "openclaw-java-sdk/1.0.0";
 
-            ConnectParams params = new ConnectParams(
-                    PROTOCOL_VERSION, PROTOCOL_VERSION,
-                    new ConnectParams.ClientInfo(
-                            "openclaw-java-sdk",
-                            "OpenClaw Java SDK",
-                            "1.0.0",
-                            "java",
-                            "operator"
-                    ),
-                    auth
-            );
+            ConnectParams params = ConnectParams.builder()
+                    .minProtocol(PROTOCOL_VERSION)
+                    .maxProtocol(PROTOCOL_VERSION)
+                    .client(client)
+                    .caps(config.getGatewayCapabilities())
+                    .commands(config.getGatewayCommands())
+                    .permissions(config.getGatewayPermissions())
+                    .pathEnv(config.getGatewayPathEnv())
+                    .auth(auth)
+                    .role(role)
+                    .scopes(scopes)
+                    .device(device)
+                    .locale(locale)
+                    .userAgent(userAgent)
+                    .build();
 
             String reqId = generateId();
             RequestFrame req = new RequestFrame(reqId, "connect", params.toParamsMap());
@@ -282,13 +288,178 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
 
             try {
                 String json = objectMapper.writeValueAsString(req);
-                debug("BODY", "Sending connect handshake: {}", json);
+                debug("BODY", "Sending connect handshake: {}", redactConnectHandshake(json));
                 sendFrame(json);
             } catch (JsonProcessingException e) {
                 failConnectFuture(e);
             }
+        } catch (RuntimeException e) {
+            failConnectFuture(e);
+            throw e;
         } finally {
             connectLock.unlock();
+        }
+    }
+
+    /**
+     * 按 OpenClaw connect schema 汇总共享认证、设备认证和本地运行时令牌。
+     *
+     * @return 未配置任何认证材料时返回 {@code null}，否则返回认证参数
+     */
+    private ConnectParams.AuthInfo buildConnectAuth() {
+        ConnectParams.AuthInfo.AuthInfoBuilder builder = ConnectParams.AuthInfo.builder();
+        boolean configured = false;
+        if (OpenClawStrings.isNotBlank(config.getGatewayAuthToken())) {
+            builder.token(config.getGatewayAuthToken().trim());
+            configured = true;
+        } else if (OpenClawStrings.isNotBlank(config.getGatewayAuthPassword())) {
+            builder.password(config.getGatewayAuthPassword().trim());
+            configured = true;
+        }
+        if (OpenClawStrings.isNotBlank(config.getGatewayAuthBootstrapToken())) {
+            builder.bootstrapToken(config.getGatewayAuthBootstrapToken().trim());
+            configured = true;
+        }
+        if (OpenClawStrings.isNotBlank(config.getGatewayAuthDeviceToken())) {
+            builder.deviceToken(config.getGatewayAuthDeviceToken().trim());
+            configured = true;
+        }
+        if (OpenClawStrings.isNotBlank(config.getGatewayApprovalRuntimeToken())) {
+            builder.approvalRuntimeToken(config.getGatewayApprovalRuntimeToken().trim());
+            configured = true;
+        }
+        if (OpenClawStrings.isNotBlank(config.getGatewayAgentRuntimeIdentityToken())) {
+            builder.agentRuntimeIdentityToken(config.getGatewayAgentRuntimeIdentityToken().trim());
+            configured = true;
+        }
+        return configured ? builder.build() : null;
+    }
+
+    /**
+     * 根据配置构造 Gateway 客户端身份，并在发送前校验必填值。
+     *
+     * @return 可直接序列化到 connect 请求的客户端身份
+     */
+    private ConnectParams.ClientInfo buildConnectClientInfo() {
+        return ConnectParams.ClientInfo.builder()
+                .id(requireConnectValue(config.getGatewayClientId(), "gatewayClientId"))
+                .displayName(config.getGatewayClientDisplayName())
+                .version(requireConnectValue(config.getGatewayClientVersion(), "gatewayClientVersion"))
+                .platform(requireConnectValue(config.getGatewayClientPlatform(), "gatewayClientPlatform"))
+                .mode(requireConnectValue(config.getGatewayClientMode(), "gatewayClientMode"))
+                .deviceFamily(config.getGatewayClientDeviceFamily())
+                .modelIdentifier(config.getGatewayClientModelIdentifier())
+                .instanceId(config.getGatewayClientInstanceId())
+                .build();
+    }
+
+    /**
+     * 使用本次 challenge nonce 动态生成设备身份签名，避免复用过期的签名和时间戳。
+     *
+     * @param client 已校验的客户端身份
+     * @param auth 本次握手认证参数
+     * @param role Gateway 连接角色
+     * @param scopes 本次请求的权限范围
+     * @return 未配置设备身份时返回 {@code null}，否则返回本次 challenge 的签名对象
+     */
+    private ConnectParams.DeviceInfo buildDeviceInfo(ConnectParams.ClientInfo client,
+                                                      ConnectParams.AuthInfo auth,
+                                                      String role,
+                                                      List<String> scopes) {
+        OpenClawGatewayDeviceIdentity identity = config.getGatewayDeviceIdentity();
+        if (Objects.isNull(identity)) {
+            if (OpenClawStrings.isNotBlank(config.getGatewayAuthBootstrapToken())
+                    || OpenClawStrings.isNotBlank(config.getGatewayAuthDeviceToken())) {
+                throw new IllegalStateException("gatewayDeviceIdentity is required for bootstrapToken or deviceToken");
+            }
+            return null;
+        }
+        String nonce = requireConnectValue(challengeNonce.get(), "connect.challenge nonce");
+        String deviceId = requireConnectValue(identity.getDeviceId(), "gatewayDeviceIdentity.deviceId");
+        String publicKey = requireConnectValue(identity.getPublicKey(), "gatewayDeviceIdentity.publicKey");
+        long signedAt = System.currentTimeMillis();
+        String signatureToken = resolveDeviceSignatureToken(auth);
+        String payload = buildDeviceAuthPayload(deviceId, client, role, scopes, signedAt,
+                signatureToken, nonce);
+        String signature = requireConnectValue(identity.sign(payload), "gatewayDeviceIdentity.signature");
+        return new ConnectParams.DeviceInfo(deviceId, publicKey, signature, signedAt, nonce);
+    }
+
+    /**
+     * 构造 OpenClaw v3 设备认证签名载荷。
+     */
+    private String buildDeviceAuthPayload(String deviceId, ConnectParams.ClientInfo client,
+                                          String role, List<String> scopes, long signedAt,
+                                          String signatureToken, String nonce) {
+        return "v3|" + deviceId
+                + "|" + client.getId()
+                + "|" + client.getMode()
+                + "|" + role
+                + "|" + String.join(",", scopes)
+                + "|" + signedAt
+                + "|" + (Objects.isNull(signatureToken) ? "" : signatureToken)
+                + "|" + nonce
+                + "|" + normalizeDeviceMetadata(client.getPlatform())
+                + "|" + normalizeDeviceMetadata(client.getDeviceFamily());
+    }
+
+    private String resolveDeviceSignatureToken(ConnectParams.AuthInfo auth) {
+        if (Objects.isNull(auth)) {
+            return null;
+        }
+        if (OpenClawStrings.isNotBlank(auth.getToken())) {
+            return auth.getToken();
+        }
+        if (OpenClawStrings.isNotBlank(auth.getDeviceToken())) {
+            return auth.getDeviceToken();
+        }
+        return OpenClawStrings.isNotBlank(auth.getBootstrapToken()) ? auth.getBootstrapToken() : null;
+    }
+
+    private String normalizeDeviceMetadata(String value) {
+        return Objects.isNull(value) ? "" : value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private String requireGatewayRole(String role) {
+        String normalized = requireConnectValue(role, "gatewayRole");
+        if (!"operator".equals(normalized) && !"node".equals(normalized)) {
+            throw new IllegalArgumentException("gatewayRole must be operator or node");
+        }
+        return normalized;
+    }
+
+    private String requireConnectValue(String value, String name) {
+        if (OpenClawStrings.isBlank(value)) {
+            throw new IllegalArgumentException(name + " must not be blank");
+        }
+        return value.trim();
+    }
+
+    /**
+     * 对 connect BODY 调试日志中的认证材料和设备签名脱敏。
+     *
+     * @param json 原始 connect 请求 JSON
+     * @return 保留协议结构但不包含认证秘密和设备签名的 JSON
+     */
+    String redactConnectHandshake(String json) {
+        try {
+            JsonNode root = objectMapper.readTree(json);
+            JsonNode auth = root.path("params").path("auth");
+            if (auth.isObject()) {
+                Iterator<String> names = auth.fieldNames();
+                while (names.hasNext()) {
+                    ((com.fasterxml.jackson.databind.node.ObjectNode) auth)
+                            .put(names.next(), "<redacted>");
+                }
+            }
+            JsonNode device = root.path("params").path("device");
+            if (device.isObject() && device.has("signature")) {
+                ((com.fasterxml.jackson.databind.node.ObjectNode) device)
+                        .put("signature", "<redacted>");
+            }
+            return objectMapper.writeValueAsString(root);
+        } catch (JsonProcessingException e) {
+            return "<connect-payload-redacted>";
         }
     }
 
@@ -644,13 +815,20 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
      * @param handler 事件处理器
      */
     public void chatSend(ChatSendParams params, ChatStreamHandler handler) {
+        Objects.requireNonNull(params, "params");
+        Objects.requireNonNull(handler, "handler");
         String reqId = generateId();
+        Map<String, Object> paramsMap = params.toParamsMap();
+        String idempotencyKey = params.getIdempotencyKey();
+        if (idempotencyKey == null) {
+            idempotencyKey = reqId;
+            paramsMap.put("idempotencyKey", idempotencyKey);
+        }
         ChatStreamCollector collector = new ChatStreamCollector(reqId, handler);
         activeChatStreams.put(reqId, collector);
-
-        Map<String, Object> paramsMap = params.toParamsMap();
-        // idempotencyKey: Gateway chat.send 要求
-        paramsMap.put("idempotencyKey", reqId);
+        if (!reqId.equals(idempotencyKey)) {
+            activeChatStreams.put(idempotencyKey, collector);
+        }
 
         try {
             RequestFrame req = new RequestFrame(reqId, "chat.send", paramsMap);
@@ -748,9 +926,18 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         // chat.send 的实际回复通过 event 帧推送，但 RPC 响应也需消费
         if (activeChatStreams.containsKey(id)) {
             if (!ok && error != null) {
-                ChatStreamCollector collector = activeChatStreams.remove(id);
+                ChatStreamCollector collector = activeChatStreams.get(id);
                 if (collector != null) {
+                    removeChatStream(collector);
                     collector.handler.onError(error.getMessage());
+                }
+            } else if (ok && payload instanceof Map) {
+                Object runId = ((Map<?, ?>) payload).get("runId");
+                if (runId instanceof String && !((String) runId).isEmpty()) {
+                    ChatStreamCollector collector = activeChatStreams.get(id);
+                    if (collector != null) {
+                        activeChatStreams.put((String) runId, collector);
+                    }
                 }
             }
             // ok=true 时 chat.send 的内容通过 event 帧推送，无需在此处理
@@ -796,8 +983,11 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         }
 
         String runId = (String) p.get("runId");
-        boolean done = Boolean.TRUE.equals(p.get("done"));
-        String delta = (String) p.get("delta");
+        String state = p.get("state") instanceof String ? (String) p.get("state") : null;
+        boolean done = Boolean.TRUE.equals(p.get("done")) || "final".equals(state);
+        String delta = p.get("deltaText") instanceof String
+                ? (String) p.get("deltaText")
+                : (String) p.get("delta");
 
         // 匹配到活跃的 chat stream
         ChatStreamCollector collector = null;
@@ -822,9 +1012,19 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
 
         if (done) {
             String fullText = collector.textBuilder.toString();
-            activeChatStreams.remove(collector.reqId);
+            removeChatStream(collector);
             collector.handler.onComplete(fullText);
+        } else if ("aborted".equals(state) || "error".equals(state)) {
+            Object errorMessage = p.get("errorMessage");
+            removeChatStream(collector);
+            collector.handler.onError(errorMessage instanceof String
+                    ? (String) errorMessage
+                    : "OpenClaw chat " + state);
         }
+    }
+
+    private void removeChatStream(ChatStreamCollector collector) {
+        activeChatStreams.entrySet().removeIf(entry -> entry.getValue() == collector);
     }
 
     // ============================================================
