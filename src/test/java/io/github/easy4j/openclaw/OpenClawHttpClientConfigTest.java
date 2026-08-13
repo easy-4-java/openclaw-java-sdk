@@ -1,6 +1,5 @@
 package io.github.easy4j.openclaw;
 
-import okhttp3.extension.logging.HttpLogLevel;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,14 +11,7 @@ class OpenClawHttpClientConfigTest {
         OpenClawHttpClientConfig config = new OpenClawHttpClientConfig();
         org.junit.jupiter.api.Assertions.assertFalse(config.getDebug().isEnabled());
         org.junit.jupiter.api.Assertions.assertEquals(2_000, config.getDebug().getMaxContentLength());
-        org.junit.jupiter.api.Assertions.assertEquals(HttpLogLevel.BASIC,
-                config.getDebug().getLevel());
-
-        config.getDebug().setLevel(HttpLogLevel.BODY);
-        org.junit.jupiter.api.Assertions.assertEquals(HttpLogLevel.BODY,
-                config.getDebug().getLevel());
-        config.getDebug().setLevel("HEADERS");
-        org.junit.jupiter.api.Assertions.assertEquals(HttpLogLevel.HEADERS,
+        org.junit.jupiter.api.Assertions.assertEquals("BASIC",
                 config.getDebug().getLevel());
     }
 
