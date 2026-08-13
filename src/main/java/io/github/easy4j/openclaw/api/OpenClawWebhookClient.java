@@ -2,6 +2,7 @@ package io.github.easy4j.openclaw.api;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
 import io.github.easy4j.openclaw.api.model.HookRequest;
 import io.github.easy4j.openclaw.api.model.HookResponse;
@@ -32,7 +33,7 @@ public class OpenClawWebhookClient extends OpenClawHttpClient {
     /**
      * 仅用于解析 Webhook 响应 JSON 的共享 ObjectMapper。
      */
-    private static final ObjectMapper RESPONSE_MAPPER = new ObjectMapper();
+    private static final ObjectMapper RESPONSE_MAPPER = new JsonMapper();
 
     /**
      * 使用默认映射器创建 Webhook 客户端，并复用调用方提供的 OkHttp 连接资源。

@@ -2,6 +2,7 @@ package io.github.easy4j.openclaw.api.sse;
 
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.OpenClawDebugConfig;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.api.model.ChatChunk;
@@ -49,8 +50,7 @@ public class SseStreamReader {
      * @param debug 客户端级调试配置
      */
     public SseStreamReader(ObjectMapper objectMapper, OpenClawDebugConfig debug) {
-        this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.objectMapper = objectMapper != null ? objectMapper : JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
         this.debug = debug != null ? debug : new OpenClawDebugConfig();
     }
 

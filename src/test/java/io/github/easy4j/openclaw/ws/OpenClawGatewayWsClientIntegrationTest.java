@@ -2,6 +2,7 @@ package io.github.easy4j.openclaw.ws;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
 import io.github.easy4j.openclaw.exception.OpenClawWsRpcException;
 import io.github.easy4j.openclaw.ws.protocol.EventFrame;
@@ -278,7 +279,7 @@ class OpenClawGatewayWsClientIntegrationTest {
     }
 
     private static final class TestGateway extends WebSocketServer {
-        private final ObjectMapper mapper = new ObjectMapper();
+        private final ObjectMapper mapper = new JsonMapper();
         private final CountDownLatch started = new CountDownLatch(1);
         private final AtomicReference<JsonNode> connectRequest = new AtomicReference<>();
         private final AtomicReference<JsonNode> chatSendRequest = new AtomicReference<JsonNode>();

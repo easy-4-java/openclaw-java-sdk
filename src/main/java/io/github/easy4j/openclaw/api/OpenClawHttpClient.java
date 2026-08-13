@@ -2,6 +2,8 @@ package io.github.easy4j.openclaw.api;
 
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.core.JacksonException;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
 import io.github.easy4j.openclaw.HttpCallCancellation;
 import io.github.easy4j.openclaw.OpenClawOkHttpClientFactory;
@@ -95,8 +97,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
      * @return 已关闭未知字段失败检查的 ObjectMapper
      */
     protected ObjectMapper createObjectMapper() {
-        return new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
     }
 
     // ============================================================
@@ -208,7 +209,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
             return executeAsync(request, url, cancellation);
         } catch (OpenClawHttpException e) {
             return failedFuture(e);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             return failedFuture(new OpenClawHttpException("POST " + url + " failed: " + e.getMessage(), e));
         }
     }
@@ -491,7 +492,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     protected <T> T parse(String json, Class<T> type) {
         try {
             return objectMapper.readValue(json, type);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new OpenClawHttpException("Failed to parse response: " + e.getMessage(), e);
         }
     }
@@ -509,7 +510,7 @@ public abstract class OpenClawHttpClient implements AutoCloseable {
     protected <T> T parse(String json, Class<T> type, String label) {
         try {
             return objectMapper.readValue(json, type);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new OpenClawHttpException("Failed to parse " + label + " response: " + e.getMessage(), e);
         }
     }

@@ -2,6 +2,7 @@ package io.github.easy4j.openclaw;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.api.model.ChatChunk;
 import io.github.easy4j.openclaw.api.model.ChatMessage;
 import io.github.easy4j.openclaw.api.model.ChatRequest;
@@ -34,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 class OpenClawHttpRealIntegrationTest {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new JsonMapper();
 
     @Test
     void shouldUseJsonObjectThroughRealBlockingHttp() throws Exception {

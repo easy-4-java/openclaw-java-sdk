@@ -1,6 +1,7 @@
 package io.github.easy4j.openclaw;
 
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.api.model.ChatMessage;
 import io.github.easy4j.openclaw.api.model.ChatRequest;
 import io.github.easy4j.openclaw.api.sse.StreamingChatResponse;
@@ -111,7 +112,7 @@ class OpenClawOkHttpClientTest {
                 .messages(List.of(ChatMessage.ofUser("ping")))
                 .build();
 
-        try (OpenClawClient client = new OpenClawClient(config, new ObjectMapper(), external)) {
+        try (OpenClawClient client = new OpenClawClient(config, new JsonMapper(), external)) {
             long startedAt = System.nanoTime();
             StreamingChatResponse stream = client.chatCompletionStream(request);
             long returnMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedAt);
@@ -168,7 +169,7 @@ class OpenClawOkHttpClientTest {
                 .messages(List.of(ChatMessage.ofUser("ping")))
                 .build();
 
-        try (OpenClawClient client = new OpenClawClient(config, new ObjectMapper(), external)) {
+        try (OpenClawClient client = new OpenClawClient(config, new JsonMapper(), external)) {
             List<StreamingChatResponse> streams = new ArrayList<>(concurrency);
             for (int index = 0; index < concurrency; index++) {
                 streams.add(client.chatCompletionStream(request));

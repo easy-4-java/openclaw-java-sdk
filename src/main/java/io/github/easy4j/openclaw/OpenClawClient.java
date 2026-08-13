@@ -1,6 +1,7 @@
 package io.github.easy4j.openclaw;
 
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.api.*;
 import io.github.easy4j.openclaw.api.sse.StreamingChatResponse;
 import io.github.easy4j.openclaw.cli.OpenClawCli;
@@ -85,7 +86,7 @@ public class OpenClawClient implements AutoCloseable {
      * @param httpConfig HTTP 与 WebSocket 配置
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig) {
-        this(httpConfig, new OpenClawCliConfig(), new ObjectMapper(),
+        this(httpConfig, new OpenClawCliConfig(), new JsonMapper(),
                 OpenClawOkHttpClientFactory.create(httpConfig), true);
     }
 
@@ -96,7 +97,7 @@ public class OpenClawClient implements AutoCloseable {
      * @param httpClient 复用连接池和 Dispatcher 的 OkHttpClient
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig, OkHttpClient httpClient) {
-        this(httpConfig, new ObjectMapper(), httpClient);
+        this(httpConfig, new JsonMapper(), httpClient);
     }
 
     /**
@@ -116,7 +117,7 @@ public class OpenClawClient implements AutoCloseable {
      * @param cliConfig CLI 配置
      */
     public OpenClawClient(OpenClawCliConfig cliConfig) {
-        this(new OpenClawHttpClientConfig(), cliConfig, new ObjectMapper(), new OkHttpClient(), true);
+        this(new OpenClawHttpClientConfig(), cliConfig, new JsonMapper(), new OkHttpClient(), true);
     }
 
     /**
@@ -137,7 +138,7 @@ public class OpenClawClient implements AutoCloseable {
      * @param cliConfig CLI 配置
      */
     public OpenClawClient(OpenClawHttpClientConfig httpConfig, OpenClawCliConfig cliConfig) {
-        this(httpConfig, cliConfig, new ObjectMapper(), OpenClawOkHttpClientFactory.create(httpConfig), true);
+        this(httpConfig, cliConfig, new JsonMapper(), OpenClawOkHttpClientFactory.create(httpConfig), true);
     }
 
     /**
@@ -204,7 +205,7 @@ public class OpenClawClient implements AutoCloseable {
     public OpenClawClient(OpenClawClientConfig config) {
         this(Objects.requireNonNull(config, "config").getHttp(),
                 config.getCli(),
-                new ObjectMapper(),
+                new JsonMapper(),
                 OpenClawOkHttpClientFactory.create(config.getHttp()),
                 true);
     }
@@ -216,7 +217,7 @@ public class OpenClawClient implements AutoCloseable {
      * @param httpClient 复用连接池和 Dispatcher 的 OkHttpClient
      */
     public OpenClawClient(OpenClawClientConfig config, OkHttpClient httpClient) {
-        this(config, new ObjectMapper(), httpClient);
+        this(config, new JsonMapper(), httpClient);
     }
 
     /**

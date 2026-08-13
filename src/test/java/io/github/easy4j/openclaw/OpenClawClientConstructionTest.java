@@ -1,6 +1,7 @@
 package io.github.easy4j.openclaw;
 
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
 
@@ -107,7 +108,7 @@ class OpenClawClientConstructionTest {
         OpenClawHttpClientConfig http = new OpenClawHttpClientConfig();
         OpenClawCliConfig cli = new OpenClawCliConfig();
         assertThrows(NullPointerException.class,
-                () -> new OpenClawClient(http, cli, new ObjectMapper(), null));
+                () -> new OpenClawClient(http, cli, new JsonMapper(), null));
     }
 
     /**
@@ -134,7 +135,7 @@ class OpenClawClientConstructionTest {
         config.getHttp().setStartupCheckEnabled(false);
         config.getCli().setStartupCheckEnabled(false);
 
-        try (OpenClawClient client = new OpenClawClient(config, new ObjectMapper(), new OkHttpClient())) {
+        try (OpenClawClient client = new OpenClawClient(config, new JsonMapper(), new OkHttpClient())) {
             assertTrue(client.isHttpEnabled());
             assertTrue(client.isCliEnabled());
         }

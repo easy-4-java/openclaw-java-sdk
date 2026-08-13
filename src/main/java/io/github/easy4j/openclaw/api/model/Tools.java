@@ -2,6 +2,7 @@ package io.github.easy4j.openclaw.api.model;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.api.OpenClawConstants;
 import io.github.easy4j.openclaw.api.model.ChatMessage.ToolCall;
 
@@ -21,7 +22,7 @@ public final class Tools {
     /**
      * 解析工具调用参数和编码工具结果的共享 ObjectMapper。
      */
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new JsonMapper();
 
     private Tools() {}
 

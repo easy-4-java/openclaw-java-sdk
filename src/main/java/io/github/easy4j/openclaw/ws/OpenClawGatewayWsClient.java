@@ -4,6 +4,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
 import io.github.easy4j.openclaw.exception.OpenClawWsRpcException;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
@@ -114,8 +115,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     public OpenClawGatewayWsClient(OpenClawHttpClientConfig config, URI serverUri) {
         super(serverUri);
         this.config = config;
-        this.objectMapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.objectMapper = JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
         this.setConnectionLostTimeout(30);
     }
 
@@ -446,10 +446,10 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
             JsonNode root = objectMapper.readTree(json);
             JsonNode auth = root.path("params").path("auth");
             if (auth.isObject()) {
-                Iterator<String> names = auth.fieldNames();
-                while (names.hasNext()) {
+                java.util.Collection<String> names = auth.propertyNames();
+                while (!names.isEmpty()) {
                     ((tools.jackson.databind.node.ObjectNode) auth)
-                            .put(names.next(), "<redacted>");
+                            .put(names.iterator().next(), "<redacted>");
                 }
             }
             JsonNode device = root.path("params").path("device");

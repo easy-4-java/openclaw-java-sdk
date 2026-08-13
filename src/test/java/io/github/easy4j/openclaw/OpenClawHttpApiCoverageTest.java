@@ -1,6 +1,7 @@
 package io.github.easy4j.openclaw;
 
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.api.OpenClawChatClient;
 import io.github.easy4j.openclaw.api.OpenClawEmbeddingsClient;
 import io.github.easy4j.openclaw.api.OpenClawHeaders;
@@ -77,7 +78,7 @@ class OpenClawHttpApiCoverageTest {
 
     @Test
     void shouldCoverChatModelsStreamingAndValidation() throws Exception {
-        try (OpenClawChatClient chat = new OpenClawChatClient(config, new ObjectMapper(), client)) {
+        try (OpenClawChatClient chat = new OpenClawChatClient(config, new JsonMapper(), client)) {
             ChatRequest agentRequest = ChatRequest.builder().agent("openclaw/default")
                     .messages(List.of(ChatMessage.ofUser("hello"))).build();
             ChatRequest modelRequest = ChatRequest.builder().model("gpt-5.4")

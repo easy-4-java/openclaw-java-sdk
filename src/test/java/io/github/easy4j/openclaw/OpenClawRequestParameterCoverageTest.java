@@ -2,6 +2,7 @@ package io.github.easy4j.openclaw;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.api.model.ResponseRequest;
 import io.github.easy4j.openclaw.api.model.ThinkOption;
 import io.github.easy4j.openclaw.cli.opts.ThinkingLevel;
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class OpenClawRequestParameterCoverageTest {
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new JsonMapper();
 
     @Test
     void shouldSerializeEveryChatSendParameterSupportedByGatewaySchema() {

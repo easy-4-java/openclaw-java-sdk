@@ -2,6 +2,7 @@ package io.github.easy4j.openclaw.ws;
 
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
 import io.github.easy4j.openclaw.ws.protocol.*;
 import io.github.easy4j.openclaw.ws.protocol.params.SessionsListParams;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class OpenClawWsProtocolTest {
 
     private final ObjectMapper mapper =
-            new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
 
     @Test
     void testConnectParamsToMap() {
