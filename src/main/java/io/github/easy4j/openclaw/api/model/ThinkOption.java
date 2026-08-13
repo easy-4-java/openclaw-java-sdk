@@ -70,7 +70,7 @@ public interface ThinkOption {
     }
 
     /**
-     * 以 low、medium 或 high 表示的思考强度。
+     * 以 OpenClaw 标准思考等级表示的思考强度。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
@@ -79,7 +79,16 @@ public interface ThinkOption {
         /**
          * ThinkLevel 接受的标准化等级集合。
          */
-        private static final List<String> VALID = java.util.Arrays.asList("low", "medium", "high");
+        private static final List<String> VALID = java.util.Arrays.asList(
+                "off", "minimal", "low", "medium", "high", "xhigh", "adaptive", "max", "ultra");
+        /**
+         * 禁用思考的共享选项。
+         */
+        public static final ThinkLevel OFF = new ThinkLevel("off");
+        /**
+         * 最小思考强度共享选项。
+         */
+        public static final ThinkLevel MINIMAL = new ThinkLevel("minimal");
         /**
          * 低思考强度共享选项。
          */
@@ -93,11 +102,27 @@ public interface ThinkOption {
          */
         public static final ThinkLevel HIGH = new ThinkLevel("high");
         /**
+         * 超高思考强度共享选项。
+         */
+        public static final ThinkLevel XHIGH = new ThinkLevel("xhigh");
+        /**
+         * 由提供方动态管理思考预算的共享选项。
+         */
+        public static final ThinkLevel ADAPTIVE = new ThinkLevel("adaptive");
+        /**
+         * 最大思考强度共享选项。
+         */
+        public static final ThinkLevel MAX = new ThinkLevel("max");
+        /**
+         * 最大思考与主动子智能体编排强度共享选项。
+         */
+        public static final ThinkLevel ULTRA = new ThinkLevel("ultra");
+        /**
          * JSON 属性 {@code level}，表示等级。
          */
         private final String level;
         /**
-         * 构造以 low、medium 或 high 字符串表示的思考等级。
+         * 构造 OpenClaw 支持的字符串思考等级。
          *
          * @param level 思考强度等级
          * @throws IllegalArgumentException 必填参数缺失、格式错误或超出范围时抛出

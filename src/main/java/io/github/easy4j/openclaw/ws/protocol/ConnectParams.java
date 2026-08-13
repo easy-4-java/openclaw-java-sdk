@@ -2,10 +2,13 @@ package io.github.easy4j.openclaw.ws.protocol;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Gateway connect 握手请求，声明协议范围、客户端身份和认证信息。
@@ -38,9 +41,23 @@ public class ConnectParams {
      */
     private final DeviceInfo device;
     /**
-     * JSON 属性 {@code role}，表示聊天消息角色。
+     * JSON 属性 {@code role}，表示 Gateway 客户端角色；当前支持 {@code operator} 和 {@code node}。
      */
     private final String role;
+    /** 客户端能力列表。 */
+    private final List<String> caps;
+    /** 客户端支持的命令列表。 */
+    private final List<String> commands;
+    /** 客户端权限快照。 */
+    private final Map<String, Boolean> permissions;
+    /** 客户端进程 PATH。 */
+    private final String pathEnv;
+    /** 请求的操作权限范围。 */
+    private final List<String> scopes;
+    /** 客户端区域设置。 */
+    private final String locale;
+    /** 客户端 User-Agent。 */
+    private final String userAgent;
 
     /**
      * 构造 Gateway 握手参数，声明协议范围、客户端身份、认证与可选设备签名。
@@ -51,7 +68,8 @@ public class ConnectParams {
      * @param auth 握手或请求使用的认证参数
      */
     public ConnectParams(int minProtocol, int maxProtocol, ClientInfo client, AuthInfo auth) {
-        this(minProtocol, maxProtocol, client, auth, null, null);
+        this(minProtocol, maxProtocol, client, auth, null, null,
+                null, null, null, null, null, null, null);
     }
 
     /**
@@ -66,12 +84,28 @@ public class ConnectParams {
      */
     public ConnectParams(int minProtocol, int maxProtocol, ClientInfo client, AuthInfo auth,
                          DeviceInfo device, String role) {
+        this(minProtocol, maxProtocol, client, auth, device, role,
+                null, null, null, null, null, null, null);
+    }
+
+    @Builder
+    private ConnectParams(int minProtocol, int maxProtocol, ClientInfo client, AuthInfo auth,
+                          DeviceInfo device, String role, List<String> caps, List<String> commands,
+                          Map<String, Boolean> permissions, String pathEnv, List<String> scopes,
+                          String locale, String userAgent) {
         this.minProtocol = minProtocol;
         this.maxProtocol = maxProtocol;
         this.client = client;
         this.auth = auth;
         this.device = device;
         this.role = role;
+        this.caps = caps;
+        this.commands = commands;
+        this.permissions = permissions;
+        this.pathEnv = pathEnv;
+        this.scopes = scopes;
+        this.locale = locale;
+        this.userAgent = userAgent;
     }
 
     /**
@@ -81,12 +115,19 @@ public class ConnectParams {
      * @since 1.0.0
      */
     @Getter
+    @Builder
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ClientInfo {
         /**
          * JSON 属性 {@code id}，表示协议对象或请求的唯一标识。
          */
         private final String id, displayName, version, platform, mode;
+        /** 可选设备家族。 */
+        private final String deviceFamily;
+        /** 可选设备型号标识。 */
+        private final String modelIdentifier;
+        /** 可选客户端实例标识。 */
+        private final String instanceId;
 
         /**
          * 构造参与握手的客户端身份、版本、平台和运行模式。
@@ -98,11 +139,19 @@ public class ConnectParams {
          * @param mode 客户端参与 Gateway 握手时声明的运行模式
          */
         public ClientInfo(String id, String displayName, String version, String platform, String mode) {
+            this(id, displayName, version, platform, mode, null, null, null);
+        }
+
+        private ClientInfo(String id, String displayName, String version, String platform, String mode,
+                           String deviceFamily, String modelIdentifier, String instanceId) {
             this.id = id;
             this.displayName = displayName;
             this.version = version;
             this.platform = platform;
             this.mode = mode;
+            this.deviceFamily = deviceFamily;
+            this.modelIdentifier = modelIdentifier;
+            this.instanceId = instanceId;
         }
         /**
          * 返回客户端或协议对象标识。
@@ -137,12 +186,13 @@ public class ConnectParams {
     }
 
     /**
-     * Gateway 握手认证信息，支持 Token 或密码二选一。
+     * Gateway 握手认证信息，支持共享 Token、密码、设备令牌、引导令牌和本地运行时令牌。
      *
      * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @since 1.0.0
      */
     @Getter
+    @Builder
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class AuthInfo {
         /**
@@ -153,10 +203,23 @@ public class ConnectParams {
          * JSON 属性 {@code password}，表示Gateway 认证密码。
          */
         private final String password;
+        /** 一次性引导令牌。 */
+        private final String bootstrapToken;
+        /** 已配对设备令牌。 */
+        private final String deviceToken;
+        /** 审批运行时令牌。 */
+        private final String approvalRuntimeToken;
+        /** Agent Runtime 身份令牌。 */
+        private final String agentRuntimeIdentityToken;
 
-        private AuthInfo(String token, String password) {
+        private AuthInfo(String token, String password, String bootstrapToken, String deviceToken,
+                         String approvalRuntimeToken, String agentRuntimeIdentityToken) {
             this.token = token;
             this.password = password;
+            this.bootstrapToken = bootstrapToken;
+            this.deviceToken = deviceToken;
+            this.approvalRuntimeToken = approvalRuntimeToken;
+            this.agentRuntimeIdentityToken = agentRuntimeIdentityToken;
         }
 
         /**
@@ -165,14 +228,14 @@ public class ConnectParams {
          * @param token 认证令牌；日志中必须脱敏
          * @return 按方法参数填充的 AuthInfo
          */
-        public static AuthInfo token(String token) { return new AuthInfo(token, null); }
+        public static AuthInfo token(String token) { return new AuthInfo(token, null, null, null, null, null); }
         /**
          * 创建仅使用密码的 Gateway 认证参数。
          *
          * @param password 认证密码；日志中必须脱敏
          * @return 按方法参数填充的 AuthInfo
          */
-        public static AuthInfo password(String password) { return new AuthInfo(null, password); }
+        public static AuthInfo password(String password) { return new AuthInfo(null, password, null, null, null, null); }
     }
 
     /**
@@ -189,19 +252,43 @@ public class ConnectParams {
         clientMap.put("version", client.getVersion());
         clientMap.put("platform", client.getPlatform());
         clientMap.put("mode", client.getMode());
-        if (client.getDisplayName() != null) {
+        if (Objects.nonNull(client.getDisplayName())) {
             clientMap.put("displayName", client.getDisplayName());
         }
+        if (Objects.nonNull(client.getDeviceFamily())) clientMap.put("deviceFamily", client.getDeviceFamily());
+        if (Objects.nonNull(client.getModelIdentifier())) clientMap.put("modelIdentifier", client.getModelIdentifier());
+        if (Objects.nonNull(client.getInstanceId())) clientMap.put("instanceId", client.getInstanceId());
         m.put("client", clientMap);
-        if (auth != null) {
+        if (Objects.nonNull(caps)) m.put("caps", caps);
+        if (Objects.nonNull(commands)) m.put("commands", commands);
+        if (Objects.nonNull(permissions)) m.put("permissions", permissions);
+        if (Objects.nonNull(pathEnv)) m.put("pathEnv", pathEnv);
+        if (Objects.nonNull(role)) m.put("role", role);
+        if (Objects.nonNull(scopes)) m.put("scopes", scopes);
+        if (Objects.nonNull(device)) {
+            Map<String, Object> deviceMap = new LinkedHashMap<String, Object>();
+            deviceMap.put("id", device.getId());
+            deviceMap.put("publicKey", device.getPublicKey());
+            deviceMap.put("signature", device.getSignature());
+            deviceMap.put("signedAt", device.getSignedAt());
+            deviceMap.put("nonce", device.getNonce());
+            m.put("device", deviceMap);
+        }
+        if (Objects.nonNull(auth)) {
             Map<String, Object> authMap = new LinkedHashMap<>();
-            if (auth.getToken() != null) authMap.put("token", auth.getToken());
-            if (auth.getPassword() != null) authMap.put("password", auth.getPassword());
+            if (Objects.nonNull(auth.getToken())) authMap.put("token", auth.getToken());
+            if (Objects.nonNull(auth.getPassword())) authMap.put("password", auth.getPassword());
+            if (Objects.nonNull(auth.getBootstrapToken())) authMap.put("bootstrapToken", auth.getBootstrapToken());
+            if (Objects.nonNull(auth.getDeviceToken())) authMap.put("deviceToken", auth.getDeviceToken());
+            if (Objects.nonNull(auth.getApprovalRuntimeToken())) authMap.put("approvalRuntimeToken", auth.getApprovalRuntimeToken());
+            if (Objects.nonNull(auth.getAgentRuntimeIdentityToken())) authMap.put("agentRuntimeIdentityToken", auth.getAgentRuntimeIdentityToken());
             m.put("auth", authMap);
         }
+        if (Objects.nonNull(locale)) m.put("locale", locale);
+        if (Objects.nonNull(userAgent)) m.put("userAgent", userAgent);
         return m;
     }
-}
+
     /**
      * Gateway 挑战响应使用的设备公钥、签名、时间戳和 nonce。
      *
@@ -210,7 +297,7 @@ public class ConnectParams {
      */
     @Getter
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    class DeviceInfo {
+    public static class DeviceInfo {
         /**
          * JSON 属性 {@code id}，表示协议对象或请求的唯一标识。
          */
@@ -249,3 +336,4 @@ public class ConnectParams {
             this.nonce = nonce;
         }
     }
+}

@@ -31,7 +31,19 @@ public enum ThinkingLevel {
     /**
      * 表示模型思考强度的 {@code xhigh} 取值；写入 CLI 或 JSON 时保持该固定拼写。
      */
-    XHIGH("xhigh");
+    XHIGH("xhigh"),
+    /**
+     * 表示由模型提供方动态决定思考预算的 {@code adaptive} 取值。
+     */
+    ADAPTIVE("adaptive"),
+    /**
+     * 表示模型支持的最大思考强度 {@code max} 取值。
+     */
+    MAX("max"),
+    /**
+     * 表示最大思考强度并允许运行时主动编排子智能体的 {@code ultra} 取值。
+     */
+    ULTRA("ultra");
 
     /** openclaw CLI 接受的小写思考等级值。 */
     private final String cliValue;

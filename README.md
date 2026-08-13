@@ -2,13 +2,13 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-[![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/openclaw-java-sdk) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
+[![Java](https://img.shields.io/badge/Java-8-orange)](https://github.com/easy-4-java/openclaw-java-sdk) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
 Pure Java SDK — talks to the OpenClaw Gateway through independent HTTP, SSE, WebSocket and local CLI channels
 [简体中文](./README.zh-CN.md)
 
-> **Current branch**: `feature/2.0.x`
-> **Version**: `2.0.x.x.20260630-SNAPSHOT`
+> **Current branch**: `feature/1.0.x`
+> **Version**: `1.0.x.20260730-SNAPSHOT`
 > **JDK baseline**: 8
 > **Project status**: stable (1.0.x line). Not yet published to Maven Central; artifacts are distributed via the Aliyun Maven repository and GitHub Releases.
 
@@ -69,7 +69,7 @@ Pure Java SDK — talks to the OpenClaw Gateway through independent HTTP, SSE, W
 
 | Component | Version | Notes |
 |---|---:|---|
-| JDK | 17+ | 1.0.x line baseline |
+| JDK | 8+ | 1.0.x line baseline |
 | Maven | 3.0+ | Enforcer minimum |
 | OkHttp / okhttp-sse | 4.12.0 | HTTP + SSE transport |
 | Java-WebSocket | — | WebSocket transport |
@@ -81,7 +81,7 @@ Version-line matrix:
 
 | Version line | Branch | JDK | Version pattern | Purpose |
 |---|---|---:|---|---|
-| 1.0.x | `feature/2.0.x` (this branch) | 8 | `1.0.x.*` | Legacy projects, Boot 2.x starter line |
+| 1.0.x | `feature/1.0.x` (this branch) | 8 | `1.0.x.*` | Legacy projects, Boot 2.x starter line |
 | 2.0.x | `feature/2.0.x` | 17 | `2.0.x.*` | Main line (JDK 17) |
 | 3.0.x | `feature/3.0.x` | 21 | `3.0.x.*` | New projects |
 
@@ -132,17 +132,17 @@ Maven:
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>openclaw-java-sdk</artifactId>
-    <version>2.0.x.x.20260630-SNAPSHOT</version>
+    <version>1.0.x.20260730-SNAPSHOT</version>
 </dependency>
 ```
 
 Gradle:
 
 ```groovy
-implementation 'io.github.easy4j:openclaw-java-sdk:2.0.x.x.20260630-SNAPSHOT'
+implementation 'io.github.easy4j:openclaw-java-sdk:1.0.x.20260730-SNAPSHOT'
 ```
 
-Snapshot builds require an enabled snapshot repository (Aliyun Maven snapshot repository per `distributionManagement` in `pom.xml`).
+Snapshot builds require an enabled snapshot repository (the Aliyun Maven snapshot repository configured by the publisher).
 
 <a id="6-quick-start"></a>
 ## 6. Quick Start
@@ -195,6 +195,21 @@ Configuration is object-based (no Spring properties in this library). Three conf
 | `gatewayBaseUrl` | String | `http://localhost:18789` | Gateway base URL |
 | `gatewayAuthToken` | String | — | Control-plane token |
 | `gatewayAuthPassword` | String | — | Control-plane password mode |
+| `gatewayAuthBootstrapToken` | String | — | One-time device bootstrap token; requires `gatewayDeviceIdentity` |
+| `gatewayAuthDeviceToken` | String | — | Paired-device token; requires `gatewayDeviceIdentity` |
+| `gatewayApprovalRuntimeToken` | String | — | Local trusted approval-runtime token |
+| `gatewayAgentRuntimeIdentityToken` | String | — | Local backend Agent Runtime identity token |
+| `gatewayRole` | String | `operator` | WS role: `operator` or `node` |
+| `gatewayScopes` | List<String> | `operator.read/write` | WS handshake scopes; system-provenance fields require explicit `operator.admin`, and Gateway applies the final policy |
+| `gatewayClientId/displayName/version/platform/mode` | String | SDK defaults | Gateway client identity fields |
+| `gatewayClientDeviceFamily/modelIdentifier/instanceId` | String | — | Optional presence, audit, and device-signature metadata |
+| `gatewayCapabilities` | List<String> | empty | Declared Gateway capabilities |
+| `gatewayCommands` | List<String> | — | Commands exposed by a node client |
+| `gatewayPermissions` | Map<String, Boolean> | — | Host permission snapshot reported by a node client |
+| `gatewayPathEnv` | String | — | PATH snapshot reported by a node client |
+| `gatewayLocale` | String | JVM locale | Locale sent in the connect payload |
+| `gatewayUserAgent` | String | SDK version | User-Agent sent in the connect payload |
+| `gatewayDeviceIdentity` | `OpenClawGatewayDeviceIdentity` | — | Signs each server challenge dynamically with the device Ed25519 private key |
 | `hooksToken` | String | — | Webhook auth token |
 | `hooksPath` | String | `/hooks` | Webhook base path |
 | `hooksUseXOpenclawTokenHeader` | boolean | `false` | Send the hook token via `x-openclaw-token` header |
@@ -227,6 +242,8 @@ Custom request headers via `OpenClawHeaders.Builder`:
 
 Auth priority: webhook (`/hooks/*`) uses `hooksToken`; control plane (`/v1/*`, `/tools/*`, WebSocket) uses `gatewayAuthToken` → `gatewayAuthPassword` → `hooksToken` → none.
 
+Device authentication is not a static DTO-only field. When `gatewayDeviceIdentity` is configured, the SDK builds the OpenClaw v3 payload from the current challenge nonce, role, scopes, token and client metadata, then invokes `sign(payload)`. `gatewayAuthBootstrapToken` and `gatewayAuthDeviceToken` are rejected before the handshake when no device identity is configured. Runtime tokens are accepted by OpenClaw only for their trusted local backend scenarios; configuring an arbitrary value does not grant those privileges.
+
 <a id="8-core-usage"></a>
 ## 8. Core Usage
 
@@ -241,13 +258,16 @@ ChatRequest req = ChatRequest.builder()
         .toolChoice("auto")
         .build();
 
-client.chatCompletionStream(req)
-        .onDelta(delta -> System.out.print(delta))
-        .onToolCall(toolCalls -> toolCalls.forEach(
-                tc -> System.out.println(tc.getFunction().getName())))
-        .onComplete(text -> System.out.println("\n[done]"))
-        .onError(Throwable::printStackTrace);
+StreamingChatResponse stream = client.chatCompletionStream(
+        req,
+        OpenClawHeaders.builder().sessionKey("conversation-42"),
+        StreamingChatResponse.builder()
+                .onDelta(System.out::print)
+                .onToolCall(System.out::println));
 ```
+
+This form attaches headers and callbacks before the HTTP/SSE subscription starts, so the first
+stream event cannot race callback registration.
 
 ### 8.2 WebSocket streaming conversation
 
@@ -259,6 +279,23 @@ client.chatSend("Hello", new ChatStreamHandler() {
     @Override public void onError(String error) { System.err.println(error); }
 });
 ```
+
+Use native `ChatSendParams` when a turn must override OpenClaw execution parameters:
+
+```java
+client.ws().chatSend(ChatSendParams.builder()
+        .sessionKey("agent:ops:conversation-42")
+        .agentId("ops")
+        .message("Analyze this turn")
+        .thinkingLevel(ThinkingLevel.MINIMAL)
+        .fastMode("auto")
+        .fastAutoOnSeconds(10)
+        .suppressCommandInterpretation(true)
+        .idempotencyKey("turn-42")
+        .build(), handler);
+```
+
+`ChatSendParams` matches the complete OpenClaw `2026.7.1-2` `chat.send` schema: session/agent selection, per-turn thinking, `fastMode`, auto-fast cutoff, delivery origin, attachments, timeout, system provenance, command-interpretation suppression, routing contract and idempotency. HTTP Chat Completions continues to emit only the OpenAI fields OpenClaw explicitly supports. `ResponseRequest` separately models the accepted-but-currently-ignored compatibility fields `max_tool_calls`, `reasoning`, `metadata`, `store`, and `truncation`.
 
 ### 8.3 Local CLI
 

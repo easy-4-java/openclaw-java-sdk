@@ -2,12 +2,12 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-[![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/openclaw-java-sdk) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
+[![Java](https://img.shields.io/badge/Java-8-orange)](https://github.com/easy-4-java/openclaw-java-sdk) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
 纯 Java SDK —— 通过 HTTP、SSE、WebSocket 与本地 CLI 等独立通道对接 OpenClaw Gateway
 
-> **当前分支**：`feature/2.0.x`
-> **版本**：`2.0.x.x.20260630-SNAPSHOT`
+> **当前分支**：`feature/1.0.x`
+> **版本**：`1.0.x.20260730-SNAPSHOT`
 > **JDK 基线**：8
 > **项目状态**：稳定（1.0.x 线）。尚未发布 Maven Central；制品通过 Aliyun Maven 仓库与 GitHub Releases 分发。
 
@@ -68,7 +68,7 @@
 
 | 组件 | 版本 | 说明 |
 |---|---:|---|
-| JDK | 17+ | 1.0.x 线基线 |
+| JDK | 8+ | 1.0.x 线基线 |
 | Maven | 3.0+ | Enforcer 下限 |
 | OkHttp / okhttp-sse | 4.12.0 | HTTP 与 SSE 传输 |
 | Java-WebSocket | — | WebSocket 传输 |
@@ -80,7 +80,7 @@
 
 | 版本线 | 分支 | JDK | 版本模式 | 用途 |
 |---|---|---:|---|---|
-| 1.0.x | `feature/2.0.x`（当前分支） | 8 | `1.0.x.*` | 存量项目、Boot 2.x Starter 线 |
+| 1.0.x | `feature/1.0.x`（当前分支） | 8 | `1.0.x.*` | 存量项目、Boot 2.x Starter 线 |
 | 2.0.x | `feature/2.0.x` | 17 | `2.0.x.*` | 主流线（JDK 17） |
 | 3.0.x | `feature/3.0.x` | 21 | `3.0.x.*` | 新项目 |
 
@@ -131,17 +131,17 @@ Maven：
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>openclaw-java-sdk</artifactId>
-    <version>2.0.x.x.20260630-SNAPSHOT</version>
+    <version>1.0.x.20260730-SNAPSHOT</version>
 </dependency>
 ```
 
 Gradle：
 
 ```groovy
-implementation 'io.github.easy4j:openclaw-java-sdk:2.0.x.x.20260630-SNAPSHOT'
+implementation 'io.github.easy4j:openclaw-java-sdk:1.0.x.20260730-SNAPSHOT'
 ```
 
-快照版本需要启用对应快照仓库（`pom.xml` 中 `distributionManagement` 指向 Aliyun Maven 仓库）。
+快照版本需要启用对应的 snapshot 仓库（由发布者配置的阿里云 Maven snapshot 仓库）。
 
 <a id="6-quick-start"></a>
 ## 6. 快速开始
@@ -194,6 +194,21 @@ client.close();
 | `gatewayBaseUrl` | String | `http://localhost:18789` | Gateway 根地址 |
 | `gatewayAuthToken` | String | — | 控制面令牌 |
 | `gatewayAuthPassword` | String | — | 控制面密码模式 |
+| `gatewayAuthBootstrapToken` | String | — | 一次性设备引导令牌；必须配置 `gatewayDeviceIdentity` |
+| `gatewayAuthDeviceToken` | String | — | 已配对设备令牌；必须配置 `gatewayDeviceIdentity` |
+| `gatewayApprovalRuntimeToken` | String | — | 本地受信任审批运行时令牌 |
+| `gatewayAgentRuntimeIdentityToken` | String | — | 本地 backend Agent Runtime 身份令牌 |
+| `gatewayRole` | String | `operator` | WS 连接角色：`operator` 或 `node` |
+| `gatewayScopes` | List<String> | `operator.read/write` | WS 握手请求权限；系统来源字段需显式加入 `operator.admin`，最终权限由 Gateway 策略裁剪 |
+| `gatewayClientId/displayName/version/platform/mode` | String | SDK 默认值 | Gateway 客户端身份字段 |
+| `gatewayClientDeviceFamily/modelIdentifier/instanceId` | String | — | 可选 presence、审计和设备签名元数据 |
+| `gatewayCapabilities` | List<String> | 空列表 | 客户端声明的 Gateway 能力 |
+| `gatewayCommands` | List<String> | — | node 客户端向 Gateway 暴露的命令 |
+| `gatewayPermissions` | Map<String, Boolean> | — | node 客户端上报的宿主权限快照 |
+| `gatewayPathEnv` | String | — | node 客户端上报的 PATH 快照 |
+| `gatewayLocale` | String | JVM 默认区域 | connect 握手上报的区域设置 |
+| `gatewayUserAgent` | String | SDK 版本 | connect 握手上报的 User-Agent |
+| `gatewayDeviceIdentity` | `OpenClawGatewayDeviceIdentity` | — | 使用设备 Ed25519 私钥为每次服务端 challenge 动态签名 |
 | `hooksToken` | String | — | Webhook 鉴权令牌 |
 | `hooksPath` | String | `/hooks` | Webhook 基础路径 |
 | `hooksUseXOpenclawTokenHeader` | boolean | `false` | 用 `x-openclaw-token` 头传 Hook 令牌 |
@@ -226,6 +241,8 @@ client.close();
 
 认证优先级：Webhook（`/hooks/*`）使用 `hooksToken`；控制面（`/v1/*`、`/tools/*`、WebSocket）为 `gatewayAuthToken` → `gatewayAuthPassword` → `hooksToken` → 空。
 
+设备认证不是只做 DTO 字段映射。配置 `gatewayDeviceIdentity` 后，SDK 会使用本次 challenge 的 nonce、角色、权限范围、认证令牌和客户端元数据构造 OpenClaw v3 载荷，再调用 `sign(payload)`。配置 `gatewayAuthBootstrapToken` 或 `gatewayAuthDeviceToken` 却没有设备身份时，SDK 会在握手前拒绝请求。运行时令牌只在 OpenClaw 定义的本地受信任 backend 场景中生效，任意填写字符串不会获得对应权限。
+
 <a id="8-core-usage"></a>
 ## 8. 核心用法
 
@@ -240,13 +257,15 @@ ChatRequest req = ChatRequest.builder()
         .toolChoice("auto")
         .build();
 
-client.chatCompletionStream(req)
-        .onDelta(delta -> System.out.print(delta))
-        .onToolCall(toolCalls -> toolCalls.forEach(
-                tc -> System.out.println(tc.getFunction().getName())))
-        .onComplete(text -> System.out.println("\n[done]"))
-        .onError(Throwable::printStackTrace);
+StreamingChatResponse stream = client.chatCompletionStream(
+        req,
+        OpenClawHeaders.builder().sessionKey("conversation-42"),
+        StreamingChatResponse.builder()
+                .onDelta(System.out::print)
+                .onToolCall(System.out::println));
 ```
+
+此调用形式会在 HTTP/SSE 订阅启动前绑定请求头与回调，避免首个流事件早于回调注册。
 
 ### 8.2 WebSocket 流式对话
 
@@ -258,6 +277,23 @@ client.chatSend("你好", new ChatStreamHandler() {
     @Override public void onError(String error) { System.err.println(error); }
 });
 ```
+
+需要逐轮覆盖 OpenClaw 执行参数时，使用原生 `ChatSendParams`：
+
+```java
+client.ws().chatSend(ChatSendParams.builder()
+        .sessionKey("agent:ops:conversation-42")
+        .agentId("ops")
+        .message("分析这一轮问题")
+        .thinkingLevel(ThinkingLevel.MINIMAL)
+        .fastMode("auto")
+        .fastAutoOnSeconds(10)
+        .suppressCommandInterpretation(true)
+        .idempotencyKey("turn-42")
+        .build(), handler);
+```
+
+`ChatSendParams` 对齐 OpenClaw `2026.7.1-2` 的完整 `chat.send` Schema，包括会话/Agent、逐轮 thinking、`fastMode`、自动快速窗口、投递来源、附件、超时、系统来源证明、指令解释抑制、路由契约与幂等键。HTTP Chat Completions 继续只发送 OpenClaw 明确支持的 OpenAI 参数；`ResponseRequest` 另行建模了 OpenClaw 接受但当前忽略的 `max_tool_calls`、`reasoning`、`metadata`、`store`、`truncation`，便于兼容上层客户端。
 
 ### 8.3 本地 CLI
 
