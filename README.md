@@ -8,7 +8,7 @@ Pure Java SDK — talks to the OpenClaw Gateway through independent HTTP, SSE, W
 [简体中文](./README.zh-CN.md)
 
 > **Current branch**: `feature/1.0.x`
-> **Version**: `1.0.x.20260813`
+> **Version**: `1.0.x.20260730-SNAPSHOT`
 > **JDK baseline**: 8
 > **Project status**: stable (1.0.x line). Not yet published to Maven Central; artifacts are distributed via the Aliyun Maven repository and GitHub Releases.
 
@@ -132,17 +132,17 @@ Maven:
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>openclaw-java-sdk</artifactId>
-    <version>1.0.x.20260813</version>
+    <version>1.0.x.20260730-SNAPSHOT</version>
 </dependency>
 ```
 
 Gradle:
 
 ```groovy
-implementation 'io.github.easy4j:openclaw-java-sdk:1.0.x.20260813'
+implementation 'io.github.easy4j:openclaw-java-sdk:1.0.x.20260730-SNAPSHOT'
 ```
 
-This is a stable release artifact. Configure the Aliyun Maven release repository used by your organization; a snapshot repository is not required.
+Snapshot builds require an enabled snapshot repository (the Aliyun Maven snapshot repository configured by the publisher).
 
 <a id="6-quick-start"></a>
 ## 6. Quick Start

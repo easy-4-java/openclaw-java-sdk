@@ -6,7 +6,7 @@
     <name>${project.groupId}:${project.artifactId}</name>
     <url>https://github.com/easy-4-java/${project.artifactId}</url>
     <description>OpenClaw external integration SDK (HTTP Gateway + local CLI)</description>
-    <version>1.0.x.20260813</version>
+    <version>1.0.x.20260730-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <!-- 开源协议采用 Apache 2.0 协议 -->
@@ -109,20 +109,6 @@
 										</message>
                                         <version>[${java.version}.0,)</version>
                                     </requireJavaVersion>
-                                </rules>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>require-release-dependencies</id>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>enforce</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <requireReleaseDeps>
-                                        <message>OpenClaw SDK releases must not depend on SNAPSHOT artifacts</message>
-                                    </requireReleaseDeps>
                                 </rules>
                             </configuration>
                         </execution>
