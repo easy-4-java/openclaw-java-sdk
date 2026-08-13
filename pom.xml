@@ -191,6 +191,7 @@
                     <configuration>
                         <skip>false</skip>
                         <skipTests>false</skipTests>
+                        <!--suppress UnresolvedMavenProperty -->
                         <argLine>${argLine} -Xmx1024m -Dfile.encoding=UTF-8</argLine>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/target/test-classes</additionalClasspathElement>
@@ -361,6 +362,7 @@
 		<junit.version>4.13.2</junit.version>
 		<slf4j.version>2.0.18</slf4j.version>
 		<lombok.version>1.18.46</lombok.version>
+		<jackson.version>2.18.9</jackson.version>
 		<commons-lang.version>2.6</commons-lang.version></properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
@@ -468,9 +470,10 @@
         <jackson.version>2.18.9</jackson.version>
         <java-websocket.version>1.6.0</java-websocket.version>
         <junit.version>5.11.4</junit.version>
-        <junit-jupiter.version>6.1.0</junit-jupiter.version>
+        <junit-jupiter.version>5.11.4</junit-jupiter.version>
         <lombok.version>1.18.46</lombok.version>
         <okhttp3.version>5.4.0</okhttp3.version>
+        <okhttp3-extension.version>3.0.x.20260630</okhttp3-extension.version>
         <slf4j.version>2.0.18</slf4j.version>
         <!-- Maven Plugin versions -->
         <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
@@ -510,6 +513,12 @@
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>mockwebserver</artifactId>
                 <version>${okhttp3.version}</version>
+            </dependency>
+            <!-- For OkHttp Extension -->
+            <dependency>
+                <groupId>io.github.easy4j</groupId>
+                <artifactId>okhttp3-extension</artifactId>
+                <version>${okhttp3-extension.version}</version>
             </dependency>
             <!-- For Websocket -->
             <dependency>
@@ -611,5 +620,10 @@
             <artifactId>mockwebserver</artifactId>
             <scope>test</scope>
         </dependency>
+            <!-- For OkHttp Extension -->
+            <dependency>
+                <groupId>io.github.easy4j</groupId>
+                <artifactId>okhttp3-extension</artifactId>
+            </dependency>
     </dependencies>
 </project>
