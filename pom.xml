@@ -469,7 +469,7 @@
         <!-- Dependency versions -->
         <commons-exec.version>1.6.0</commons-exec.version>
         <jackson.version>2.22.1</jackson.version>
-        <jackson-annotations.version>2.22</jackson-annotations.version>
+        <jackson-bom.version>2.22.1</jackson-bom.version>
         <java-websocket.version>1.6.0</java-websocket.version>
         <junit.version>5.11.4</junit.version>
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
@@ -499,6 +499,14 @@
     <!-- 依赖版本统一管理（dependencyManagement） -->
     <dependencyManagement>
         <dependencies>
+            <!-- Jackson BOM -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- For OkHttp -->
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
@@ -527,22 +535,6 @@
                 <groupId>org.java-websocket</groupId>
                 <artifactId>Java-WebSocket</artifactId>
                 <version>${java-websocket.version}</version>
-            </dependency>
-            <!-- For Jackson -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson-annotations.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <!-- For Commons Exec -->
             <dependency>
