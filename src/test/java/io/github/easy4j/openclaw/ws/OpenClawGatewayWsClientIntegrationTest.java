@@ -1,7 +1,7 @@
 package io.github.easy4j.openclaw.ws;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
 import io.github.easy4j.openclaw.exception.OpenClawWsRpcException;
 import io.github.easy4j.openclaw.ws.protocol.EventFrame;

@@ -1,7 +1,7 @@
 package io.github.easy4j.openclaw.api.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.api.OpenClawConstants;
 import io.github.easy4j.openclaw.api.model.ChatMessage.ToolCall;
 
@@ -85,7 +85,7 @@ public final class Tools {
         }
         try {
             return MAPPER.readValue(args, clazz);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException("Failed to parse tool arguments: " + args, e);
         }
     }
@@ -114,7 +114,7 @@ public final class Tools {
         } else {
             try {
                 content = MAPPER.writeValueAsString(output);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 content = String.valueOf(output);
             }
         }

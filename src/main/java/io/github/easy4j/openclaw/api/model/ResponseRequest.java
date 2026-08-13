@@ -168,7 +168,7 @@ public class ResponseRequest {
          *
          * @return 已设置 {@code type=message} 的输入项构建器
          */
-        public static InputItemBuilder message() {
+        public static InputItem.InputItemBuilder message() {
             return InputItem.builder().type(OpenClawConstants.INPUT_TYPE_MESSAGE);
         }
 
@@ -177,7 +177,7 @@ public class ResponseRequest {
          *
          * @return 已设置 {@code type=function_call_output} 的输入项构建器
          */
-        public static InputItemBuilder functionCallOutput() {
+        public static InputItem.InputItemBuilder functionCallOutput() {
             return InputItem.builder().type(OpenClawConstants.INPUT_TYPE_FUNCTION_CALL_OUTPUT);
         }
 
@@ -188,7 +188,7 @@ public class ResponseRequest {
          * @param value 与来源类型匹配的 URL 或 Base64 数据
          * @return 已设置图片类型和来源信息的输入项构建器
          */
-        public static InputItemBuilder imageSource(String sourceType, String value) {
+        public static InputItem.InputItemBuilder imageSource(String sourceType, String value) {
             return InputItem.builder()
                     .type(OpenClawConstants.INPUT_TYPE_IMAGE)
                     .source(buildSource(sourceType, value, null));
@@ -200,7 +200,7 @@ public class ResponseRequest {
          * @param url 完整目标 URL
          * @return 已设置 URL 图片来源的输入项构建器
          */
-        public static InputItemBuilder imageUrl(String url) {
+        public static InputItem.InputItemBuilder imageUrl(String url) {
             return imageSource("url", url);
         }
 
@@ -210,7 +210,7 @@ public class ResponseRequest {
          * @param base64Data 不含 Data URI 前缀的 Base64 编码负载
          * @return 已设置 Base64 图片来源的输入项构建器
          */
-        public static InputItemBuilder imageBase64(String base64Data) {
+        public static InputItem.InputItemBuilder imageBase64(String base64Data) {
             return imageSource("base64", base64Data);
         }
 
@@ -222,7 +222,7 @@ public class ResponseRequest {
          * @param mediaType 文件的 MIME 类型；未指定时可为 {@code null}
          * @return 已设置文件类型、来源和媒体类型的输入项构建器
          */
-        public static InputItemBuilder fileSource(String sourceType, String value, String mediaType) {
+        public static InputItem.InputItemBuilder fileSource(String sourceType, String value, String mediaType) {
             return InputItem.builder()
                     .type(OpenClawConstants.INPUT_TYPE_FILE)
                     .source(buildSource(sourceType, value, mediaType));
@@ -244,7 +244,7 @@ public class ResponseRequest {
          * @param url 完整目标 URL
          * @return 已设置 URL 文件来源且不指定媒体类型的输入项构建器
          */
-        public static InputItemBuilder fileUrl(String url) {
+        public static InputItem.InputItemBuilder fileUrl(String url) {
             return fileUrl(url, null);
         }
 
@@ -255,7 +255,7 @@ public class ResponseRequest {
          * @param mediaType 文件的 MIME 类型；未指定时可为 {@code null}
          * @return 已设置 URL 文件来源和媒体类型的输入项构建器
          */
-        public static InputItemBuilder fileUrl(String url, String mediaType) {
+        public static InputItem.InputItemBuilder fileUrl(String url, String mediaType) {
             return fileSource("url", url, mediaType);
         }
 
@@ -265,7 +265,7 @@ public class ResponseRequest {
          * @param base64Data 不含 Data URI 前缀的 Base64 编码负载
          * @return 已设置 Base64 文件来源且不指定媒体类型的输入项构建器
          */
-        public static InputItemBuilder fileBase64(String base64Data) {
+        public static InputItem.InputItemBuilder fileBase64(String base64Data) {
             return fileBase64(base64Data, null);
         }
 
@@ -276,7 +276,7 @@ public class ResponseRequest {
          * @param mediaType 文件的 MIME 类型；未指定时可为 {@code null}
          * @return 已设置 Base64 文件来源和媒体类型的输入项构建器
          */
-        public static InputItemBuilder fileBase64(String base64Data, String mediaType) {
+        public static InputItem.InputItemBuilder fileBase64(String base64Data, String mediaType) {
             return fileSource("base64", base64Data, mediaType);
         }
 

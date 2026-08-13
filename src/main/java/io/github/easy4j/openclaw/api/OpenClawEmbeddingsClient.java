@@ -1,6 +1,6 @@
 package io.github.easy4j.openclaw.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
 import io.github.easy4j.openclaw.api.model.EmbeddingsRequest;

@@ -1,9 +1,9 @@
 package io.github.easy4j.openclaw.ws;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawHttpClientConfig;
 import io.github.easy4j.openclaw.exception.OpenClawWsRpcException;
 import io.github.easy4j.openclaw.util.OpenClawStrings;
@@ -290,7 +290,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
                 String json = objectMapper.writeValueAsString(req);
                 debug("BODY", "Sending connect handshake: {}", redactConnectHandshake(json));
                 sendFrame(json);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 failConnectFuture(e);
             }
         } catch (RuntimeException e) {
@@ -448,17 +448,17 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
             if (auth.isObject()) {
                 Iterator<String> names = auth.fieldNames();
                 while (names.hasNext()) {
-                    ((com.fasterxml.jackson.databind.node.ObjectNode) auth)
+                    ((tools.jackson.databind.node.ObjectNode) auth)
                             .put(names.next(), "<redacted>");
                 }
             }
             JsonNode device = root.path("params").path("device");
             if (device.isObject() && device.has("signature")) {
-                ((com.fasterxml.jackson.databind.node.ObjectNode) device)
+                ((tools.jackson.databind.node.ObjectNode) device)
                         .put("signature", "<redacted>");
             }
             return objectMapper.writeValueAsString(root);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return "<connect-payload-redacted>";
         }
     }
@@ -760,7 +760,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
             RequestFrame req = new RequestFrame(reqId, method, paramsMap);
             String json = objectMapper.writeValueAsString(req);
             sendFrame(json);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Failed to serialize RPC request: " + method, e);
         }
 
@@ -778,7 +778,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> serializeRpcParams(Object params) throws JsonProcessingException {
+    private Map<String, Object> serializeRpcParams(Object params) throws JacksonException {
         if (params == null) {
             return Collections.emptyMap();
         }
@@ -834,7 +834,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
             RequestFrame req = new RequestFrame(reqId, "chat.send", paramsMap);
             String json = objectMapper.writeValueAsString(req);
             sendFrame(json);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             activeChatStreams.remove(reqId);
             handler.onError("Failed to serialize chat.send request: " + e.getMessage());
         }
@@ -893,7 +893,7 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
         if (root.has("error") && !root.path("error").isNull()) {
             try {
                 error = objectMapper.treeToValue(root.path("error"), ErrorShape.class);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 log.warn("Failed to parse error shape", e);
             }
         }

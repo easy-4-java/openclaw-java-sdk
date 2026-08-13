@@ -362,8 +362,7 @@
 		<junit.version>4.13.2</junit.version>
 		<slf4j.version>2.0.18</slf4j.version>
 		<lombok.version>1.18.46</lombok.version>
-		<jackson.version>2.22.1</jackson.version>
-        <jackson-annotations.version>2.22</jackson-annotations.version>
+		<jackson.version>3.2.1</jackson.version>
 		<commons-lang.version>2.6</commons-lang.version></properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
@@ -468,8 +467,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
         <commons-exec.version>1.6.0</commons-exec.version>
-        <jackson.version>2.22.1</jackson.version>
-        <jackson-annotations.version>2.22</jackson-annotations.version>
+        <jackson.version>3.2.1</jackson.version>
+        <jackson-bom.version>3.2.1</jackson-bom.version>
         <java-websocket.version>1.6.0</java-websocket.version>
         <junit.version>5.11.4</junit.version>
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
@@ -499,6 +498,14 @@
     <!-- 依赖版本统一管理（dependencyManagement） -->
     <dependencyManagement>
         <dependencies>
+            <!-- Jackson BOM -->
+            <dependency>
+                <groupId>tools.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- For OkHttp -->
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
@@ -527,22 +534,6 @@
                 <groupId>org.java-websocket</groupId>
                 <artifactId>Java-WebSocket</artifactId>
                 <version>${java-websocket.version}</version>
-            </dependency>
-            <!-- For Jackson -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson-annotations.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <!-- For Commons Exec -->
             <dependency>
@@ -592,7 +583,7 @@
         </dependency>
         <!-- For Jackson -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <!-- For Commons Exec -->

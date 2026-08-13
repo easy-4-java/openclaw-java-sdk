@@ -1,6 +1,6 @@
 package io.github.easy4j.openclaw;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
 

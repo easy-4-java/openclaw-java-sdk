@@ -1,7 +1,7 @@
 package io.github.easy4j.openclaw;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.api.model.ResponseRequest;
 import io.github.easy4j.openclaw.api.model.ThinkOption;
 import io.github.easy4j.openclaw.cli.opts.ThinkingLevel;

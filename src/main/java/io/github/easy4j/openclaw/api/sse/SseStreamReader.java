@@ -1,7 +1,7 @@
 package io.github.easy4j.openclaw.api.sse;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
 import io.github.easy4j.openclaw.OpenClawDebugConfig;
 import io.github.easy4j.openclaw.exception.OpenClawHttpException;
 import io.github.easy4j.openclaw.api.model.ChatChunk;
