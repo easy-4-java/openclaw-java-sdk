@@ -84,6 +84,11 @@ public class OpenClawResponsesClient extends OpenClawHttpClient {
                 .topP(request.getTopP())
                 .user(request.getUser())
                 .previousResponseId(request.getPreviousResponseId())
+                .maxToolCalls(request.getMaxToolCalls())
+                .reasoning(request.getReasoning())
+                .metadata(request.getMetadata())
+                .store(request.getStore())
+                .truncation(request.getTruncation())
                 .build();
 
         return postJsonAsync(OpenClawConstants.ENDPOINT_RESPONSES, normalized, headers, null)

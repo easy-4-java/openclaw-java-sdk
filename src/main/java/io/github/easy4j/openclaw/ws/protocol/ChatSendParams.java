@@ -1,215 +1,181 @@
 package io.github.easy4j.openclaw.ws.protocol;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.github.easy4j.openclaw.cli.opts.ThinkingLevel;
+import lombok.Getter;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * chat.send RPC 参数，包含会话、消息、投递来源和超时。
+ * OpenClaw Gateway {@code chat.send} RPC 的完整请求参数。
+ * <p>字段对齐 OpenClaw 2026.7.1-2 {@code ChatSendParamsSchema}；可选字段为空时不会写入请求。</p>
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
+@Getter
+@lombok.Builder(builderClassName = "Builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChatSendParams {
 
-    /**
-     * JSON 属性 {@code sessionKey}，表示Gateway 会话路由键。
-     */
+    /** Gateway 会话路由键。 */
     private final String sessionKey;
-    /**
-     * 发送到目标聊天会话的消息正文。
-     */
+    /** 可选智能体标识。 */
+    private final String agentId;
+    /** 可选物理会话标识。 */
+    private final String sessionId;
+    /** 发送到目标会话的消息正文。 */
     private final String message;
-    /**
-     * JSON 属性 {@code thinking}，表示思考强度选项。
-     */
+    /** 本轮思考强度。 */
     private final String thinking;
-    /**
-     * JSON 属性 {@code deliver}，表示是否向外部通道投递消息。
-     */
+    /** 本轮快速模式，可为 {@link Boolean} 或字符串 {@code auto}。 */
+    private final Object fastMode;
+    /** {@code fastMode=auto} 时保持快速模式的秒数。 */
+    private final Integer fastAutoOnSeconds;
+    /** 是否把回复投递到外部通道。 */
     private final Boolean deliver;
-    /**
-     * JSON 属性 {@code originatingChannel}，表示来源通道名称。
-     */
+    /** 来源通道名称。 */
     private final String originatingChannel;
-    /**
-     * JSON 属性 {@code originatingTo}，表示来源通道目标。
-     */
+    /** 来源通道目标。 */
     private final String originatingTo;
-    /**
-     * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
-     */
+    /** 来源通道账号标识。 */
+    private final String originatingAccountId;
+    /** 来源线程标识。 */
+    private final String originatingThreadId;
+    /** OpenClaw 接受的原始附件对象列表。 */
+    private final List<Object> attachments;
+    /** 请求超时毫秒数。 */
     private final Integer timeoutMs;
-
-    private ChatSendParams(Builder b) {
-        this.sessionKey = b.sessionKey;
-        this.message = b.message;
-        this.thinking = b.thinking;
-        this.deliver = b.deliver;
-        this.originatingChannel = b.originatingChannel;
-        this.originatingTo = b.originatingTo;
-        this.timeoutMs = b.timeoutMs;
-    }
-
-    /**
-     * 返回会话路由键。
-     *
-     * @return Gateway 聊天会话路由键
-     */
-    public String getSessionKey() { return sessionKey; }
-    /**
-     * 返回消息正文。
-     *
-     * @return 发送给会话的消息正文
-     */
-    public String getMessage() { return message; }
-    /**
-     * 返回本次请求使用的思考强度选项。
-     *
-     * @return 本次请求的思考强度；未设置时为 {@code null}
-     */
-    public String getThinking() { return thinking; }
-    /**
-     * 返回是否将消息投递到外部通道。
-     *
-     * @return 是否投递到外部通道；未设置时返回 {@code null}
-     */
-    public Boolean getDeliver() { return deliver; }
-    /**
-     * 返回触发本次消息的来源通道。
-     *
-     * @return 触发消息的来源通道；未设置时为 {@code null}
-     */
-    public String getOriginatingChannel() { return originatingChannel; }
-    /**
-     * 返回来源通道中的目标地址。
-     *
-     * @return 来源通道中的目标地址；未设置时为 {@code null}
-     */
-    public String getOriginatingTo() { return originatingTo; }
-    /**
-     * 返回聊天消息发送超时，单位为毫秒。
-     *
-     * @return 请求超时毫秒数；未设置时为空
-     */
-    public Integer getTimeoutMs() { return timeoutMs; }
+    /** 可信系统输入来源。 */
+    private final SystemInputProvenance systemInputProvenance;
+    /** 系统来源回执。 */
+    private final String systemProvenanceReceipt;
+    /** 是否禁止把消息中的斜杠指令解释为控制命令。 */
+    private final Boolean suppressCommandInterpretation;
+    /** 调用方期望的会话路由契约。 */
+    private final String expectedSessionRoutingContract;
+    /** 幂等键；相同业务请求重试时应复用同一个值。 */
+    private final String idempotencyKey;
 
     /**
-     * 把当前协议对象编码为 Gateway WebSocket RPC 接受的键值参数。
-     *
-     * @return 键名与 OpenClaw JSON/CLI 协议一致的映射
-     */
-    public Map<String, Object> toParamsMap() {
-        Map<String, Object> m = new LinkedHashMap<>();
-        if (sessionKey != null) m.put("sessionKey", sessionKey);
-        m.put("message", message);
-        if (thinking != null) m.put("thinking", thinking);
-        if (deliver != null) m.put("deliver", deliver);
-        if (originatingChannel != null) m.put("originatingChannel", originatingChannel);
-        if (originatingTo != null) m.put("originatingTo", originatingTo);
-        if (timeoutMs != null) m.put("timeoutMs", timeoutMs);
-        return m;
-    }
-
-    /**
-     * 创建空白构建器，供调用方链式设置 {@code ChatSendParams} 字段。
-     *
-     * @return 新的空白构建器
-     */
-    public static Builder builder() { return new Builder(); }
-
-    /**
-     * {@code ChatSendParams} 的可变构建器；链式方法记录参数，{@code build()} 生成不再受后续修改影响的对象。
-     *
-     * @author <a href="https://github.com/loong10k">Loong Wan</a>
-     * @since 1.0.0
+     * {@code ChatSendParams} 构建器，保留字符串协议值并提供类型安全重载。
      */
     public static class Builder {
         /**
-         * JSON 属性 {@code sessionKey}，表示Gateway 会话路由键。
+         * 设置原始字符串思考等级，供前向兼容新等级。
+         *
+         * @param thinking OpenClaw 思考等级
+         * @return 当前构建器
          */
-        private String sessionKey;
-        /**
-         * 构建中的聊天消息正文。
-         */
-        private String message;
-        /**
-         * JSON 属性 {@code thinking}，表示思考强度选项。
-         */
-        private String thinking;
-        /**
-         * JSON 属性 {@code deliver}，表示是否向外部通道投递消息。
-         */
-        private Boolean deliver;
-        /**
-         * JSON 属性 {@code originatingChannel}，表示来源通道名称。
-         */
-        private String originatingChannel;
-        /**
-         * JSON 属性 {@code originatingTo}，表示来源通道目标。
-         */
-        private String originatingTo;
-        /**
-         * 该请求或进程允许等待的最长时间，单位为毫秒；超时后主动取消对应任务。
-         */
-        private Integer timeoutMs;
+        public Builder thinking(String thinking) {
+            this.thinking = thinking;
+            return this;
+        }
 
         /**
-         * 设置 {@code --session-key} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 类型安全地设置 OpenClaw 标准思考等级。
          *
-         * @param sessionKey 会话路由键
-         * @return 当前构建器，便于继续链式配置
+         * @param thinking 思考等级
+         * @return 当前构建器
          */
-        public Builder sessionKey(String sessionKey) { this.sessionKey = sessionKey; return this; }
+        public Builder thinkingLevel(ThinkingLevel thinking) {
+            this.thinking = thinking == null ? null : thinking.cliValue();
+            return this;
+        }
+
         /**
-         * 设置 {@code --message} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 使用布尔值设置快速模式。
          *
-         * @param message 消息正文
-         * @return 当前构建器，便于继续链式配置
+         * @param fastMode 是否启用快速模式
+         * @return 当前构建器
          */
-        public Builder message(String message) { this.message = message; return this; }
+        public Builder fastMode(Boolean fastMode) {
+            this.fastMode = fastMode;
+            return this;
+        }
+
         /**
-         * 设置 {@code --thinking} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 使用协议字符串设置快速模式；当前 OpenClaw 支持 {@code auto}。
          *
-         * @param thinking 模型思考强度；作为 {@code --thinking} 的参数
-         * @return 当前构建器，便于继续链式配置
+         * @param fastMode 快速模式值
+         * @return 当前构建器
          */
-        public Builder thinking(String thinking) { this.thinking = thinking; return this; }
+        public Builder fastMode(String fastMode) {
+            this.fastMode = fastMode;
+            return this;
+        }
+    }
+
+    /**
+     * 把当前对象编码为 Gateway WebSocket RPC 接受的参数映射。
+     *
+     * @return 仅包含已设置字段的参数映射
+     */
+    public Map<String, Object> toParamsMap() {
+        Map<String, Object> params = new LinkedHashMap<String, Object>();
+        putIfNonNull(params, "sessionKey", sessionKey);
+        putIfNonNull(params, "agentId", agentId);
+        putIfNonNull(params, "sessionId", sessionId);
+        putIfNonNull(params, "message", message);
+        putIfNonNull(params, "thinking", thinking);
+        putIfNonNull(params, "fastMode", fastMode);
+        putIfNonNull(params, "fastAutoOnSeconds", fastAutoOnSeconds);
+        putIfNonNull(params, "deliver", deliver);
+        putIfNonNull(params, "originatingChannel", originatingChannel);
+        putIfNonNull(params, "originatingTo", originatingTo);
+        putIfNonNull(params, "originatingAccountId", originatingAccountId);
+        putIfNonNull(params, "originatingThreadId", originatingThreadId);
+        putIfNonNull(params, "attachments", attachments);
+        putIfNonNull(params, "timeoutMs", timeoutMs);
+        if (systemInputProvenance != null) {
+            params.put("systemInputProvenance", systemInputProvenance.toParamsMap());
+        }
+        putIfNonNull(params, "systemProvenanceReceipt", systemProvenanceReceipt);
+        putIfNonNull(params, "suppressCommandInterpretation", suppressCommandInterpretation);
+        putIfNonNull(params, "expectedSessionRoutingContract", expectedSessionRoutingContract);
+        putIfNonNull(params, "idempotencyKey", idempotencyKey);
+        return params;
+    }
+
+    private static void putIfNonNull(Map<String, Object> params, String key, Object value) {
+        if (value != null) {
+            params.put(key, value);
+        }
+    }
+
+    /**
+     * 系统输入的来源证明，供 Gateway 识别可信的跨会话或工具生成输入。
+     */
+    @Getter
+    @lombok.Builder
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class SystemInputProvenance {
+        /** 来源类型。 */
+        private final String kind;
+        /** 原始会话标识。 */
+        private final String originSessionId;
+        /** 来源会话键。 */
+        private final String sourceSessionKey;
+        /** 来源通道。 */
+        private final String sourceChannel;
+        /** 来源工具。 */
+        private final String sourceTool;
+
         /**
-         * 设置 {@code --deliver} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
+         * 编码为 Gateway Schema 对应的参数映射。
          *
-         * @param deliver 是否把消息投递至外部通道；作为 {@code --deliver} 的参数
-         * @return 当前构建器，便于继续链式配置
+         * @return 仅包含已设置字段的来源映射
          */
-        public Builder deliver(Boolean deliver) { this.deliver = deliver; return this; }
-        /**
-         * 设置 {@code --originating-channel} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
-         *
-         * @param ch 触发消息的来源通道；作为 {@code --originating-channel} 的参数
-         * @return 当前构建器，便于继续链式配置
-         */
-        public Builder originatingChannel(String ch) { this.originatingChannel = ch; return this; }
-        /**
-         * 设置 {@code --originating-to} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
-         *
-         * @param to 消息投递目标；作为 {@code --originating-to} 的参数
-         * @return 当前构建器，便于继续链式配置
-         */
-        public Builder originatingTo(String to) { this.originatingTo = to; return this; }
-        /**
-         * 设置 {@code --timeout-ms} 命令选项并返回当前构建器；是否输出该选项由参数值决定。
-         *
-         * @param ms 超时时长，单位为毫秒；作为 {@code --timeout-ms} 的参数
-         * @return 当前构建器，便于继续链式配置
-         */
-        public Builder timeoutMs(Integer ms) { this.timeoutMs = ms; return this; }
-        /**
-         * 校验并复制当前构建器字段，创建独立的 {@code ChatSendParams}。
-         *
-         * @return 按当前字段创建的 ChatSendParams
-         */
-        public ChatSendParams build() { return new ChatSendParams(this); }
+        public Map<String, Object> toParamsMap() {
+            Map<String, Object> params = new LinkedHashMap<String, Object>();
+            putIfNonNull(params, "kind", kind);
+            putIfNonNull(params, "originSessionId", originSessionId);
+            putIfNonNull(params, "sourceSessionKey", sourceSessionKey);
+            putIfNonNull(params, "sourceChannel", sourceChannel);
+            putIfNonNull(params, "sourceTool", sourceTool);
+            return params;
+        }
     }
 }

@@ -22,9 +22,17 @@ public class ChatHistoryParams {
      */
     private final String sessionKey;
     /**
+     * JSON 属性 {@code agentId}，用于显式限定智能体作用域。
+     */
+    private final String agentId;
+    /**
      * JSON 属性 {@code limit}，表示最大返回条数。
      */
     private final Integer limit;
+    /**
+     * JSON 属性 {@code offset}，表示从第几条可见记录开始读取。
+     */
+    private final Integer offset;
     /**
      * JSON 属性 {@code maxChars}，表示最大字符数。
      */

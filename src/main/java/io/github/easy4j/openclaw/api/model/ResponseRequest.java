@@ -90,6 +90,32 @@ public class ResponseRequest {
     @JsonProperty("previous_response_id")
     private String previousResponseId;
 
+    /**
+     * JSON 属性 {@code maxToolCalls}，OpenClaw 当前接受该兼容参数但不参与执行。
+     */
+    @JsonProperty("max_tool_calls")
+    private Integer maxToolCalls;
+
+    /**
+     * JSON 属性 {@code reasoning}，OpenClaw 当前接受该兼容参数但不参与执行。
+     */
+    private Object reasoning;
+
+    /**
+     * JSON 属性 {@code metadata}，OpenClaw 当前接受该兼容参数但不参与执行。
+     */
+    private Map<String, String> metadata;
+
+    /**
+     * JSON 属性 {@code store}，OpenClaw 当前接受该兼容参数但不参与执行。
+     */
+    private Boolean store;
+
+    /**
+     * JSON 属性 {@code truncation}，OpenClaw 当前接受该兼容参数但不参与执行。
+     */
+    private Object truncation;
+
     // ==================== Inner Classes ====================
 
     /**
@@ -165,10 +191,7 @@ public class ResponseRequest {
         public static InputItemBuilder imageSource(String sourceType, String value) {
             return InputItem.builder()
                     .type(OpenClawConstants.INPUT_TYPE_IMAGE)
-                    .source(Source.builder()
-                            .type(sourceType)
-                            .url(value)
-                            .build());
+                    .source(buildSource(sourceType, value, null));
         }
 
         /**
@@ -202,11 +225,17 @@ public class ResponseRequest {
         public static InputItemBuilder fileSource(String sourceType, String value, String mediaType) {
             return InputItem.builder()
                     .type(OpenClawConstants.INPUT_TYPE_FILE)
-                    .source(Source.builder()
-                            .type(sourceType)
-                            .url(value)
-                            .mediaType(mediaType)
-                            .build());
+                    .source(buildSource(sourceType, value, mediaType));
+        }
+
+        private static Source buildSource(String sourceType, String value, String mediaType) {
+            Source.SourceBuilder builder = Source.builder().type(sourceType).mediaType(mediaType);
+            if ("base64".equals(sourceType)) {
+                builder.data(value);
+            } else {
+                builder.url(value);
+            }
+            return builder.build();
         }
 
         /**
@@ -264,6 +293,7 @@ public class ResponseRequest {
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         public static class Source {
             /**
              * JSON 属性 {@code type}，表示对象或协议帧的类型判别值。
@@ -274,6 +304,11 @@ public class ResponseRequest {
              * JSON 属性 {@code url}，表示目标地址。
              */
             private String url;
+
+            /**
+             * JSON 属性 {@code data}，表示 Base64 编码的数据负载。
+             */
+            private String data;
 
             /**
              * JSON 属性 {@code mediaType}，表示文件媒体类型。
