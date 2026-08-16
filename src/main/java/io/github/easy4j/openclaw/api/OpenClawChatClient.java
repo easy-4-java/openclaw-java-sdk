@@ -213,6 +213,22 @@ public class OpenClawChatClient extends OpenClawHttpClient {
         return response;
     }
 
+    /**
+     * 携带自定义请求头发起流式请求，并在订阅启动前完成回调绑定。
+     *
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
+     * @param headers 附加 HTTP 请求头
+     * @param callbackBuilder 用于注册流式增量、工具调用、完成和失败回调的构建器
+     * @return 已在订阅启动前绑定请求头和回调的可取消流式结果句柄
+     */
+    public StreamingChatResponse chatCompletionStream(ChatRequest request, Map<String, String> headers,
+                                                       StreamingChatResponse.Builder callbackBuilder) {
+        Objects.requireNonNull(callbackBuilder, "callbackBuilder");
+        StreamingChatResponse response = callbackBuilder.build();
+        subscribeStream(request, headers, response);
+        return response;
+    }
+
     // ============================================================
     // Models
     // ============================================================
