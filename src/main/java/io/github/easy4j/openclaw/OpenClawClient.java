@@ -650,6 +650,21 @@ public class OpenClawClient implements AutoCloseable {
     }
 
     /**
+     * 携带结构化请求头发起流式聊天，并在订阅启动前完成回调绑定。
+     *
+     * @param request 要校验、序列化并发送的 {@code ChatRequest}
+     * @param headersBuilder OpenClaw 请求头构建器，可为 {@code null}
+     * @param callbackBuilder 用于注册流式增量、工具调用、完成和失败回调的构建器
+     * @return 已在订阅启动前绑定请求头和回调的可取消流式结果句柄
+     */
+    public StreamingChatResponse chatCompletionStream(ChatRequest request,
+                                                       OpenClawHeaders.Builder headersBuilder,
+                                                       StreamingChatResponse.Builder callbackBuilder) {
+        Map<String, String> headers = Objects.nonNull(headersBuilder) ? headersBuilder.build() : null;
+        return chatClient.chatCompletionStream(request, headers, callbackBuilder);
+    }
+
+    /**
      * 携带会话键发起流式聊天，使后续请求可复用同一会话。
      *
      * @param request 要校验、序列化并发送的 {@code ChatRequest}
