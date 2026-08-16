@@ -438,26 +438,30 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
     /**
      * 对 connect BODY 调试日志中的认证材料和设备签名脱敏。
      *
+     * <p>基于深拷贝构造仅用于日志的脱敏副本，解析出的原始树保持只读；副本为调用线程私有，
+     * 因此本方法天然线程安全，可在任意线程（如 WebSocket 读线程）并发调用。</p>
+     *
      * @param json 原始 connect 请求 JSON
      * @return 保留协议结构但不包含认证秘密和设备签名的 JSON
      */
     String redactConnectHandshake(String json) {
         try {
             JsonNode root = objectMapper.readTree(json);
+            JsonNode sanitized = root.deepCopy();
             JsonNode auth = root.path("params").path("auth");
             if (auth.isObject()) {
-                java.util.Collection<String> names = auth.propertyNames();
-                while (!names.isEmpty()) {
-                    ((tools.jackson.databind.node.ObjectNode) auth)
-                            .put(names.iterator().next(), "<redacted>");
+                tools.jackson.databind.node.ObjectNode sanitizedAuth =
+                        (tools.jackson.databind.node.ObjectNode) sanitized.path("params").path("auth");
+                for (String name : auth.propertyNames()) {
+                    sanitizedAuth.put(name, "<redacted>");
                 }
             }
             JsonNode device = root.path("params").path("device");
             if (device.isObject() && device.has("signature")) {
-                ((tools.jackson.databind.node.ObjectNode) device)
+                ((tools.jackson.databind.node.ObjectNode) sanitized.path("params").path("device"))
                         .put("signature", "<redacted>");
             }
-            return objectMapper.writeValueAsString(root);
+            return objectMapper.writeValueAsString(sanitized);
         } catch (JacksonException e) {
             return "<connect-payload-redacted>";
         }
