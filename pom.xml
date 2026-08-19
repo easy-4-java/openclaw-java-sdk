@@ -74,6 +74,7 @@
         <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+    
     </properties>
 
     <dependencyManagement>
@@ -516,7 +517,9 @@
 		<lombok.version>1.18.46</lombok.version>
 		<jackson.version>2.22.1</jackson.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
-		<commons-lang.version>2.6</commons-lang.version></properties>
+		<commons-lang.version>2.6</commons-lang.version>
+    
+    </properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
 
