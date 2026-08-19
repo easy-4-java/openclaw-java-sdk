@@ -98,9 +98,7 @@
                                         <version>[4.0.0,)</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
-                                        <message>
-											You are running an older version of Java. This application requires at least JDK ${java.version}.
-										</message>
+                                        <message><![CDATA[You are running an older version of Java. This application requires at least JDK ${java.version}.]]></message>
                                         <version>[${java.version}.0,)</version>
                                     </requireJavaVersion>
                                 </rules>
@@ -350,12 +348,12 @@
             <properties>
                 <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
                 <additionalparam>-Xdoclint:none -Xlint:unchecked</additionalparam>
-            
-		<junit.version>4.13.2</junit.version>
-		<slf4j.version>2.0.18</slf4j.version>
-		<lombok.version>1.18.46</lombok.version>
-		<jackson.version>3.2.1</jackson.version>
-		<commons-lang.version>2.6</commons-lang.version></properties>
+                <junit.version>4.13.2</junit.version>
+                <slf4j.version>2.0.18</slf4j.version>
+                <lombok.version>1.18.46</lombok.version>
+                <jackson.version>3.2.1</jackson.version>
+                <commons-lang.version>2.6</commons-lang.version>
+            </properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
 
