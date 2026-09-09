@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.1.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 http://maven.apache.org/xsd/maven-4.1.0.xsd">
     <modelVersion>4.1.0</modelVersion>
     <groupId>io.github.easy4j</groupId>
     <artifactId>openclaw-java-sdk</artifactId>
@@ -43,7 +43,7 @@
         
         <commons-exec.version>1.6.0</commons-exec.version>
         <jackson.version>2.22.1</jackson.version>
-        <jackson-bom.version>2.22.1</jackson-bom.version>
+        <jackson-bom.version>3.2.1</jackson-bom.version>
         <java-websocket.version>1.6.0</java-websocket.version>
         <junit.version>5.11.4</junit.version>
         <junit-jupiter.version>5.11.4</junit-jupiter.version>
@@ -73,7 +73,7 @@
         <dependencies>
             
             <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
+                <groupId>tools.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>${jackson-bom.version}</version>
                 <type>pom</type>
@@ -154,7 +154,7 @@
         </dependency>
         
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
         
