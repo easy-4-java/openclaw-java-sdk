@@ -485,7 +485,6 @@
             </activation>
             <properties>
                 <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
-                <additionalparam>-Xdoclint:none -Xlint:unchecked</additionalparam>
                 <junit.version>4.13.2</junit.version>
                 <slf4j.version>2.0.18</slf4j.version>
                 <lombok.version>1.18.46</lombok.version>
