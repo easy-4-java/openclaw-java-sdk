@@ -607,6 +607,355 @@ public class OpenClawCli {
         return executor.execute(request);
     }
 
+    // ============================================================
+    // 文档化缺口补齐（CLI 参考对齐）
+    // ============================================================
+
+    /**
+     * 通过执行器运行 {@code openclaw attach} 子命令。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult attach(CliSubArgs args) {
+        return run("attach", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw audit} 子命令。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult audit(CliSubArgs args) {
+        return run("audit", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw browser} 子命令；status/start/navigate 等
+     * 完整子命令树以「一级子命令 + 自由参数」形态透传。
+     *
+     * @param args 浏览器子命令与参数
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult browser(SubcommandOptions args) {
+        return run("browser", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw claws} 子命令。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult claws(CliSubArgs args) {
+        return run("claws", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw connect} 子命令。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult connect(CliSubArgs args) {
+        return run("connect", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw dns} 子命令（文档化动作为 {@code setup}）。
+     *
+     * @param args DNS 选项
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult dns(DnsOptions args) {
+        return run("dns", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw docs} 子命令。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult docs(CliSubArgs args) {
+        return run("docs", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw fleet} 子命令（create/backup/restore 等
+     * 十二个文档化动作）。
+     *
+     * @param args fleet 选项
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult fleet(FleetOptions args) {
+        return run("fleet", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw infer} 子命令（alias {@code capability}）；
+     * model/image/audio/tts/video/web/embedding 子树以自由参数透传。
+     *
+     * @param args infer 子命令与参数
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult infer(SubcommandOptions args) {
+        return run("infer", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw memory status}。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult memoryStatus() {
+        return run("memory", MemoryOptions.builder().verb(MemoryOptions.Verb.STATUS).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw memory index}。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult memoryIndex() {
+        return run("memory", MemoryOptions.builder().verb(MemoryOptions.Verb.INDEX).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw memory search <query>}。
+     *
+     * @param query 搜索串
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult memorySearch(String query) {
+        return run("memory", MemoryOptions.builder().verb(MemoryOptions.Verb.SEARCH).operand(query).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw path} 子命令（resolve/find/set/validate/emit）。
+     *
+     * @param args path 选项
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult path(PathOptions args) {
+        return run("path", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw policy} 子命令（可选插件）。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult policy(CliSubArgs args) {
+        return run("policy", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw promos list}。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult promosList() {
+        return run("promos", PromosOptions.builder().verb(PromosOptions.Verb.LIST).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw promos claim <slug>}。
+     *
+     * @param slug 促销标识
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult promosClaim(String slug) {
+        return run("promos", PromosOptions.builder().verb(PromosOptions.Verb.CLAIM).operand(slug).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw resume} 子命令。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult resume(CliSubArgs args) {
+        return run("resume", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw sandbox} 子命令（list/recreate/explain）。
+     *
+     * @param args sandbox 选项
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult sandbox(SandboxOptions args) {
+        return run("sandbox", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw setup} 子命令（交互式引导）。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult setup() {
+        return run("setup", SetupOptions.builder().build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw setup --baseline}（跳过引导，直接建基线）。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult setupBaseline() {
+        return run("setup", SetupOptions.builder().baseline(true).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw tasks} 子命令（list/audit/maintenance 等）。
+     *
+     * @param args tasks 选项
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult tasks(TasksOptions args) {
+        return run("tasks", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw transcripts list}。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult transcriptsList() {
+        return run("transcripts", TranscriptsOptions.builder().verb(TranscriptsOptions.Verb.LIST).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw transcripts show <id>}。
+     *
+     * @param id 转录标识
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult transcriptsShow(String id) {
+        return run("transcripts", TranscriptsOptions.builder().verb(TranscriptsOptions.Verb.SHOW).operand(id).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw transcripts path}。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult transcriptsPath() {
+        return run("transcripts", TranscriptsOptions.builder().verb(TranscriptsOptions.Verb.PATH).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw triage} 子命令。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult triage(CliSubArgs args) {
+        return run("triage", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw voicecall} 子命令（可选插件）。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult voicecall(CliSubArgs args) {
+        return run("voicecall", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw webhooks gmail setup}。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult webhooksGmailSetup() {
+        return run("webhooks", WebhooksOptions.builder().verb(WebhooksOptions.Verb.GMAIL_SETUP).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw webhooks gmail run}。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult webhooksGmailRun() {
+        return run("webhooks", WebhooksOptions.builder().verb(WebhooksOptions.Verb.GMAIL_RUN).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw wiki} 子命令；status/doctor/init/compile 等
+     * 子树以「一级子命令 + 自由参数」形态透传。
+     *
+     * @param args wiki 子命令与参数
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult wiki(SubcommandOptions args) {
+        return run("wiki", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw workboard list}。
+     *
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult workboardList() {
+        return run("workboard", WorkboardOptions.builder().verb(WorkboardOptions.Verb.LIST).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw workboard create <args...>}。
+     *
+     * @param args 创建参数
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult workboardCreate(CliSubArgs args) {
+        return run("workboard", WorkboardOptions.builder()
+                .verb(WorkboardOptions.Verb.CREATE).arguments(args.toSubcommandArguments()).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw workboard show <id>}。
+     *
+     * @param id 看板标识
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult workboardShow(String id) {
+        return run("workboard", WorkboardOptions.builder().verb(WorkboardOptions.Verb.SHOW).operand(id).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw workboard dispatch <id>}。
+     *
+     * @param id 看板标识
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult workboardDispatch(String id) {
+        return run("workboard", WorkboardOptions.builder().verb(WorkboardOptions.Verb.DISPATCH).operand(id).build());
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw worker} 子命令。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult worker(CliSubArgs args) {
+        return run("worker", args);
+    }
+
+    /**
+     * 通过执行器运行 {@code openclaw file-transfer} 子命令（可选插件）。
+     *
+     * @param args 附加参数；可传 {@code CliSubArgs.empty()}
+     * @return 包含子进程退出码、标准输出和标准错误的执行结果
+     */
+    public OpenClawCliResult fileTransfer(CliSubArgs args) {
+        return run("file-transfer", args);
+    }
+
     /**
      * 按 {@code openclaw <top-level> <sub-arguments...>} 顺序组装并执行子命令。
      *
