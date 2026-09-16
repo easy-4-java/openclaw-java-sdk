@@ -462,7 +462,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    
+                    <release>${java.version}</release>
+                    <proc>full</proc>
                     <parameters>true</parameters>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <maxmem>512M</maxmem>

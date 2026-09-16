@@ -128,9 +128,104 @@ public class ResponseRequest {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class InputItem {
+
+        /**
+         * 手写构建器：显式声明以规避 JDK 21 javac 在 Enter 阶段先于 Lombok
+         * 生成解析嵌套 builder 类型的时序问题（公开 API 与 Lombok 生成形态一致）。
+         *
+         * @author <a href="https://github.com/loong10k">Loong Wan</a>
+         * @since 1.0.0
+         */
+        public static class InputItemBuilder {
+
+            private final InputItem item = new InputItem();
+
+            /**
+             * 设置 JSON 属性 {@code type}。
+             *
+             * @param value 类型判别值
+             * @return 当前构建器
+             */
+            public InputItemBuilder type(String value) {
+                item.type = value;
+                return this;
+            }
+
+            /**
+             * 设置 JSON 属性 {@code role}。
+             *
+             * @param value 消息角色
+             * @return 当前构建器
+             */
+            public InputItemBuilder role(String value) {
+                item.role = value;
+                return this;
+            }
+
+            /**
+             * 设置 JSON 属性 {@code content}。
+             *
+             * @param value 消息正文
+             * @return 当前构建器
+             */
+            public InputItemBuilder content(String value) {
+                item.content = value;
+                return this;
+            }
+
+            /**
+             * 设置 JSON 属性 {@code call_id}。
+             *
+             * @param value 函数调用标识
+             * @return 当前构建器
+             */
+            public InputItemBuilder callId(String value) {
+                item.callId = value;
+                return this;
+            }
+
+            /**
+             * 设置函数调用输出文本。
+             *
+             * @param value 输出文本
+             * @return 当前构建器
+             */
+            public InputItemBuilder output(String value) {
+                item.output = value;
+                return this;
+            }
+
+            /**
+             * 设置 JSON 属性 {@code source}。
+             *
+             * @param value 数据来源
+             * @return 当前构建器
+             */
+            public InputItemBuilder source(Source value) {
+                item.source = value;
+                return this;
+            }
+
+            /**
+             * 构建不可变 {@link InputItem}。
+             *
+             * @return 输入项实例
+             */
+            public InputItem build() {
+                return item;
+            }
+        }
+
+        /**
+         * 返回输入项构建器。
+         *
+         * @return 新的 {@link InputItemBuilder} 实例
+         */
+        public static InputItemBuilder builder() {
+            return new InputItemBuilder();
+        }
 
         /**
          * JSON 属性 {@code type}，表示对象或协议帧的类型判别值。
