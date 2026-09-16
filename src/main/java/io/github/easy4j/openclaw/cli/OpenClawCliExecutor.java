@@ -155,7 +155,10 @@ public class OpenClawCliExecutor {
             cmd.addArgument("--no-color");
         }
         for (String a : request.getArguments()) {
-            cmd.addArgument(a);
+            // handleQuoting=false：子进程经 exec(argv) 启动而非 shell，多词参数
+            // 不需要引号包裹；commons-exec 默认引号会成为 argv 的字面字符，
+            // 导致 sh -c 把整段脚本当成单个命令名。
+            cmd.addArgument(a, false);
         }
         return cmd;
     }
