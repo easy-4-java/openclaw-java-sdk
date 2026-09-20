@@ -1,0 +1,122 @@
+{
+  "documentVersion": "0.1.0-draft",
+  "date": "2026-09-20",
+  "repository": "easy-4-java/openclaw-java-sdk",
+  "sdkBaseline": {
+    "feature/1.0.x": "8cfbeb880a6c6ae5390fab0f9fe65e06938907be",
+    "feature/2.0.x": "48309d7bc34c4298cdfa1c52db06114b2e7e9f17",
+    "feature/3.0.x": "3687fcb09e75ec4c2ecb522877e9a27c1f1955aa",
+    "main": "c4ddcd3fa86d8fb5352b722813268760c35636b2"
+  },
+  "upstream": {
+    "documentationBasis": "live-official-documentation",
+    "documentationObservedDate": "2026-09-20",
+    "documentedProtocol": "v4",
+    "testedGatewayVersion": null,
+    "testedGatewayCommit": null,
+    "pinStatus": "BLOCKED_VERSION_PIN",
+    "rawPageSnapshotArchived": false
+  },
+  "verification": {
+    "sourceReview": "static-review-only",
+    "codegraphExecuted": false,
+    "sdkBuildExecuted": false,
+    "liveGatewayTestsExecuted": false,
+    "officialOpenSpecValidationExecuted": false,
+    "structuralValidation": "see validation-report.json"
+  },
+  "approval": {
+    "state": "DRAFT",
+    "implementationAuthorized": false,
+    "archiveAuthorized": false
+  },
+  "delivery": {
+    "createdIn": "conversation-sandbox",
+    "githubCommitted": false,
+    "userMachineModified": false
+  },
+  "changes": [
+    {
+      "id": "establish-sdk-compatibility-governance",
+      "priority": "P0",
+      "dependsOn": [],
+      "state": "DRAFT",
+      "capabilities": [
+        "sdk-compatibility-governance"
+      ]
+    },
+    {
+      "id": "fix-openclaw-protocol-contracts",
+      "priority": "P0",
+      "dependsOn": [
+        "establish-sdk-compatibility-governance"
+      ],
+      "state": "DRAFT",
+      "capabilities": [
+        "responses-streaming",
+        "gateway-chat-events",
+        "gateway-device-auth",
+        "session-history-contract",
+        "tools-invoke-contract"
+      ]
+    },
+    {
+      "id": "add-managed-gateway-client",
+      "priority": "P0",
+      "dependsOn": [
+        "establish-sdk-compatibility-governance",
+        "fix-openclaw-protocol-contracts"
+      ],
+      "state": "DRAFT",
+      "capabilities": [
+        "managed-rpc",
+        "gateway-recovery",
+        "typed-event-delivery"
+      ]
+    },
+    {
+      "id": "add-agent-session-approval-control",
+      "priority": "P1",
+      "dependsOn": [
+        "add-managed-gateway-client"
+      ],
+      "state": "DRAFT",
+      "capabilities": [
+        "agent-lifecycle",
+        "session-control",
+        "approval-control"
+      ]
+    },
+    {
+      "id": "add-gateway-operations",
+      "priority": "P1/P2",
+      "dependsOn": [
+        "add-managed-gateway-client",
+        "add-agent-session-approval-control"
+      ],
+      "state": "DRAFT",
+      "capabilities": [
+        "configuration-control",
+        "cron-control",
+        "tool-model-catalogs",
+        "skill-plugin-lifecycle",
+        "channel-node-control",
+        "task-audit-artifacts"
+      ]
+    },
+    {
+      "id": "add-optional-runtime-adapters",
+      "priority": "P2",
+      "dependsOn": [
+        "add-managed-gateway-client",
+        "add-agent-session-approval-control"
+      ],
+      "state": "DRAFT",
+      "capabilities": [
+        "terminal-voice-adapters",
+        "persistent-stdio-adapters",
+        "cli-typed-results"
+      ]
+    }
+  ]
+}
