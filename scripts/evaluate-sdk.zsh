@@ -1,4 +1,6 @@
 #!/bin/zsh
+# shellcheck shell=bash  # SC1071: zsh 脚本按 bash 规则检查
+# shellcheck shell=ksh  # ShellCheck 不支持 zsh，按 ksh 规则 lint
 set -uo pipefail
 
 repo_root=${0:a:h:h}

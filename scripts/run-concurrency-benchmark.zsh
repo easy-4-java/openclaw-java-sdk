@@ -1,4 +1,6 @@
 #!/bin/zsh
+# shellcheck shell=bash  # SC1071: zsh 脚本按 bash 规则检查
+# shellcheck shell=ksh  # ShellCheck 不支持 zsh，按 ksh 规则 lint
 set -euo pipefail
 
 repo_root=${0:a:h:h}
@@ -12,7 +14,7 @@ if [[ "$workload" != http && "$workload" != sse ]]; then
   print -u2 'Usage: run-concurrency-benchmark.zsh <http|sse> <concurrency> [result.csv]'
   exit 64
 fi
-if [[ ! "$concurrency" =~ '^[1-9][0-9]*$' ]]; then
+if [[ ! "$concurrency" =~ ^[1-9][0-9]*$ ]]; then
   print -u2 'concurrency must be a positive integer'
   exit 64
 fi
@@ -65,7 +67,7 @@ operations=$(awk -F= '$1 == "operations" { print $2 }' "$metrics_file")
 errors=$(awk -F= '$1 == "errors" { print $2 }' "$metrics_file")
 duration_seconds=$(awk -F= '$1 == "duration_seconds" { print $2 }' "$metrics_file")
 throughput=$(awk -F= '$1 == "throughput_per_sec" { print $2 }' "$metrics_file")
-read avg_cpu peak_cpu peak_rss_mb <<<"$(awk '
+read -r avg_cpu peak_cpu peak_rss_mb <<<"$(awk '
   BEGIN { sum=0; count=0; peak_cpu=0; peak_rss=0 }
   NF == 2 { sum += $1; count++; if ($1 > peak_cpu) peak_cpu=$1; if ($2 > peak_rss) peak_rss=$2 }
   END { printf "%.3f %.3f %.3f", count ? sum/count : 0, peak_cpu, peak_rss/1024 }
