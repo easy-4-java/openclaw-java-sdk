@@ -1,0 +1,30 @@
+# Implementation Tasks
+
+状态：未执行。已有草案不代表治理流程已获批准或自动检查已落地。
+
+## 1. 评审与版本准入
+
+- [ ] 1.1 评审 GOV-01 至 GOV-04 的八个场景和六组变更边界；验收：有范围、依赖、优先级、人审记录，不把文档生成记录当作批准。
+- [x] 1.2 选择可获得的 OpenClaw 精确版本／提交与构建来源；（证据：evidence/2026-09-20-precursor-evidence.md、version-lock.md）验收：形成版本锁定记录及对应协议来源，未锁定时后续实施保持阻断。
+- [x] 1.3 在独立检出目录核对三条 SDK HEAD、现有指令和代码图；（证据：evidence/2026-09-20-precursor-evidence.md §1.3）验收：记录 codegraph 版本、实际执行命令与索引/查询结果；不支持 Java 或执行失败时明确标注，并保留源码核对证据，禁止冒充代码图结果。
+
+## 2. 能力证据和兼容治理
+
+- [x] 2.1 为 GOV-01、GOV-04 建立机器可读的能力、版本和证据清单；（证据：evidence/2026-09-20-precursor-evidence.md、capability-inventory.json——8 项静态存在均 liveVerified=false，4 项未封装，无 live-pass 标记）验收：能区分静态存在、部分实现、CLI 透传、未封装、未验证与不适用，并演示缺失证据不能被标记为 live-pass。
+- [ ] 2.2 为 GOV-02 建立三分支协议 fixture 和获准差异清单；验收：同一行为具有共同场景标识，JSON 包名和 JDK 差异不被误判为功能分叉，行为差异不能被全局忽略。
+- [ ] 2.3 为 GOV-03 建立规范评审与归档检查步骤；验收：DRAFT、REVIEWED、IMPLEMENTED、VERIFIED 与 ARCHIVED 分开，未执行任务和缺证据场景可阻止本项目归档流程。
+- [ ] 2.4 逐项映射 traceability 中 GOV-01-S1 至 GOV-04-S2；验收：八个场景均有对应检查或人工审核记录，重写 README 不得替代证据校验。
+
+## 3. 基线验证与文档同步
+
+- [ ] 3.1 对锁定 Gateway 执行基础健康、认证成功及授权拒绝检查；验收：记录真实目标版本、认证模式及脱敏结果，现有缺陷如实登记，不以消除尚未实施功能的失败为本阶段前提。
+- [ ] 3.2 修正文档中的版本、JDK、依赖和支持等级漂移；验收：逐分支核对 pom、README、发布说明，快照版本和未验证状态一致，无声称全量支持的空泛结论。
+- [x] 3.3 记录实际 JDK／Maven／依赖来源与构建结果；（证据：evidence/2026-09-20-precursor-evidence.md §3.3）验收：每条分支都有独立结果，环境不足标为 BLOCKED，治理变更无运行资源触点时明确记录资源测试不适用原因。
+- [x] 3.4 使用已固定版本的官方 OpenSpec CLI 校验全部变更并保存输出；openspec CLI 1.8.0，`validate --all --strict --no-interactive --json`：6/6 changes valid，issues 为空（证据：evidence/2026-09-20-precursor-evidence.md §3.4）验收：validate --all --strict --no-interactive --json 成功，不用自定义结构检查冒充官方校验。
+- [ ] 3.5 评审治理变更的归档资格；验收：全部必需任务有证据、获准三分支规则已记录，只有治理规范本身可归档，后续功能提案不随之归档。
+
+## 执行记录（2026-09-20）
+
+已由 AI 会话完成并附证据：1.2、1.3、2.1、3.3、3.4（见 evidence/ 目录）。
+保持未勾选（人审/环境门禁）：1.1、2.2、2.3、2.4、3.1、3.2、3.5——原因逐条见
+evidence/2026-09-20-precursor-evidence.md「阻塞项」。G1 编码保持阻断，待人审批准。

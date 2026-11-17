@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-09-20",
+  "openclawVersion": "2026.7.1-2 (0790d9f)",
+  "branches": {
+    "feature/1.0.x": {"sha": "8cfbeb8", "jdk": 8,  "tests": "155 green", "graph": "2324 nodes / 13840 edges"},
+    "feature/2.0.x": {"sha": "48309d7", "jdk": 17, "tests": "155 green", "graph": "indexed, head_matches_build=true"},
+    "feature/3.0.x": {"sha": "3687fcb", "jdk": 21, "tests": "155 green", "graph": "indexed, head_matches_build=true"}
+  },
+  "capabilities": [
+    {"id": "http-chat", "status": "static-present", "evidence": "OpenClawChatClient + 单测", "liveVerified": false},
+    {"id": "http-responses", "status": "static-present", "evidence": "OpenClawResponsesClient + SSE reader + 单测", "liveVerified": false},
+    {"id": "http-embeddings", "status": "static-present", "evidence": "OpenClawEmbeddingsClient + 单测", "liveVerified": false},
+    {"id": "http-tool-invoke", "status": "static-present", "evidence": "OpenClawToolInvokeClient + 单测", "liveVerified": false},
+    {"id": "http-webhook", "status": "static-present", "evidence": "OpenClawWebhookClient + 单测", "liveVerified": false},
+    {"id": "cli-commands", "status": "static-present", "evidence": "OpenClawCli 81+ 方法 + 参数装配测试 + UTF-8 回归", "liveVerified": false},
+    {"id": "ws-gateway-core", "status": "static-present", "evidence": "OpenClawGatewayWsClient chat/sessions/cron/config + 本地 fixture 集成测试", "liveVerified": false},
+    {"id": "spring-boot-autoconfig", "status": "static-present", "evidence": "spring/boot 包", "liveVerified": false},
+    {"id": "gateway-reconnect-reconciliation", "status": "not-wrapped", "evidence": null, "liveVerified": false},
+    {"id": "approval-execution-loop", "status": "not-wrapped", "evidence": null, "liveVerified": false},
+    {"id": "gateway-ops-rpcs", "status": "not-wrapped", "evidence": null, "liveVerified": false},
+    {"id": "terminal-voice-adapters", "status": "not-wrapped", "evidence": null, "liveVerified": false}
+  ],
+  "rule": "liveVerified=false 或 evidence=null 的条目不得标记为 live-pass；CLI 透传不计为已封装能力。"
+}
