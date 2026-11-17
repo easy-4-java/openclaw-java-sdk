@@ -2,7 +2,7 @@
 
 版本 0.1.0-draft · 2026-09-20 · **待评审，未实施，未归档**
 
-这是一套仓库内的 OpenSpec 变更草案，不是仅供讨论的差距清单。包含六组 proposal/design/tasks、21 个 capability spec、64 条 Requirement 和 128 个 Scenario；实施任务共 97 项，全部未执行；检查结果见 [文档检查结果](validation-summary.md)。
+这是一套仓库内的 OpenSpec 变更草案，不是仅供讨论的差距清单。包含六组 proposal/design/tasks、21 个 capability spec、64 条 Requirement 和 128 个 Scenario；任务共 97 项，其中 5 项 G0 准入证据任务已勾选，92 项待完成。SDK 功能尚未按这些草案实施；检查结果见 [文档检查结果](validation-summary.md)。
 
 ## 阅读顺序
 
@@ -13,9 +13,9 @@
 
 ## 交付边界
 
-本目录及 openspec/ 以独立文档提交交付；没有修改任何 SDK Java 源码、pom、依赖或现有测试，也没有写入维护者的本机工作区。所有实施任务保持未勾选，人审批准和具体目标 Gateway 版本锁定仍是下一阶段前提。
+本目录及 openspec/ 以独立文档提交交付；没有修改任何 SDK Java 源码、pom、依赖或现有测试。G0 已记录目标版本和来源，但该锁定仍待人审确认；G1 编码继续受评审门禁约束。
 
-官方 OpenSpec CLI 在当前环境不可用，尝试获取时因 DNS/网络解析失败而未能安装。因此只报告实际完成的自定义文档结构检查，不声称执行过官方 validate。也没有执行 codegraph、Maven 或真实 Gateway 测试。
+首次文档编制时仅执行自定义结构检查；后续 G0 证据提交记录了三分支 CodeGraph、Maven 构建与测试，以及 OpenSpec 1.8.0 strict 校验。2026-11-18 使用 OpenSpec 1.14.1 对本分支再次执行 `openspec validate --all --strict --no-interactive --json`，6/6 changes 有效。上述构建证据对应 2026-09-20 的 SDK 提交，不证明当前源码或真实 Gateway 集成；真实 Gateway 测试仍未执行。
 
 ## 合入方式
 
@@ -25,8 +25,8 @@
 
 ## 快速核对
 
-查看 `docs/openclaw-integration/baseline.json` 确认 SDK 提交及明确未验证的上游版本。参照 acceptance-plan 中的命令使用官方 OpenSpec CLI 校验；切勿把 artifact 已齐全或状态命令的 isComplete 字段解释为产品实现完成。
+查看 `docs/openclaw-integration/baseline.json` 确认首次文档编制时的 SDK 提交，再阅读 G0 的 `evidence/` 目录了解后续验证。OpenSpec 格式校验通过不代表产品实现完成。
 
 ## 发布打包说明
 
-原始文档包的 traceability.json 使用 gzip 保存为 .json.gz；validation-report.json 使用 gzip + Base64 分段保存在 [validation-report/](validation-report/README.md)，该目录说明如何恢复原始 JSON。解压后的内容与原包逐字节一致；Markdown 追踪表与检查摘要保留直接可读版本。仓库路径与文件校验值见 [package-manifest.json](package-manifest.json)。此打包调整不改变任何 Requirement、Scenario 或实施任务。
+原始文档包的 traceability.json 使用 gzip 保存为 .json.gz；validation-report.json 使用 gzip + Base64 分段保存在 [validation-report/](validation-report/README.md)，该目录说明如何恢复原始 JSON。两份解压后的 JSON 与原包逐字节一致；README 和检查摘要已按后续证据修订，当前文件校验值见 [package-manifest.json](package-manifest.json)。修订不改变任何 Requirement 或 Scenario。
