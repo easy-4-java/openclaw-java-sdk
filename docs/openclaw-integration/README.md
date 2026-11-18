@@ -2,7 +2,7 @@
 
 版本 0.1.0-draft · 2026-09-20 · **待评审，未实施，未归档**
 
-这是一套仓库内的 OpenSpec 变更草案，不是仅供讨论的差距清单。包含六组 proposal/design/tasks、21 个 capability spec、64 条 Requirement 和 128 个 Scenario；任务共 97 项，其中 5 项 G0 准入证据任务已勾选，92 项待完成。SDK 功能尚未按这些草案实施；检查结果见 [文档检查结果](validation-summary.md)。
+这是一套仓库内的 OpenSpec 变更草案，不是仅供讨论的差距清单。包含六组 proposal/design/tasks、21 个 capability spec、64 条 Requirement 和 128 个 Scenario；任务共 97 项，其中 6 项 G0 准入证据任务已勾选，91 项待完成。SDK 功能尚未按这些草案实施；检查结果见 [文档检查结果](validation-summary.md)。
 
 ## 阅读顺序
 
@@ -15,7 +15,7 @@
 
 本目录及 openspec/ 以独立文档提交交付；没有修改任何 SDK Java 源码、pom、依赖或现有测试。G0 已记录目标版本和来源，但该锁定仍待人审确认；G1 编码继续受评审门禁约束。
 
-首次文档编制时仅执行自定义结构检查；后续 G0 证据提交记录了三分支 CodeGraph、Maven 构建与测试，以及 OpenSpec 1.8.0 strict 校验。2026-11-18 使用 OpenSpec 1.14.1 对本分支再次执行 `openspec validate --all --strict --no-interactive --json`，6/6 changes 有效。上述构建证据对应 2026-09-20 的 SDK 提交，不证明当前源码或真实 Gateway 集成；真实 Gateway 测试仍未执行。
+首次文档编制时仅执行自定义结构检查；后续 G0 证据提交记录了三分支 CodeGraph、Maven 构建与测试，以及 OpenSpec 1.8.0 strict 校验。2026-11-18 使用 OpenSpec 1.14.1 对本分支再次执行 `openspec validate --all --strict --no-interactive --json`，6/6 changes 有效。历史构建证据对应 2026-09-20 的 SDK 提交。2026-11-18 补充了 [真实 Gateway 基线验证](../../openspec/changes/establish-sdk-compatibility-governance/evidence/2026-11-18-live-gateway.md)，覆盖三条维护线并记录默认分支的兼容缺口。
 
 ## 合入方式
 
