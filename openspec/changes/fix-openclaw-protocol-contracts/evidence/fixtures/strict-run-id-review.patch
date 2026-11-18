@@ -1,0 +1,56 @@
+diff --git a/src/main/java/io/github/easy4j/openclaw/ws/OpenClawGatewayWsClient.java b/src/main/java/io/github/easy4j/openclaw/ws/OpenClawGatewayWsClient.java
+index 4bb2ccb..589c433 100644
+--- a/src/main/java/io/github/easy4j/openclaw/ws/OpenClawGatewayWsClient.java
++++ b/src/main/java/io/github/easy4j/openclaw/ws/OpenClawGatewayWsClient.java
+@@ -987,29 +987,21 @@ public class OpenClawGatewayWsClient extends WebSocketClient implements AutoClos
+             }
+         }
+
+-        String runId = (String) p.get("runId");
++        Object runId = p.get("runId");
++        if (!(runId instanceof String)) {
++            return;
++        }
++        ChatStreamCollector collector = activeChatStreams.get(runId);
++        if (Objects.isNull(collector)) {
++            return;
++        }
++
+         String state = p.get("state") instanceof String ? (String) p.get("state") : null;
+         boolean done = Boolean.TRUE.equals(p.get("done")) || "final".equals(state);
+         String delta = p.get("deltaText") instanceof String
+                 ? (String) p.get("deltaText")
+                 : (String) p.get("delta");
+
+-        // 匹配到活跃的 chat stream
+-        ChatStreamCollector collector = null;
+-        if (runId != null) {
+-            collector = activeChatStreams.get(runId);
+-        }
+-        // 旧版 Gateway 可能省略 runId；仅作兼容性回退，优先最近登记的活动流。
+-        if (collector == null && !activeChatStreams.isEmpty()) {
+-            collector = activeChatStreams.values().stream()
+-                    .reduce((first, second) -> second)
+-                    .orElse(null);
+-        }
+-
+-        if (collector == null) {
+-            return;
+-        }
+-
+         if (delta != null) {
+             collector.textBuilder.append(delta);
+             collector.handler.onDelta(delta);
+diff --git a/src/test/java/io/github/easy4j/openclaw/ws/OpenClawGatewayWsClientIntegrationTest.java b/src/test/java/io/github/easy4j/openclaw/ws/OpenClawGatewayWsClientIntegrationTest.java
+index 6030e14..03ab45b 100644
+--- a/src/test/java/io/github/easy4j/openclaw/ws/OpenClawGatewayWsClientIntegrationTest.java
++++ b/src/test/java/io/github/easy4j/openclaw/ws/OpenClawGatewayWsClientIntegrationTest.java
+@@ -308,6 +308,8 @@ class OpenClawGatewayWsClientIntegrationTest {
+                     chatSendRequest.set(request);
+                     if ("modern-event".equals(request.path("params").path("message").asText())) {
+                         conn.send(response(id, true, Collections.singletonMap("runId", "gateway-run-1")));
++                        conn.send("{\"type\":\"event\",\"event\":\"chat\",\"payload\":{\"runId\":\"another-run\",\"state\":\"delta\",\"deltaText\":\"foreign\"}}");
++                        conn.send("{\"type\":\"event\",\"event\":\"chat\",\"payload\":{\"state\":\"delta\",\"deltaText\":\"unidentified\"}}");
+                         conn.send("{\"type\":\"event\",\"event\":\"chat\",\"payload\":{\"runId\":\"gateway-run-1\",\"state\":\"delta\",\"deltaText\":\"modern-event\",\"seq\":1}}");
+                         conn.send("{\"type\":\"event\",\"event\":\"chat\",\"payload\":{\"runId\":\"gateway-run-1\",\"state\":\"final\",\"seq\":2}}");
+                         return;
