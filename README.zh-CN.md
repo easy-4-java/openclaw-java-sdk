@@ -7,9 +7,9 @@
 纯 Java SDK —— 通过 HTTP、SSE、WebSocket 与本地 CLI 等独立通道对接 OpenClaw Gateway
 
 > **当前分支**：`feature/3.0.x`
-> **版本**：`3.0.x.x.20260630-SNAPSHOT`
+> **版本**：`3.0.x.20260630-SNAPSHOT`
 > **JDK 基线**：8
-> **项目状态**：稳定（1.0.x 线）。尚未发布 Maven Central；制品通过 Aliyun Maven 仓库与 GitHub Releases 分发。
+> **发布说明**：[3.0.x.20260630](https://github.com/easy-4-java/openclaw-java-sdk/releases/tag/v3.0.x.20260630).
 
 ## 目录
 
@@ -29,7 +29,7 @@
 
 ### 1.1 是什么
 
-**openclaw-java-sdk** 是面向 Java 开发者的纯 Java 库，通过 OpenClaw Gateway 的全部外部通信面进行对接：HTTP Chat Completions / Embeddings / Responses / Webhook / Tools Invoke、用于双向流式的 WebSocket 控制面，以及本地 `openclaw` CLI。
+**openclaw-java-sdk** 是面向 Java 开发者的纯 Java 库，通过以下 OpenClaw Gateway 接口进行对接：HTTP Chat Completions / Embeddings / Responses / Webhook / Tools Invoke、用于双向流式的 WebSocket 控制面，以及本地 `openclaw` CLI。
 
 ### 1.2 不是什么
 
@@ -68,23 +68,26 @@
 
 | 组件 | 版本 | 说明 |
 |---|---:|---|
-| JDK | 21+ | 1.0.x 线基线 |
-| Maven | 3.0+ | Enforcer 下限 |
+| JDK | 21+ | 3.0.x 线基线 |
+| Maven | 4.0.0-rc-5 | 仓库 Maven Wrapper 版本 |
 | OkHttp / okhttp-sse | 4.12.0 | HTTP 与 SSE 传输 |
-| Java-WebSocket | — | WebSocket 传输 |
-| Jackson databind | 2.17.x | JSON |
-| commons-exec | — | CLI 子进程执行 |
+| okhttp3-extension | 2.0.x.20260630 | OkHttp |
+| Java-WebSocket | 1.6.0 | WebSocket 传输 |
+| `tools.jackson.core:jackson-databind` | 3.2.1 | JSON |
+| commons-exec | 1.6.0 | CLI 子进程执行 |
 | SLF4J | 2.0.18 | 日志门面 |
+
+真实 Gateway 验证覆盖 2026.7.1-2 与 2026.11.5 的 WebSocket 协议 4 握手、Token 认证和 `sessions.list` 的 `operator.read` 权限检查。验证使用 `gateway-client` 客户端标识和 `backend` 模式。HTTP、SSE、CLI、模型调用及其他 RPC 的真实 Gateway 兼容性待验证。 [验证记录](https://github.com/easy-4-java/openclaw-java-sdk/blob/a191fa9598dbf492275da33da06d71018d6adb83/openspec/changes/establish-sdk-compatibility-governance/evidence/2026-11-18-live-gateway.md)
 
 版本线矩阵：
 
 | 版本线 | 分支 | JDK | 版本模式 | 用途 |
 |---|---|---:|---|---|
-| 1.0.x | `feature/3.0.x`（当前分支） | 8 | `1.0.x.*` | 存量项目、Boot 2.x Starter 线 |
+| 1.0.x | `feature/1.0.x` | 8 | `1.0.x.*` | 存量项目、Boot 2.x Starter 线 |
 | 2.0.x | `feature/2.0.x` | 17 | `2.0.x.*` | 主流线（JDK 17） |
-| 3.0.x | `feature/3.0.x` | 21 | `3.0.x.*` | 新项目 |
+| 3.0.x | `feature/3.0.x`（当前分支） | 21 | `3.0.x.*` | 新项目 |
 
-依赖边界：SDK 仅依赖 OkHttp、Jackson、Java-WebSocket、commons-exec 与 SLF4J。**无 Spring 依赖**——Spring Boot 应用请使用配套的 `openclaw-spring-boot-starter`。
+依赖边界：SDK 依赖 OkHttp、okhttp3-extension、Jackson、Java-WebSocket、commons-exec 与 SLF4J。**无 Spring 依赖**——Spring Boot 应用请使用配套的 `openclaw-spring-boot-starter`。
 
 <a id="4-architecture--modules"></a>
 ## 4. 架构与模块
@@ -131,14 +134,14 @@ Maven：
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>openclaw-java-sdk</artifactId>
-    <version>3.0.x.x.20260630-SNAPSHOT</version>
+    <version>3.0.x.20260630-SNAPSHOT</version>
 </dependency>
 ```
 
 Gradle：
 
 ```groovy
-implementation 'io.github.easy4j:openclaw-java-sdk:3.0.x.x.20260630-SNAPSHOT'
+implementation 'io.github.easy4j:openclaw-java-sdk:3.0.x.20260630-SNAPSHOT'
 ```
 
 快照版本需要启用对应快照仓库（`pom.xml` 中 `distributionManagement` 指向 Aliyun Maven 仓库）。
@@ -285,9 +288,9 @@ mvn clean verify
 
 | 分支 | 版本模式 | JDK | 维护策略 |
 |---|---|---|---|
-| `feature/1.0.x`（当前分支） | `1.0.x.*` | 8 | 仅接受兼容性修复与 JDK 8 安全的依赖升级 |
+| `feature/1.0.x` | `1.0.x.*` | 8 | 仅接受兼容性修复与 JDK 8 安全的依赖升级 |
 | `feature/2.0.x` | `2.0.x.*` | 17 | 主流开发线 |
-| `feature/3.0.x` | `3.0.x.*` | 21 | 新项目 |
+| `feature/3.0.x`（当前分支） | `3.0.x.*` | 21 | 新项目 |
 
 <a id="11-contributing--license"></a>
 ## 11. 贡献与许可证

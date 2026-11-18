@@ -8,9 +8,9 @@ Pure Java SDK — talks to the OpenClaw Gateway through independent HTTP, SSE, W
 [简体中文](./README.zh-CN.md)
 
 > **Current branch**: `feature/3.0.x`
-> **Version**: `3.0.x.x.20260630-SNAPSHOT`
-> **JDK baseline**: 8
-> **Project status**: stable (1.0.x line). Not yet published to Maven Central; artifacts are distributed via the Aliyun Maven repository and GitHub Releases.
+> **Version**: `3.0.x.20260630-SNAPSHOT`
+> **JDK baseline**: 21
+> **Release notes**: [3.0.x.20260630](https://github.com/easy-4-java/openclaw-java-sdk/releases/tag/v3.0.x.20260630).
 
 ## Table of Contents
 
@@ -30,7 +30,7 @@ Pure Java SDK — talks to the OpenClaw Gateway through independent HTTP, SSE, W
 
 ### 1.1 What it is
 
-**openclaw-java-sdk** is a pure Java library for Java developers to integrate with the OpenClaw Gateway over all of its external communication surfaces: HTTP Chat Completions / Embeddings / Responses / Webhook / Tools invoke, a WebSocket control plane for bidirectional streaming, and the local `openclaw` CLI.
+**openclaw-java-sdk** is a pure Java library for Java developers to integrate with the OpenClaw Gateway over these interfaces: HTTP Chat Completions / Embeddings / Responses / Webhook / Tools invoke, a WebSocket control plane for bidirectional streaming, and the local `openclaw` CLI.
 
 ### 1.2 What it is not
 
@@ -69,23 +69,26 @@ Pure Java SDK — talks to the OpenClaw Gateway through independent HTTP, SSE, W
 
 | Component | Version | Notes |
 |---|---:|---|
-| JDK | 21+ | 1.0.x line baseline |
-| Maven | 3.0+ | Enforcer minimum |
+| JDK | 21+ | 3.0.x line baseline |
+| Maven | 4.0.0-rc-5 | Repository Maven Wrapper version |
 | OkHttp / okhttp-sse | 4.12.0 | HTTP + SSE transport |
-| Java-WebSocket | — | WebSocket transport |
-| Jackson databind | 2.17.x | JSON |
-| commons-exec | — | CLI subprocess execution |
+| okhttp3-extension | 2.0.x.20260630 | OkHttp |
+| Java-WebSocket | 1.6.0 | WebSocket transport |
+| `tools.jackson.core:jackson-databind` | 3.2.1 | JSON |
+| commons-exec | 1.6.0 | CLI subprocess execution |
 | SLF4J | 2.0.18 | Logging facade |
+
+Live checks with Gateway 2026.7.1-2 and 2026.11.5 covered the protocol 4 WebSocket handshake, token authentication, and the `operator.read` requirement for `sessions.list`. The checks used the `gateway-client` client ID and `backend` mode. Live compatibility for HTTP, SSE, CLI, model calls and other RPCs remains unverified. [Verification record](https://github.com/easy-4-java/openclaw-java-sdk/blob/a191fa9598dbf492275da33da06d71018d6adb83/openspec/changes/establish-sdk-compatibility-governance/evidence/2026-11-18-live-gateway.md)
 
 Version-line matrix:
 
 | Version line | Branch | JDK | Version pattern | Purpose |
 |---|---|---:|---|---|
-| 1.0.x | `feature/3.0.x` (this branch) | 8 | `1.0.x.*` | Legacy projects, Boot 2.x starter line |
+| 1.0.x | `feature/1.0.x` | 8 | `1.0.x.*` | Legacy projects, Boot 2.x starter line |
 | 2.0.x | `feature/2.0.x` | 17 | `2.0.x.*` | Main line (JDK 17) |
-| 3.0.x | `feature/3.0.x` | 21 | `3.0.x.*` | New projects |
+| 3.0.x | `feature/3.0.x` (this branch) | 21 | `3.0.x.*` | New projects |
 
-Dependency boundary: the SDK depends only on OkHttp, Jackson, Java-WebSocket, commons-exec and SLF4J. **No Spring dependency** — Spring Boot applications should use the companion `openclaw-spring-boot-starter`.
+Dependency boundary: the SDK depends on OkHttp, okhttp3-extension, Jackson, Java-WebSocket, commons-exec and SLF4J. **No Spring dependency** — Spring Boot applications should use the companion `openclaw-spring-boot-starter`.
 
 <a id="4-architecture--modules"></a>
 ## 4. Architecture & Modules
@@ -132,14 +135,14 @@ Maven:
 <dependency>
     <groupId>io.github.easy4j</groupId>
     <artifactId>openclaw-java-sdk</artifactId>
-    <version>3.0.x.x.20260630-SNAPSHOT</version>
+    <version>3.0.x.20260630-SNAPSHOT</version>
 </dependency>
 ```
 
 Gradle:
 
 ```groovy
-implementation 'io.github.easy4j:openclaw-java-sdk:3.0.x.x.20260630-SNAPSHOT'
+implementation 'io.github.easy4j:openclaw-java-sdk:3.0.x.20260630-SNAPSHOT'
 ```
 
 Snapshot builds require an enabled snapshot repository (Aliyun Maven snapshot repository per `distributionManagement` in `pom.xml`).
@@ -286,9 +289,9 @@ mvn clean verify
 
 | Branch | Version pattern | JDK | Maintenance policy |
 |---|---|---|---|
-| `feature/1.0.x` (this branch) | `1.0.x.*` | 8 | Compatibility fixes and JDK-8-safe dependency upgrades only |
+| `feature/1.0.x` | `1.0.x.*` | 8 | Compatibility fixes and JDK-8-safe dependency upgrades only |
 | `feature/2.0.x` | `2.0.x.*` | 17 | Main development line |
-| `feature/3.0.x` | `3.0.x.*` | 21 | New projects |
+| `feature/3.0.x` (this branch) | `3.0.x.*` | 21 | New projects |
 
 <a id="11-contributing--license"></a>
 ## 11. Contributing & License
