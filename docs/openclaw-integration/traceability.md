@@ -1,6 +1,6 @@
 # Requirement → Scenario → Task 追踪表
 
-所有状态为 NOT_RUN；文档场景不是测试执行结果。
+表中状态记录首次编制时的基线。八个治理场景的后续验证见 [G0 场景证据核对](../../openspec/changes/establish-sdk-compatibility-governance/evidence/2026-11-19-governance-scenario-audit.md)。
 
 | Change | Capability | Requirement | Scenario | Tasks | 状态 |
 |---|---|---|---|---|---|

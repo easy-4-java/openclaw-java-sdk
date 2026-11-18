@@ -13,7 +13,7 @@
 - [x] 2.1 为 GOV-01、GOV-04 建立机器可读的能力、版本和证据清单；（证据：evidence/2026-09-20-precursor-evidence.md、capability-inventory.json——8 项静态存在均 liveVerified=false，4 项未封装，无 live-pass 标记）验收：能区分静态存在、部分实现、CLI 透传、未封装、未验证与不适用，并演示缺失证据不能被标记为 live-pass。
 - [ ] 2.2 为 GOV-02 建立三分支协议 fixture 和获准差异清单；[共用 Gateway 测试样本](evidence/2026-11-18-live-gateway.md#三条维护线共用的-gateway-测试样本)已实测握手、认证和读取权限，完整协议范围与差异清单待评审。验收：同一行为具有共同场景标识，JSON 包名和 JDK 差异不被误判为功能分叉，行为差异不能被全局忽略。
 - [ ] 2.3 为 GOV-03 建立规范评审与归档检查步骤；验收：DRAFT、REVIEWED、IMPLEMENTED、VERIFIED 与 ARCHIVED 分开，未执行任务和缺证据场景可阻止本项目归档流程。
-- [ ] 2.4 逐项映射 traceability 中 GOV-01-S1 至 GOV-04-S2；验收：八个场景均有对应检查或人工审核记录，重写 README 不得替代证据校验。
+- [ ] 2.4 逐项映射 traceability 中 GOV-01-S1 至 GOV-04-S2；[场景证据核对](evidence/2026-11-19-governance-scenario-audit.md)已标注各项核查与缺口。验收：八个场景均有对应检查或人工审核记录，重写 README 不得替代证据校验。
 
 ## 3. 基线验证与文档同步
 
