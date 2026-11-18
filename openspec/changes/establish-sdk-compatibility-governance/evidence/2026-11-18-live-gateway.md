@@ -40,3 +40,27 @@
 | feature/3.0.x | 3.0.x.20260630-SNAPSHOT | 21 / 4.0.0-rc-5 | tools.jackson.core 3.2.1 | 34b003b5c2c2158e536d3290ef67de7932ab78ef | [成功](https://github.com/easy-4-java/openclaw-java-sdk/actions/runs/44335951638) |
 
 三个提交仅修改各自的两份 README，已推送到对应的维护线。六份 README 均通过快照坐标、依赖版本、JDK、Wrapper、Release 标签和验证范围核对。文档明确记录实测的协议 4 握手、Token 认证和会话列表的读取权限检查，并标明 HTTP、SSE、CLI、模型调用及其余 RPC 的真实兼容性待验证。
+
+## 三条维护线共用的 Gateway 测试样本
+
+[GatewayCompatibilityFixtureTest.java](fixtures/GatewayCompatibilityFixtureTest.java) 在三条维护线上使用同一份源码。它通过公开 SDK API 验证协议 4 握手、无效 Token、`operator.read` 下的 `sessions.list` 以及缺少权限时的结构化拒绝。无效 Token 场景的客户端断言检查握手异常，服务端日志同时确认了 `token_mismatch`，因此可以区分认证拒绝和网络故障。
+
+| SDK 源码 | JDK | Maven | Gateway 2026.7.1-2 | Gateway 2026.11.5 |
+|---|---|---|---|---|
+| `8cfbeb8` | 1.8.0_504 | 3.9.16 | 4 项通过 | 4 项通过 |
+| `48309d7` | 17.0.21 | 3.9.16 | 4 项通过 | 4 项通过 |
+| `87c2113` | 21.0.13.0.2 | 4.0.0-rc-5 | 4 项通过 | 4 项通过 |
+
+六次执行均无失败、错误或跳过，两个 Gateway 均通过 `/readyz`。不同 JDK 和 Jackson 包名无需分叉这四个场景。默认分支握手差异保留在上文的独立记录中。GOV-02 的其它协议行为及差异清单批准仍待验收。
+
+复核时在三条维护线的独立检出目录中，将样本放到 `src/test/java/io/github/easy4j/openclaw/ws/`。按上文使用独立状态目录和临时 Token 启动本地 Gateway，只绑定回环地址并关闭插件。将 `SDK_PROBE_URL` 和 `OPENCLAW_GATEWAY_TOKEN` 传给测试进程。请勿使用线上 Token 或生产 Gateway。
+
+```bash
+# JDK 8 and JDK 17
+mvn -B -ntp -Dtest=GatewayCompatibilityFixtureTest test
+
+# JDK 21
+./mvnw -B -ntp -Dtest=GatewayCompatibilityFixtureTest test
+```
+
+每个版本均复核服务端认证拒绝原因、四条 JUnit 测试记录及 Maven 退出码。
