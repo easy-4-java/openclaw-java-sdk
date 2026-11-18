@@ -6,7 +6,7 @@
 |---|---|---|
 | GOV-01-S1 真实通过可追溯 | [实测记录](2026-11-18-live-gateway.md)绑定三条维护线、两版 Gateway、JDK、Maven、命令和四项测试。 | 核对发布兼容矩阵的实际内容及评审记录。 |
 | GOV-01-S2 缺少运行证据 | [能力清单](capability-inventory.json)保留静态存在、未封装以及 `liveVerified=false`。维护线 README 仅声明已实测的 WebSocket 范围。 | 发布时逐项核对能力声明。 |
-| GOV-02-S1 依赖适配差异 | [共用样本](fixtures/GatewayCompatibilityFixtureTest.java)在 Java 8、17、21 上执行，两版 Gateway 共通过 24 项检查。 | 流重建、终态语义及允许差异清单仍待验收。 |
+| GOV-02-S1 依赖适配差异 | [共用样本](fixtures/GatewayCompatibilityFixtureTest.java)在 Java 8、17、21 上执行，两版 Gateway 共通过 24 项检查。 | [真实 Gateway 并发串流](../../fix-openclaw-protocol-contracts/evidence/2026-11-19-gateway-chat-isolation.md)三线均失败。流重建、终态语义及允许差异清单待验收。 |
 | GOV-02-S2 单分支缺测 | [实测记录](2026-11-18-live-gateway.md)为各维护线分别列出结果，并独立记录默认分支拒绝；其它协议能力仍未标记为通过。 | 用只验证一条线的样本演示发布流程如何阻止全线声明。 |
 | GOV-03-S1 文档评审 | [设计稿](../design.md)标明草案，[任务清单](../tasks.md)保留未完成项。 | 维护者记录范围、版本和依赖审批。 |
 | GOV-03-S2 提前归档 | [归档判定](../design.md#评审与归档判定)列明阻断项，生效规范尚未更新。 | 维护者确认归档拒绝条件和验收记录。 |

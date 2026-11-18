@@ -15,7 +15,7 @@
 
 ## 3. Gateway 聊天事件语义
 
-- [ ] 3.1 为 `gateway-chat-events` 建立契约样本及回归基线（CHAT-01, CHAT-02, CHAT-03）；验收：spec.md 的 6 个场景全部映射到 fixture 或人工验收步骤，已存在问题有最小复现且测试确实执行。
+- [ ] 3.1 为 `gateway-chat-events` 建立契约样本及回归基线（CHAT-01, CHAT-02, CHAT-03）；[CHAT-02-S1 并发隔离](evidence/2026-11-19-gateway-chat-isolation.md)已在两版 Gateway 复现。验收：spec.md 的 6 个场景全部映射到 fixture 或人工验收步骤，已存在问题有最小复现且测试确实执行。
 - [ ] 3.2 按 design.md 实施 `gateway-chat-events` 并保持旧入口的已声明兼容范围；验收：对应成功、拒绝、边界和生命周期场景通过，错误与权限语义不被吞并。
 - [ ] 3.3 在三条适用分支验证 `gateway-chat-events` 并同步示例；验收：记录每条分支 SHA、JDK、构建命令、非零执行测试数和结果，获准差异逐项列出，缺测不得勾选。
 
