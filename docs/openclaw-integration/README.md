@@ -2,7 +2,7 @@
 
 版本 0.1.0-draft · 2026-09-20 · **待评审，未实施，未归档**
 
-这是一套仓库内的 OpenSpec 变更草案，不是仅供讨论的差距清单。包含六组 proposal/design/tasks、21 个 capability spec、64 条 Requirement 和 128 个 Scenario；任务共 97 项，其中 6 项 G0 准入证据任务已勾选，91 项待完成。SDK 功能尚未按这些草案实施；检查结果见 [文档检查结果](validation-summary.md)。
+这是一套仓库内的 OpenSpec 变更草案，不是仅供讨论的差距清单。包含六组 proposal/design/tasks、21 个 capability spec、64 条 Requirement 和 128 个 Scenario；任务共 97 项，其中 7 项 G0 准入证据任务已勾选，90 项待完成。SDK 功能尚未按这些草案实施；检查结果见 [文档检查结果](validation-summary.md)。
 
 ## 阅读顺序
 
