@@ -46,3 +46,5 @@
 Tools Invoke 的锁定版与 2026.11.5 两轮真实回环验证及 Java DTO 差距见 [版本评审](evidence/2026-11-19-tools-invoke-version-review.md)。
 
 会话历史的两版真实 Gateway 游标、增量及重置差异见 [版本评审](evidence/2026-11-19-chat-history-version-review.md)。
+
+Responses 的两版真实 Gateway 终态及续接差异见 [版本评审](evidence/2026-11-19-responses-version-review.md)。
