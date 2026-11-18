@@ -42,7 +42,7 @@ proposal 解释为什么、范围与破坏性变化；specs 只写外部行为�
 
 ## 准入状态
 
-人审：尚未发生。G0 证据已记录本机可获得的 OpenClaw `2026.7.1-2 (0790d9f)` 及来源，但协议 schema 和真实 Gateway 观察仍缺失，版本锁定待人审确认，G1 编码保持阻断。首次文档编制时 OpenSpec CLI 不可用；后续 G0 证据记录了 OpenSpec 1.8.0 strict 校验和三分支构建结果，2026-11-18 又以 OpenSpec 1.14.1 strict 校验 6/6 通过。CLI 格式校验和历史构建不代替当前 SDK 行为或真实 Gateway 验收。
+人审：尚未发生。G0 证据已记录本机可获得的 OpenClaw `2026.7.1-2 (0790d9f)` 及来源，并完成 [真实 Gateway 基线验证](../../openspec/changes/establish-sdk-compatibility-governance/evidence/2026-11-18-live-gateway.md)。锁定版机器可读协议 schema 仍缺失，版本锁定待人审确认，G1 编码保持阻断。首次文档编制时 OpenSpec CLI 不可用；后续 G0 证据记录了 OpenSpec 1.8.0 strict 校验和三分支构建结果，2026-11-18 又以 OpenSpec 1.14.1 strict 校验 6/6 通过。CLI 格式校验和历史构建不代替当前 SDK 行为或真实 Gateway 验收。
 
 ## 尚未纳入强承诺的扩展
 
