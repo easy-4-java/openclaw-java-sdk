@@ -15,6 +15,11 @@
 
 候选版应让 SDK 同时保留 SSE 事件名和资源状态。旧版长度耗尽响应说明，仅看事件名会误判成功。续接拒绝时应保留 400，宿主需要显式选择是否携带完整历史重开。JSON `user` 在本次共享令牌模式中不是独立身份约束。候选实现以认证主体、agent 和显式会话请求头查找对应关系。 [候选版续接实现](https://github.com/openclaw/openclaw/blob/v2026.11.5/src/gateway/openresponses-http.ts)
 
-现有三条 Java 发行线的 `OpenClawResponsesClient` JSON 路径将 `stream` 透传后再按 `ResponseResult` 解析。评审范围保留发送前拒绝错误入口和独立 SSE 解码。混合输出、空工具输出、客户端主动取消、终态前断流，以及实际 SDK 流式入口，仍需实施和验收。
+现有三条 Java 发行线的 `OpenClawResponsesClient` JSON 路径将 `stream` 透传后再按 `ResponseResult` 解析。评审范围保留发送前拒绝错误入口和独立 SSE 解码。混合输出、空工具输出、SDK 主动取消、终态前断流，以及实际 SDK 流式入口，仍需实施和验收。
 
 运行 [review-responses.py](fixtures/review-responses.py)，位置参数依次为两个已安装的 OpenClaw 包目录。脚本检查版本并在进程退出前清理模型桩和 Gateway。工具桩只返回合成协议帧，未执行实际工具。
+
+
+## 下游断开与上游连接回收
+
+模型桩在发送文本增量后保持连接，既不发送终态也不自行关闭。客户端收到首个文本增量后关闭 SSE。两版 Gateway 均在桩的 8 秒保持窗口内关闭模型连接，桩通过 TCP EOF 确认。每版的被取消请求只进入模型桩一次。同一 JSON user 和 agent 随后的非流式请求成功完成。此处验证 Gateway 对真实断开的处理。Java SDK 主动取消、调用方收到的终态，以及无终态断流仍需实施后验证。

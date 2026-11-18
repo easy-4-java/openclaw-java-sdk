@@ -2,6 +2,7 @@
 import json
 import os
 import secrets
+import select
 import socket
 import subprocess
 import sys
@@ -47,6 +48,13 @@ class Provider(BaseHTTPRequestHandler):
             emit({"content": "Gateway "})
             time.sleep(0.1)
             emit({"content": "fixture"})
+            if mode == "hold":
+                deadline = time.monotonic() + 8
+                while time.monotonic() < deadline and not self.server.finished_hold.is_set():
+                    readable, _, _ = select.select([self.connection], [], [], 0.2)
+                    if readable and not self.connection.recv(1, socket.MSG_PEEK):
+                        self.server.cancelled_connection.set()
+                        return
             emit({}, "length" if mode == "length" else "stop")
         usage = {"id": "fixture", "object": "chat.completion.chunk", "created": 1, "model": "local-fixture",
                  "choices": [], "usage": {"prompt_tokens": 8, "completion_tokens": 2, "total_tokens": 10}}
@@ -54,7 +62,7 @@ class Provider(BaseHTTPRequestHandler):
         self.wfile.flush()
 
 
-def request(base, token, user, mode, provider, session_header=None, **parameters):
+def open_request(base, token, user, mode, provider, session_header=None, **parameters):
     provider.mode = mode
     body = {"model": "openclaw", "user": user, **parameters}
     headers = {"Authorization": "Bearer " + token, "Content-Type": "application/json"}
@@ -62,10 +70,13 @@ def request(base, token, user, mode, provider, session_header=None, **parameters
         headers["x-openclaw-session-key"] = session_header
     req = Request(base + "/v1/responses", json.dumps(body).encode(), headers)
     try:
-        response = OPENER.open(req, timeout=25)
+        return OPENER.open(req, timeout=25)
     except HTTPError as error:
-        response = error
-    with response:
+        return error
+
+
+def request(*args, **kwargs):
+    with open_request(*args, **kwargs) as response:
         if response.headers.get_content_type() != "text/event-stream":
             return response.status, json.load(response)
         frames = []
@@ -141,6 +152,31 @@ def probe(base, token, provider, candidate):
         print("locked release returned a tool call and rejected empty tool output", flush=True)
 
 
+
+def verify_disconnect(base, token, provider):
+    provider.cancelled_connection = threading.Event()
+    provider.finished_hold = threading.Event()
+    before = provider.requests
+    try:
+        with open_request(base, token, "cancel-probe", "hold", provider, input="fixture", stream=True) as response:
+            assert response.status == 200
+            assert response.headers.get_content_type() == "text/event-stream"
+            for raw in response:
+                if raw.startswith(b"event: response.output_text.delta"):
+                    break
+            else:
+                raise AssertionError("expected a text delta before disconnect")
+        started = time.monotonic()
+        assert provider.cancelled_connection.wait(timeout=9), "provider socket remained open after disconnect"
+        print(f"downstream disconnect closed provider socket in {time.monotonic() - started:.3f}s", flush=True)
+    finally:
+        provider.finished_hold.set()
+    assert provider.requests == before + 1
+    status, next_turn = request(base, token, "cancel-probe", "normal", provider, input="after disconnect")
+    assert status == 200 and next_turn["status"] == "completed"
+    print("same session accepted another turn", flush=True)
+
+
 def release(runtime, version):
     assert json.loads((runtime / "package.json").read_bytes())["version"] == version
     with tempfile.TemporaryDirectory(prefix="openclaw-responses-review-") as tmp, \
@@ -192,6 +228,7 @@ def release(runtime, version):
                     raise RuntimeError("Gateway did not start")
                 print(version, flush=True)
                 probe(base, token, provider, candidate)
+                verify_disconnect(base, token, provider)
             finally:
                 child.terminate()
                 try:
