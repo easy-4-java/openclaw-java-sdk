@@ -4,7 +4,7 @@
 
 ## Context
 
-动机与范围见 proposal.md；固定的 SDK HEAD、静态观察和证据等级见 [coverage-baseline](../../../docs/openclaw-integration/coverage-baseline.md)。当前文档基于公开协议说明和此前源码静态核查，不包含真实 Gateway 验证。在线文档随时间变化；目标版本锁定仍是实施前的阻断条件。
+动机与范围见 [proposal](proposal.md)。首次静态核查的 SDK 提交与证据等级见 [coverage-baseline](../../../docs/openclaw-integration/coverage-baseline.md)。G0 后续验证覆盖三条维护线和默认分支，具体运行结果见 [真实 Gateway 基线验证](evidence/2026-11-18-live-gateway.md)。
 
 ## Goals / Non-Goals
 
@@ -14,7 +14,7 @@
 
 采用共同契约、分支独立证据的方式，不把三个分支合并成一条开发线，也不新增统一发行版本。共享 fixture 的期望语义保持一致；Java 8 语法、Jackson 2/3 包名和宿主扩展点的差异记录到兼容清单。
 
-已读取的 SDK HEAD 可精确固定；在线 OpenClaw 文档不等于已测试发布版本。因此先允许文档评审，实施前必须选定可获得的 Gateway 精确版本／提交与构建来源，并核实其协议文件、方法、事件和权限。当前没有选择或测试该版本，状态为 BLOCKED_VERSION_PIN。
+G0 记录的目标是 OpenClaw 2026.7.1-2（`0790d9f`）。[版本锁定记录](evidence/version-lock.md) 和 [官方生成的协议 schema](evidence/2026-11-18-locked-gateway-schema.md) 提供版本与契约依据。2026.11.5 的运行结果用于候选比较。目标版本和实施范围仍需人审确认，后续能力还需按锁定版本逐项核对方法、事件和权限。
 
 不把根 specs 填成未来蓝图。由于仓库尚无本轮能力的生效规范，这些能力首次以 ADDED Requirements 建档；ADDED 指新增规范条目，不断言全部代码此前不存在。归档是未来行为，需经过本项目人审和实施证据核验。
 
@@ -46,6 +46,18 @@
 ## Validation Strategy
 
 需求与场景的逐项映射见 [traceability](../../../docs/openclaw-integration/traceability.md)。每项能力须完成固定样本验证、受控模拟、适用分支构建及真实 Gateway 验收。资源测试至少覆盖成功、失败、取消、deadline、断线和用户回调异常。缺失环境的测试记录 BLOCKED，不记录 PASS。
+
+## 评审与归档判定
+
+| 状态 | 进入条件 |
+|---|---|
+| DRAFT | 提案可审阅，任务和场景按现有证据标明进度。当前属于此状态。 |
+| REVIEWED | 维护者在 PR 记录通过的范围、依赖、目标版本和对应提交。 |
+| IMPLEMENTED | 已批准的变更落到目标分支。记录实现提交和执行结果。 |
+| VERIFIED | 按场景核对每条适用维护线的提交、命令、运行结果与证据。适用范围例外须有评审记录。 |
+| ARCHIVED | 维护者复核归档资格，同步该变更的增量规范并确认归档结果。 |
+
+评审时以 [场景追踪表](../../../docs/openclaw-integration/traceability.md) 和 [任务清单](tasks.md) 对照每项证据。任何必需任务未完成、场景失败或证据缺失，都应在 PR 上列出对应编号并暂停归档。OpenSpec strict 校验用于校验规格结构，归档资格由维护者按本表复核。当前缺少范围批准、三线共享协议样本和逐场景证据，归档条件尚未满足。
 
 ## Sources
 
