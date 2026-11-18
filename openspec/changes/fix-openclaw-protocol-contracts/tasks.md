@@ -44,3 +44,5 @@
 - [ ] 7.3 更新覆盖矩阵并执行规范校验；验收：官方 OpenSpec validate 输出通过、无未解释的三分支差异、所有必需任务有证据且人审允许归档，随后才更新生效 specs。
 
 Tools Invoke 的锁定版与 2026.11.5 两轮真实回环验证及 Java DTO 差距见 [版本评审](evidence/2026-11-19-tools-invoke-version-review.md)。
+
+会话历史的两版真实 Gateway 游标、增量及重置差异见 [版本评审](evidence/2026-11-19-chat-history-version-review.md)。
