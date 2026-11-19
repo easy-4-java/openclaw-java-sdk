@@ -48,3 +48,5 @@ Tools Invoke 的锁定版与 2026.11.5 两轮真实回环验证及 Java DTO 差�
 会话历史的两版真实 Gateway 游标、增量及重置差异见 [版本评审](evidence/2026-11-19-chat-history-version-review.md)。
 
 Responses 的两版真实 Gateway 终态及续接差异见 [版本评审](evidence/2026-11-19-responses-version-review.md)。
+
+设备身份握手的两版真实 Gateway 观察与三条 Java 发行线的 hello-ok 映射差距见 [设备认证版本复评](evidence/2026-11-19-device-auth-version-review.md)。
