@@ -40,7 +40,9 @@ class Provider(BaseHTTPRequestHandler):
             self.wfile.flush()
 
         emit({"role": "assistant"})
-        if mode == "tool":
+        if mode in ("tool", "mixed"):
+            if mode == "mixed":
+                emit({"content": "Mixed fixture"})
             emit({"tool_calls": [{"index": 0, "id": "call_fixture", "type": "function",
                                   "function": {"name": "fixture_result", "arguments": "{}"}}]})
             emit({}, "tool_calls")
@@ -52,7 +54,12 @@ class Provider(BaseHTTPRequestHandler):
                 deadline = time.monotonic() + 8
                 while time.monotonic() < deadline and not self.server.finished_hold.is_set():
                     readable, _, _ = select.select([self.connection], [], [], 0.2)
-                    if readable and not self.connection.recv(1, socket.MSG_PEEK):
+                    if readable:
+                        try:
+                            if self.connection.recv(1, socket.MSG_PEEK):
+                                continue
+                        except ConnectionResetError:
+                            pass
                         self.server.cancelled_connection.set()
                         return
             emit({}, "length" if mode == "length" else "stop")
@@ -139,10 +146,29 @@ def probe(base, token, provider, candidate):
             assert code == 200 and provider.requests > before
         print("unknown continuation", "SSE" if stream else "JSON", code, flush=True)
 
+    empty_result = [{"type": "function_call_output", "call_id": "call_fixture", "output": ""}]
+    for stream in (False, True):
+        before = provider.requests
+        status, result = request(base, token, "continuation", "normal", provider,
+                                 previous_response_id=response_id, input=empty_result, stream=stream)
+        if candidate:
+            assert status == 200 and provider.requests == before + 1
+            if stream:
+                assert [(name, payload["response"]["status"]) for name, payload in result
+                        if name in ("response.completed", "response.incomplete", "response.failed")] == [
+                            ("response.completed", "completed")]
+                assert result[-1] == ("done", None)
+            else:
+                assert result["status"] == "completed"
+        else:
+            assert status == 400 and result["error"]["message"] == "Missing user message in `input`."
+            assert provider.requests == before
+        print("synthetic empty tool result", "SSE" if stream else "JSON", status, flush=True)
+
     code, tool = request(base, token, "tool", "tool", provider, input="fixture", tools=TOOLS)
     if candidate:
         assert code == 500 and tool["status"] == "failed" and tool["error"]["code"] == "api_error"
-        print("candidate client tool fixture failed; empty tool continuation remains unverified", flush=True)
+        print("candidate could not generate a tool call from this model fixture", flush=True)
     else:
         assert code == 200 and tool["status"] == "incomplete"
         call, = [item for item in tool["output"] if item.get("type") == "function_call"]
@@ -151,6 +177,25 @@ def probe(base, token, provider, candidate):
         assert code == 400 and continuation["error"]["type"] == "invalid_request_error"
         print("locked release returned a tool call and rejected empty tool output", flush=True)
 
+    status, frames = request(base, token, "mixed", "mixed", provider, input="fixture", tools=TOOLS, stream=True)
+    assert status == 200 and frames[-1] == ("done", None)
+    terminal, = [(name, data["response"]) for name, data in frames
+                 if name in ("response.completed", "response.incomplete", "response.failed")]
+    event, response = terminal
+    if candidate:
+        assert (event, response["status"]) == ("response.failed", "failed")
+        assert response["error"]["code"] == "api_error"
+    else:
+        assert (event, response["status"]) == ("response.completed", "incomplete")
+        text, call = response["output"]
+        assert text["content"][0]["text"] == "Mixed fixture"
+        assert call["type"] == "function_call" and call["name"] == "fixture_result"
+        assert call["call_id"] and json.loads(call["arguments"]) == {}
+        assert response["usage"]["total_tokens"] == 10
+        items = [(data["output_index"], data["item"]) for name, data in frames
+                 if name == "response.output_item.done"]
+        assert items == [(0, text), (1, {**call, "status": "completed"})]
+    print("mixed text and tool", event, response["status"], flush=True)
 
 
 def verify_disconnect(base, token, provider):
