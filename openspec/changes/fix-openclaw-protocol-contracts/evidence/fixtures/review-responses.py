@@ -29,6 +29,7 @@ class Provider(BaseHTTPRequestHandler):
             return
         mode = self.server.mode
         self.server.requests += 1
+        self.server.last_model_messages = body["messages"]
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream")
         self.end_headers()
@@ -177,16 +178,20 @@ def probe(base, token, provider, candidate):
         assert code == 400 and continuation["error"]["type"] == "invalid_request_error"
         print("locked release returned a tool call and rejected empty tool output", flush=True)
 
+    verify_mixed_tool_stream(base, token, provider, candidate)
+
+
+def verify_mixed_tool_stream(base, token, provider, candidate, inline_tools=False):
     status, frames = request(base, token, "mixed", "mixed", provider, input="fixture", tools=TOOLS, stream=True)
     assert status == 200 and frames[-1] == ("done", None)
     terminal, = [(name, data["response"]) for name, data in frames
                  if name in ("response.completed", "response.incomplete", "response.failed")]
     event, response = terminal
-    if candidate:
+    if candidate and not inline_tools:
         assert (event, response["status"]) == ("response.failed", "failed")
         assert response["error"]["code"] == "api_error"
     else:
-        assert (event, response["status"]) == ("response.completed", "incomplete")
+        assert (event, response["status"]) == ("response.completed", "completed" if candidate else "incomplete")
         text, call = response["output"]
         assert text["content"][0]["text"] == "Mixed fixture"
         assert call["type"] == "function_call" and call["name"] == "fixture_result"
@@ -196,6 +201,26 @@ def probe(base, token, provider, candidate):
                  if name == "response.output_item.done"]
         assert items == [(0, text), (1, {**call, "status": "completed"})]
     print("mixed text and tool", event, response["status"], flush=True)
+
+
+def verify_inline_tool_continuation(base, token, provider):
+    status, first = request(base, token, "inline-tool", "tool", provider, input="fixture", tools=TOOLS)
+    assert status == 200 and first["status"] == "completed"
+    call, = first["output"]
+    assert call["type"] == "function_call" and call["name"] == "fixture_result" and call["call_id"]
+    before = provider.requests
+    status, frames = request(base, token, "inline-tool", "normal", provider, previous_response_id=first["id"],
+                             input=[{"type": "function_call_output", "call_id": call["call_id"], "output": ""}],
+                             tools=TOOLS, stream=True)
+    assert status == 200 and provider.requests == before + 1 and frames[-1] == ("done", None)
+    terminal, = [(name, data["response"]) for name, data in frames
+                 if name in ("response.completed", "response.incomplete", "response.failed")]
+    event, response = terminal
+    assert (event, response["status"]) == ("response.completed", "completed")
+    assert response["output"][0]["content"][0]["text"] == "Gateway fixture"
+    assert f'Tool:{call["call_id"]}:' in json.dumps(provider.last_model_messages)
+    print("returned call ID accepted with empty output in SSE continuation", flush=True)
+    verify_mixed_tool_stream(base, token, provider, candidate=True, inline_tools=True)
 
 
 def verify_disconnect(base, token, provider):
@@ -222,7 +247,7 @@ def verify_disconnect(base, token, provider):
     print("same session accepted another turn", flush=True)
 
 
-def release(runtime, version):
+def release(runtime, version, inline_tools=False):
     assert json.loads((runtime / "package.json").read_bytes())["version"] == version
     with tempfile.TemporaryDirectory(prefix="openclaw-responses-review-") as tmp, \
             ThreadingHTTPServer(("127.0.0.1", 0), Provider) as provider:
@@ -239,7 +264,9 @@ def release(runtime, version):
         candidate = version == "2026.11.5"
         catalog = {"catalogRefresh": {"enabled": False}} if candidate else {}
         config = state / "gateway.json"
+        tool_policy = {"tools": {"allow": ["fixture_result"], "toolSearch": False}} if inline_tools else {}
         config.write_text(json.dumps({
+            **tool_policy,
             "gateway": {"mode": "local", "bind": "loopback", "port": port,
                         "auth": {"mode": "token", "allowTailscale": False},
                         "http": {"endpoints": {"responses": {"enabled": True}}},
@@ -250,7 +277,8 @@ def release(runtime, version):
                 "localprobe": {"baseUrl": f"http://127.0.0.1:{provider.server_port}/v1",
                                "apiKey": "local-fixture-key", "api": "openai-completions",
                                "models": [{"id": "local-fixture", "name": "Local fixture", "reasoning": False,
-                                           "input": ["text"], "contextWindow": 32768, "maxTokens": 1024}]}}},
+                                           "input": ["text"], "contextWindow": 262144 if inline_tools else 32768,
+                                           "maxTokens": 1024}]}}},
             "discovery": {"mdns": {"mode": "off"}}, "cron": {"enabled": False}, "plugins": {"enabled": False},
         }))
         env = {"PATH": os.environ["PATH"], "OPENCLAW_HOME": tmp, "OPENCLAW_CONFIG_PATH": str(config),
@@ -272,8 +300,11 @@ def release(runtime, version):
                 else:
                     raise RuntimeError("Gateway did not start")
                 print(version, flush=True)
-                probe(base, token, provider, candidate)
-                verify_disconnect(base, token, provider)
+                if inline_tools:
+                    verify_inline_tool_continuation(base, token, provider)
+                else:
+                    probe(base, token, provider, candidate)
+                    verify_disconnect(base, token, provider)
             finally:
                 child.terminate()
                 try:
@@ -289,3 +320,4 @@ if __name__ == "__main__":
         raise SystemExit("usage: review-responses.py LOCKED_PACKAGE_DIR CANDIDATE_PACKAGE_DIR")
     for directory, version in zip(sys.argv[1:], ("2026.7.1-2", "2026.11.5"), strict=True):
         release(Path(directory).resolve(), version)
+    release(Path(sys.argv[2]).resolve(), "2026.11.5", inline_tools=True)

@@ -17,12 +17,21 @@
 
 候选版应让 SDK 同时保留 SSE 事件名和资源状态。旧版长度耗尽响应说明，仅看事件名会误判成功。续接拒绝时应保留 400，宿主需要显式选择是否携带完整历史重开。JSON `user` 在本次共享令牌模式中不是独立身份约束。候选实现以认证主体、agent 和显式会话请求头查找对应关系。 [候选版续接实现](https://github.com/openclaw/openclaw/blob/v2026.11.5/src/gateway/openresponses-http.ts)
 
-候选版接受带空字符串的续接请求。该对照使用正常文本响应的有效 ID 和合成调用 ID，尚缺 Gateway 生成工具调用后再提交空结果的端到端证据。候选版标记的上游测试覆盖该流程，其中 agent 运行结果来自 mock。 [候选版空结果续接测试](https://github.com/openclaw/openclaw/blob/v2026.11.5/src/gateway/openresponses-http.test.ts#L1454)
+前表的空字符串对照使用正常文本响应的有效 ID 和合成调用 ID。候选版标记的上游测试也覆盖工具结果续接，其中 agent 运行结果来自 mock。 [候选版空结果续接测试](https://github.com/openclaw/openclaw/blob/v2026.11.5/src/gateway/openresponses-http.test.ts#L1454)
 
-现有三条 Java 发行线的 `OpenClawResponsesClient` JSON 路径将 `stream` 透传后再按 `ResponseResult` 解析。评审范围保留发送前拒绝错误入口和独立 SSE 解码。混合输出、空工具输出、SDK 主动取消、终态前断流，以及实际 SDK 流式入口，仍需实施和验收。
+现有三条 Java 发行线的 `OpenClawResponsesClient` JSON 路径将 `stream` 透传后再按 `ResponseResult` 解析。评审范围保留发送前拒绝错误入口和独立 SSE 解码。Java 的混合输出重建、空工具输出序列化、主动取消、终态前断流和流式入口仍需实施和验收。
 
 运行 [review-responses.py](fixtures/review-responses.py)，位置参数依次为两个已安装的 OpenClaw 包目录。脚本检查版本并在进程退出前清理模型桩和 Gateway。工具桩只返回合成协议帧，未执行实际工具。
 
+
+## 候选版显式工具配置
+
+默认配置的候选版模型请求没有直接列出合成客户端工具。另起一个回环 Gateway，只允许 `fixture_result`，关闭工具发现，并将模型桩的上下文声明设为 262144。该配置仅用于验证客户端显式传入的合成工具。全程没有执行该工具。
+
+- 首次 JSON 请求返回 `function_call`。续接请求重新提供工具声明，并使用原响应 ID、Gateway 返回的 `call_id` 和空字符串结果。真实 Gateway 只调用模型桩一次，模型输入携带相同工具 ID，SSE 以唯一的 `response.completed` 和 `[DONE]` 结束。
+- 混合 SSE 请求在两个不同的 `output_index` 结束文本和工具项，终态保留相同项、调用 ID、参数与用量。候选版的最终资源和工具项都携带 `status=completed`。
+
+这两项可作为 RSP-02-S1 与 RSP-03-S1 的 Gateway 输入样本。验收仍需覆盖 Java 协议层及部署所用的工具配置。
 
 ## 下游断开与上游连接回收
 
