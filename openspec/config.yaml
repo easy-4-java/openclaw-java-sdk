@@ -1,0 +1,24 @@
+schema: spec-driven
+context: |
+  Repository: easy-4-java/openclaw-java-sdk.
+  Language: Chinese prose; keep normative OpenSpec headings and SHALL/MUST in English.
+  Release lines: feature/1.0.x (JDK 8), feature/2.0.x (JDK 17), feature/3.0.x (JDK 21).
+  Keep wire behavior and shared acceptance fixtures aligned; do not assume binary ABI identity across Jackson/JDK lines.
+  This package contains proposed changes only. No implementation, Gateway live test, or archive is authorized by artifact presence.
+  The SDK commit baseline is recorded in docs/openclaw-integration/baseline.json.
+  A precise tested OpenClaw version/commit is not yet selected; version pinning is a pre-implementation gate.
+  Preserve HTTP, SSE, WebSocket, and CLI boundaries. A CLI wrapper is not a native RPC or a persistent protocol client.
+  Host application owns credential persistence, execution authorization, tenant isolation, and injected shared resources.
+  Do not claim that dryRun, scope headers with shared credentials, or idempotency keys imply safety or exactly-once execution.
+rules:
+  proposal:
+    - State in-scope, non-goals, affected branches, dependencies, and behavioral breaking changes.
+    - Declare exact capability paths; do not invent MODIFIED targets without existing main specs.
+  specs:
+    - Write observable behavior, not internal classes; each SHALL/MUST requirement needs WHEN/THEN scenarios.
+    - Cover success and rejection or failure paths and preserve transport versus remote execution semantics.
+  design:
+    - Identify proposed components separately from existing code and document alternatives, migration, and rollback limits.
+  tasks:
+    - Every numbered checkbox must include acceptance evidence and remain unchecked until actually executed.
+    - Do not archive before human review and required branch and live-Gateway evidence are complete.
