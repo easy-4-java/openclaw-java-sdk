@@ -36,3 +36,15 @@
 ## 下游断开与上游连接回收
 
 模型桩在发送文本增量后保持连接，既不发送终态也不自行关闭。客户端收到首个文本增量后关闭 SSE。两版 Gateway 均在桩的 8 秒保持窗口内关闭模型连接，桩通过 TCP EOF 或连接重置确认。每版的被取消请求只进入模型桩一次。同一 JSON user 和 agent 随后的非流式请求成功完成。此处验证 Gateway 对真实断开的处理。Java SDK 主动取消、调用方收到的终态，以及无终态断流仍需实施后验证。
+
+## RSP-01-S2 的 Java 基线
+
+[共享回环夹具](fixtures/ResponsesJsonEntryFixtureTest.java)在三条 Java 发行线各执行一项测试，均零失败、零错误、零跳过。每项先用普通 JSON 请求确认控制组成功，再向同一个 JSON 入口传 `stream=true`。回环服务器实际收到两次 HTTP 请求，其中一次带 `stream=true`。返回 SSE 后客户端才抛出 JSON 解析异常。该结果记录了现状，并验证了请求发出前拦截的验收缺口。
+
+| Java | 发行线验证提交 |
+| --- | --- |
+| 8 | `3dc46a0e58200b086efc59029a43aa5c136bf61b` |
+| 17 | `9293a8cd2580435ec076b076d98c7965b77f0049` |
+| 21 | `34b003b5c2c2158e536d3290ef67de7932ab78ef` |
+
+将夹具放入各提交的 `src/test/java/io/github/easy4j/openclaw/`，使用对应 JDK，运行 `mvn -B -ntp -Dtest=ResponsesJsonEntryFixtureTest test`。Java 21 使用 `./mvnw`。
