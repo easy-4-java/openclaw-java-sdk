@@ -48,7 +48,12 @@ threading.Thread(target=provider.serve_forever, daemon=True).start()
 version = os.sys.argv[1]
 workers = int(os.environ.get("FIXTURE_WORKERS", "3"))
 streams_started = threading.Barrier(workers)
-prefix = f"chat-provenance-{workers}-{version}-"
+fixture = os.environ.get("FIXTURE_TEST", "GatewayStreamingLiveFixtureTest")
+fixture_labels = {
+    "GatewayStreamingLiveFixtureTest": "provenance",
+    "GatewayChatSnapshotFixtureTest": "snapshot-wire",
+}
+prefix = f"chat-{fixture_labels[fixture]}-{workers}-{version}-"
 runtime = root / (("locked-" if version == "locked" else "") + "runtime/node_modules/openclaw")
 token = secrets.token_hex(24)
 with socket.socket() as reservation:
@@ -81,14 +86,14 @@ def verify(args):
     java = subprocess.check_output(["/usr/libexec/java_home", "-v", jdk], text=True).strip()
     env = dict(os.environ, JAVA_HOME=java,
                PATH=java + "/bin:" + os.environ["PATH"], SDK_PROBE_URL=f"ws://127.0.0.1:{port}",
-               OPENCLAW_GATEWAY_TOKEN=token)
+               OPENCLAW_GATEWAY_TOKEN=token, SDK_FIXTURE_VERSION=version)
     with (root / f"{prefix}tests-{line}.log").open("w") as log:
         mvn = ["bash", "./mvnw"] if line == 3 else ["mvn"]
         subprocess.run(mvn + ["-version"], env=env, cwd=root / f"sdk-{line}", stdout=log, stderr=log)
         build = subprocess.run(mvn + ["-B", "-ntp", "-o",
                  "-Dmaven.repo.local=" + str(root / f"m2-{line}"),
                  "-Dmaven.repo.local.tail=" + str(Path.home() / ".m2/repository"),
-                 "-Dtest=" + test, "test"],
+                 "-Dtest=" + test, "clean", "test"],
                  env=env, cwd=root / f"sdk-{line}", stdout=log, stderr=log, timeout=120)
     return line, build.returncode
 
@@ -111,7 +116,7 @@ with (root / (prefix + "gateway-live.log")).open("w") as log:
             raise RuntimeError("Gateway did not become ready")
         runs = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
-            for line, result in executor.map(verify, tuple((line, jdk, "GatewayStreamingLiveFixtureTest") for line, jdk in ((1, "1.8"), (2, "17"), (3, "21")))):
+            for line, result in executor.map(verify, tuple((line, jdk, fixture) for line, jdk in ((1, "1.8"), (2, "17"), (3, "21")))):
                 print(f"SDK line {line}: Maven exit {result}", flush=True)
                 runs.append(result)
         if any(runs):

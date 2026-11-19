@@ -33,3 +33,21 @@
 3. 将[启动器](fixtures/run-gateway-streaming.py)复制到同一临时目录，分别运行 `python3 run-gateway-streaming.py locked` 和 `python3 run-gateway-streaming.py candidate`。它会启动独立的回环 Gateway 和本地模型夹具，并写出三条版本线的测试日志。
 
 候选补丁和测试证据供评审，SDK 分支仍指向表中的基线。该结果覆盖 CHAT-02-S1。版本确认、人审、会话代际和其他 G1 场景沿用现有验收项。
+
+## CHAT-01 替换事件与最终快照
+
+在上述三个 SDK 基线上，用通用事件监听器采集同一 `runId` 的原始 `chat` 事件，并核对每帧的 `sessionKey`。两个官方 Gateway 版本分别运行在回环地址，使用本地固定 SSE 模型和独立状态目录。每个版本分别发出三个模型请求，三条 Java 线共执行六项测试，零失败、零错误、零跳过。
+
+| Gateway | 普通增量拼接结果 | `replace=true` 事件 | `final.message.content` 文本 |
+| --- | --- | --- | --- |
+| `2026.7.1-2` | `Gateway fixture ✓` | 0 次 | `Gateway fixture ✓` |
+| `2026.11.5` | `Gateway fixture ✓` | 1 次，`deltaText=""` | `Gateway fixture ✓` |
+
+候选版在普通增量之后、最终帧之前发送空文本替换。空字符串是实际事件值，最终帧仍携带完整文本。这个序列为 CHAT-01 的替换与最终快照对账提供真实输入。非空替换、重复终态和 SDK 如何把替换通知给旧回调仍需按相应场景验收。
+
+在前述临时源码树中复制 [GatewayChatSnapshotFixtureTest.java](fixtures/GatewayChatSnapshotFixtureTest.java)，逐个启动 Gateway 以隔离 Maven 构建目录，重放命令如下。
+
+```bash
+FIXTURE_WORKERS=1 FIXTURE_TEST=GatewayChatSnapshotFixtureTest python3 run-gateway-streaming.py locked
+FIXTURE_WORKERS=1 FIXTURE_TEST=GatewayChatSnapshotFixtureTest python3 run-gateway-streaming.py candidate
+```
